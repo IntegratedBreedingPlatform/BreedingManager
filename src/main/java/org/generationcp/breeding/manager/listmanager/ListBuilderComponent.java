@@ -180,7 +180,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				ListBuilderComponent.this.enableMenuOptionsAfterSave();
 			}
 
-			ListBuilderComponent.this.addColumnContextMenu.refreshAddColumnMenu();
+			ListBuilderComponent.this.addColumnContextMenu.refreshAddColumnMenu(ListBuilderComponent.this.listDataTable);
 			ListBuilderComponent.this.menu.show(event.getClientX(), event.getClientY());
 
 		}
@@ -543,9 +543,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.menuDeleteSelectedEntries = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
 		this.menuCopyToList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));//changed label
 		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.RESET_LIST));
-		this.addColumnContextMenu =
-				new AddColumnContextMenu(this, this.menu, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName(), true,
-						this.listEditingOptions);//Passing new ContextMenuItem As ListEditingOption In which Add Column Will be Sub Menu
+		this.addColumnContextMenu = new AddColumnContextMenu(
+				new ListBuilderAddColumnSource(this, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName()), this.menu,
+				this.listEditingOptions);
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
 
 		this.inventoryViewMenu = new ContextMenu();

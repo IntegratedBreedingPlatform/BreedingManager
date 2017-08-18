@@ -1,38 +1,20 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import com.google.common.collect.Lists;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.FieldEvents.BlurEvent;
-import com.vaadin.event.FieldEvents.BlurListener;
-import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.event.FieldEvents.FocusListener;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.TableFieldFactory;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Reindeer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
@@ -119,19 +101,39 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import com.google.common.collect.Lists;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.TableFieldFactory;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
@@ -463,9 +465,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	protected void initializeAddColumnContextMenu() {
-		this.addColumnContextMenu =
-				new AddColumnContextMenu(this.parentListDetailsComponent, this.menu, this.listDataTable, ColumnLabels.GID.getName(),
-						this.menu.getListEditingOptions());
+		this.addColumnContextMenu = new AddColumnContextMenu(
+				new ListComponentAddColumnSource(this.parentListDetailsComponent, this.listDataTable, ColumnLabels.GID.getName()),
+				this.menu, this.menu.getListEditingOptions());
 	}
 
 	public void initializeListInventoryTable() {
@@ -1074,7 +1076,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		@Override
 		public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-			ListComponent.this.addColumnContextMenu.refreshAddColumnMenu();
+			ListComponent.this.addColumnContextMenu.refreshAddColumnMenu(ListComponent.this.listDataTable);
 			ListComponent.this.menu.show(event.getClientX(), event.getClientY());
 
 			// update list view action menu based on the following criteria:
@@ -1688,41 +1690,43 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.addListEntryToTable(listData);
 
 				final Object[] visibleColumns = this.listDataTable.getVisibleColumns();
+				final AddedEntryFillColumnSource fillColumnSource = new AddedEntryFillColumnSource(this.listDataTable, listDataId, gid);
+				final GermplasmColumnValuesGenerator valuesGenerator = new GermplasmColumnValuesGenerator(fillColumnSource);
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.PREFERRED_ID.getName())) {
-					this.addColumnContextMenu.setPreferredIdColumnValues(false);
+					valuesGenerator.setPreferredIdColumnValues();
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.GERMPLASM_LOCATION.getName())) {
-					this.addColumnContextMenu.setLocationColumnValues(false);
+					valuesGenerator.setLocationNameColumnValues();
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.PREFERRED_NAME.getName())) {
-					this.addColumnContextMenu.setPreferredNameColumnValues(false);
+					valuesGenerator.setPreferredNameColumnValues();
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.GERMPLASM_DATE.getName())) {
-					this.addColumnContextMenu.setGermplasmDateColumnValues(false);
+					valuesGenerator.setGermplasmDateColumnValues();
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.BREEDING_METHOD_NAME.getName())) {
-					this.addColumnContextMenu.setMethodInfoColumnValues(false, ColumnLabels.BREEDING_METHOD_NAME.getName());
+					valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NAME.getName());
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())) {
-					this.addColumnContextMenu.setMethodInfoColumnValues(false, ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
+					valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.BREEDING_METHOD_NUMBER.getName())) {
-					this.addColumnContextMenu.setMethodInfoColumnValues(false, ColumnLabels.BREEDING_METHOD_NUMBER.getName());
+					valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NUMBER.getName());
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.BREEDING_METHOD_GROUP.getName())) {
-					this.addColumnContextMenu.setMethodInfoColumnValues(false, ColumnLabels.BREEDING_METHOD_GROUP.getName());
+					valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_GROUP.getName());
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_FEMALE_GID.getName())) {
-					this.addColumnContextMenu.setCrossFemaleInfoColumnValues(false, ColumnLabels.CROSS_FEMALE_GID.getName());
+					valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName());
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())) {
-					this.addColumnContextMenu.setCrossFemaleInfoColumnValues(false, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
+					valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_MALE_GID.getName())) {
-					this.addColumnContextMenu.setCrossMaleGIDColumnValues(false);
+					valuesGenerator.setCrossMaleGIDColumnValues();
 				}
 				if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())) {
-					this.addColumnContextMenu.setCrossMalePrefNameColumnValues(false);
+					valuesGenerator.setCrossMalePrefNameColumnValues();
 				}
 
 				this.saveChangesAction(this.getWindow(), false);
