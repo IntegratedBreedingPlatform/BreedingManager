@@ -28,8 +28,8 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	public void setPreferredIdColumnValues() {
-		final List<Integer> itemIds = this.fillColumnSource.getItemIdsToProcess();
-		for (final Integer itemId : itemIds) {
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 			String preferredID = "";
 			// TODO Optimize in one-off Middleware query for all GIDs
@@ -45,10 +45,10 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	public void setPreferredNameColumnValues() {
-		final List<Integer> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final Map<Integer, String> gidPreferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
-		for (final Integer itemId : itemIds) {
+		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 			String preferredName = "";
 			if (gidPreferredNamesMap.get(gid) != null) {
@@ -63,10 +63,10 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	public void setGermplasmDateColumnValues() {
-		final List<Integer> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final Map<Integer, Integer> germplasmGidDateMap = this.germplasmDataManager.getGermplasmDatesByGids(gids);
-		for (final Integer itemId : itemIds) {
+		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 
 			if (germplasmGidDateMap.get(gid) == null) {
@@ -81,11 +81,11 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	public void setLocationNameColumnValues() {
-		final List<Integer> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final Map<Integer, String> locationNamesMap = this.germplasmDataManager.getLocationNamesByGids(gids);
 
-		for (final Integer itemId : itemIds) {
+		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 			if (locationNamesMap.get(gid) == null) {
 				this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.GERMPLASM_LOCATION.getName(), "");
@@ -99,11 +99,11 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	public void setMethodInfoColumnValues(final String columnName) {
-		final List<Integer> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final Map<Integer, Object> methodsMap = this.germplasmDataManager.getMethodsByGids(gids);
 
-		for (final Integer itemId : itemIds) {
+		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 
 			if (methodsMap.get(gid) == null) {
@@ -129,10 +129,10 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	public void setCrossMaleGIDColumnValues() {
-		final List<Integer> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final List<Germplasm> germplasmMap = this.germplasmDataManager.getGermplasms(gids);
-		for (final Integer itemId : itemIds) {
+		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 			final Germplasm germplasm = germplasmMap.get(gid);
 
@@ -157,23 +157,23 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	public void setCrossMalePrefNameColumnValues() {
-		final List<Integer> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final List<Germplasm> germplasmMap = this.germplasmDataManager.getGermplasms(gids);
 
-		final Map<Integer, List<Integer>> gidToItemIdMap = new HashMap<>();
+		final Map<Integer, List<Object>> gidToItemIdMap = new HashMap<>();
 		final List<Integer> gidsToUseForQuery = new ArrayList<>();
 
-		for (final Integer itemId : itemIds) {
+		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 			final Germplasm germplasm = germplasmMap.get(gid);
 
 			if (germplasm != null) {
 				if (germplasm.getGnpgs() >= 2 && germplasm.getGpid2() != null && germplasm.getGpid2() != 0) {
 					gidsToUseForQuery.add(germplasm.getGpid2());
-					List<Integer> itemIdsInMap = gidToItemIdMap.get(germplasm.getGpid2());
+					List<Object> itemIdsInMap = gidToItemIdMap.get(germplasm.getGpid2());
 					if (itemIdsInMap == null) {
-						itemIdsInMap = new ArrayList<Integer>();
+						itemIdsInMap = new ArrayList<>();
 						itemIdsInMap.add(itemId);
 						gidToItemIdMap.put(germplasm.getGpid2(), itemIdsInMap);
 					} else {
@@ -192,8 +192,8 @@ public class GermplasmColumnValuesGenerator {
 
 			for (final Integer gid : gidToNameMap.keySet()) {
 				final String prefName = gidToNameMap.get(gid);
-				final List<Integer> itemIdsInMap = gidToItemIdMap.get(gid);
-				for (final Integer itemId : itemIdsInMap) {
+				final List<Object> itemIdsInMap = gidToItemIdMap.get(gid);
+				for (final Object itemId : itemIdsInMap) {
 					this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), prefName);
 				}
 			}
@@ -204,11 +204,11 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	public void setCrossFemaleInfoColumnValues(final String columnName) {
-		final List<Integer> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final List<Germplasm> germplasmMap = this.germplasmDataManager.getGermplasms(gids);
 		
-		for (final Integer itemId : itemIds) {
+		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 			final Germplasm germplasm = germplasmMap.get(gid);
 			Germplasm femaleParent = null;
