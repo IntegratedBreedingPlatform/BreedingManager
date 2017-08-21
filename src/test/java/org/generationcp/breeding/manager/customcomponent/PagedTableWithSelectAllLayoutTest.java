@@ -57,27 +57,6 @@ public class PagedTableWithSelectAllLayoutTest {
 	}
 
 	@Test
-	public void testGetAllEntriesForPage() {
-
-		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
-
-		final int pageLength = 5;
-		final int firstPage = 1;
-		final int lastPage = 21;
-
-		this.pagedTableWithSelectAllLayout.getTable().setPageLength(pageLength);
-
-		final List<Object> result = this.pagedTableWithSelectAllLayout.getAllEntriesForPage(firstPage);
-
-		Assert.assertEquals("The number of entries per page should be equal to the table's page length.", pageLength, result.size());
-
-		final List<Object> result2 = this.pagedTableWithSelectAllLayout.getAllEntriesForPage(lastPage);
-
-		Assert.assertEquals("The last page should only have 1 item", 1, result2.size());
-
-	}
-
-	@Test
 	public void testUpdateItemSelectCheckboxesSomeSelectedOnCurrentPage() {
 
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
@@ -145,7 +124,7 @@ public class PagedTableWithSelectAllLayoutTest {
 				checkboxOfSecondItem.booleanValue());
 
 		// Items on the 2nd page are not selected
-		final List<Object> entriesForCurrentPage = this.pagedTableWithSelectAllLayout.getAllEntriesForPage(currentPage);
+		final List<Object> entriesForCurrentPage = this.pagedTableWithSelectAllLayout.getTable().getAllEntriesForPage(currentPage);
 		for (final Object item : entriesForCurrentPage) {
 			final CheckBox checkbox =
 					(CheckBox) table.getItem(item).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();

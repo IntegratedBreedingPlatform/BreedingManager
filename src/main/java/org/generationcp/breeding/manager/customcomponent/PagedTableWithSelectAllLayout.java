@@ -179,31 +179,12 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	}
 
 	/***
-	 * Retrieves all items for given page
-	 *
-	 * @param pageNo - current page
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	List<Object> getAllEntriesForPage(final Integer pageNo) {
-		final Collection<Object> allEntries = (Collection<Object>) this.table.getItemIds();
-		final List<Object> allEntriesList = new ArrayList<>(allEntries);
-
-		final Integer pageLength = this.table.getPageLength();
-		final Integer startingIndex = pageNo * pageLength - pageLength;
-		Integer endingIndex = startingIndex + pageLength;
-		endingIndex = endingIndex > allEntriesList.size() ? allEntriesList.size() : endingIndex;
-
-		return allEntriesList.subList(startingIndex, endingIndex);
-	}
-
-	/***
 	 * Update the selection checkboxes per item on current page.
 	 */
 	@SuppressWarnings("unchecked")
 	void updateItemSelectCheckboxes() {
 		final Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
-		final List<Object> entriesForCurrentPage = this.getAllEntriesForPage(this.table.getCurrentPage());
+		final List<Object> entriesForCurrentPage = this.table.getAllEntriesForPage(this.table.getCurrentPage());
 
 		for (final Object entry : entriesForCurrentPage) {
 			final Property itemProperty = this.table.getItem(entry).getItemProperty(this.checkboxColumnId);
@@ -225,7 +206,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	 */
 	void updateSelectAllOnPageCheckBoxStatus() {
 
-		final List<Object> entriesForCurrentPage = this.getAllEntriesForPage(this.table.getCurrentPage());
+		final List<Object> entriesForCurrentPage = this.table.getAllEntriesForPage(this.table.getCurrentPage());
 		int noOfSelectedEntriesForCurrentPage = 0;
 
 		for (final Object entry : entriesForCurrentPage) {
@@ -275,7 +256,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	 * @param doSelectAll - if true, selects all entries on current page. Else, unselects all entries on current page.
 	 */
 	private void toggleAllEntriesSelectionOnCurrentPage(final boolean doSelectAll) {
-		final List<Object> entriesForCurrentPage = this.getAllEntriesForPage(this.table.getCurrentPage());
+		final List<Object> entriesForCurrentPage = this.table.getAllEntriesForPage(this.table.getCurrentPage());
 		this.toggleEntriesSelectionStatus(entriesForCurrentPage, doSelectAll);
 	}
 

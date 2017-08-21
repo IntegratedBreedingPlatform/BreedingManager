@@ -1,7 +1,10 @@
 
 package org.generationcp.breeding.manager.customfields;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
@@ -117,5 +120,23 @@ public class PagedBreedingManagerTable extends PagedTable {
 		final Container.Indexed contanerSource = this.getContainerDataSource();
 		return ((LazyQueryContainer) ((PagedTableContainer) contanerSource).getContainer()).getQueryView().getQueryDefinition()
 				.getBatchSize();
+	}
+	
+	/***
+	 * Retrieves all items for given page
+	 *
+	 * @param pageNo - current page
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Object> getAllEntriesForPage(final Integer pageNo) {
+		final Collection<Object> allEntries = (Collection<Object>) this.getItemIds();
+		final List<Object> allEntriesList = new ArrayList<>(allEntries);
+
+		final Integer startingIndex = pageNo * this.getPageLength() - this.getPageLength();
+		Integer endingIndex = startingIndex + this.getPageLength();
+		endingIndex = endingIndex > allEntriesList.size() ? allEntriesList.size() : endingIndex;
+
+		return allEntriesList.subList(startingIndex, endingIndex);
 	}
 }

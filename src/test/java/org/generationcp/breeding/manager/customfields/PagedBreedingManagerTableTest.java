@@ -2,6 +2,7 @@
 package org.generationcp.breeding.manager.customfields;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -116,6 +117,21 @@ public class PagedBreedingManagerTableTest {
 
 		Assert.assertEquals("The batch size should be equal to the updated batch size", batchSize, updatedBatchSize);
 		Assert.assertFalse("The new page length and the updated batch size should not be equal", newPageLength == updatedBatchSize);
+	}
+	
+	@Test
+	public void testGetAllEntriesForPage() {
+		final int numberOfItems = 21;
+		final int firstPage = 1;
+		final int lastPage = 3;
+		this.setupContainerDataSource(numberOfItems);
+
+		final List<Object> result = this.pagedTable.getAllEntriesForPage(firstPage);
+		Assert.assertEquals("The number of entries per page should be equal to the table's page length.", this.pagedTable.getPageLength(),
+				result.size());
+
+		final List<Object> result2 = this.pagedTable.getAllEntriesForPage(lastPage);
+		Assert.assertEquals("The last page should only have 1 item", 1, result2.size());
 	}
 
 	private void setupContainerDataSource(final int numberOfItems) {
