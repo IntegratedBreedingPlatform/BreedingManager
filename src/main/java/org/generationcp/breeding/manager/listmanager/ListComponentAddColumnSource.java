@@ -2,7 +2,6 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
@@ -34,13 +33,9 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 		this.gidPropertyId = gidPropertyId;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<Integer> getItemIdsToProcess() {
-		final List<Integer> itemIds = new ArrayList<>();
-		itemIds.addAll((Collection<? extends Integer>) this.targetTable.getItemIds());
-		return itemIds;
-
+	public List<Object> getItemIdsToProcess() {
+		return new ArrayList<>(this.targetTable.getItemIds());
 	}
 
 	/*
@@ -51,8 +46,8 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	@Override
 	public List<Integer> getGidsToProcess() {
 		final List<Integer> gids = new ArrayList<>();
-		final List<Integer> listDataItemIds = this.getItemIdsToProcess();
-		for (final Integer itemId : listDataItemIds) {
+		final List<Object> listDataItemIds = this.getItemIdsToProcess();
+		for (final Object itemId : listDataItemIds) {
 			gids.add(this.getGidForItemId(itemId));
 		}
 		return gids;
@@ -62,16 +57,16 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	/*
 	 * Get GID string from caption of GID button/link of specified item in table (non-Javadoc)
 	 *
-	 * @see org.generationcp.breeding.manager.listmanager.api.FillColumnSource#getGidForItemId(java.lang.Integer)
+	 * @see org.generationcp.breeding.manager.listmanager.api.FillColumnSource#getGidForItemId(java.lang.Object)
 	 */
 	@Override
-	public Integer getGidForItemId(final Integer itemId) {
+	public Integer getGidForItemId(final Object itemId) {
 		final Button gidButton = (Button) this.targetTable.getItem(itemId).getItemProperty(this.gidPropertyId).getValue();
 		return Integer.valueOf(gidButton.getCaption().toString());
 	}
 
 	@Override
-	public void setColumnValueForItem(final Integer itemId, final String column, final Object value) {
+	public void setColumnValueForItem(final Object itemId, final String column, final Object value) {
 		this.targetTable.getItem(itemId).getItemProperty(column).setValue(value);
 	}
 

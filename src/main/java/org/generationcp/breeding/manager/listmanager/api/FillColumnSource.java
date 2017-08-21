@@ -4,13 +4,13 @@ import java.util.List;
 
 public interface FillColumnSource {
 	
-	List<Integer> getItemIdsToProcess();
+	List<Object> getItemIdsToProcess();
 	
 	List<Integer> getGidsToProcess();
 	
-	Integer getGidForItemId(Integer itemId);
+	Integer getGidForItemId(Object itemId);
 	
-	void setColumnValueForItem(Integer itemId, String column, Object value);
+	void setColumnValueForItem(Object itemId, String column, Object value);
 	
 	void setUnsavedChanges();
 	

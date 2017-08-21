@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,8 +22,10 @@ public class AddedEntryFillColumnSource implements FillColumnSource {
 	}
 
 	@Override
-	public List<Integer> getItemIdsToProcess() {
-		return Arrays.asList(this.addedItemId);
+	public List<Object> getItemIdsToProcess() {
+		final List<Object> list =  new ArrayList<>();
+		list.add(this.addedItemId);
+		return list;
 	}
 
 	@Override
@@ -31,12 +34,12 @@ public class AddedEntryFillColumnSource implements FillColumnSource {
 	}
 
 	@Override
-	public Integer getGidForItemId(final Integer itemId) {
+	public Integer getGidForItemId(final Object itemId) {
 		return this.addedGid;
 	}
 
 	@Override
-	public void setColumnValueForItem(final Integer itemId, final String column, final Object value) {
+	public void setColumnValueForItem(final Object itemId, final String column, final Object value) {
 		this.targetTable.getItem(itemId).getItemProperty(column).setValue(value);
 	}
 
