@@ -19,7 +19,7 @@ import org.vaadin.addons.lazyquerycontainer.QueryFactory;
 import com.vaadin.ui.Table;
 
 /**
- * A factory that creates a list of study details by implementing QueryFactory
+ * A factory that creates a list of germplasm details by implementing QueryFactory
  *
  */
 public class GermplasmQueryFactory implements QueryFactory {

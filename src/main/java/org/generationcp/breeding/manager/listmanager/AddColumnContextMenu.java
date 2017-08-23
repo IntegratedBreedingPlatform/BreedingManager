@@ -362,4 +362,13 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	public void setVisible(Boolean state) {
 		this.addColumnItem.setVisible(state);
 	}
+	
+	public static boolean sourceHadAddedColumn(final Object[] visibleColumns){
+		for (final Object column : visibleColumns) {
+			if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(column.toString())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

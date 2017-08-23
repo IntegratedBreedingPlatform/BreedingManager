@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.containers.GermplasmQuery;
 import org.generationcp.breeding.manager.containers.GermplasmQueryFactory;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
@@ -66,6 +67,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 	private ContextMenu menu;
 	private ContextMenuItem menuSelectAll;
 	private ContextMenuItem menuAddNewEntry;
+	private AddColumnContextMenu addColumnContextMenu;
 
 	private PagedTableWithSelectAllLayout matchingGermplasmTableWithSelectAll;
 
@@ -97,6 +99,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+	
+	private GermplasmSearchLoadedItemsAddColumnSource addColumnSource;
 
 	public GermplasmSearchResultsComponent() {
 		this(null);
@@ -115,7 +119,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.definition.addProperty(ColumnLabels.GROUP_ID.getName(), String.class, null, false, true);
 		this.definition.addProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null, false, false);
 		this.definition.addProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null, false, false);
-		this.definition.addProperty(ColumnLabels.GID.getName() + "_REF", Integer.class, null, false, false);
+		this.definition.addProperty(GermplasmQuery.GID_REF_PROPERTY, Integer.class, null, false, false);
 
 	}
 
@@ -162,7 +166,6 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.menu.setWidth("250px");
 		this.menuAddNewEntry = this.menu.addItem(this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST));
 		this.menuSelectAll = this.menu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
-		this.updateActionMenuOptions(false);
 
 		this.matchingGermplasmTableWithSelectAll = this.getTableWithSelectAllLayout();
 		this.matchingGermplasmTableWithSelectAll.setHeight("530px");
@@ -187,7 +190,10 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 				}
 			}
 		};
-
+		// Add "Add Column" context menu option and disable all options initially when are search results table is empty
+		this.addColumnSource = new GermplasmSearchLoadedItemsAddColumnSource(this.matchingGermplasmTable, GermplasmQuery.GID_REF_PROPERTY);
+		this.addColumnContextMenu = new AddColumnContextMenu(addColumnSource, this.menu, null);
+		this.updateActionMenuOptions(false);		
 	}
 
 	void initMatchingGermplasmTable() {
@@ -243,8 +249,13 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.matchingGermplasmTable.setContainerDataSource(this.createInitialContainer());
 
 		// hide the internal GID reference ID
-		this.matchingGermplasmTable.setVisibleColumns(
-				new ArrayList<>(this.definition.getPropertyIds()).subList(0, this.definition.getPropertyIds().size() - 1).toArray());
+		this.hideInternalGIDColumn();
+	}
+	
+	private void hideInternalGIDColumn() {
+		final List<Object> visibleColumns = new ArrayList<>(this.definition.getPropertyIds());
+		visibleColumns.remove(GermplasmQuery.GID_REF_PROPERTY);
+		this.matchingGermplasmTable.setVisibleColumns(visibleColumns.toArray());
 	}
 
 	/**
@@ -275,8 +286,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		// update the definitions batch size to match current state of table's page entry length
 		this.definition.setBatchSize(this.matchingGermplasmTable.getPageLength());
 
-		final LazyQueryContainer container = new LazyQueryContainer(this.definition, factory);
-		return container;
+		return new LazyQueryContainer(this.definition, factory);
 	}
 
 	protected PagedTableWithSelectAllLayout getTableWithSelectAllLayout() {
@@ -286,6 +296,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 	private void updateActionMenuOptions(final boolean status) {
 		this.menuAddNewEntry.setEnabled(status);
 		this.menuSelectAll.setEnabled(status);
+		this.addColumnContextMenu.setEnabled(status);
 	}
 
 	@Override
@@ -386,9 +397,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		// This triggers the page change listener that enables/disables pagination controls properly
 		this.matchingGermplasmTable.setCurrentPage(1);
 
-		// hide the internal GID reference ID
-		this.matchingGermplasmTable.setVisibleColumns(
-				new ArrayList<>(this.definition.getPropertyIds()).subList(0, this.definition.getPropertyIds().size() - 1).toArray());
+		this.hideInternalGIDColumn();
 
 		this.updateNoOfEntries(factory.getNumberOfItems());
 		// update paged table controls given the latest table entries
@@ -396,9 +405,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 		if (!this.matchingGermplasmTable.getItemIds().isEmpty()) {
 			this.updateActionMenuOptions(true);
-		}
-
-		if (this.matchingGermplasmTable.getContainerDataSource().getItemIds().isEmpty()) {
+			
+		} else {
 			throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
 		}
 
@@ -466,7 +474,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		} else {
 			for (final Integer id : itemIds) {
 				// retrieve the actual GID from the itemId
-				final Integer gid = (Integer) this.matchingGermplasmTable.getItem(id).getItemProperty(ColumnLabels.GID + "_REF").getValue();
+				final Integer gid =
+						(Integer) this.matchingGermplasmTable.getItem(id).getItemProperty(GermplasmQuery.GID_REF_PROPERTY).getValue();
 				gids.add(gid);
 			}
 			this.listManagerMain.addPlantsToList(gids);
