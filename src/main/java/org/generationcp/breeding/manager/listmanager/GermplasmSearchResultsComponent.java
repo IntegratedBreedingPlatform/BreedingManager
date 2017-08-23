@@ -163,7 +163,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 		this.menu = new ContextMenu();
 		this.menu.setDebugId("menu");
-		this.menu.setWidth("250px");
+		this.menu.setWidth("295px");
 		this.menuAddNewEntry = this.menu.addItem(this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST));
 		this.menuSelectAll = this.menu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 
