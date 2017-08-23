@@ -14,7 +14,8 @@ public class ListBuilderAddColumnSource extends ListComponentAddColumnSource {
 	}
 	
 	@Override
-	public void setUnsavedChanges() {
+	public void propagateUIChanges() {
+		resetEditableTable();
 		this.listBuilderComponent.setHasUnsavedChanges(true);
 	}
 

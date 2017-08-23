@@ -12,8 +12,6 @@ public interface FillColumnSource {
 	
 	void setColumnValueForItem(Object itemId, String column, Object value);
 	
-	void setUnsavedChanges();
-	
-	void resetEditableTable();
+	void propagateUIChanges();
 
 }

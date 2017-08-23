@@ -70,12 +70,7 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 	}
 
 	@Override
-	public void setUnsavedChanges() {
-		// Do nothing - Added column values will not be saved when coming from Germplasm Search results table
-	}
-
-	@Override
-	public void resetEditableTable() {
+	public void propagateUIChanges() {
 		this.targetTable.refreshRowCache();
 	}
 

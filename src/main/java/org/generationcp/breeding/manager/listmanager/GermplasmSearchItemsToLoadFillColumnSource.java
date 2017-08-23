@@ -49,14 +49,10 @@ public class GermplasmSearchItemsToLoadFillColumnSource implements FillColumnSou
 		final Item item = (Item) itemId;
 		item.addItemProperty(column, new ObjectProperty<>(value));
 	}
+	
 
 	@Override
-	public void setUnsavedChanges() {
-		// Do nothing, we are not saving values for added columns from germplasm search results table
-	}
-
-	@Override
-	public void resetEditableTable() {
+	public void propagateUIChanges() {
 		// Do nothing, the items are yet to be loaded on target table so no need refresh UI for generated changes
 	}
 

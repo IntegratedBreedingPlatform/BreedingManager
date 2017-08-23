@@ -71,18 +71,17 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	}
 
 	@Override
-	public void setUnsavedChanges() {
+	public void propagateUIChanges() {
+		this.resetEditableTable();
 		this.listTabComponent.getListComponent().setHasUnsavedChanges(true);
 	}
 
-	@Override
-	public void resetEditableTable() {
+	protected void resetEditableTable() {
 		// To trigger TableFieldFactory (fix for truncated data)
 		if (this.targetTable.isEditable()) {
 			this.targetTable.setEditable(false);
 			this.targetTable.setEditable(true);
 		}
-
 	}
 
 	@Override

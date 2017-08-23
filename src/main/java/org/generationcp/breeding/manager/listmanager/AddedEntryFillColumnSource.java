@@ -44,12 +44,7 @@ public class AddedEntryFillColumnSource implements FillColumnSource {
 	}
 
 	@Override
-	public void setUnsavedChanges() {
-		// Do nothing as new column values were result of adding entry to table and not by user adding/filling up column manually
-	}
-
-	@Override
-	public void resetEditableTable() {
+	public void propagateUIChanges() {
 		// To trigger TableFieldFactory (fix for truncated data)
 		if (this.targetTable.isEditable()) {
 			this.targetTable.setEditable(false);

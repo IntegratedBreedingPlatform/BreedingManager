@@ -40,8 +40,7 @@ public class GermplasmColumnValuesGenerator {
 			this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.PREFERRED_ID.getName(), preferredID);
 		}
 
-		this.fillColumnSource.resetEditableTable();
-		this.fillColumnSource.setUnsavedChanges();
+		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setPreferredNameColumnValues() {
@@ -57,9 +56,7 @@ public class GermplasmColumnValuesGenerator {
 			this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.PREFERRED_NAME.getName(), preferredName);
 		}
 
-		this.fillColumnSource.resetEditableTable();
-		this.fillColumnSource.setUnsavedChanges();
-
+		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setGermplasmDateColumnValues() {
@@ -76,8 +73,7 @@ public class GermplasmColumnValuesGenerator {
 			}
 		}
 
-		this.fillColumnSource.resetEditableTable();
-		this.fillColumnSource.setUnsavedChanges();
+		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setLocationNameColumnValues() {
@@ -94,8 +90,7 @@ public class GermplasmColumnValuesGenerator {
 			}
 		}
 
-		this.fillColumnSource.resetEditableTable();
-		this.fillColumnSource.setUnsavedChanges();
+		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setMethodInfoColumnValues(final String columnName) {
@@ -124,8 +119,7 @@ public class GermplasmColumnValuesGenerator {
 			}
 		}
 
-		this.fillColumnSource.resetEditableTable();
-		this.fillColumnSource.setUnsavedChanges();
+		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setCrossMaleGIDColumnValues() {
@@ -152,8 +146,7 @@ public class GermplasmColumnValuesGenerator {
 			}
 		}
 
-		this.fillColumnSource.resetEditableTable();
-		this.fillColumnSource.setUnsavedChanges();
+		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setCrossMalePrefNameColumnValues() {
@@ -199,8 +192,7 @@ public class GermplasmColumnValuesGenerator {
 			}
 		}
 
-		this.fillColumnSource.resetEditableTable();
-		this.fillColumnSource.setUnsavedChanges();
+		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setCrossFemaleInfoColumnValues(final String columnName) {
@@ -234,8 +226,7 @@ public class GermplasmColumnValuesGenerator {
 			}
 		}
 
-		this.fillColumnSource.resetEditableTable();
-		this.fillColumnSource.setUnsavedChanges();
+		this.fillColumnSource.propagateUIChanges();
 	}
 
 
