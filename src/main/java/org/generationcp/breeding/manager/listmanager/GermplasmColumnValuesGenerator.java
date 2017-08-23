@@ -15,6 +15,10 @@ import org.generationcp.middleware.pojos.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+
 @Configurable
 public class GermplasmColumnValuesGenerator {
 
@@ -125,7 +129,7 @@ public class GermplasmColumnValuesGenerator {
 	public void setCrossMaleGIDColumnValues() {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		final List<Germplasm> germplasmMap = this.germplasmDataManager.getGermplasms(gids);
+		ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
 		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 			final Germplasm germplasm = germplasmMap.get(gid);
@@ -149,10 +153,25 @@ public class GermplasmColumnValuesGenerator {
 		this.fillColumnSource.propagateUIChanges();
 	}
 
+	private ImmutableMap<Integer, Germplasm> retrieveGermplasmAndGenerateMap(final List<Integer> gids) {
+		final List<Germplasm> germplasmList = this.germplasmDataManager.getGermplasms(gids);
+		ImmutableMap<Integer, Germplasm> germplasmMap = null;
+		if (germplasmList != null) {
+			germplasmMap = Maps.uniqueIndex(germplasmList, new Function<Germplasm, Integer>() {
+
+				@Override
+				public Integer apply(final Germplasm germplasm) {
+					return germplasm.getGid();
+				}
+			});
+		}
+		return germplasmMap;
+	}
+
 	public void setCrossMalePrefNameColumnValues() {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		final List<Germplasm> germplasmMap = this.germplasmDataManager.getGermplasms(gids);
+		ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
 
 		final Map<Integer, List<Object>> gidToItemIdMap = new HashMap<>();
 		final List<Integer> gidsToUseForQuery = new ArrayList<>();
@@ -198,7 +217,7 @@ public class GermplasmColumnValuesGenerator {
 	public void setCrossFemaleInfoColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		final List<Germplasm> germplasmMap = this.germplasmDataManager.getGermplasms(gids);
+		ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
 		
 		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
