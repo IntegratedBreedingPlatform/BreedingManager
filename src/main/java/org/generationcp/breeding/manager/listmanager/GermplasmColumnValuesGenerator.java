@@ -3,20 +3,29 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listmanager.api.FillColumnSource;
+import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.PedigreeService;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 @Configurable
@@ -24,6 +33,12 @@ public class GermplasmColumnValuesGenerator {
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
+	
+	@Autowired
+	private PedigreeService pedigreeService;
+	
+	@Resource
+	private CrossExpansionProperties crossExpansionProperties;
 
 	private FillColumnSource fillColumnSource;
 	
@@ -31,7 +46,7 @@ public class GermplasmColumnValuesGenerator {
 		this.fillColumnSource = fillColumnSource;
 	}
 
-	public void setPreferredIdColumnValues() {
+	public void setPreferredIdColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
@@ -41,13 +56,13 @@ public class GermplasmColumnValuesGenerator {
 			if (name != null && name.getNval() != null) {
 				preferredID = name.getNval();
 			}
-			this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.PREFERRED_ID.getName(), preferredID);
+			this.fillColumnSource.setColumnValueForItem(itemId, columnName, preferredID);
 		}
 
 		this.fillColumnSource.propagateUIChanges();
 	}
 
-	public void setPreferredNameColumnValues() {
+	public void setPreferredNameColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final Map<Integer, String> gidPreferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
@@ -57,13 +72,13 @@ public class GermplasmColumnValuesGenerator {
 			if (gidPreferredNamesMap.get(gid) != null) {
 				preferredName = gidPreferredNamesMap.get(gid);
 			}
-			this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.PREFERRED_NAME.getName(), preferredName);
+			this.fillColumnSource.setColumnValueForItem(itemId, columnName, preferredName);
 		}
 
 		this.fillColumnSource.propagateUIChanges();
 	}
 
-	public void setGermplasmDateColumnValues() {
+	public void setGermplasmDateColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final Map<Integer, Integer> germplasmGidDateMap = this.germplasmDataManager.getGermplasmDatesByGids(gids);
@@ -71,16 +86,16 @@ public class GermplasmColumnValuesGenerator {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 
 			if (germplasmGidDateMap.get(gid) == null) {
-				this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.GERMPLASM_DATE.getName(), "");
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
 			} else {
-				this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.GERMPLASM_DATE.getName(), germplasmGidDateMap.get(gid));
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, germplasmGidDateMap.get(gid));
 			}
 		}
 
 		this.fillColumnSource.propagateUIChanges();
 	}
 
-	public void setLocationNameColumnValues() {
+	public void setLocationNameColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final Map<Integer, String> locationNamesMap = this.germplasmDataManager.getLocationNamesByGids(gids);
@@ -88,16 +103,16 @@ public class GermplasmColumnValuesGenerator {
 		for (final Object itemId : itemIds) {
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 			if (locationNamesMap.get(gid) == null) {
-				this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.GERMPLASM_LOCATION.getName(), "");
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
 			} else {
-				this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.GERMPLASM_LOCATION.getName(), locationNamesMap.get(gid));
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, locationNamesMap.get(gid));
 			}
 		}
 
 		this.fillColumnSource.propagateUIChanges();
 	}
 
-	public void setMethodInfoColumnValues(final String columnName) {
+	public void setMethodInfoColumnValues(final String columnName, final FillWithOption option) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		final Map<Integer, Object> methodsMap = this.germplasmDataManager.getMethodsByGids(gids);
@@ -110,13 +125,13 @@ public class GermplasmColumnValuesGenerator {
 			} else {
 				String value = "";
 
-				if (columnName.equals(ColumnLabels.BREEDING_METHOD_NAME.getName())) {
+				if (FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.equals(option)) {
 					value = ((Method) methodsMap.get(gid)).getMname();
-				} else if (columnName.equals(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())) {
+				} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV.equals(option)) {
 					value = ((Method) methodsMap.get(gid)).getMcode();
-				} else if (columnName.equals(ColumnLabels.BREEDING_METHOD_NUMBER.getName())) {
+				} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER.equals(option)) {
 					value = ((Method) methodsMap.get(gid)).getMid().toString();
-				} else if (columnName.equals(ColumnLabels.BREEDING_METHOD_GROUP.getName())) {
+				} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.equals(option)) {
 					value = ((Method) methodsMap.get(gid)).getMgrp();
 				}
 				this.fillColumnSource.setColumnValueForItem(itemId, columnName, value);
@@ -126,7 +141,7 @@ public class GermplasmColumnValuesGenerator {
 		this.fillColumnSource.propagateUIChanges();
 	}
 
-	public void setCrossMaleGIDColumnValues() {
+	public void setCrossMaleGIDColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
@@ -137,16 +152,16 @@ public class GermplasmColumnValuesGenerator {
 			if (germplasm != null) {
 				if (germplasm.getGnpgs() >= 2) {
 					if (germplasm.getGpid2() != null && germplasm.getGpid2() != 0) {
-						this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.CROSS_MALE_GID.getName(),
+						this.fillColumnSource.setColumnValueForItem(itemId, columnName,
 								germplasm.getGpid2().toString());
 					} else {
-						this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.CROSS_MALE_GID.getName(), "-");
+						this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 					}
 				} else {
-					this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.CROSS_MALE_GID.getName(), "-");
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 				}
 			} else {
-				this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.CROSS_MALE_GID.getName(), "-");
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 			}
 		}
 
@@ -168,7 +183,7 @@ public class GermplasmColumnValuesGenerator {
 		return germplasmMap;
 	}
 
-	public void setCrossMalePrefNameColumnValues() {
+	public void setCrossMalePrefNameColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
@@ -192,10 +207,10 @@ public class GermplasmColumnValuesGenerator {
 						itemIdsInMap.add(itemId);
 					}
 				} else {
-					this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), "-");
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 				}
 			} else {
-				this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), "-");
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 			}
 		}
 
@@ -214,7 +229,7 @@ public class GermplasmColumnValuesGenerator {
 		this.fillColumnSource.propagateUIChanges();
 	}
 
-	public void setCrossFemaleInfoColumnValues(final String columnName) {
+	public void setCrossFemaleInfoColumnValues(final String columnName, final FillWithOption option) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
@@ -232,9 +247,9 @@ public class GermplasmColumnValuesGenerator {
 				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 			} else {
 				String value = "-";
-				if (columnName.equals(ColumnLabels.CROSS_FEMALE_GID.getName())) {
+				if (FillWithOption.FILL_WITH_CROSS_FEMALE_GID.equals(option)) {
 					value = femaleParent.getGid().toString();
-				} else if (columnName.equals(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())) {
+				} else if (FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.equals(option)) {
 					// TODO See if this Middleware query can be done one-off
 					final Name prefName = this.germplasmDataManager.getPreferredNameByGID(femaleParent.getGid());
 					if (prefName != null) {
@@ -246,6 +261,97 @@ public class GermplasmColumnValuesGenerator {
 		}
 
 		this.fillColumnSource.propagateUIChanges();
+	}
+	
+	public void fillWithEmpty(final String columnName) {
+		List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		for (final Object itemId : itemIds) {
+			this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
+		}
+
+		this.fillColumnSource.propagateUIChanges();
+	}
+	
+	public void fillWithAttribute(final Integer attributeType, final String columnName) {
+		if (attributeType != null) {
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			Map<Integer, String> gidAttributeMap = this.germplasmDataManager.getAttributeValuesByTypeAndGIDList(attributeType, gids);
+
+			List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
+			for (final Object itemId : itemIds) {
+				Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, gidAttributeMap.get(gid));
+			}
+		}
+
+		this.fillColumnSource.propagateUIChanges();
+	}
+	
+	public void fillWithSequence(final String columnName, final String prefix, final String suffix, final int startNumber, final int numOfZeros,
+			final boolean spaceBetweenPrefixAndCode, final boolean spaceBetweenSuffixAndCode) {
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		int number = startNumber;
+		for (final Object itemId : itemIds) {
+			StringBuilder builder = new StringBuilder();
+			builder.append(prefix);
+			if (spaceBetweenPrefixAndCode) {
+				builder.append(" ");
+			}
+
+			if (numOfZeros > 0) {
+				String numberString = "" + number;
+				int numOfZerosNeeded = numOfZeros - numberString.length();
+				for (int i = 0; i < numOfZerosNeeded; i++) {
+					builder.append("0");
+				}
+			}
+			builder.append(number);
+
+			if (suffix != null && spaceBetweenSuffixAndCode) {
+				builder.append(" ");
+			}
+
+			if (suffix != null) {
+				builder.append(suffix);
+			}
+			this.fillColumnSource.setColumnValueForItem(itemId, columnName, builder.toString());
+			++number;
+		}
+
+		this.fillColumnSource.propagateUIChanges();
+	}
+	
+	public void fillWithCrossExpansion(final Integer crossExpansionLevel, final String columnName) {
+		if (crossExpansionLevel != null) {
+			
+			final Map<Integer, String> crossExpansions = bulkGeneratePedigreeString(crossExpansionLevel);
+
+			for (Iterator<Object> i = this.fillColumnSource.getItemIdsToProcess().iterator(); i.hasNext();) {
+				// iterate through the table elements' IDs
+				final Integer listDataId = (Integer) i.next();
+				final Integer gid = this.fillColumnSource.getGidForItemId(listDataId);
+				String crossExpansion = crossExpansions.get(gid);
+				this.fillColumnSource.setColumnValueForItem(listDataId, columnName, crossExpansion);
+			}
+
+			this.fillColumnSource.propagateUIChanges();
+
+		}
+	}
+
+	private Map<Integer, String> bulkGeneratePedigreeString(final Integer crossExpansionLevel) {
+		
+		final Set<Integer> gidIdList = new HashSet<>(this.fillColumnSource.getGidsToProcess());
+		final Iterable<List<Integer>> partition = Iterables.partition(gidIdList, 5000);
+
+		final Map<Integer, String> crossExpansions = new HashMap<>();
+
+		for (List<Integer> partitionedGidList : partition) {
+			final Set<Integer> partitionedGidSet = new HashSet<Integer>(partitionedGidList);
+			crossExpansions.putAll(this.pedigreeService.getCrossExpansions(partitionedGidSet, crossExpansionLevel.intValue(),
+					this.crossExpansionProperties));
+		}
+		return crossExpansions;
 	}
 
 

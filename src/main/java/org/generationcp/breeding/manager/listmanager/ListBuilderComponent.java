@@ -50,7 +50,6 @@ import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -60,7 +59,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -634,8 +632,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	@Override
 	public void addListeners() {
-
-		this.fillWith = new FillWith(this, this.messageSource, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName());
+		final ListBuilderFillWithSource fillWithSource = new ListBuilderFillWithSource(this, this.listDataTable, ColumnLabels.GID.getName());
+		this.fillWith = new FillWith(fillWithSource, this, this.messageSource);
+		this.fillWith.setTableHeaderListener(this.listDataTable);
 
 		this.menu.addListener(new MenuClickListener());
 
@@ -778,7 +777,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.saveButton.setEnabled(false);
 
 		this.source.setUIForLockedListBuilder();
-		this.fillWith.setContextMenuEnabled(false);
+		this.fillWith.setContextMenuEnabled(this.listDataTable, false);
 	}
 
 	public void setUIForUnlockedList() {
@@ -797,7 +796,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.viewHeaderButton.setVisible(false);
 		this.saveButton.setEnabled(true);
 		this.source.setUIForUnlockedListBuilder();
-		this.fillWith.setContextMenuEnabled(true);
+		this.fillWith.setContextMenuEnabled(this.listDataTable, true);
 	}
 
 	public void setUIForNewList() {

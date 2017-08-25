@@ -4,7 +4,7 @@ import com.vaadin.ui.Table;
 
 public class ListBuilderAddColumnSource extends ListComponentAddColumnSource {
 	
-	private ListBuilderComponent listBuilderComponent;
+	protected ListBuilderComponent listBuilderComponent;
 	
 	public ListBuilderAddColumnSource(final ListBuilderComponent listBuilderComponent, final Table targetTable, final String gidPropertyId) {
 		super();

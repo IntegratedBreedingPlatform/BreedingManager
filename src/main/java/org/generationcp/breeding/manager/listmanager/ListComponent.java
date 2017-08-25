@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -735,9 +736,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private void setFillWith() {
 		if (!this.germplasmList.isLockedList()) {
-			this.fillWith =
-					new FillWith(this.parentListDetailsComponent, this.parentListDetailsComponent, this.messageSource, this.listDataTable,
-							ColumnLabels.GID.getName());
+			final ListComponentFillWithSource fillWithSource = new ListComponentFillWithSource(this.parentListDetailsComponent, this.listDataTable, ColumnLabels.GID.getName());
+			this.fillWith = new FillWith(fillWithSource, this.parentListDetailsComponent, this.messageSource);
+			this.fillWith.setTableHeaderListener(this.listDataTable);
+					
 		} else {
 			this.fillWith = null;
 		}
@@ -1567,7 +1569,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.editHeaderButton.setVisible(!locked);
 
 		if (this.fillWith != null) {
-			this.fillWith.setContextMenuEnabled(!locked);
+			this.fillWith.setContextMenuEnabled(this.listDataTable, !locked);
 		}
 	}
 
@@ -1690,7 +1692,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.addListEntryToTable(listData);
 
 				// Generate values for added columns, if any
-				final AddedEntryFillColumnSource fillColumnSource = new AddedEntryFillColumnSource(this.listDataTable, listDataId, gid);
+				final NewGermplasmEntriesFillColumnSource fillColumnSource =
+						new NewGermplasmEntriesFillColumnSource(this.listDataTable, Arrays.asList(listDataId), Arrays.asList(gid));
 				final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(fillColumnSource);
 				addedColumnsMapper.generateValuesForAddedColumns(this.listDataTable.getVisibleColumns());
 				

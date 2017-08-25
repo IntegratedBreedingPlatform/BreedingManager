@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,10 +16,12 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
+import org.generationcp.breeding.manager.listmanager.AddedColumnsMapper;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
+import org.generationcp.breeding.manager.listmanager.NewGermplasmEntriesFillColumnSource;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
@@ -35,10 +38,13 @@ import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
@@ -47,11 +53,6 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
-
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class DropHandlerMethods {
 
@@ -182,8 +183,10 @@ public class DropHandlerMethods {
 		final Map<Integer, Germplasm> germplsmWithAvailableBalance = this.getAvailableBalanceWithScaleForGermplasm(gidGermplasmMap);
 
 		try {
+			final List<Integer> newItemIds = new ArrayList<>();
 			for (final Integer gid : gids) {
 				final Integer newItemId = this.getNextListEntryId();
+				newItemIds.add(newItemId);
 				final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
 
 				final Button gidButton = new Button(String.format("%s", gid),
@@ -284,14 +287,9 @@ public class DropHandlerMethods {
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
 
 				this.assignSerializedEntryNumber();
-
-				final FillWith fillWith = new FillWith(ColumnLabels.GID.getName(), this.targetTable);
-
-				for (final String column : AddColumnContextMenu.getTablePropertyIds(this.targetTable)) {
-					fillWith.fillWith(this.targetTable, column, true);
-				}
-
 			}
+			
+			this.generateAddedColumnValuesForAddedEntry(newItemIds, gids);
 
 			this.fireListUpdatedEvent();
 
@@ -489,11 +487,7 @@ public class DropHandlerMethods {
 
 				this.assignSerializedEntryNumber();
 
-				final FillWith fillWith = new FillWith(ColumnLabels.GID.getName(), this.targetTable);
-
-				for (final String column : AddColumnContextMenu.getTablePropertyIds(this.targetTable)) {
-					fillWith.fillWith(this.targetTable, column, true);
-				}
+				this.generateAddedColumnValuesForAddedEntry(Arrays.asList(newItemId), Arrays.asList(gid));
 
 				this.currentListId = null;
 
@@ -560,11 +554,12 @@ public class DropHandlerMethods {
 				this.targetTable.setColumnWidth(column, 250);
 			}
 		}
-
+		final List<Integer> newItemIds = new ArrayList<>();
 		for (final Integer itemId : itemIds) {
 
 			final Item itemFromSourceTable = sourceTable.getItem(itemId);
 			final Integer newItemId = this.getNextListEntryId();
+			newItemIds.add(newItemId);
 			final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
 
 			final Integer gid = this.getGidFromButtonCaption(sourceTable, itemId);
@@ -648,15 +643,17 @@ public class DropHandlerMethods {
 		}
 
 		this.assignSerializedEntryNumber();
-
-		final FillWith fillWith = new FillWith(ColumnLabels.GID.getName(), this.targetTable);
-
-		for (final String column : AddColumnContextMenu.getTablePropertyIds(this.targetTable)) {
-			fillWith.fillWith(this.targetTable, column, true);
-		}
+		this.generateAddedColumnValuesForAddedEntry(newItemIds, gids);
+		
 		this.fireListUpdatedEvent();
 
 		this.setHasUnsavedChanges(true);
+	}
+	
+	private void generateAddedColumnValuesForAddedEntry(final List<Integer> itemIds, final List<Integer> gids){
+		final NewGermplasmEntriesFillColumnSource fillColumnSource = new NewGermplasmEntriesFillColumnSource(this.targetTable, itemIds, gids);
+		final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(fillColumnSource);
+		addedColumnsMapper.generateValuesForAddedColumns(this.targetTable.getVisibleColumns());
 	}
 
 	/**

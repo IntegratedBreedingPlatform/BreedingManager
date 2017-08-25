@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
+import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
@@ -107,7 +108,8 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		this.addColumnSource = addColumnSource;
 		this.valuesGenerator = new GermplasmColumnValuesGenerator(addColumnSource);
 		this.sourceContextMenu = sourceContextMenu;
-		this.listEditingOptions = listEditingOption;//Adding new ContextMenuItem As ListEditingOption In which Add Column Will be Sub Menu
+		//Adding new ContextMenuItem As ListEditingOption In which Add Column Will be Sub Menu
+		this.listEditingOptions = listEditingOption;
 		this.setupContextMenu();
 	}
 
@@ -220,84 +222,90 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	private void addPreferredIdColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.PREFERRED_ID.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.PREFERRED_ID);
-			this.valuesGenerator.setPreferredIdColumnValues();
+			this.valuesGenerator.setPreferredIdColumnValues(ColumnLabels.PREFERRED_ID.getName());
 		}
 	}
 
 	private void addPreferredNameColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.PREFERRED_NAME.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.PREFERRED_NAME);
-			this.valuesGenerator.setPreferredNameColumnValues();
+			this.valuesGenerator.setPreferredNameColumnValues(ColumnLabels.PREFERRED_NAME.getName());
 		}
 	}
 
 	private void addGermplasmDateColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.GERMPLASM_DATE.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.GERMPLASM_DATE);
-			this.valuesGenerator.setGermplasmDateColumnValues();
+			this.valuesGenerator.setGermplasmDateColumnValues(ColumnLabels.GERMPLASM_DATE.getName());
 		}
 	}
 
 	private void addLocationColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.GERMPLASM_LOCATION.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.GERMPLASM_LOCATION);
-			this.valuesGenerator.setLocationNameColumnValues();
+			this.valuesGenerator.setLocationNameColumnValues(ColumnLabels.GERMPLASM_LOCATION.getName());
 		}
 	}
 	
 	private void addMethodNameColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.BREEDING_METHOD_NAME.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.BREEDING_METHOD_NAME);
-			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NAME.getName());
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NAME.getName(),
+					FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
 		}
 	}
 
 	private void addMethodAbbrevColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.BREEDING_METHOD_ABBREVIATION);
-			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(),
+					FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV);
 		}
 	}
 
 	private void addMethodNumberColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.BREEDING_METHOD_NUMBER);
-			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NUMBER.getName());
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NUMBER.getName(),
+					FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER);
 		}
 	}
 
 	private void addMethodGroupColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.BREEDING_METHOD_GROUP.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.BREEDING_METHOD_GROUP);
-			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_GROUP.getName());
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_GROUP.getName(),
+					FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
 		}
 	}
 
 	private void addCrossMaleGIDColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.CROSS_MALE_GID.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.CROSS_MALE_GID);
-			this.valuesGenerator.setCrossMaleGIDColumnValues();
+			this.valuesGenerator.setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
 		}
 	}
 
 	private void addCrossMalePrefNameColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.CROSS_MALE_PREFERRED_NAME);
-			this.valuesGenerator.setCrossMalePrefNameColumnValues();
+			this.valuesGenerator.setCrossMalePrefNameColumnValues(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
 		}
 	}
 
 	private void addCrossFemaleGidColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.CROSS_FEMALE_GID.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.CROSS_FEMALE_GID);
-			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName());
+			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(),
+					FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
 		}
 	}
 
 	private void addCrossFemalePrefNameColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())){
 			this.addColumnSource.addColumn(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME);
-			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
+			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
+					FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
 		}
 	}
 
