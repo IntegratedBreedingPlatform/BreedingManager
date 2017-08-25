@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class ListComponentAddColumnSource implements AddColumnSource {
@@ -94,6 +95,17 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	@Override
 	public boolean columnExists(final String columnName) {
 		return AddColumnContextMenu.propertyExists(columnName, this.targetTable);
+	}
+
+	@Override
+	public void addColumn(final String columnName) {
+		this.targetTable.addContainerProperty(columnName, String.class, "");
+		this.targetTable.setColumnHeader(columnName, columnName);
+	}
+
+	@Override
+	public Window getWindow() {
+		return this.targetTable.getWindow();
 	}
 
 }

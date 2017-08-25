@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.ui.Window;
 
 /**
  * This takes care of adding columns and generating values for those added columns when  there are items
@@ -83,6 +84,19 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 	@Override
 	public boolean columnExists(final String columnName) {
 		return AddColumnContextMenu.propertyExists(columnName, this.targetTable);
+	}
+
+	@Override
+	public void addColumn(final String columnName) {
+		if (!this.columnExists(columnName)) {
+			this.targetTable.addContainerProperty(columnName, String.class, "");
+			this.targetTable.setColumnHeader(columnName, columnName);
+		}
+	}
+
+	@Override
+	public Window getWindow() {
+		return this.targetTable.getWindow();
 	}
 
 }
