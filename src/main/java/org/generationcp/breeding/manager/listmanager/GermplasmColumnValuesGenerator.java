@@ -64,108 +64,118 @@ public class GermplasmColumnValuesGenerator {
 
 	public void setPreferredNameColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
-		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		final Map<Integer, String> gidPreferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
-		for (final Object itemId : itemIds) {
-			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
-			String preferredName = "";
-			if (gidPreferredNamesMap.get(gid) != null) {
-				preferredName = gidPreferredNamesMap.get(gid);
+		if (!itemIds.isEmpty()) {
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			final Map<Integer, String> gidPreferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
+			for (final Object itemId : itemIds) {
+				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+				String preferredName = "";
+				if (gidPreferredNamesMap.get(gid) != null) {
+					preferredName = gidPreferredNamesMap.get(gid);
+				}
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, preferredName);
 			}
-			this.fillColumnSource.setColumnValueForItem(itemId, columnName, preferredName);
+			
+			this.fillColumnSource.propagateUIChanges();
 		}
-
-		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setGermplasmDateColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
-		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		final Map<Integer, Integer> germplasmGidDateMap = this.germplasmDataManager.getGermplasmDatesByGids(gids);
-		for (final Object itemId : itemIds) {
-			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
-
-			if (germplasmGidDateMap.get(gid) == null) {
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
-			} else {
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, germplasmGidDateMap.get(gid));
+		if (!itemIds.isEmpty()) {
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			final Map<Integer, Integer> germplasmGidDateMap = this.germplasmDataManager.getGermplasmDatesByGids(gids);
+			for (final Object itemId : itemIds) {
+				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+				
+				if (germplasmGidDateMap.get(gid) == null) {
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
+				} else {
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, germplasmGidDateMap.get(gid));
+				}
 			}
+			this.fillColumnSource.propagateUIChanges();
 		}
 
-		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setLocationNameColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
-		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		final Map<Integer, String> locationNamesMap = this.germplasmDataManager.getLocationNamesByGids(gids);
-
-		for (final Object itemId : itemIds) {
-			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
-			if (locationNamesMap.get(gid) == null) {
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
-			} else {
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, locationNamesMap.get(gid));
+		if (!itemIds.isEmpty()) {
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			final Map<Integer, String> locationNamesMap = this.germplasmDataManager.getLocationNamesByGids(gids);
+			
+			for (final Object itemId : itemIds) {
+				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+				if (locationNamesMap.get(gid) == null) {
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
+				} else {
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, locationNamesMap.get(gid));
+				}
 			}
+			
+			this.fillColumnSource.propagateUIChanges();
 		}
-
-		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setMethodInfoColumnValues(final String columnName, final FillWithOption option) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
-		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		final Map<Integer, Object> methodsMap = this.germplasmDataManager.getMethodsByGids(gids);
-
-		for (final Object itemId : itemIds) {
-			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
-
-			if (methodsMap.get(gid) == null) {
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
-			} else {
-				String value = "";
-
-				if (FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.equals(option)) {
-					value = ((Method) methodsMap.get(gid)).getMname();
-				} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV.equals(option)) {
-					value = ((Method) methodsMap.get(gid)).getMcode();
-				} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER.equals(option)) {
-					value = ((Method) methodsMap.get(gid)).getMid().toString();
-				} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.equals(option)) {
-					value = ((Method) methodsMap.get(gid)).getMgrp();
+		if (!itemIds.isEmpty()) {
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			final Map<Integer, Object> methodsMap = this.germplasmDataManager.getMethodsByGids(gids);
+			
+			for (final Object itemId : itemIds) {
+				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+				
+				if (methodsMap.get(gid) == null) {
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
+				} else {
+					String value = "";
+					
+					if (FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.equals(option)) {
+						value = ((Method) methodsMap.get(gid)).getMname();
+					} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV.equals(option)) {
+						value = ((Method) methodsMap.get(gid)).getMcode();
+					} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER.equals(option)) {
+						value = ((Method) methodsMap.get(gid)).getMid().toString();
+					} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.equals(option)) {
+						value = ((Method) methodsMap.get(gid)).getMgrp();
+					}
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, value);
 				}
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, value);
 			}
+			this.fillColumnSource.propagateUIChanges();
 		}
 
-		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setCrossMaleGIDColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
-		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
-		for (final Object itemId : itemIds) {
-			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
-			final Germplasm germplasm = germplasmMap.get(gid);
-
-			if (germplasm != null) {
-				if (germplasm.getGnpgs() >= 2) {
-					if (germplasm.getGpid2() != null && germplasm.getGpid2() != 0) {
-						this.fillColumnSource.setColumnValueForItem(itemId, columnName,
-								germplasm.getGpid2().toString());
+		if (!itemIds.isEmpty()) {
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
+			for (final Object itemId : itemIds) {
+				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+				final Germplasm germplasm = germplasmMap.get(gid);
+				
+				if (germplasm != null) {
+					if (germplasm.getGnpgs() >= 2) {
+						if (germplasm.getGpid2() != null && germplasm.getGpid2() != 0) {
+							this.fillColumnSource.setColumnValueForItem(itemId, columnName,
+									germplasm.getGpid2().toString());
+						} else {
+							this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
+						}
 					} else {
 						this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 					}
 				} else {
 					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 				}
-			} else {
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 			}
+			
+			this.fillColumnSource.propagateUIChanges();
 		}
-
-		this.fillColumnSource.propagateUIChanges();
 	}
 
 	private ImmutableMap<Integer, Germplasm> retrieveGermplasmAndGenerateMap(final List<Integer> gids) {
@@ -185,140 +195,151 @@ public class GermplasmColumnValuesGenerator {
 
 	public void setCrossMalePrefNameColumnValues(final String columnName) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
-		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
-
-		final Map<Integer, List<Object>> gidToItemIdMap = new HashMap<>();
-		final List<Integer> gidsToUseForQuery = new ArrayList<>();
-
-		for (final Object itemId : itemIds) {
-			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
-			final Germplasm germplasm = germplasmMap.get(gid);
-
-			if (germplasm != null) {
-				if (germplasm.getGnpgs() >= 2 && germplasm.getGpid2() != null && germplasm.getGpid2() != 0) {
-					gidsToUseForQuery.add(germplasm.getGpid2());
-					List<Object> itemIdsInMap = gidToItemIdMap.get(germplasm.getGpid2());
-					if (itemIdsInMap == null) {
-						itemIdsInMap = new ArrayList<>();
-						itemIdsInMap.add(itemId);
-						gidToItemIdMap.put(germplasm.getGpid2(), itemIdsInMap);
+		if (!itemIds.isEmpty()) {
+			
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
+			
+			final Map<Integer, List<Object>> gidToItemIdMap = new HashMap<>();
+			final List<Integer> gidsToUseForQuery = new ArrayList<>();
+			
+			for (final Object itemId : itemIds) {
+				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+				final Germplasm germplasm = germplasmMap.get(gid);
+				
+				if (germplasm != null) {
+					if (germplasm.getGnpgs() >= 2 && germplasm.getGpid2() != null && germplasm.getGpid2() != 0) {
+						gidsToUseForQuery.add(germplasm.getGpid2());
+						List<Object> itemIdsInMap = gidToItemIdMap.get(germplasm.getGpid2());
+						if (itemIdsInMap == null) {
+							itemIdsInMap = new ArrayList<>();
+							itemIdsInMap.add(itemId);
+							gidToItemIdMap.put(germplasm.getGpid2(), itemIdsInMap);
+						} else {
+							itemIdsInMap.add(itemId);
+						}
 					} else {
-						itemIdsInMap.add(itemId);
+						this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 					}
 				} else {
 					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 				}
-			} else {
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
 			}
-		}
-
-		if (!gidsToUseForQuery.isEmpty()) {
-			final Map<Integer, String> gidToNameMap = this.germplasmDataManager.getPreferredNamesByGids(gidsToUseForQuery);
-
-			for (final Integer gid : gidToNameMap.keySet()) {
-				final String prefName = gidToNameMap.get(gid);
-				final List<Object> itemIdsInMap = gidToItemIdMap.get(gid);
-				for (final Object itemId : itemIdsInMap) {
-					this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), prefName);
+			
+			if (!gidsToUseForQuery.isEmpty()) {
+				final Map<Integer, String> gidToNameMap = this.germplasmDataManager.getPreferredNamesByGids(gidsToUseForQuery);
+				
+				for (final Integer gid : gidToNameMap.keySet()) {
+					final String prefName = gidToNameMap.get(gid);
+					final List<Object> itemIdsInMap = gidToItemIdMap.get(gid);
+					for (final Object itemId : itemIdsInMap) {
+						this.fillColumnSource.setColumnValueForItem(itemId, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), prefName);
+					}
 				}
 			}
+			
+			this.fillColumnSource.propagateUIChanges();
 		}
-
-		this.fillColumnSource.propagateUIChanges();
 	}
 
 	public void setCrossFemaleInfoColumnValues(final String columnName, final FillWithOption option) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
-		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
-		
-		for (final Object itemId : itemIds) {
-			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
-			final Germplasm germplasm = germplasmMap.get(gid);
-			Germplasm femaleParent = null;
-			// get female only if germplasm is created via generative process
-			if (germplasm.getGnpgs() >= 2) {
-				femaleParent = this.germplasmDataManager.getGermplasmByGID(germplasm.getGpid1());
-			}
-
-			if (femaleParent == null) {
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
-			} else {
-				String value = "-";
-				if (FillWithOption.FILL_WITH_CROSS_FEMALE_GID.equals(option)) {
-					value = femaleParent.getGid().toString();
-				} else if (FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.equals(option)) {
-					// TODO See if this Middleware query can be done one-off
-					final Name prefName = this.germplasmDataManager.getPreferredNameByGID(femaleParent.getGid());
-					if (prefName != null) {
-						value = prefName.getNval();
-					}
+		if (!itemIds.isEmpty()) {
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			ImmutableMap<Integer, Germplasm> germplasmMap = this.retrieveGermplasmAndGenerateMap(gids);
+			
+			for (final Object itemId : itemIds) {
+				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+				final Germplasm germplasm = germplasmMap.get(gid);
+				Germplasm femaleParent = null;
+				// get female only if germplasm is created via generative process
+				if (germplasm.getGnpgs() >= 2) {
+					femaleParent = this.germplasmDataManager.getGermplasmByGID(germplasm.getGpid1());
 				}
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, value);
+				
+				if (femaleParent == null) {
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
+				} else {
+					String value = "-";
+					if (FillWithOption.FILL_WITH_CROSS_FEMALE_GID.equals(option)) {
+						value = femaleParent.getGid().toString();
+					} else if (FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.equals(option)) {
+						// TODO See if this Middleware query can be done one-off
+						final Name prefName = this.germplasmDataManager.getPreferredNameByGID(femaleParent.getGid());
+						if (prefName != null) {
+							value = prefName.getNval();
+						}
+					}
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, value);
+				}
 			}
+			
+			this.fillColumnSource.propagateUIChanges();
 		}
-
-		this.fillColumnSource.propagateUIChanges();
 	}
 	
 	public void fillWithEmpty(final String columnName) {
 		List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
-		for (final Object itemId : itemIds) {
-			this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
+		if (!itemIds.isEmpty()) {
+			for (final Object itemId : itemIds) {
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
+			}
+			
+			this.fillColumnSource.propagateUIChanges();
 		}
-
-		this.fillColumnSource.propagateUIChanges();
 	}
 	
 	public void fillWithAttribute(final Integer attributeType, final String columnName) {
 		if (attributeType != null) {
 			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-			Map<Integer, String> gidAttributeMap = this.germplasmDataManager.getAttributeValuesByTypeAndGIDList(attributeType, gids);
-
-			List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
-			for (final Object itemId : itemIds) {
-				Integer gid = this.fillColumnSource.getGidForItemId(itemId);
-				this.fillColumnSource.setColumnValueForItem(itemId, columnName, gidAttributeMap.get(gid));
+			if (!gids.isEmpty()) {
+				Map<Integer, String> gidAttributeMap = this.germplasmDataManager.getAttributeValuesByTypeAndGIDList(attributeType, gids);
+				
+				List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
+				for (final Object itemId : itemIds) {
+					Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, gidAttributeMap.get(gid));
+				}
+				this.fillColumnSource.propagateUIChanges();
 			}
 		}
 
-		this.fillColumnSource.propagateUIChanges();
 	}
 	
 	public void fillWithSequence(final String columnName, final String prefix, final String suffix, final int startNumber, final int numOfZeros,
 			final boolean spaceBetweenPrefixAndCode, final boolean spaceBetweenSuffixAndCode) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
-		int number = startNumber;
-		for (final Object itemId : itemIds) {
-			StringBuilder builder = new StringBuilder();
-			builder.append(prefix);
-			if (spaceBetweenPrefixAndCode) {
-				builder.append(" ");
-			}
-
-			if (numOfZeros > 0) {
-				String numberString = "" + number;
-				int numOfZerosNeeded = numOfZeros - numberString.length();
-				for (int i = 0; i < numOfZerosNeeded; i++) {
-					builder.append("0");
+		if (!itemIds.isEmpty()) { 
+			int number = startNumber;
+			for (final Object itemId : itemIds) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(prefix);
+				if (spaceBetweenPrefixAndCode) {
+					builder.append(" ");
 				}
+				
+				if (numOfZeros > 0) {
+					String numberString = "" + number;
+					int numOfZerosNeeded = numOfZeros - numberString.length();
+					for (int i = 0; i < numOfZerosNeeded; i++) {
+						builder.append("0");
+					}
+				}
+				builder.append(number);
+				
+				if (suffix != null && spaceBetweenSuffixAndCode) {
+					builder.append(" ");
+				}
+				
+				if (suffix != null) {
+					builder.append(suffix);
+				}
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, builder.toString());
+				++number;
 			}
-			builder.append(number);
-
-			if (suffix != null && spaceBetweenSuffixAndCode) {
-				builder.append(" ");
-			}
-
-			if (suffix != null) {
-				builder.append(suffix);
-			}
-			this.fillColumnSource.setColumnValueForItem(itemId, columnName, builder.toString());
-			++number;
+			
+			this.fillColumnSource.propagateUIChanges();
 		}
-
-		this.fillColumnSource.propagateUIChanges();
 	}
 	
 	public void fillWithCrossExpansion(final Integer crossExpansionLevel, final String columnName) {
