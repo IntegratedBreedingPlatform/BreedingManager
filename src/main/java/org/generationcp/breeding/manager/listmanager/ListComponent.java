@@ -466,9 +466,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	protected void initializeAddColumnContextMenu() {
-		this.addColumnContextMenu = new AddColumnContextMenu(
-				new ListComponentAddColumnSource(this.parentListDetailsComponent, this.listDataTable, ColumnLabels.GID.getName()),
-				this.menu, this.menu.getListEditingOptions());
+		final ListComponentAddColumnSource addColumnSource = new ListComponentAddColumnSource(this.parentListDetailsComponent, this.listDataTable, ColumnLabels.GID.getName());
+		this.addColumnContextMenu =
+				new AddColumnContextMenu(addColumnSource, this.menu, this.menu.getListEditingOptions(), this.messageSource);
 	}
 
 	public void initializeListInventoryTable() {

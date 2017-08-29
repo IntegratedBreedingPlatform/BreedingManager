@@ -195,7 +195,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		};
 		// Add "Add Column" context menu option and disable all options initially when are search results table is empty
 		this.addColumnSource = new GermplasmSearchLoadedItemsAddColumnSource(this.matchingGermplasmTable, GermplasmQuery.GID_REF_PROPERTY);
-		this.addColumnContextMenu = new AddColumnContextMenu(addColumnSource, this.menu, null);
+		this.addColumnContextMenu = new AddColumnContextMenu(addColumnSource, this.menu, null, this.messageSource);
 		this.updateActionMenuOptions(false);		
 	}
 

@@ -543,7 +543,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.RESET_LIST));
 		this.addColumnContextMenu = new AddColumnContextMenu(
 				new ListBuilderAddColumnSource(this, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName()), this.menu,
-				this.listEditingOptions);
+				this.listEditingOptions, this.messageSource);
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
 
 		this.inventoryViewMenu = new ContextMenu();
