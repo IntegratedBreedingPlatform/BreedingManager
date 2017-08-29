@@ -651,9 +651,13 @@ public class DropHandlerMethods {
 	}
 	
 	private void generateAddedColumnValuesForAddedEntry(final List<Integer> itemIds, final List<Integer> gids){
-		final NewGermplasmEntriesFillColumnSource fillColumnSource = new NewGermplasmEntriesFillColumnSource(this.targetTable, itemIds, gids);
-		final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(fillColumnSource);
-		addedColumnsMapper.generateValuesForAddedColumns(this.targetTable.getVisibleColumns());
+		if (AddColumnContextMenu.sourceHadAddedColumn(this.targetTable.getVisibleColumns())) {
+			final NewGermplasmEntriesFillColumnSource fillColumnSource =
+					new NewGermplasmEntriesFillColumnSource(this.targetTable, itemIds, gids);
+			final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(fillColumnSource);
+			// Add Column > "Fill With Attribute" is disabled in ListBuilder context hence 2nd parameter is false
+			addedColumnsMapper.generateValuesForAddedColumns(this.targetTable.getVisibleColumns(), false);
+		}
 	}
 
 	/**

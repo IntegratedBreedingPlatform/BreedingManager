@@ -77,8 +77,10 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 	@Override
 	public void addColumn(final ColumnLabels columnLabel) {
-		this.targetTable.addContainerProperty(columnLabel.getName(), String.class, "");
-		this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
+		if (!this.columnExists(columnLabel.getName())) {
+			this.targetTable.addContainerProperty(columnLabel.getName(), String.class, "");
+			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
+		}
 	}
 
 	@Override
@@ -88,8 +90,8 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 	@Override
 	public void addColumn(final String columnName) {
-		if (!this.columnExists(columnName)) {
-			this.targetTable.addContainerProperty(columnName, String.class, "");
+		if (!this.columnExists(columnName.toUpperCase())) {
+			this.targetTable.addContainerProperty(columnName.toUpperCase(), String.class, "");
 			this.targetTable.setColumnHeader(columnName, columnName);
 		}
 	}

@@ -22,9 +22,9 @@ import javax.annotation.Resource;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.AddedColumnsMapper;
+import org.generationcp.breeding.manager.listmanager.GermplasmSearchItemsToLoadFillColumnSource;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.GermplasmSearchItemsToLoadFillColumnSource;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -132,7 +132,8 @@ public class GermplasmQuery implements Query {
 		if (AddColumnContextMenu.sourceHadAddedColumn(columns.toArray())) {
 			final GermplasmSearchItemsToLoadFillColumnSource fillColumnSource = new GermplasmSearchItemsToLoadFillColumnSource(items, gids);
 			final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(fillColumnSource);
-			addedColumnsMapper.generateValuesForAddedColumns(columns.toArray());
+			// Add Column > "Fill With Attribute" is disabled in Germplasm Search context hence 2nd parameter is true
+			addedColumnsMapper.generateValuesForAddedColumns(columns.toArray(), true);
 		}
 
 		return items;

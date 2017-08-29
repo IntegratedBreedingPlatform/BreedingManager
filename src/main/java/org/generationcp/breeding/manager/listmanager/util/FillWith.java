@@ -219,7 +219,6 @@ public class FillWith implements InternationalizableComponent {
 
 	private void displayFillWithAttributeWindow(final String columnName) {
 		final Window mainWindow = this.addColumnSource.getWindow();
-		// 2nd parameter is null because user is yet to select the attribute type, which will become column name
 		Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, columnName);
 		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
 		mainWindow.addWindow(attributeWindow);

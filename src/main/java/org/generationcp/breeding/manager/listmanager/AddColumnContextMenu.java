@@ -18,6 +18,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent {
@@ -54,10 +56,12 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 				AddColumnContextMenu.this.addCrossMaleGIDColumn();
 			} else if (clickedItem.getName().equals(AddColumnContextMenu.FILL_WITH_CROSS_MALE_PREF_NAME)) {
 				AddColumnContextMenu.this.addCrossMalePrefNameColumn();
+			} else if (clickedItem.getName().equals(AddColumnContextMenu.FILL_WITH_ATTRIBUTE)) {
+				AddColumnContextMenu.this.displayFillWithAttributeWindow();
 			}
 		}
 	}
-
+	
 	private ContextMenu sourceContextMenu;
 	private ContextMenuItem addColumnItem;
 	private ContextMenuItem menuFillWithPreferredId;
@@ -92,6 +96,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	private static final String FILL_WITH_CROSS_MALE_INFO = "Fill with Cross-Male Information";
 	private static final String FILL_WITH_CROSS_MALE_GID = "Fill with Cross-Male GID";
 	private static final String FILL_WITH_CROSS_MALE_PREF_NAME = "Fill with Cross-Male Preferred Name";
+	private static final String FILL_WITH_ATTRIBUTE = "Fill with Attribute";
 
 	private GermplasmColumnValuesGenerator valuesGenerator;
 	private AddColumnSource addColumnSource;
@@ -130,6 +135,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		this.menuFillWithMethodInfo = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_METHOD_INFO);
 		this.menuFillWithCrossFemaleInfo = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_CROSS_FEMALE_INFO);
 		this.menuFillWithCrossMaleInfo = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_CROSS_MALE_INFO);
+		this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_ATTRIBUTE);
 
 		// breeding method sub-options
 		this.menuFillWithMethodName = this.menuFillWithMethodInfo.addItem(AddColumnContextMenu.FILL_WITH_METHOD_NAME);
@@ -151,7 +157,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 	public void initializeAddableProperties() {
 
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS = new ArrayList<String>();
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS = new ArrayList<>();
 
 		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_ID.getName());
 		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_NAME.getName());
@@ -307,6 +313,14 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
 					FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
 		}
+	}
+	
+	private void displayFillWithAttributeWindow() {
+		final Window mainWindow = this.addColumnSource.getWindow();
+		// 2nd parameter is null because user is yet to select the attribute type, which will become column name
+		Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null);
+		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
+		mainWindow.addWindow(attributeWindow);
 	}
 
 	public static Boolean propertyExists(String propertyId, Table table) {

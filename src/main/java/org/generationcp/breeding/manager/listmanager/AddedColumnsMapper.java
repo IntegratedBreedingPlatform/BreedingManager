@@ -1,10 +1,22 @@
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.listmanager.api.FillColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.UserDefinedField;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class AddedColumnsMapper {
+	
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 	
 	private GermplasmColumnValuesGenerator valuesGenerator;
 	
@@ -13,7 +25,7 @@ public class AddedColumnsMapper {
 		this.valuesGenerator = new GermplasmColumnValuesGenerator(fillWithSource);
 	}
 	
-	public void generateValuesForAddedColumns(final Object[] visibleColumns) {
+	public void generateValuesForAddedColumns(final Object[] visibleColumns, final boolean attributeTypesAddable) {
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.PREFERRED_ID.getName())) {
 			valuesGenerator.setPreferredIdColumnValues(ColumnLabels.PREFERRED_ID.getName());
 		}
@@ -56,16 +68,36 @@ public class AddedColumnsMapper {
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())) {
 			valuesGenerator.setCrossMalePrefNameColumnValues(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
 		}
+		
+		// Check if any of the columns are attribute types
+		if (attributeTypesAddable) {
+			final Map<String, Integer> attributeTypesMap = this.getAllAttributeTypes();
+			for (final Object column : visibleColumns){
+				final String columnName = column.toString().toUpperCase();
+				final Integer attributeTypeId = attributeTypesMap.get(columnName);
+				if (attributeTypeId != null) {
+					valuesGenerator.fillWithAttribute(attributeTypeId, columnName);
+				}
+			}
+		}
+	}
+	
+	private Map<String, Integer> getAllAttributeTypes() {
+		final Map<String, Integer> attributeTypesMap = new HashMap<>();
+		// Add all attribute types as add-able columns
+		final List<UserDefinedField> attributesTypes = this.germplasmDataManager.getAllAttributesTypes();
+		for (final UserDefinedField attributeType : attributesTypes) {
+			attributeTypesMap.put(attributeType.getFname().toUpperCase(), attributeType.getFldno());
+		}
+		return attributeTypesMap;
 	}
 	
 	private boolean isColumnVisible(final Object[] columns, final String columnName) {
-
 		for (final Object col : columns) {
 			if (col.equals(columnName)) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 	

@@ -98,17 +98,19 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				final Integer attributeTypeId = (Integer) FillWithAttributeWindow.this.attributeBox.getValue();
-				final String attributeType = FillWithAttributeWindow.this.attributeBox.getItemCaption(attributeTypeId);
-				String finalProperty = FillWithAttributeWindow.this.targetPropertyId;
-				// Add selected attribute type as column if no existing property was specified
-				if (finalProperty == null) {
-					FillWithAttributeWindow.this.addColumnSource.addColumn(attributeType);
-					finalProperty = attributeType;
+				if (attributeTypeId != null) {
+					final String attributeType = FillWithAttributeWindow.this.attributeBox.getItemCaption(attributeTypeId).toUpperCase();
+					String finalProperty = FillWithAttributeWindow.this.targetPropertyId;
+					// Add selected attribute type as column if no existing property was specified
+					if (finalProperty == null) {
+						FillWithAttributeWindow.this.addColumnSource.addColumn(attributeType);
+						finalProperty = attributeType;
+					}
+					// Generate values for target column
+					GermplasmColumnValuesGenerator valuesGenerator =
+							new GermplasmColumnValuesGenerator(FillWithAttributeWindow.this.addColumnSource);
+					valuesGenerator.fillWithAttribute(attributeTypeId, finalProperty);
 				}
-				// Generate values for target column
-				GermplasmColumnValuesGenerator valuesGenerator =
-						new GermplasmColumnValuesGenerator(FillWithAttributeWindow.this.addColumnSource);
-				valuesGenerator.fillWithAttribute(attributeTypeId, finalProperty);
 				
 				// Close pop-up
 				Window attributeWindow = ((Button) event.getSource()).getWindow();

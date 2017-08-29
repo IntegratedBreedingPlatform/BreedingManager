@@ -1692,10 +1692,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.addListEntryToTable(listData);
 
 				// Generate values for added columns, if any
-				final NewGermplasmEntriesFillColumnSource fillColumnSource =
-						new NewGermplasmEntriesFillColumnSource(this.listDataTable, Arrays.asList(listDataId), Arrays.asList(gid));
-				final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(fillColumnSource);
-				addedColumnsMapper.generateValuesForAddedColumns(this.listDataTable.getVisibleColumns());
+				if (AddColumnContextMenu.sourceHadAddedColumn(this.listDataTable.getVisibleColumns())) {
+					final NewGermplasmEntriesFillColumnSource fillColumnSource =
+							new NewGermplasmEntriesFillColumnSource(this.listDataTable, Arrays.asList(listDataId), Arrays.asList(gid));
+					final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(fillColumnSource);
+					// Add Column > "Fill With Attribute" is disabled in View List context hence 2nd parameter is false
+					addedColumnsMapper.generateValuesForAddedColumns(this.listDataTable.getVisibleColumns(), false);
+				}
 				
 				this.saveChangesAction(this.getWindow(), false);
 				this.listDataTable.refreshRowCache();
