@@ -128,29 +128,71 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		} else {
 			this.addColumnItem = this.sourceContextMenu.addItem(AddColumnContextMenu.ADD_COLUMN_MENU);
 		}
-		this.menuFillWithPreferredId = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_PREFERRED_ID);
-		this.menuFillWithPreferredName = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_PREFERRED_NAME);
-		this.menuFillWithGermplasmDate = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_GERMPLASM_DATE);
-		this.menuFillWithLocations = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_LOCATION);
-		this.menuFillWithMethodInfo = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_METHOD_INFO);
-		this.menuFillWithCrossFemaleInfo = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_CROSS_FEMALE_INFO);
-		this.menuFillWithCrossMaleInfo = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_CROSS_MALE_INFO);
-		this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_ATTRIBUTE);
+		final List<FillWithOption> columnsToExclude = this.addColumnSource.getColumnsToExclude();
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_PREFERRED_ID)) {
+			this.menuFillWithPreferredId = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_PREFERRED_ID);
+		}
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_PREFERRED_NAME)) {
+			this.menuFillWithPreferredName = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_PREFERRED_NAME);
+		}
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_GERMPLASM_DATE)) {
+			this.menuFillWithGermplasmDate = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_GERMPLASM_DATE);
+		}
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_LOCATION)) {
+			this.menuFillWithLocations = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_LOCATION);
+		}
 
-		// breeding method sub-options
-		this.menuFillWithMethodName = this.menuFillWithMethodInfo.addItem(AddColumnContextMenu.FILL_WITH_METHOD_NAME);
-		this.menuFillWithMethodAbbrev = this.menuFillWithMethodInfo.addItem(AddColumnContextMenu.FILL_WITH_METHOD_ABBREV);
-		this.menuFillWithMethodNumber = this.menuFillWithMethodInfo.addItem(AddColumnContextMenu.FILL_WITH_METHOD_NUMBER);
-		this.menuFillWithMethodGroup = this.menuFillWithMethodInfo.addItem(AddColumnContextMenu.FILL_WITH_METHOD_GROUP);
+		// Breeding method Info and its sub-options. Excluded sub-options will be visible but disabled
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_BREEDING_METHOD_INFO)) {
+			this.menuFillWithMethodInfo = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_METHOD_INFO);
+			
+			final boolean doExcludeBreedingMethodName = columnsToExclude.contains(FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
+			this.menuFillWithMethodName = this.menuFillWithMethodInfo.addItem(AddColumnContextMenu.FILL_WITH_METHOD_NAME);
+			this.menuFillWithMethodName.setEnabled(!doExcludeBreedingMethodName);
 
-		// cross female sub-options
-		this.menuFillWithCrossFemaleGID = this.menuFillWithCrossFemaleInfo.addItem(AddColumnContextMenu.FILL_WITH_CROSS_FEMALE_GID);
-		this.menuFillWithCrossFemalePrefName =
-				this.menuFillWithCrossFemaleInfo.addItem(AddColumnContextMenu.FILL_WITH_CROSS_FEMALE_PREF_NAME);
+			final boolean doExcludeBreedingMethodAbbrev = columnsToExclude.contains(FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV);
+			this.menuFillWithMethodAbbrev = this.menuFillWithMethodInfo.addItem(AddColumnContextMenu.FILL_WITH_METHOD_ABBREV);
+			this.menuFillWithMethodAbbrev.setEnabled(!doExcludeBreedingMethodAbbrev);
 
-		// cross-male info sub-options
-		this.menuFillWithCrossMaleGID = this.menuFillWithCrossMaleInfo.addItem(AddColumnContextMenu.FILL_WITH_CROSS_MALE_GID);
-		this.menuFillWithCrossMalePrefName = this.menuFillWithCrossMaleInfo.addItem(AddColumnContextMenu.FILL_WITH_CROSS_MALE_PREF_NAME);
+			final boolean doExcludeBreedingMethodNumber = columnsToExclude.contains(FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER);
+			this.menuFillWithMethodNumber = this.menuFillWithMethodInfo.addItem(AddColumnContextMenu.FILL_WITH_METHOD_NUMBER);
+			this.menuFillWithMethodNumber.setEnabled(!doExcludeBreedingMethodNumber);
+			
+			final boolean doExcludeBreedingMethodGroup = columnsToExclude.contains(FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
+			this.menuFillWithMethodGroup = this.menuFillWithMethodInfo.addItem(AddColumnContextMenu.FILL_WITH_METHOD_GROUP);
+			this.menuFillWithMethodGroup.setEnabled(!doExcludeBreedingMethodGroup);
+		}
+		
+		// Cross Female Info and its sub-options. Excluded sub-options will be visible but disabled
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_CROSS_FEMALE_INFO)) {
+			this.menuFillWithCrossFemaleInfo = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_CROSS_FEMALE_INFO);
+			
+			final boolean doExcludeCrossFemaleGid = columnsToExclude.contains(FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
+			this.menuFillWithCrossFemaleGID = this.menuFillWithCrossFemaleInfo.addItem(AddColumnContextMenu.FILL_WITH_CROSS_FEMALE_GID);
+			this.menuFillWithCrossFemaleGID.setEnabled(!doExcludeCrossFemaleGid);
+			
+			final boolean doExcludeCrossFemaleName = columnsToExclude.contains(FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
+			this.menuFillWithCrossFemalePrefName =
+					this.menuFillWithCrossFemaleInfo.addItem(AddColumnContextMenu.FILL_WITH_CROSS_FEMALE_PREF_NAME);
+			this.menuFillWithCrossFemalePrefName.setEnabled(!doExcludeCrossFemaleName);
+		}
+			
+		// Cross Male Info and its sub-options. Excluded sub-options will be visible but disabled
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_CROSS_MALE_INFO)) {
+			this.menuFillWithCrossMaleInfo = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_CROSS_MALE_INFO);
+			
+			final boolean doExcludeCrossMaleGid = columnsToExclude.contains(FillWithOption.FILL_WITH_CROSS_MALE_GID);
+			this.menuFillWithCrossMaleGID = this.menuFillWithCrossMaleInfo.addItem(AddColumnContextMenu.FILL_WITH_CROSS_MALE_GID);
+			this.menuFillWithCrossMaleGID.setEnabled(!doExcludeCrossMaleGid);
+			
+			final boolean doExcludeCrossMaleName = columnsToExclude.contains(FillWithOption.FILL_WITH_CROSS_MALE_NAME);
+			this.menuFillWithCrossMalePrefName = this.menuFillWithCrossMaleInfo.addItem(AddColumnContextMenu.FILL_WITH_CROSS_MALE_PREF_NAME);
+			this.menuFillWithCrossMalePrefName.setEnabled(!doExcludeCrossMaleName);
+		}
+		
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_ATTRIBUTE)) {
+			this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_ATTRIBUTE);
+		}
 
 		this.sourceContextMenu.addListener(new SourceContextMenuClickListener());
 	}

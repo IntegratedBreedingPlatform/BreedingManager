@@ -127,8 +127,10 @@ public class GermplasmQuery implements Query {
 			items.add(this.getGermplasmItem(germplasmResults.get(i), i + startIndex, pedigreeStringMap, preferredNamesMap));
 		}
 		
-		// Generate values for added columns, if any were added to table
+		// Generate values for added columns, if any were added. Exclude Location and Breeding Method name for they are part of default columns
 		final List<Object> columns = Arrays.asList(this.matchingGermplasmsTable.getVisibleColumns());
+		columns.remove(ColumnLabels.GERMPLASM_LOCATION);
+		columns.remove(ColumnLabels.BREEDING_METHOD_NAME);
 		if (AddColumnContextMenu.sourceHadAddedColumn(columns.toArray())) {
 			final GermplasmSearchItemsToLoadFillColumnSource fillColumnSource = new GermplasmSearchItemsToLoadFillColumnSource(items, gids);
 			final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(fillColumnSource);

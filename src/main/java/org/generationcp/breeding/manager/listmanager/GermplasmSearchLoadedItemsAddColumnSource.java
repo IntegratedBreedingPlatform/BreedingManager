@@ -2,10 +2,12 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
+import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +101,11 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 	@Override
 	public Window getWindow() {
 		return this.targetTable.getWindow();
+	}
+	
+	@Override
+	public List<FillWithOption> getColumnsToExclude() {
+		return Arrays.asList(FillWithOption.FILL_WITH_LOCATION, FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
 	}
 
 }
