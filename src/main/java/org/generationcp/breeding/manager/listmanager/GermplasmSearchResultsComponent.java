@@ -316,6 +316,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
+				GermplasmSearchResultsComponent.this.addColumnContextMenu.refreshAddColumnMenu(GermplasmSearchResultsComponent.this.matchingGermplasmTable);
 				GermplasmSearchResultsComponent.this.menu.show(event.getClientX(), event.getClientY());
 			}
 
