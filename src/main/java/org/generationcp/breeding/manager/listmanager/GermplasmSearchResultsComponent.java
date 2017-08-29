@@ -2,6 +2,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,6 +34,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import com.jensjansson.pagedtable.PagedTable;
+import com.jensjansson.pagedtable.PagedTable.PagedTableChangeEvent;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -346,6 +349,23 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
 				GermplasmSearchResultsComponent.this.updateNoOfSelectedEntries();
+			}
+		});
+		
+		this.matchingGermplasmTable.addListener(new PagedTable.PageChangeListener() {
+			
+			// Generate values for added columns, if any were added 
+			@Override
+			public void pageChanged(PagedTableChangeEvent event) {
+				final List<Object> columns = Arrays.asList(GermplasmSearchResultsComponent.this.matchingGermplasmTable.getVisibleColumns());
+				// Exclude Location and Breeding Method name for they are part of default columns
+				columns.remove(ColumnLabels.GERMPLASM_LOCATION);
+				columns.remove(ColumnLabels.BREEDING_METHOD_NAME);
+				if (AddColumnContextMenu.sourceHadAddedColumn(columns.toArray())) {
+					final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(GermplasmSearchResultsComponent.this.addColumnSource);
+					// Add Column > "Fill With Attribute" is disabled in Germplasm Search context hence 2nd parameter is true
+					addedColumnsMapper.generateValuesForAddedColumns(columns.toArray(), true);
+				}
 			}
 		});
 	}

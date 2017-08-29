@@ -11,7 +11,6 @@
 package org.generationcp.breeding.manager.containers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,9 +19,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
-import org.generationcp.breeding.manager.listmanager.AddedColumnsMapper;
-import org.generationcp.breeding.manager.listmanager.GermplasmSearchItemsToLoadFillColumnSource;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
@@ -125,17 +121,6 @@ public class GermplasmQuery implements Query {
 		final Map<Integer, String> preferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
 		for (int i = 0; i < germplasmResults.size(); i++) {
 			items.add(this.getGermplasmItem(germplasmResults.get(i), i + startIndex, pedigreeStringMap, preferredNamesMap));
-		}
-		
-		// Generate values for added columns, if any were added. Exclude Location and Breeding Method name for they are part of default columns
-		final List<Object> columns = Arrays.asList(this.matchingGermplasmsTable.getVisibleColumns());
-		columns.remove(ColumnLabels.GERMPLASM_LOCATION);
-		columns.remove(ColumnLabels.BREEDING_METHOD_NAME);
-		if (AddColumnContextMenu.sourceHadAddedColumn(columns.toArray())) {
-			final GermplasmSearchItemsToLoadFillColumnSource fillColumnSource = new GermplasmSearchItemsToLoadFillColumnSource(items, gids);
-			final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(fillColumnSource);
-			// Add Column > "Fill With Attribute" is disabled in Germplasm Search context hence 2nd parameter is true
-			addedColumnsMapper.generateValuesForAddedColumns(columns.toArray(), true);
 		}
 
 		return items;
