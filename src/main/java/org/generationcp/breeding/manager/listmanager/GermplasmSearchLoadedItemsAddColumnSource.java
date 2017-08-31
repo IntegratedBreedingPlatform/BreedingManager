@@ -17,6 +17,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.Window;
+import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 
 /**
  * This takes care of adding columns and generating values for those added columns when  there are items
@@ -29,13 +30,15 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 	private OntologyDataManager ontologyDataManager;
 
 	private PagedBreedingManagerTable targetTable;
+	private LazyQueryDefinition definition;
 	private String gidPropertyId;
 
 	
-	public GermplasmSearchLoadedItemsAddColumnSource(final PagedBreedingManagerTable targetTable, final String gidPropertyId) {
+	public GermplasmSearchLoadedItemsAddColumnSource(final PagedBreedingManagerTable targetTable, final LazyQueryDefinition definition, final String gidPropertyId) {
 		super();
 		this.targetTable = targetTable;
 		this.gidPropertyId = gidPropertyId;
+		this.definition = definition;
 	}
 
 	@Override
@@ -83,6 +86,9 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 			this.targetTable.addContainerProperty(columnLabel.getName(), String.class, "");
 			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
 		}
+		if (!this.definition.getPropertyIds().contains(columnLabel.getName())) {
+			this.definition.addProperty(columnLabel.getName(), String.class, "", false, false);
+		}
 	}
 
 	@Override
@@ -95,6 +101,9 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 		if (!this.columnExists(columnName.toUpperCase())) {
 			this.targetTable.addContainerProperty(columnName.toUpperCase(), String.class, "");
 			this.targetTable.setColumnHeader(columnName, columnName);
+		}
+		if (!this.definition.getPropertyIds().contains(columnName)) {
+			this.definition.addProperty(columnName, String.class, "", false, false);
 		}
 	}
 
