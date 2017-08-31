@@ -59,7 +59,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		this.germplasmDataManager = germplasmDataManager;
 		this.germplasmListManager = germplasmListManager;
 		this.inventoryDataManager = inventoryDataManager;
-		this.targetTable = targetTable;
+		this.setTargetTable(targetTable);
 		this.pedigreeService = pedigreeService;
 		this.crossExpansionProperties = crossExpansionProperties;
 		this.listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
@@ -72,7 +72,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		this.germplasmDataManager = germplasmDataManager;
 		this.germplasmListManager = germplasmListManager;
 		this.inventoryDataManager = inventoryDataManager;
-		this.targetTable = targetTable;
+		this.setTargetTable(targetTable);
 		this.pedigreeService = pedigreeService;
 		this.crossExpansionProperties = crossExpansionProperties;
 		this.listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
@@ -92,7 +92,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 				MessageNotifier.showWarning(this.listManagerMain.getWindow(), "Warning!", message);
 
-			} else if (sourceTableData.equals(ListManagerInventoryTable.INVENTORY_TABLE_DATA) && !sourceTable.equals(this.targetTable)) {
+			} else if (sourceTableData.equals(ListManagerInventoryTable.INVENTORY_TABLE_DATA) && !sourceTable.equals(this.getTargetTable())) {
 				super.setHasUnsavedChanges(true);
 
 				this.lastDroppedListId = ((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
@@ -109,7 +109,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				this.addSelectedInventoryDetails(lotDetails, sourceTable);
 
 			} else if (sourceTableData.equals(SelectParentsListDataComponent.CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE)
-					&& !sourceTable.equals(this.targetTable)) {
+					&& !sourceTable.equals(this.getTargetTable())) {
 				this.inventoryDropTargetContainer.setHasUnsavedChanges(true);
 				this.hasChanges = true;
 
@@ -165,7 +165,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				nextId++;
 			}
 
-			this.addItemToDestinationTable(lotDetail, nextId, sourceTable, this.targetTable);
+			this.addItemToDestinationTable(lotDetail, nextId, sourceTable, this.getTargetTable());
 			lastLrecId = lotDetail.getId();
 		}
 
@@ -237,7 +237,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	 * @param entryId
 	 */
 	public void assignLrecIdToRowsFromListWithEntryId(Integer listId, Integer entryId) {
-		List<ListEntryLotDetails> itemIds = this.getLotDetailsWithEntryId(entryId, this.targetTable);
+		List<ListEntryLotDetails> itemIds = this.getLotDetailsWithEntryId(entryId, this.getTargetTable());
 		for (ListEntryLotDetails itemId : itemIds) {
 			try {
 				GermplasmListData listData = this.germplasmListManager.getGermplasmListDataByListIdAndEntryId(listId, entryId);
@@ -284,7 +284,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 					if (lotDetails != null) {
 						for (ListEntryLotDetails lotDetail : lotDetails) {
-							Item newItem = this.targetTable.addItem(lotDetail);
+							Item newItem = this.getTargetTable().addItem(lotDetail);
 
 							CheckBox itemCheckBox = new CheckBox();
 							itemCheckBox.setDebugId("itemCheckBox");
@@ -298,9 +298,9 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 								public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 									CheckBox itemCheckBox = (CheckBox) event.getButton();
 									if (((Boolean) itemCheckBox.getValue()).equals(true)) {
-										InventoryTableDropHandler.this.targetTable.select(itemCheckBox.getData());
+										InventoryTableDropHandler.this.getTargetTable().select(itemCheckBox.getData());
 									} else {
-										InventoryTableDropHandler.this.targetTable.unselect(itemCheckBox.getData());
+										InventoryTableDropHandler.this.getTargetTable().unselect(itemCheckBox.getData());
 									}
 								}
 
@@ -412,7 +412,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(lotDetail.getStockIds());
 
 		final Button lotButton = new Button(lotDetail.getLotId().toString(),
-				new LotDetailsButtonClickListener(lotDetail.getEntityIdOfLot(), targetDesignationButton.toString(), this.targetTable, lotDetail.getLotId()));
+				new LotDetailsButtonClickListener(lotDetail.getEntityIdOfLot(), targetDesignationButton.toString(), this.getTargetTable(), lotDetail.getLotId()));
 		lotButton.setStyleName(BaseTheme.BUTTON_LINK);
 		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotButton);
 
@@ -432,10 +432,10 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	@SuppressWarnings("unchecked")
 	private Integer getInventoryTableLastEntryId() {
 		int topId = 0;
-		for (ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) this.targetTable.getItemIds()) {
+		for (ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) this.getTargetTable().getItemIds()) {
 
 			Integer entryId = 0;
-			Item item = this.targetTable.getItem(lotDetails);
+			Item item = this.getTargetTable().getItem(lotDetails);
 			if (item != null) {
 				entryId = (Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
 			}

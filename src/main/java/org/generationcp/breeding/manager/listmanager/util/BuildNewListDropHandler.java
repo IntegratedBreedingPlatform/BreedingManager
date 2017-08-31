@@ -44,7 +44,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 		this.inventoryDataManager = inventoryDataManager;
 		this.pedigreeService = pedigreeService;
 		this.crossExpansionProperties = crossExpansionProperties;
-		this.targetTable = targetTable;
+		this.setTargetTable(targetTable);
 		this.transactionManager = transactionManager;
 	}
 
@@ -62,7 +62,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 					final Table sourceTable = transferable.getSourceComponent();
 					final String sourceTableData = sourceTable.getData().toString();
 					final AbstractSelectTargetDetails dropData = (AbstractSelectTargetDetails) event.getTargetDetails();
-					BuildNewListDropHandler.this.targetTable = (Table) dropData.getTarget();
+					BuildNewListDropHandler.this.setTargetTable((Table) dropData.getTarget());
 
 					if (sourceTableData.equals(DropHandlerMethods.MATCHING_GERMPLASMS_TABLE_DATA)) {
 						BuildNewListDropHandler.super.setHasUnsavedChanges(true);

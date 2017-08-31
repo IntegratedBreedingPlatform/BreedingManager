@@ -48,6 +48,22 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	private AddColumnSource addColumnSource;
 
 	public static List<String> ADDABLE_PROPERTY_IDS;
+	static {
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS = new ArrayList<>();
+
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_ID.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_NAME.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.GERMPLASM_DATE.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.GERMPLASM_LOCATION.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_NAME.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_NUMBER.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_GROUP.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_FEMALE_GID.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_MALE_GID.getName());
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
+	}
 
 	/**
 	 * Add "Add column" context menu to a parent context menu item
@@ -68,9 +84,6 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	}
 
 	private void setupContextMenu() {
-
-		this.initializeAddableProperties();
-
 		// Adding it to List Editing Option instead of main menu
 		if (this.listEditingOptions != null) {
 			this.addColumnItem = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.ADD_COLUMN));
@@ -164,24 +177,6 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 	private ContextMenuItem addFillWithOptionToSubMenu(final FillWithOption option, final ContextMenuItem item) {
 		return item.addItem(this.messageSource.getMessage(option.getMessageKey()));
-	}
-
-	public void initializeAddableProperties() {
-
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS = new ArrayList<>();
-
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_ID.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_NAME.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.GERMPLASM_DATE.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.GERMPLASM_LOCATION.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_NAME.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_NUMBER.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_GROUP.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_FEMALE_GID.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_MALE_GID.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
 	}
 
 	public void refreshAddColumnMenu(final Table table) {

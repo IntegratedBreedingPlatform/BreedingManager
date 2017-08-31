@@ -38,6 +38,7 @@ import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -54,6 +55,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 
+@Configurable
 public class DropHandlerMethods {
 
 	private static final String CLICK_TO_VIEW_GERMPLASM_INFORMATION = "Click to view Germplasm information";
@@ -66,8 +68,10 @@ public class DropHandlerMethods {
 
 	private static final String STRING_DASH = "-";
 
-	protected Table targetTable;
-
+	private Table targetTable;
+	private NewGermplasmEntriesFillColumnSource newEntriesFillSource;
+	private AddedColumnsMapper addedColumnsMapper;
+	
 	protected GermplasmDataManager germplasmDataManager;
 	protected GermplasmListManager germplasmListManager;
 	protected InventoryDataManager inventoryDataManager;
@@ -650,13 +654,12 @@ public class DropHandlerMethods {
 		this.setHasUnsavedChanges(true);
 	}
 	
-	private void generateAddedColumnValuesForAddedEntry(final List<Integer> itemIds, final List<Integer> gids){
+	void generateAddedColumnValuesForAddedEntry(final List<Integer> itemIds, final List<Integer> gids){
 		if (AddColumnContextMenu.sourceHadAddedColumn(this.targetTable.getVisibleColumns())) {
-			final NewGermplasmEntriesFillColumnSource fillColumnSource =
-					new NewGermplasmEntriesFillColumnSource(this.targetTable, itemIds, gids);
-			final AddedColumnsMapper addedColumnsMapper = new AddedColumnsMapper(fillColumnSource);
+			this.newEntriesFillSource.setAddedItemIds(itemIds);
+			this.newEntriesFillSource.setAddedGids(gids);
 			// Add Column > "Fill With Attribute" is disabled in ListBuilder context hence 2nd parameter is false
-			addedColumnsMapper.generateValuesForAddedColumns(this.targetTable.getVisibleColumns(), false);
+			this.addedColumnsMapper.generateValuesForAddedColumns(this.targetTable.getVisibleColumns(), false);
 		}
 	}
 
@@ -877,6 +880,8 @@ public class DropHandlerMethods {
 
 	void setTargetTable(final Table targetTable) {
 		this.targetTable = targetTable;
+		this.newEntriesFillSource = new NewGermplasmEntriesFillColumnSource(this.targetTable);
+		this.addedColumnsMapper = new AddedColumnsMapper(this.newEntriesFillSource);
 	}
 
 	void setListManagerMain(final ListManagerMain listManagerMain) {
@@ -894,4 +899,19 @@ public class DropHandlerMethods {
 	void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
 		this.inventoryDataManager = inventoryDataManager;
 	}
+	
+	public Table getTargetTable() {
+		return targetTable;
+	}
+	
+	public void setNewEntriesFillSource(NewGermplasmEntriesFillColumnSource newEntriesFillSource) {
+		this.newEntriesFillSource = newEntriesFillSource;
+	}
+
+	
+	public void setAddedColumnsMapper(AddedColumnsMapper addedColumnsMapper) {
+		this.addedColumnsMapper = addedColumnsMapper;
+	}
+	
+	
 }

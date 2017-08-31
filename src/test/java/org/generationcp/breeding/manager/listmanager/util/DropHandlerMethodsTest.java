@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.listmanager.AddedColumnsMapper;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.NewGermplasmEntriesFillColumnSource;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
@@ -34,16 +36,14 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.google.common.collect.Lists;
-
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-
-import org.springframework.transaction.PlatformTransactionManager;
 
 public class DropHandlerMethodsTest {
 
@@ -103,27 +103,25 @@ public class DropHandlerMethodsTest {
 
 	@Mock
 	private ListComponent listComponent;
+	
+	@Mock
+	private NewGermplasmEntriesFillColumnSource newEntriesFillSource;
+	
+	@Mock
+	private AddedColumnsMapper addedColumnsMapper;
 
 	private final GermplasmListNewColumnsInfo germplasmListNewColumnsInfo = new GermplasmListNewColumnsInfo(1);
-
-	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@InjectMocks
 	private DropHandlerMethods dropHandlerMethods;
 
 	// Data Initializer
-	private GermplasmTestDataInitializer germplasmInitializer;
-	private GermplasmListTestDataInitializer germplasmListInitializer;
 
 	private Table targetTable;
 
 	@Before
 	public void beforeEachTest() {
 		MockitoAnnotations.initMocks(this);
-
-		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
-		this.germplasmInitializer = new GermplasmTestDataInitializer();
-		this.germplasmListInitializer = new GermplasmListTestDataInitializer();
 
 		this.dropHandlerMethods.setPedigreeService(this.pedigreeService);
 		this.dropHandlerMethods.setCrossExpansionProperties(this.crossExpansionProperties);
@@ -343,7 +341,7 @@ public class DropHandlerMethodsTest {
 		// MGID or group ID of Germplasm List Data has default value to 0, so this field will never be null
 		listData.setGroupId(DropHandlerMethodsTest.GROUP_ID);
 
-		Mockito.doReturn(testList.getListData()).when(this.inventoryDataManager).getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList());
+		Mockito.doReturn(testList.getListData()).when(this.inventoryDataManager).getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyListOf(Integer.class));
 
 		this.dropHandlerMethods.addGermplasmFromList(DropHandlerMethodsTest.GERMPLASM_LIST_ID, listData.getId(), testList, false);
 
@@ -412,11 +410,10 @@ public class DropHandlerMethodsTest {
 
 		this.dropHandlerMethods.addFromListDataTable(sourceTbl);
 
-		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Mockito.anyList());
+		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Mockito.anyListOf(Integer.class));
 		this.verifyGermplasmListDataFromListDataTableIsTransferredProperly(selectedIDs, sourceTbl);
 
 	}
-
 
 	@Test
 	public void testAddFromListDataTableUsePreferredNameInDesignationIfAvailable() {
@@ -447,7 +444,7 @@ public class DropHandlerMethodsTest {
 		// Create preferred name map for gid in the table
 		final Map<Integer, String> preferredNames = new HashMap<>();
 		preferredNames.put(gid, preferredName);
-		Mockito.doReturn(preferredNames).when(germplasmDataManager).getPreferredNamesByGids(Mockito.anyList());
+		Mockito.doReturn(preferredNames).when(germplasmDataManager).getPreferredNamesByGids(Mockito.anyListOf(Integer.class));
 
 		for (final Integer itemId : selectedIDs) {
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(itemId);
@@ -455,7 +452,7 @@ public class DropHandlerMethodsTest {
 
 		this.dropHandlerMethods.addFromListDataTable(sourceTable);
 
-		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Mockito.anyList());
+		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Mockito.anyListOf(Integer.class));
 
 		final Item targetTableItem = this.targetTable.getItem(gid);
 		final Item sourceTableItem = sourceTable.getItem(gid);
@@ -502,8 +499,38 @@ public class DropHandlerMethodsTest {
 		Assert.assertEquals("Only 2 entries are selected so the gids extracted should only be 2", 2, gids.size());
 		Assert.assertTrue("Gid 1 should be in the extracted gid list", gids.contains(1));
 		Assert.assertTrue("Gid 2 should be in the extracted gid list", gids.contains(2));
-
-
+	}
+	
+	@Test
+	public void testGenerateAddedColumnValuesForAddedEntryWhenNoAddedColumns() {
+		this.dropHandlerMethods.setAddedColumnsMapper(this.addedColumnsMapper);
+		this.dropHandlerMethods.setNewEntriesFillSource(this.newEntriesFillSource);
+		final List<Integer> selectedItems = new ArrayList<>();
+		for (int i = 1; i <= NO_OF_ENTRIES_SELECTED; i++) {
+			this.addItemToTestTable(this.targetTable, i);
+			selectedItems.add(i);
+		}
+		this.dropHandlerMethods.generateAddedColumnValuesForAddedEntry(selectedItems, selectedItems);
+		
+		Mockito.verifyZeroInteractions(this.newEntriesFillSource);
+		
+	}
+	
+	@Test
+	public void testGenerateAddedColumnValuesForAddedEntryWhenColumnsAdded() {
+		this.dropHandlerMethods.setAddedColumnsMapper(this.addedColumnsMapper);
+		this.dropHandlerMethods.setNewEntriesFillSource(this.newEntriesFillSource);
+		this.addColumnsToTable(this.targetTable, ColumnLabels.PREFERRED_NAME, ColumnLabels.GERMPLASM_DATE);
+		final List<Integer> selectedItems = new ArrayList<>();
+		for (int i = 1; i <= NO_OF_ENTRIES_SELECTED; i++) {
+			this.addItemToTestTable(this.targetTable, i);
+			selectedItems.add(i);
+		}
+		this.dropHandlerMethods.generateAddedColumnValuesForAddedEntry(selectedItems, selectedItems);
+		
+		Mockito.verify(this.newEntriesFillSource).setAddedGids(selectedItems);
+		Mockito.verify(this.newEntriesFillSource).setAddedItemIds(selectedItems);
+		Mockito.verify(this.addedColumnsMapper).generateValuesForAddedColumns(this.targetTable.getVisibleColumns(), false);
 	}
 
 	private void verifyGermplasmListDataFromListIsTransferredProperly(final GermplasmList germplasmList) {
@@ -562,6 +589,12 @@ public class DropHandlerMethodsTest {
 		table.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
 		return table;
+	}
+	
+	private void addColumnsToTable(final Table table, final ColumnLabels...columnLabels) {
+		for (ColumnLabels columnLabel : columnLabels) {
+			table.addContainerProperty(columnLabel.getName(), String.class, null);
+		}
 	}
 
 	private void addItemToTestTable(final Table table, final Integer itemId) {

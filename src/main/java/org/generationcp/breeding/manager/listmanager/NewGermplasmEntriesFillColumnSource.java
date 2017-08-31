@@ -1,12 +1,11 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.generationcp.breeding.manager.listmanager.api.FillColumnSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -14,16 +13,12 @@ import com.vaadin.ui.Table;
 
 public class NewGermplasmEntriesFillColumnSource implements FillColumnSource {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(NewGermplasmEntriesFillColumnSource.class);
-
 	private final Table targetTable;
-	private final List<Integer> addedItemIds;
-	private final List<Integer> addedGids;
+	private List<Integer> addedItemIds = new ArrayList<>();
+	private List<Integer> addedGids = new ArrayList<>();
 
-	public NewGermplasmEntriesFillColumnSource(final Table targetTable, final List<Integer> addedItemids, final List<Integer> addedGids) {
+	public NewGermplasmEntriesFillColumnSource(final Table targetTable) {
 		this.targetTable = targetTable;
-		this.addedItemIds = addedItemids;
-		this.addedGids = addedGids;
 	}
 
 	@Override
@@ -40,10 +35,8 @@ public class NewGermplasmEntriesFillColumnSource implements FillColumnSource {
 	public Integer getGidForItemId(final Object itemId) {
 		if (this.addedItemIds.contains(itemId)) {
 			final int index = this.addedItemIds.indexOf(itemId);
-			LOG.info("## GID = " + this.addedGids.get(index) + " for item " + itemId);
 			return this.addedGids.get(index);
 		}
-		LOG.info("## NO GID found for = " + itemId);
 		return null;
 	}
 
@@ -61,7 +54,6 @@ public class NewGermplasmEntriesFillColumnSource implements FillColumnSource {
 	@Override
 	public void propagateUIChanges() {
 		this.resetEditableTable();
-
 	}
 
 	protected void resetEditableTable() {
@@ -71,5 +63,15 @@ public class NewGermplasmEntriesFillColumnSource implements FillColumnSource {
 			this.targetTable.setEditable(true);
 		}
 	}
+	
+	public void setAddedItemIds(List<Integer> addedItemIds) {
+		this.addedItemIds = addedItemIds;
+	}
+
+	
+	public void setAddedGids(List<Integer> addedGids) {
+		this.addedGids = addedGids;
+	}
+
 
 }
