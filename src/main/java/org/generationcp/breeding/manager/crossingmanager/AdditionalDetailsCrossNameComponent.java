@@ -566,4 +566,14 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 	void setFillWithSource(final FillWith fillWith) {
 		this.fillWithSource = fillWith;
 	}
+
+	
+	public FillWith getFillWithSource() {
+		return fillWithSource;
+	}
+
+	
+	public String getPropertyIdToFill() {
+		return propertyIdToFill;
+	}
 }

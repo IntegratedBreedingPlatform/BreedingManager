@@ -16,6 +16,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
+import org.generationcp.breeding.manager.listmanager.listeners.FillWithAttributeButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
@@ -26,10 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Window;
 
 /**
  * This class opens a pop-up window for selecting attribute types available for GIDs to process. It will proceed to fill to add selected
@@ -91,32 +90,8 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 
 	@Override
 	public void addListeners() {
-		this.okButton.addListener(new ClickListener() {
-
-			private static final long serialVersionUID = -7472646361265849940L;
-
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				final Integer attributeTypeId = (Integer) FillWithAttributeWindow.this.attributeBox.getValue();
-				if (attributeTypeId != null) {
-					final String attributeType = FillWithAttributeWindow.this.attributeBox.getItemCaption(attributeTypeId).toUpperCase();
-					String finalProperty = FillWithAttributeWindow.this.targetPropertyId;
-					// Add selected attribute type as column if no existing property was specified
-					if (finalProperty == null) {
-						FillWithAttributeWindow.this.addColumnSource.addColumn(attributeType);
-						finalProperty = attributeType;
-					}
-					// Generate values for target column
-					GermplasmColumnValuesGenerator valuesGenerator =
-							new GermplasmColumnValuesGenerator(FillWithAttributeWindow.this.addColumnSource);
-					valuesGenerator.fillWithAttribute(attributeTypeId, finalProperty);
-				}
-				
-				// Close pop-up
-				Window attributeWindow = ((Button) event.getSource()).getWindow();
-				attributeWindow.getParent().removeWindow(attributeWindow);
-			}
-		});
+		this.okButton.addListener(
+				new FillWithAttributeButtonClickListener(this.addColumnSource, this.attributeBox, this.targetPropertyId));
 	}
 
 	@Override
@@ -150,5 +125,25 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 	public void updateLabels() {
 		this.messageSource.setCaption(this, Message.FILL_WITH_ATTRIBUTE_WINDOW);
 		this.messageSource.setCaption(this.okButton, Message.OK);
+	}
+
+	
+	public AddColumnSource getAddColumnSource() {
+		return addColumnSource;
+	}
+
+	
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	
+	public ComboBox getAttributeBox() {
+		return attributeBox;
+	}
+
+	
+	public Button getOkButton() {
+		return okButton;
 	}
 }
