@@ -23,7 +23,7 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	private final GermplasmColumnValuesGenerator valuesGenerator;
+	private GermplasmColumnValuesGenerator valuesGenerator;
 	private final AddColumnSource addColumnSource;
 
 	public AddColumnMenuItemClickListener(final AddColumnSource addColumnSource) {
@@ -161,4 +161,14 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
 		mainWindow.addWindow(attributeWindow);
 	}
+	
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	
+	public void setValuesGenerator(GermplasmColumnValuesGenerator valuesGenerator) {
+		this.valuesGenerator = valuesGenerator;
+	}
+	
 }

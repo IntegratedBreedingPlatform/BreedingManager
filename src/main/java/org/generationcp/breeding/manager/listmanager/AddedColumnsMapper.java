@@ -101,7 +101,13 @@ public class AddedColumnsMapper {
 		return false;
 	}
 	
+	public void setValuesGenerator(GermplasmColumnValuesGenerator valuesGenerator) {
+		this.valuesGenerator = valuesGenerator;
+	}
+
 	
-	
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
 
 }

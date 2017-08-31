@@ -77,6 +77,13 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		} else {
 			this.addColumnItem = this.sourceContextMenu.addItem(this.messageSource.getMessage(Message.ADD_COLUMN));
 		}
+		
+		this.setupSubMenuItems();
+
+		this.sourceContextMenu.addListener(new AddColumnMenuItemClickListener(this.addColumnSource));
+	}
+
+	void setupSubMenuItems() {
 		final List<FillWithOption> columnsToExclude = this.addColumnSource.getColumnsToExclude();
 		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_PREFERRED_ID)) {
 			this.menuFillWithPreferredId = this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_PREFERRED_ID);
@@ -149,8 +156,6 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_ATTRIBUTE)) {
 			this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_ATTRIBUTE);
 		}
-
-		this.sourceContextMenu.addListener(new AddColumnMenuItemClickListener(this.addColumnSource));
 	}
 
 	private ContextMenuItem addFillWIthOptionToMenu(final FillWithOption option) {
@@ -301,5 +306,90 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 			}
 		}
 		return false;
+	}
+
+	
+	public ContextMenuItem getAddColumnItem() {
+		return addColumnItem;
+	}
+
+	
+	public void setAddColumnItem(ContextMenuItem addColumnItem) {
+		this.addColumnItem = addColumnItem;
+	}
+
+	
+	public void setMenuFillWithPreferredId(ContextMenuItem menuFillWithPreferredId) {
+		this.menuFillWithPreferredId = menuFillWithPreferredId;
+	}
+
+	
+	public void setMenuFillWithPreferredName(ContextMenuItem menuFillWithPreferredName) {
+		this.menuFillWithPreferredName = menuFillWithPreferredName;
+	}
+
+	
+	public void setMenuFillWithGermplasmDate(ContextMenuItem menuFillWithGermplasmDate) {
+		this.menuFillWithGermplasmDate = menuFillWithGermplasmDate;
+	}
+
+	
+	public void setMenuFillWithLocations(ContextMenuItem menuFillWithLocations) {
+		this.menuFillWithLocations = menuFillWithLocations;
+	}
+
+	
+	public void setMenuFillWithMethodInfo(ContextMenuItem menuFillWithMethodInfo) {
+		this.menuFillWithMethodInfo = menuFillWithMethodInfo;
+	}
+
+	
+	public void setMenuFillWithMethodName(ContextMenuItem menuFillWithMethodName) {
+		this.menuFillWithMethodName = menuFillWithMethodName;
+	}
+
+	
+	public void setMenuFillWithMethodAbbrev(ContextMenuItem menuFillWithMethodAbbrev) {
+		this.menuFillWithMethodAbbrev = menuFillWithMethodAbbrev;
+	}
+
+	
+	public void setMenuFillWithMethodNumber(ContextMenuItem menuFillWithMethodNumber) {
+		this.menuFillWithMethodNumber = menuFillWithMethodNumber;
+	}
+
+	
+	public void setMenuFillWithMethodGroup(ContextMenuItem menuFillWithMethodGroup) {
+		this.menuFillWithMethodGroup = menuFillWithMethodGroup;
+	}
+
+	
+	public void setMenuFillWithCrossFemaleInfo(ContextMenuItem menuFillWithCrossFemaleInfo) {
+		this.menuFillWithCrossFemaleInfo = menuFillWithCrossFemaleInfo;
+	}
+
+	
+	public void setMenuFillWithCrossFemaleGID(ContextMenuItem menuFillWithCrossFemaleGID) {
+		this.menuFillWithCrossFemaleGID = menuFillWithCrossFemaleGID;
+	}
+
+	
+	public void setMenuFillWithCrossFemalePrefName(ContextMenuItem menuFillWithCrossFemalePrefName) {
+		this.menuFillWithCrossFemalePrefName = menuFillWithCrossFemalePrefName;
+	}
+
+	
+	public void setMenuFillWithCrossMaleInfo(ContextMenuItem menuFillWithCrossMaleInfo) {
+		this.menuFillWithCrossMaleInfo = menuFillWithCrossMaleInfo;
+	}
+
+	
+	public void setMenuFillWithCrossMaleGID(ContextMenuItem menuFillWithCrossMaleGID) {
+		this.menuFillWithCrossMaleGID = menuFillWithCrossMaleGID;
+	}
+
+	
+	public void setMenuFillWithCrossMalePrefName(ContextMenuItem menuFillWithCrossMalePrefName) {
+		this.menuFillWithCrossMalePrefName = menuFillWithCrossMalePrefName;
 	}
 }

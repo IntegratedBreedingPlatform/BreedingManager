@@ -377,5 +377,15 @@ public class GermplasmColumnValuesGenerator {
 		return crossExpansions;
 	}
 
+	
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	
+	public void setPedigreeService(PedigreeService pedigreeService) {
+		this.pedigreeService = pedigreeService;
+	}
+
 
 }
