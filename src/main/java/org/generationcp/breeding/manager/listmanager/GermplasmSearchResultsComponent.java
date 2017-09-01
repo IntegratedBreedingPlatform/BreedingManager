@@ -189,9 +189,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 	public void createActionMenu() {
 
-		final ActionButton actionButton = new ActionButton();
-		actionButton.setDebugId("actionButton");
-		this.setActionButton(actionButton);
+		final ActionButton button = new ActionButton();
+		button.setDebugId("actionButton");
+		this.setActionButton(button);
 
 		final ContextMenu contextMenu = new ContextMenu();
 		contextMenu.setDebugId("menu");
