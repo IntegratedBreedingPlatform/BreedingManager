@@ -1,7 +1,8 @@
-
 package org.generationcp.breeding.manager.listmanager;
 
+import com.jensjansson.pagedtable.PagedTable;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.containers.GermplasmQuery;
 import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
@@ -15,17 +16,23 @@ import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import com.vaadin.data.Container.Indexed;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+@RunWith(MockitoJUnitRunner.class)
 public class GermplasmSearchResultsComponentTest {
 
 	private static final String GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -55,11 +62,13 @@ public class GermplasmSearchResultsComponentTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
 
 		// menu item
-		Mockito.doReturn("MENU").when(this.messageSource).getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST);
-		Mockito.doReturn("SELECT ALL").when(this.messageSource).getMessage(Message.SELECT_ALL);
+		Mockito.doReturn("Add New Entry").when(this.messageSource).getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST);
+		Mockito.doReturn("Select All").when(this.messageSource).getMessage(Message.SELECT_ALL);
+		Mockito.doReturn("Total Result").when(this.messageSource).getMessage(Message.TOTAL_RESULTS);
+		Mockito.doReturn("Total Selected Result").when(this.messageSource).getMessage(Message.SELECTED);
+		Mockito.doReturn("Add Column").when(this.messageSource).getMessage(Message.ADD_COLUMN);
 		Mockito.doReturn("DUMMY MESSAGE").when(this.messageSource).getMessage("VALIDATION_INTEGER_FORMAT");
 
 		Mockito.doReturn(this.pagedTable).when(this.tableWithSelectAllLayout).getTable();
@@ -167,23 +176,222 @@ public class GermplasmSearchResultsComponentTest {
 			// Check that GID_REF property is not visible
 			Assert.assertEquals(10, this.captor.getValue().length);
 			for (final Object property : this.captor.getValue()) {
-				final String gidRefColumn = ColumnLabels.GID.getName() + "_REF";
-				if (gidRefColumn.equals(property)) {
+				if (GermplasmQuery.GID_REF_PROPERTY.equals(property)) {
 					Assert.fail("Expecting GID_REF column to be hidden on table but was not.");
 				}
 			}
 
 			// Check that Select All checkboxes states were updated
 			Mockito.verify(this.tableWithSelectAllLayout, Mockito.times(1)).updateSelectAllCheckboxes();
+
+			// Expecting that 'Select All' and 'Add New Entry' context menu items are disabled if
+			// there's no germplasm result matched
+			Assert.assertFalse(this.germplasmSearchResultsComponent.getMenuSelectAll().isEnabled());
+			Assert.assertFalse(this.germplasmSearchResultsComponent.getMenuAddNewEntry().isEnabled());
 		}
+	}
+
+	@Test
+	public void testApplyGermplasmResultsWithMatch() throws BreedingManagerSearchException {
+		// instantiate other needed components in the page
+		this.createDummyComponents();
+
+		final GermplasmSearchParameter searchParameter = new GermplasmSearchParameter("ABC", Operation.EQUAL);
+		Mockito.when(this.pagedTable.getItemIds()).thenReturn(this.createDummyItemIds());
+
+		this.germplasmSearchResultsComponent.applyGermplasmResults(searchParameter);
+
+		Mockito.verify(this.pagedTable, Mockito.times(1)).setCurrentPage(1);
+
+		// Setting of visible columns set twice
+		// 1) during table initialization and 2) in applyGermplasmResults method
+		Mockito.verify(this.pagedTable, Mockito.times(2)).setVisibleColumns(this.captor.capture());
+
+		// Check that GID_REF property is not visible
+		Assert.assertEquals(10, this.captor.getValue().length);
+		for (final Object property : this.captor.getValue()) {
+			if (GermplasmQuery.GID_REF_PROPERTY.equals(property)) {
+				Assert.fail("Expecting GID_REF column to be hidden on table but was not.");
+			}
+		}
+
+		// Expecting that 'Select All' and 'Add New Entry' context menu items are enabled if
+		// there are germplasm result matched.
+		Assert.assertTrue(this.germplasmSearchResultsComponent.getMenuSelectAll().isEnabled());
+		Assert.assertTrue(this.germplasmSearchResultsComponent.getMenuAddNewEntry().isEnabled());
+
+	}
+
+	@Test
+	public void testCreateTotalMatchingGermplasmLabel() {
+
+		final Label label = this.germplasmSearchResultsComponent.createTotalMatchingGermplasmLabel();
+		Assert.assertEquals("", label.getValue());
+		Assert.assertEquals("totalMatchingGermplasmLabel", label.getDebugId());
+		Assert.assertEquals(Double.doubleToLongBits(120.0), Double.doubleToLongBits(label.getWidth()));
+		Assert.assertEquals(Label.CONTENT_XHTML, label.getContentMode());
+
+	}
+
+	@Test
+	public void testUpdateNoOfEntries() {
+
+		this.createDummyComponents();
+		this.germplasmSearchResultsComponent.updateNoOfEntries(100);
+		Assert.assertEquals("Total Result:   <b>100</b>", this.germplasmSearchResultsComponent.getTotalMatchingGermplasmLabel().getValue());
+
+	}
+
+	@Test
+	public void testTotalSelectedMatchingGermplasmLabel() {
+
+		final Label label = this.germplasmSearchResultsComponent.createTotalSelectedMatchingGermplasmLabel();
+		Assert.assertEquals("", label.getValue());
+		Assert.assertEquals("totalSelectedMatchingGermplasmLabel", label.getDebugId());
+		Assert.assertEquals(Double.doubleToLongBits(95.0), Double.doubleToLongBits(label.getWidth()));
+		Assert.assertEquals(Label.CONTENT_XHTML, label.getContentMode());
+
+	}
+
+	@Test
+	public void testUpdateNoOfSelectedEntries() {
+
+		final Collection dummySelectedItems = new ArrayList();
+		dummySelectedItems.add(new Object());
+
+		Mockito.when(this.pagedTable.getValue()).thenReturn(dummySelectedItems);
+
+		this.createDummyComponents();
+		this.germplasmSearchResultsComponent.updateNoOfSelectedEntries();
+		Assert.assertEquals("<i>Total Selected Result:   <b>1</b></i>",
+				this.germplasmSearchResultsComponent.getTotalSelectedMatchingGermplasmLabel().getValue());
+
+	}
+
+	@Test
+	public void testCreateActionMenu() {
+
+		this.germplasmSearchResultsComponent.createActionMenu();
+
+		// Check the following components if they are properly initialized
+		Assert.assertEquals("actionButton", this.germplasmSearchResultsComponent.getActionButton().getDebugId());
+
+		Assert.assertEquals("menu", this.germplasmSearchResultsComponent.getMenu().getDebugId());
+		Assert.assertEquals(Double.doubleToLongBits(295.0),
+				Double.doubleToLongBits(this.germplasmSearchResultsComponent.getMenu().getWidth()));
+
+	}
+
+	@Test
+	public void testAddActionMenuItems() {
+
+		final AddColumnContextMenu addColumnContextMenu = Mockito.mock(AddColumnContextMenu.class);
+
+		this.germplasmSearchResultsComponent.createActionMenu();
+		this.germplasmSearchResultsComponent.addActionMenuItems(addColumnContextMenu);
+
+		// Check the following components if they are properly initialized
+		Assert.assertEquals("Add New Entry", this.germplasmSearchResultsComponent.getMenuAddNewEntry().getName());
+		Assert.assertEquals("Select All", this.germplasmSearchResultsComponent.getMenuSelectAll().getName());
+
+		Assert.assertEquals(GermplasmSearchResultsComponent.TableRightClickHandler.class,
+				this.germplasmSearchResultsComponent.getRightClickActionHandler().getClass());
+
+		Assert.assertNotNull(this.germplasmSearchResultsComponent.getAddColumnContextMenu());
+
+		Assert.assertFalse(this.germplasmSearchResultsComponent.getMenuAddNewEntry().isEnabled());
+		Assert.assertFalse(this.germplasmSearchResultsComponent.getMenuSelectAll().isEnabled());
+	}
+
+	@Test
+	public void testTableRightClickHandlerCopyToNewList() {
+
+		final GermplasmSearchResultsComponent mockGermplasmSearchResultsComponent = Mockito.mock(GermplasmSearchResultsComponent.class);
+
+		final GermplasmSearchResultsComponent.TableRightClickHandler rightClickHandler =
+				new GermplasmSearchResultsComponent().new TableRightClickHandler(mockGermplasmSearchResultsComponent);
+
+		rightClickHandler.handleAction(GermplasmSearchResultsComponent.ACTION_COPY_TO_NEW_LIST, null, null);
+
+		Mockito.verify(mockGermplasmSearchResultsComponent, Mockito.times(1)).addSelectedEntriesToNewList();
+
+	}
+
+	@Test
+	public void testTableRightClickHandlerSelectAll() {
+
+		final GermplasmSearchResultsComponent mockGermplasmSearchResultsComponent = Mockito.mock(GermplasmSearchResultsComponent.class);
+		final PagedTableWithSelectAllLayout mockPagedTableWithSelectAllLayout = Mockito.mock(PagedTableWithSelectAllLayout.class);
+
+		Mockito.when(mockGermplasmSearchResultsComponent.getMatchingGermplasmTableWithSelectAll())
+				.thenReturn(mockPagedTableWithSelectAllLayout);
+
+		final GermplasmSearchResultsComponent.TableRightClickHandler rightClickHandler =
+				new GermplasmSearchResultsComponent().new TableRightClickHandler(mockGermplasmSearchResultsComponent);
+
+		rightClickHandler.handleAction(GermplasmSearchResultsComponent.ACTION_SELECT_ALL, null, null);
+
+		Mockito.verify(mockPagedTableWithSelectAllLayout, Mockito.times(1)).selectAllEntriesOnCurrentPage();
+
+	}
+
+	@Test
+	public void testTablePageChangeListenerAddedColumn() {
+
+		final PagedBreedingManagerTable matchingGermplasmTable = Mockito.mock(PagedBreedingManagerTable.class);
+		final AddedColumnsMapper addedColumnsMapper = Mockito.mock(AddedColumnsMapper.class);
+		final GermplasmSearchResultsComponent.TablePageChangeListener pageChangeListener =
+				new GermplasmSearchResultsComponent().new TablePageChangeListener(matchingGermplasmTable, addedColumnsMapper);
+
+		Object[] columns = new Object[] {ColumnLabels.GERMPLASM_LOCATION, ColumnLabels.BREEDING_METHOD_NAME, ColumnLabels.PREFERRED_NAME};
+		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_NAME.name());
+
+		Mockito.when(matchingGermplasmTable.getVisibleColumns()).thenReturn(columns);
+
+		pageChangeListener.pageChanged(Mockito.mock(PagedTable.PagedTableChangeEvent.class));
+
+		// Verify that values will be generated for the added column Preferred Name. GERMPLASM_LOCATION and BREEDING_METHOD_NAME
+		// should be ignored.
+		Mockito.verify(addedColumnsMapper, Mockito.times(1))
+				.generateValuesForAddedColumns(new Object[] {ColumnLabels.PREFERRED_NAME}, true);
+
+	}
+
+	@Test
+	public void testTablePageChangeListenerNoAddedColumn() {
+
+		final PagedBreedingManagerTable matchingGermplasmTable = Mockito.mock(PagedBreedingManagerTable.class);
+		final AddedColumnsMapper addedColumnsMapper = Mockito.mock(AddedColumnsMapper.class);
+		final GermplasmSearchResultsComponent.TablePageChangeListener pageChangeListener =
+				new GermplasmSearchResultsComponent().new TablePageChangeListener(matchingGermplasmTable, addedColumnsMapper);
+
+		Object[] columns = new Object[] {ColumnLabels.GERMPLASM_LOCATION, ColumnLabels.BREEDING_METHOD_NAME};
+
+		Mockito.when(matchingGermplasmTable.getVisibleColumns()).thenReturn(columns);
+
+		pageChangeListener.pageChanged(Mockito.mock(PagedTable.PagedTableChangeEvent.class));
+
+		// There's no added column so addedColumnsMapper should not be called.
+		Mockito.verifyZeroInteractions(addedColumnsMapper);
+
 	}
 
 	private void createDummyComponents() {
 		this.germplasmSearchResultsComponent.initMatchingGermplasmTable();
 		final Label totalEntriesLabel = new Label();
 		this.germplasmSearchResultsComponent.setTotalEntriesLabel(totalEntriesLabel);
-		final Label selectedEntriesLabel = new Label();
-		this.germplasmSearchResultsComponent.setTotalSelectedEntriesLabel(selectedEntriesLabel);
+		this.germplasmSearchResultsComponent
+				.setTotalSelectedEntriesLabel(this.germplasmSearchResultsComponent.createTotalSelectedMatchingGermplasmLabel());
+		this.germplasmSearchResultsComponent
+				.setTotalMatchingGermplasmLabel(this.germplasmSearchResultsComponent.createTotalMatchingGermplasmLabel());
+
+		final ContextMenu.ContextMenuItem menuSelectAll = new ContextMenu().addItem("");
+		menuSelectAll.setEnabled(false);
+		this.germplasmSearchResultsComponent.setMenuSelectAll(menuSelectAll);
+		final ContextMenu.ContextMenuItem menuAddNewEntry = new ContextMenu().addItem("");
+		menuAddNewEntry.setEnabled(false);
+		this.germplasmSearchResultsComponent.setMenuAddNewEntry(menuAddNewEntry);
+
 	}
 
 	private Term createTerm(final String name) {
@@ -191,6 +399,13 @@ public class GermplasmSearchResultsComponentTest {
 		term.setName(name);
 		term.setId(0);
 		return term;
+	}
+
+	private Collection createDummyItemIds() {
+		Collection itemIds = new ArrayList();
+		itemIds.add(new Object());
+		itemIds.add(new Object());
+		return itemIds;
 	}
 
 }
