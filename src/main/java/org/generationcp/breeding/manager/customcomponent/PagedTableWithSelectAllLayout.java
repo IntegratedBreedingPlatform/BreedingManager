@@ -92,7 +92,6 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 				PagedTableWithSelectAllLayout.this.syncSelectionCheckBoxes();
 			}
 		});
-		
 
 		this.table.registerTableSelectHandler(new PagedBreedingManagerTable.EntrySelectSyncHandler() {
 
@@ -144,13 +143,13 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.addComponent(this.table);
 		this.addComponent(((PagedTable) this.table).createControls());
 
-		final HorizontalLayout selectAllLayout = generateCheckboxesLayout();
+		final HorizontalLayout selectAllLayout = this.generateCheckboxesLayout();
 
 		this.addComponent(selectAllLayout);
 	}
 
 	/*
-	 * Generate  layout for select checkboxes and clear button/link
+	 * Generate layout for select checkboxes and clear button/link
 	 */
 	private HorizontalLayout generateCheckboxesLayout() {
 		final HorizontalLayout selectAllLayout = new HorizontalLayout();
@@ -172,7 +171,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		// update the "Select all on page" and "Select All Pages" checkboxes status based on the selected items
 		this.updateSelectAllOnPageCheckBoxStatus();
 		this.updateSelectAllEntriesCheckboxStatus();
-		
+
 		// Update also the caption of "Select all on page" checkbox
 		// in case the page length changed or size of current page is less than page length
 		this.updateSelectAllCheckboxesCaption();
@@ -339,12 +338,13 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 
 	/**
 	 * Update captions of "Select All on Page" and "Select All Pages" checkboxes based on the entries in the paged table. If the table had
-	 * entries, the page length and the entries size will be included in the captions. Also, if there is just
-	 * one page in the table, hide "Select All Pages" checkbox, else display it.
+	 * entries, the page length and the entries size will be included in the captions. Also, if there is just one page in the table, hide
+	 * "Select All Pages" checkbox, else display it.
 	 */
 	public void updateSelectAllCheckboxes() {
 		this.updateSelectAllCheckboxesCaption();
-		this.replaceComponent(this.getComponent(INDEX_OF_CHECKBOXES_LAYOUT), this.generateCheckboxesLayout());;
+		this.replaceComponent(this.getComponent(PagedTableWithSelectAllLayout.INDEX_OF_CHECKBOXES_LAYOUT), this.generateCheckboxesLayout());
+		;
 	}
 
 	void updateSelectAllCheckboxesCaption() {
@@ -358,7 +358,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 			sb.append(selectAllCaption.substring(0, selectAllCaption.length() - 1));
 			sb.append(" - ");
 			sb.append(allEntriesSize);
-			if (allEntriesSize > 1){
+			if (allEntriesSize > 1) {
 				sb.append(" entries)");
 			} else {
 				sb.append(" entry)");
@@ -374,7 +374,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 			// check if the items visible is less than max possible items on board
 			final int noOfEntries = Math.min(pageLength, this.table.size());
 			sb.append(noOfEntries);
-			if (noOfEntries > 1){
+			if (noOfEntries > 1) {
 				sb.append(" entries)");
 			} else {
 				sb.append(" entry)");

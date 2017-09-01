@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.generationcp.breeding.manager.containers.GermplasmQuery;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
@@ -26,7 +28,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClic
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
-import org.generationcp.middleware.domain.inventory.ListDataInventory;
+import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -71,7 +73,7 @@ public class DropHandlerMethods {
 	private Table targetTable;
 	private NewGermplasmEntriesFillColumnSource newEntriesFillSource;
 	private AddedColumnsMapper addedColumnsMapper;
-	
+
 	protected GermplasmDataManager germplasmDataManager;
 	protected GermplasmListManager germplasmListManager;
 	protected InventoryDataManager inventoryDataManager;
@@ -130,8 +132,8 @@ public class DropHandlerMethods {
 			protected void doInTransactionWithoutResult(final TransactionStatus transactionStatus) {
 
 				// Load currentColumnsInfo if cached list info is null or not matching the needed list id
-				if (DropHandlerMethods.this.currentColumnsInfo == null || !DropHandlerMethods.this.currentColumnsInfo.getListId()
-						.equals(listId)) {
+				if (DropHandlerMethods.this.currentColumnsInfo == null
+						|| !DropHandlerMethods.this.currentColumnsInfo.getListId().equals(listId)) {
 					DropHandlerMethods.this.currentColumnsInfo =
 							DropHandlerMethods.this.germplasmListManager.getAdditionalColumnsForList(listId);
 				}
@@ -166,8 +168,7 @@ public class DropHandlerMethods {
 		final List<Integer> gidList = new ArrayList<>();
 		for (final Integer itemId : selectedGermplasmIds) {
 			// note, for paged table, the itemId !== GID, but there is a hidden reference GID there so we can retrive actual GID
-			// todo: lets cleanup that "_REF" string later
-			final Property internalGIDReference = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName() + "_REF");
+			final Property internalGIDReference = sourceTable.getItem(itemId).getItemProperty(GermplasmQuery.GID_REF_PROPERTY);
 
 			if (internalGIDReference != null && internalGIDReference.getValue() != null) {
 				gidList.add((Integer) internalGIDReference.getValue());
@@ -253,10 +254,10 @@ public class DropHandlerMethods {
 				final StringBuilder available = new StringBuilder();
 				final Germplasm germplasmWithAvailableBalance = germplsmWithAvailableBalance.get(gid);
 
-				if(germplasmWithAvailableBalance != null) {
+				if (germplasmWithAvailableBalance != null) {
 
 					if (germplasm.getInventoryInfo().getScaleForGermplsm() != null) {
-						if(ListDataInventory.MIXED.equals(germplasm.getInventoryInfo().getScaleForGermplsm())) {
+						if (GermplasmInventory.MIXED.equals(germplasm.getInventoryInfo().getScaleForGermplsm())) {
 							available.append(germplasm.getInventoryInfo().getScaleForGermplsm());
 						} else {
 							available.append(germplasm.getInventoryInfo().getTotalAvailableBalance());
@@ -272,13 +273,12 @@ public class DropHandlerMethods {
 					available.append(DropHandlerMethods.STRING_DASH);
 				}
 
-				final Button availableButton = new Button(available.toString(),
-						new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+				final Button availableButton =
+						new Button(available.toString(), new InventoryLinkButtonClickListener(this.listManagerMain, gid));
 				availableButton.setDebugId("availableButton");
 				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 				availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
 				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
-
 
 				newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
 				if (newItem != null && gidButton != null) {
@@ -292,7 +292,7 @@ public class DropHandlerMethods {
 
 				this.assignSerializedEntryNumber();
 			}
-			
+
 			this.generateAddedColumnValuesForAddedEntry(newItemIds, gids);
 
 			this.fireListUpdatedEvent();
@@ -316,16 +316,16 @@ public class DropHandlerMethods {
 	}
 
 	private Map<Integer, Germplasm> getAvailableBalanceWithScaleForGermplasm(final Map<Integer, Germplasm> germplasmMap) {
-		Map<Integer, Germplasm> availableBalanceWithScale = new HashMap<>();
+		final Map<Integer, Germplasm> availableBalanceWithScale = new HashMap<>();
 
-		List<Germplasm> germplasmList = new ArrayList<>();
-		for(Entry<Integer, Germplasm> entry : germplasmMap.entrySet()) {
+		final List<Germplasm> germplasmList = new ArrayList<>();
+		for (final Entry<Integer, Germplasm> entry : germplasmMap.entrySet()) {
 			germplasmList.add(entry.getValue());
 		}
 
-		List<Germplasm> availableBalanceForGermplsms = this.inventoryDataManager.getAvailableBalanceForGermplasms(germplasmList);
+		final List<Germplasm> availableBalanceForGermplsms = this.inventoryDataManager.getAvailableBalanceForGermplasms(germplasmList);
 
-		for(Germplasm germplasm : availableBalanceForGermplsms) {
+		for (final Germplasm germplasm : availableBalanceForGermplsms) {
 			availableBalanceWithScale.put(germplasm.getGid(), germplasm);
 		}
 
@@ -445,12 +445,12 @@ public class DropHandlerMethods {
 				// Inventory Related Columns
 
 				// Lots
-				Button lotButton = ListCommonActionsUtil
-						.getLotCountButton(germplasmListData.getInventoryInfo().getLotCount().intValue(), germplasmListData.getGid(),
-								germplasmListData.getDesignation(), this.listManagerMain, null);
+				final Button lotButton =
+						ListCommonActionsUtil.getLotCountButton(germplasmListData.getInventoryInfo().getLotCount().intValue(),
+								germplasmListData.getGid(), germplasmListData.getDesignation(), this.listManagerMain, null);
 				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
-				StringBuilder available = new StringBuilder();
+				final StringBuilder available = new StringBuilder();
 
 				if (germplasmListData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
 					available.append("-");
@@ -463,7 +463,7 @@ public class DropHandlerMethods {
 					}
 
 				} else {
-					available.append(ListDataInventory.MIXED);
+					available.append(GermplasmInventory.MIXED);
 				}
 
 				final Button availableButton = new Button(available.toString(),
@@ -513,16 +513,14 @@ public class DropHandlerMethods {
 	}
 
 	public GermplasmListData getListDataByListIdAndLrecId(final Integer listId, final Integer lrecid, final GermplasmList germplasmList) {
-		GermplasmListData germplasmListData =
-				this.inventoryDataManager.getLotCountsForListEntries(listId, Lists.newArrayList(lrecid)).get(0);
-		return germplasmListData;
+		return this.inventoryDataManager.getLotCountsForListEntries(listId, Lists.newArrayList(lrecid)).get(0);
 	}
 
 	List<Integer> extractGidsFromTable(final Table sourceTable, final List<Integer> selectedTableItemIds) {
 
 		final List<Integer> gids = new ArrayList<>();
 		for (final Integer itemId : selectedTableItemIds) {
-			Integer gid = getGidFromButtonCaption(sourceTable, itemId);
+			final Integer gid = this.getGidFromButtonCaption(sourceTable, itemId);
 			gids.add(gid);
 		}
 
@@ -533,9 +531,9 @@ public class DropHandlerMethods {
 	public void addFromListDataTable(final Table sourceTable) {
 		final List<Integer> itemIds = this.getSelectedItemIds(sourceTable);
 
-		final List<Integer> gids = extractGidsFromTable(sourceTable, itemIds);
+		final List<Integer> gids = this.extractGidsFromTable(sourceTable, itemIds);
 
-		final Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(gids);
+		final Map<Integer, String> preferredNames = this.germplasmDataManager.getPreferredNamesByGids(gids);
 
 		Integer listId = null;
 		if (sourceTable.getParent() instanceof TableWithSelectAllLayout && sourceTable.getParent().getParent() instanceof ListComponent) {
@@ -592,7 +590,8 @@ public class DropHandlerMethods {
 
 			});
 
-			final String designation = preferredNames.get(gid) != null ? preferredNames.get(gid) : this.getDesignationFromButtonCaption(sourceTable, itemId);
+			final String designation =
+					preferredNames.get(gid) != null ? preferredNames.get(gid) : this.getDesignationFromButtonCaption(sourceTable, itemId);
 			final Button designationButton =
 					new Button(designation, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 			designationButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -648,13 +647,13 @@ public class DropHandlerMethods {
 
 		this.assignSerializedEntryNumber();
 		this.generateAddedColumnValuesForAddedEntry(newItemIds, gids);
-		
+
 		this.fireListUpdatedEvent();
 
 		this.setHasUnsavedChanges(true);
 	}
-	
-	void generateAddedColumnValuesForAddedEntry(final List<Integer> itemIds, final List<Integer> gids){
+
+	void generateAddedColumnValuesForAddedEntry(final List<Integer> itemIds, final List<Integer> gids) {
 		if (AddColumnContextMenu.sourceHadAddedColumn(this.targetTable.getVisibleColumns())) {
 			this.newEntriesFillSource.setAddedItemIds(itemIds);
 			this.newEntriesFillSource.setAddedGids(gids);
@@ -769,11 +768,11 @@ public class DropHandlerMethods {
 		return null;
 	}
 
-	protected Button getAvailableBalanceButton(final Table table, final Integer itemId, Integer gid) {
+	protected Button getAvailableBalanceButton(final Table table, final Integer itemId, final Integer gid) {
 		final Item item = table.getItem(itemId);
 		String availableButtonCaption = DropHandlerMethods.STRING_DASH;
 		if (item != null) {
-			availableButtonCaption = ((Button)item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue()).getCaption();
+			availableButtonCaption = ((Button) item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue()).getCaption();
 		}
 
 		final Button availableButton = new Button(availableButtonCaption, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
@@ -844,7 +843,6 @@ public class DropHandlerMethods {
 		public void listUpdated(final ListUpdatedEvent event);
 	}
 
-
 	public class ListUpdatedEvent {
 
 		private final int listCount;
@@ -899,19 +897,17 @@ public class DropHandlerMethods {
 	void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
 		this.inventoryDataManager = inventoryDataManager;
 	}
-	
+
 	public Table getTargetTable() {
-		return targetTable;
+		return this.targetTable;
 	}
-	
-	public void setNewEntriesFillSource(NewGermplasmEntriesFillColumnSource newEntriesFillSource) {
+
+	public void setNewEntriesFillSource(final NewGermplasmEntriesFillColumnSource newEntriesFillSource) {
 		this.newEntriesFillSource = newEntriesFillSource;
 	}
 
-	
-	public void setAddedColumnsMapper(AddedColumnsMapper addedColumnsMapper) {
+	public void setAddedColumnsMapper(final AddedColumnsMapper addedColumnsMapper) {
 		this.addedColumnsMapper = addedColumnsMapper;
 	}
-	
-	
+
 }
