@@ -117,4 +117,9 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 		return Arrays.asList(FillWithOption.FILL_WITH_LOCATION, FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
 	}
 
+	
+	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
+	}
+
 }

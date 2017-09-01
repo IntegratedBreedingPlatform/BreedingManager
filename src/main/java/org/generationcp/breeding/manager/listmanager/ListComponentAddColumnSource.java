@@ -44,7 +44,6 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	/*
 	 * Get list of GIDs from caption of GID button/link (non-Javadoc)
 	 *
-	 * @see org.generationcp.breeding.manager.listmanager.api.FillColumnSource#getGidsToProcess()
 	 */
 	@Override
 	public List<Integer> getGidsToProcess() {
@@ -60,7 +59,6 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	/*
 	 * Get GID string from caption of GID button/link of specified item in table (non-Javadoc)
 	 *
-	 * @see org.generationcp.breeding.manager.listmanager.api.FillColumnSource#getGidForItemId(java.lang.Object)
 	 */
 	@Override
 	public Integer getGidForItemId(final Object itemId) {
@@ -101,8 +99,8 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 
 	@Override
 	public void addColumn(final String columnName) {
-		this.targetTable.addContainerProperty(columnName, String.class, "");
-		this.targetTable.setColumnHeader(columnName, columnName);
+		this.targetTable.addContainerProperty(columnName.toUpperCase(), String.class, "");
+		this.targetTable.setColumnHeader(columnName.toUpperCase(), columnName);
 	}
 
 	@Override
@@ -113,6 +111,11 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	@Override
 	public List<FillWithOption> getColumnsToExclude() {
 		return Arrays.asList(FillWithOption.FILL_WITH_ATTRIBUTE);
+	}
+
+	
+	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
 	}
 
 }
