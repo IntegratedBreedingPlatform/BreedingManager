@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
@@ -146,7 +145,6 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.layoutComponents();
 	}
 
-
 	protected Label createTotalMatchingGermplasmLabel() {
 		final Label label = new Label("", Label.CONTENT_XHTML);
 		label.setDebugId("totalMatchingGermplasmLabel");
@@ -160,7 +158,6 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		label.setWidth("95px");
 		return label;
 	}
-
 
 	@Override
 	public void instantiateComponents() {
@@ -183,8 +180,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.createActionMenu();
 
 		// Add "Add Column" context menu option
-		this.setAddColumnSource(
-				new GermplasmSearchLoadedItemsAddColumnSource(this.matchingGermplasmTable, this.definition, GermplasmQuery.GID_REF_PROPERTY));
+		this.setAddColumnSource(new GermplasmSearchLoadedItemsAddColumnSource(this.matchingGermplasmTable, this.definition,
+				GermplasmQuery.GID_REF_PROPERTY));
 
 		this.addActionMenuItems(new AddColumnContextMenu(getAddColumnSource(), this.getMenu(), null, this.messageSource));
 
@@ -231,21 +228,21 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.matchingGermplasmTable.setDragMode(TableDragMode.ROW);
 		this.matchingGermplasmTable.setHeight("440px");
 
-		this.messageSource.setColumnHeader(this.matchingGermplasmTable, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID,
-				Message.CHECK_ICON);
+		this.messageSource
+				.setColumnHeader(this.matchingGermplasmTable, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 		this.messageSource.setColumnHeader(this.matchingGermplasmTable, GermplasmSearchResultsComponent.NAMES, Message.NAMES_LABEL);
 		this.matchingGermplasmTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(),
 				ColumnLabels.PARENTAGE.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
 				ColumnLabels.AVAILABLE_INVENTORY.getTermNameFromOntology(this.ontologyDataManager));
-		this.matchingGermplasmTable.setColumnHeader(ColumnLabels.TOTAL.getName(),
-				ColumnLabels.TOTAL.getTermNameFromOntology(this.ontologyDataManager));
-		this.matchingGermplasmTable.setColumnHeader(ColumnLabels.STOCKID.getName(),
-				ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
-		this.matchingGermplasmTable.setColumnHeader(ColumnLabels.GID.getName(),
-				ColumnLabels.GID.getTermNameFromOntology(this.ontologyDataManager));
-		this.matchingGermplasmTable.setColumnHeader(ColumnLabels.GROUP_ID.getName(),
-				ColumnLabels.GROUP_ID.getTermNameFromOntology(this.ontologyDataManager));
+		this.matchingGermplasmTable
+				.setColumnHeader(ColumnLabels.TOTAL.getName(), ColumnLabels.TOTAL.getTermNameFromOntology(this.ontologyDataManager));
+		this.matchingGermplasmTable
+				.setColumnHeader(ColumnLabels.STOCKID.getName(), ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
+		this.matchingGermplasmTable
+				.setColumnHeader(ColumnLabels.GID.getName(), ColumnLabels.GID.getTermNameFromOntology(this.ontologyDataManager));
+		this.matchingGermplasmTable
+				.setColumnHeader(ColumnLabels.GROUP_ID.getName(), ColumnLabels.GROUP_ID.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(),
 				ColumnLabels.GERMPLASM_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(),
@@ -337,7 +334,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				GermplasmSearchResultsComponent.this.getAddColumnContextMenu().refreshAddColumnMenu(GermplasmSearchResultsComponent.this.matchingGermplasmTable);
+				GermplasmSearchResultsComponent.this.getAddColumnContextMenu()
+						.refreshAddColumnMenu(GermplasmSearchResultsComponent.this.matchingGermplasmTable);
 				GermplasmSearchResultsComponent.this.getMenu().show(event.getClientX(), event.getClientY());
 			}
 
@@ -374,7 +372,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 			}
 		});
 
-		this.matchingGermplasmTable.addListener(new TablePageChangeListener(this.matchingGermplasmTable,  new AddedColumnsMapper(this.getAddColumnSource())));
+		this.matchingGermplasmTable
+				.addListener(new TablePageChangeListener(this.matchingGermplasmTable, new AddedColumnsMapper(this.getAddColumnSource())));
 	}
 
 	public void setRightClickActionHandlerEnabled(final Boolean isEnabled) {
@@ -472,7 +471,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 	}
 
 	protected void updateNoOfEntries(final long count) {
-		this.getTotalMatchingGermplasmLabel().setValue(this.messageSource.getMessage(Message.TOTAL_RESULTS) + ": " + "  <b>" + count + "</b>");
+		this.getTotalMatchingGermplasmLabel()
+				.setValue(this.messageSource.getMessage(Message.TOTAL_RESULTS) + ": " + "  <b>" + count + "</b>");
 	}
 
 	private void updateNoOfSelectedEntries(final int count) {
@@ -533,11 +533,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.setTotalSelectedMatchingGermplasmLabel(totalSelectedEntriesLabel);
 	}
 
-	public void setMenuSelectAll(ContextMenuItem menuSelectAll) {
+	public void setMenuSelectAll(final ContextMenuItem menuSelectAll) {
 		this.menuSelectAll = menuSelectAll;
 	}
 
-	public void setMenuAddNewEntry(ContextMenuItem menuAddNewEntry) {
+	public void setMenuAddNewEntry(final ContextMenuItem menuAddNewEntry) {
 		this.menuAddNewEntry = menuAddNewEntry;
 	}
 
@@ -553,7 +553,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		return totalMatchingGermplasmLabel;
 	}
 
-	public void setTotalMatchingGermplasmLabel(Label totalMatchingGermplasmLabel) {
+	public void setTotalMatchingGermplasmLabel(final Label totalMatchingGermplasmLabel) {
 		this.totalMatchingGermplasmLabel = totalMatchingGermplasmLabel;
 	}
 
@@ -561,7 +561,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		return totalSelectedMatchingGermplasmLabel;
 	}
 
-	public void setTotalSelectedMatchingGermplasmLabel(Label totalSelectedMatchingGermplasmLabel) {
+	public void setTotalSelectedMatchingGermplasmLabel(final Label totalSelectedMatchingGermplasmLabel) {
 		this.totalSelectedMatchingGermplasmLabel = totalSelectedMatchingGermplasmLabel;
 	}
 
@@ -569,7 +569,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		return actionButton;
 	}
 
-	public void setActionButton(Button actionButton) {
+	public void setActionButton(final Button actionButton) {
 		this.actionButton = actionButton;
 	}
 
@@ -577,7 +577,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		return menu;
 	}
 
-	public void setMenu(ContextMenu menu) {
+	public void setMenu(final ContextMenu menu) {
 		this.menu = menu;
 	}
 
@@ -585,7 +585,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		return rightClickActionHandler;
 	}
 
-	public void setRightClickActionHandler(Action.Handler rightClickActionHandler) {
+	public void setRightClickActionHandler(final Action.Handler rightClickActionHandler) {
 		this.rightClickActionHandler = rightClickActionHandler;
 	}
 
@@ -593,7 +593,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		return addColumnSource;
 	}
 
-	public void setAddColumnSource(GermplasmSearchLoadedItemsAddColumnSource addColumnSource) {
+	public void setAddColumnSource(final GermplasmSearchLoadedItemsAddColumnSource addColumnSource) {
 		this.addColumnSource = addColumnSource;
 	}
 
@@ -601,7 +601,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		return addColumnContextMenu;
 	}
 
-	public void setAddColumnContextMenu(AddColumnContextMenu addColumnContextMenu) {
+	public void setAddColumnContextMenu(final AddColumnContextMenu addColumnContextMenu) {
 		this.addColumnContextMenu = addColumnContextMenu;
 	}
 
@@ -631,19 +631,21 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 	}
 
+
 	public class TablePageChangeListener implements PagedTable.PageChangeListener {
 
-		private PagedBreedingManagerTable matchingGermplasmTable;
-		private AddedColumnsMapper addedColumnsMapper;
+		private final PagedBreedingManagerTable matchingGermplasmTable;
+		private final AddedColumnsMapper addedColumnsMapper;
 
-		public TablePageChangeListener(final PagedBreedingManagerTable matchingGermplasmTable, final AddedColumnsMapper addedColumnsMapper) {
+		public TablePageChangeListener(final PagedBreedingManagerTable matchingGermplasmTable,
+				final AddedColumnsMapper addedColumnsMapper) {
 			this.matchingGermplasmTable = matchingGermplasmTable;
 			this.addedColumnsMapper = addedColumnsMapper;
 		}
 
 		// Generate values for added columns, if any were added
 		@Override
-		public void pageChanged(PagedTableChangeEvent event) {
+		public void pageChanged(final PagedTableChangeEvent event) {
 
 			final List<Object> columns = new ArrayList<>(Arrays.asList(this.matchingGermplasmTable.getVisibleColumns()));
 			// Exclude Location and Breeding Method name for they are part of default columns
