@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -55,7 +54,9 @@ import com.vaadin.ui.themes.BaseTheme;
  */
 @Configurable
 public class GermplasmQuery implements Query {
-
+	
+	public  static final String GID_REF_PROPERTY = ColumnLabels.GID.getName() + "_REF";
+	
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
 	private final QueryDefinition definition;
 	private final ListManagerMain listManagerMain;
@@ -111,13 +112,13 @@ public class GermplasmQuery implements Query {
 		GermplasmQuery.LOG.info(String.format("LoadItems(%d,%d): %s", startIndex, count, this.searchParameter));
 		final List<Item> items = new ArrayList<>();
 		final List<Germplasm> germplasmResults = this.getGermplasmSearchResults(startIndex, count);
-		final Set<Integer> gids = new HashSet<>();
+		final List<Integer> gids = new ArrayList<>();
 		for (final Germplasm germplasmToGeneratePedigreeStringsFor : germplasmResults) {
 			gids.add(germplasmToGeneratePedigreeStringsFor.getGid());
 		}
 
-		final Map<Integer, String> pedigreeStringMap = this.pedigreeService.getCrossExpansions(gids, null, this.crossExpansionProperties);
-		final Map<Integer, String> preferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(new ArrayList<>(gids));
+		final Map<Integer, String> pedigreeStringMap = this.pedigreeService.getCrossExpansions(new HashSet<>(gids), null, this.crossExpansionProperties);
+		final Map<Integer, String> preferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
 		for (int i = 0; i < germplasmResults.size(); i++) {
 			items.add(this.getGermplasmItem(germplasmResults.get(i), i + startIndex, pedigreeStringMap, preferredNamesMap));
 		}
@@ -166,7 +167,7 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.GROUP_ID.getName(), new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
 		propertyMap.put(ColumnLabels.GERMPLASM_LOCATION.getName(), new ObjectProperty<>(germplasm.getLocationName()));
 		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(), new ObjectProperty<>(germplasm.getMethodName()));
-		propertyMap.put(ColumnLabels.GID.getName() + "_REF", new ObjectProperty<>(gid));
+		propertyMap.put(GID_REF_PROPERTY, new ObjectProperty<>(gid));
 
 		for (final String propertyId : propertyMap.keySet()) {
 			item.addItemProperty(propertyId, propertyMap.get(propertyId));

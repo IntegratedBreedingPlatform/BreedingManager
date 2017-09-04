@@ -1,7 +1,10 @@
 
 package org.generationcp.breeding.manager.customfields;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
@@ -12,8 +15,9 @@ import com.vaadin.data.Container;
 import com.vaadin.ui.HorizontalLayout;
 
 public class PagedBreedingManagerTable extends PagedTable {
+
 	private static final long serialVersionUID = -7491014479295834712L;
-	
+
 	private EntrySelectSyncHandler entrySelectSyncHandler;
 	private TableMultipleSelectionHandler tableMultipleSelectionHandler;
 	private Integer pageLength;
@@ -54,7 +58,7 @@ public class PagedBreedingManagerTable extends PagedTable {
 
 	/**
 	 * Register a table select all handler
-	 * 
+	 *
 	 * @param handler
 	 */
 	public void registerTableSelectHandler(final EntrySelectSyncHandler handler) {
@@ -112,10 +116,28 @@ public class PagedBreedingManagerTable extends PagedTable {
 
 		void dispatch();
 	}
-	
+
 	int getBatchSize() {
 		final Container.Indexed contanerSource = this.getContainerDataSource();
 		return ((LazyQueryContainer) ((PagedTableContainer) contanerSource).getContainer()).getQueryView().getQueryDefinition()
 				.getBatchSize();
+	}
+
+	/***
+	 * Retrieves all items for given page
+	 *
+	 * @param pageNo - current page
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Object> getAllEntriesForPage(final Integer pageNo) {
+		final Collection<Object> allEntries = (Collection<Object>) this.getItemIds();
+		final List<Object> allEntriesList = new ArrayList<>(allEntries);
+
+		final Integer startingIndex = pageNo * this.getPageLength() - this.getPageLength();
+		Integer endingIndex = startingIndex + this.getPageLength();
+		endingIndex = endingIndex > allEntriesList.size() ? allEntriesList.size() : endingIndex;
+
+		return allEntriesList.subList(startingIndex, endingIndex);
 	}
 }

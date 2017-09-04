@@ -40,6 +40,10 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableTransferable;
 
 public class BuildNewListDropHandlerTest {
+	
+	private static final String[] STANDARD_COLUMNS =
+		{ColumnLabels.GID.getName(), ColumnLabels.DESIGNATION.getName(), ColumnLabels.SEED_SOURCE.getName(),
+				ColumnLabels.ENTRY_CODE.getName(), ColumnLabels.GROUP_ID.getName(), ColumnLabels.STOCKID.getName()};
 
 	private static final int NO_OF_ENTRIES = 5;
 	private static final int GID1 = 1;
@@ -88,19 +92,11 @@ public class BuildNewListDropHandlerTest {
 
 	private BuildNewListDropHandler dropHandler;
 
-	// Data Initializer
-	private GermplasmTestDataInitializer germplasmInitializer;
-	private GermplasmListTestDataInitializer germplasmListInitializer;
-
 	private final List<GermplasmList> germplasmLists = new ArrayList<GermplasmList>();
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-
-		// initializers
-		this.germplasmInitializer = new GermplasmTestDataInitializer();
-		this.germplasmListInitializer = new GermplasmListTestDataInitializer();
 
 		// other mocks
 		Mockito.when(this.targetTable.getContainerDataSource()).thenReturn(this.mockContainer);
@@ -115,6 +111,7 @@ public class BuildNewListDropHandlerTest {
 		Mockito.doReturn(this.sourceTable).when(this.tableTransferable).getSourceComponent();
 		Mockito.doReturn(this.targetDetails).when(this.event).getTargetDetails();
 		Mockito.doReturn(this.targetTable).when(this.targetDetails).getTarget();
+		Mockito.doReturn(STANDARD_COLUMNS).when(this.targetTable).getVisibleColumns();
 
 		final List<Integer> itemIds = this.prepareItemIds();
 		Mockito.doReturn(itemIds).when(this.sourceTable).getValue();

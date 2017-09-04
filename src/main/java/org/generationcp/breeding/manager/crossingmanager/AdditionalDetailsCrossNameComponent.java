@@ -215,7 +215,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		this.parentWindow = parentWindow;
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.setHeight("200px");
@@ -233,8 +232,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
-				AdditionalDetailsCrossNameComponent.this
-						.enableSpecifyNumOfAllowedDigitsComponents(AdditionalDetailsCrossNameComponent.this.sequenceNumCheckBox.booleanValue());
+				AdditionalDetailsCrossNameComponent.this.enableSpecifyNumOfAllowedDigitsComponents(
+						AdditionalDetailsCrossNameComponent.this.sequenceNumCheckBox.booleanValue());
 			}
 		});
 
@@ -565,5 +564,13 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
 	void setFillWithSource(final FillWith fillWith) {
 		this.fillWithSource = fillWith;
+	}
+
+	public FillWith getFillWithSource() {
+		return this.fillWithSource;
+	}
+
+	public String getPropertyIdToFill() {
+		return this.propertyIdToFill;
 	}
 }
