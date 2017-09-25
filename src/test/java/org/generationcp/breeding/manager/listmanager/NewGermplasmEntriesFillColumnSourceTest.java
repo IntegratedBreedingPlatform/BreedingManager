@@ -84,5 +84,29 @@ public class NewGermplasmEntriesFillColumnSourceTest {
 
 		Assert.assertEquals(value, item.getItemProperty(column).getValue());
 	}
+	
+	@Test
+	public void testGetGidsToProcess() {
+		this.newEntriesSource.setAddedItemIds(ITEMS_LIST);
+		this.newEntriesSource.setAddedGids(GID_LIST);
+		
+		Assert.assertEquals(GID_LIST, this.newEntriesSource.getGidsToProcess());
+	}
+	
+	@Test
+	public void testGetItemIdsToProcess() {
+		this.newEntriesSource.setAddedItemIds(ITEMS_LIST);
+		this.newEntriesSource.setAddedGids(GID_LIST);
+		
+		Assert.assertEquals(ITEMS_LIST, this.newEntriesSource.getItemIdsToProcess());
+	}
+	
+	@Test
+	public void testGetAllGids() {
+		this.newEntriesSource.setAddedItemIds(ITEMS_LIST);
+		this.newEntriesSource.setAddedGids(GID_LIST);
+		
+		Assert.assertEquals(GID_LIST, this.newEntriesSource.getGidsToProcess());
+	}
 
 }

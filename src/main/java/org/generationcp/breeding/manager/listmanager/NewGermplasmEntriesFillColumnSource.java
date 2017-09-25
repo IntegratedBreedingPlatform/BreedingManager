@@ -73,5 +73,10 @@ public class NewGermplasmEntriesFillColumnSource implements FillColumnSource {
 		this.addedGids = addedGids;
 	}
 
+	@Override
+	public List<Integer> getAllGids() {
+		return this.addedGids; 
+	}
+
 
 }

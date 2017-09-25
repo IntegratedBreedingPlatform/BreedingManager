@@ -91,6 +91,11 @@ public class ListComponentAddColumnSourceTest {
 	public void testGetGidsToProcess() {
 		Assert.assertEquals(ListComponentAddColumnSourceTest.GID_LIST, this.addColumnSource.getGidsToProcess());
 	}
+	
+	@Test
+	public void testGetAllGids() {
+		Assert.assertEquals(ListComponentAddColumnSourceTest.GID_LIST, this.addColumnSource.getAllGids());
+	}
 
 	@Test
 	public void testColumnExists() {

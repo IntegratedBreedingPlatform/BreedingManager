@@ -116,6 +116,16 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 	public List<FillWithOption> getColumnsToExclude() {
 		return Arrays.asList(FillWithOption.FILL_WITH_LOCATION, FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
 	}
+	
+	@Override
+	public List<Integer> getAllGids() {
+		final List<Integer> gids = new ArrayList<>();
+		final List<Object> listDataItemIds = new ArrayList<>(this.targetTable.getItemIds());
+		for (final Object itemId : listDataItemIds) {
+			gids.add(this.getGidForItemId(itemId));
+		}
+		return gids;
+	}
 
 	
 	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
