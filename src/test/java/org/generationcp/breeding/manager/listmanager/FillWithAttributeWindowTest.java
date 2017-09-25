@@ -26,8 +26,10 @@ public class FillWithAttributeWindowTest {
 
 	private static final int ATTRIBUTE_TYPE_ID2 = 2;
 	private static final int ATTRIBUTE_TYPE_ID1 = 1;
+	private static final String ATTRIBUTE_TYPE_CODE2 = "NEW_PAZZPORT";
+	private static final String ATTRIBUTE_TYPE_CODE1 = "Ipstat";
 	private static final String ATTRIBUTE_TYPE_NAME2 = "New Passport Type";
-	private static final String ATTRIBUTE_TYPE_NAME1 = "Ipstat";
+	private static final String ATTRIBUTE_TYPE_NAME1 = "Ip Status";
 	private static final List<Integer> GID_LIST = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 	@Mock
@@ -55,7 +57,7 @@ public class FillWithAttributeWindowTest {
 	}
 
 	@Test
-	public void testInstantiateComponents() {
+	public void testPopulateAttributeTypes() {
 		this.fillWithAttributeWindow.instantiateComponents();
 		this.fillWithAttributeWindow.initializeValues();
 
@@ -64,6 +66,11 @@ public class FillWithAttributeWindowTest {
 		final ComboBox attributeTypesComboBox = this.fillWithAttributeWindow.getAttributeBox();
 		Assert.assertNotNull(attributeTypesComboBox);
 		Assert.assertEquals(3, attributeTypesComboBox.size());
+		for (final UserDefinedField attributeType : this.attributeTypes) {
+			final Integer id = attributeType.getFldno();
+			Assert.assertNotNull(attributeTypesComboBox.getItem(id));
+			Assert.assertEquals(attributeType.getFcode(), attributeTypesComboBox.getItemCaption(id));
+		}
 	}
 
 	@Test
@@ -80,10 +87,13 @@ public class FillWithAttributeWindowTest {
 	private List<UserDefinedField> getAttributeTypes() {
 		final UserDefinedField attributeType1 = new UserDefinedField(FillWithAttributeWindowTest.ATTRIBUTE_TYPE_ID1);
 		attributeType1.setFname(FillWithAttributeWindowTest.ATTRIBUTE_TYPE_NAME1);
+		attributeType1.setFcode(FillWithAttributeWindowTest.ATTRIBUTE_TYPE_CODE1);
 		final UserDefinedField attributeType2 = new UserDefinedField(FillWithAttributeWindowTest.ATTRIBUTE_TYPE_ID2);
 		attributeType2.setFname(FillWithAttributeWindowTest.ATTRIBUTE_TYPE_NAME2);
+		attributeType2.setFcode(FillWithAttributeWindowTest.ATTRIBUTE_TYPE_CODE2);
 		final UserDefinedField attributeType3 = new UserDefinedField(3);
 		attributeType3.setFname("Grower");
+		attributeType3.setFcode("Grow");
 		return Arrays.asList(attributeType1, attributeType2, attributeType3);
 	}
 
