@@ -79,7 +79,7 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 
 	@Override
 	public void initializeValues() {
-		final List<Integer> gids = this.addColumnSource.getGidsToProcess();
+		final List<Integer> gids = this.addColumnSource.getAllGids();
 		this.attributeList = this.germplasmDataManager.getAttributeTypesByGIDList(gids);
 
 		for (UserDefinedField attribute : this.attributeList) {

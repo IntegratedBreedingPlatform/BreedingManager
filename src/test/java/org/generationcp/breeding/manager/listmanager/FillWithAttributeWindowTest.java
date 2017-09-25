@@ -28,6 +28,7 @@ public class FillWithAttributeWindowTest {
 	private static final int ATTRIBUTE_TYPE_ID1 = 1;
 	private static final String ATTRIBUTE_TYPE_NAME2 = "New Passport Type";
 	private static final String ATTRIBUTE_TYPE_NAME1 = "Ipstat";
+	private static final List<Integer> GID_LIST = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
@@ -48,9 +49,9 @@ public class FillWithAttributeWindowTest {
 		MockitoAnnotations.initMocks(this);
 		this.fillWithAttributeWindow.setGermplasmDataManager(this.germplasmDataManager);
 
-		Mockito.doReturn(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)).when(this.addColumnSource).getGidsToProcess();
+		Mockito.doReturn(GID_LIST).when(this.addColumnSource).getAllGids();
 		this.attributeTypes = this.getAttributeTypes();
-		Mockito.doReturn(this.attributeTypes).when(this.germplasmDataManager).getAttributeTypesByGIDList(Matchers.anyListOf(Integer.class));
+		Mockito.doReturn(this.attributeTypes).when(this.germplasmDataManager).getAttributeTypesByGIDList(Matchers.eq(GID_LIST));
 	}
 
 	@Test
@@ -58,6 +59,8 @@ public class FillWithAttributeWindowTest {
 		this.fillWithAttributeWindow.instantiateComponents();
 		this.fillWithAttributeWindow.initializeValues();
 
+		Mockito.verify(this.addColumnSource).getAllGids();
+		Mockito.verify(this.germplasmDataManager).getAttributeTypesByGIDList(Matchers.eq(GID_LIST));
 		final ComboBox attributeTypesComboBox = this.fillWithAttributeWindow.getAttributeBox();
 		Assert.assertNotNull(attributeTypesComboBox);
 		Assert.assertEquals(3, attributeTypesComboBox.size());
