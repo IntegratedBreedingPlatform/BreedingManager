@@ -134,9 +134,17 @@ public class PagedBreedingManagerTable extends PagedTable {
 		final Collection<Object> allEntries = (Collection<Object>) this.getItemIds();
 		final List<Object> allEntriesList = new ArrayList<>(allEntries);
 
-		final Integer startingIndex = pageNo * this.getPageLength() - this.getPageLength();
+		Integer startingIndex = pageNo * this.getPageLength() - this.getPageLength();
 		Integer endingIndex = startingIndex + this.getPageLength();
 		endingIndex = endingIndex > allEntriesList.size() ? allEntriesList.size() : endingIndex;
+
+		if (startingIndex > allEntriesList.size()) {
+			startingIndex = 0;
+		}
+
+		if (endingIndex > allEntriesList.size()) {
+			endingIndex = allEntriesList.size();
+		}
 
 		return allEntriesList.subList(startingIndex, endingIndex);
 	}
