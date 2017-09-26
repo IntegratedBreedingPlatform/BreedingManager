@@ -103,6 +103,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 	private SimpleResourceBundleMessageSource messageSource;
 
 	private GermplasmSearchLoadedItemsAddColumnSource addColumnSource;
+	private List<Integer> allGids;
 
 	public GermplasmSearchResultsComponent() {
 		this(null);
@@ -180,7 +181,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.createActionMenu();
 
 		// Add "Add Column" context menu option
-		this.setAddColumnSource(new GermplasmSearchLoadedItemsAddColumnSource(this.matchingGermplasmTable, this.definition,
+		this.setAddColumnSource(new GermplasmSearchLoadedItemsAddColumnSource(this.matchingGermplasmTable, this,
 				GermplasmQuery.GID_REF_PROPERTY));
 
 		this.addActionMenuItems(new AddColumnContextMenu(getAddColumnSource(), this.getMenu(), null, this.messageSource));
@@ -412,7 +413,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 	public void applyGermplasmResults(final GermplasmSearchParameter searchParameter) throws BreedingManagerSearchException {
 
 		final Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
-
+		this.allGids = new ArrayList<>();
 		final GermplasmQueryFactory factory = this.createGermplasmQueryFactory(searchParameter);
 		final LazyQueryContainer container = this.createContainer(factory);
 
@@ -424,8 +425,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.matchingGermplasmTable.setCurrentPage(1);
 
 		this.hideInternalGIDColumn();
-
+		
+		// GermplasmQueryFactory#getNumberOfItems must be called first to retrieve list of all matched GIDs
 		this.updateNoOfEntries(factory.getNumberOfItems());
+		this.allGids = factory.getAllGids();
+		
 		// update paged table controls given the latest table entries
 		this.matchingGermplasmTableWithSelectAll.updateSelectAllCheckboxes();
 
@@ -659,4 +663,13 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		}
 
 	}
+	
+	public List<Integer> getAllGids() {
+		return allGids;
+	}
+	
+	public LazyQueryDefinition getDefinition() {
+		return definition;
+	}
+	
 }
