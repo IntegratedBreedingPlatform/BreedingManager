@@ -22,14 +22,13 @@ import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.manager.GermplasmNameType;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -48,6 +47,8 @@ import junit.framework.Assert;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmQueryTest {
 
+	private static final int NUMBER_OF_ITEMS_ON_PAGE = 20;
+	private static final int ALL_GERMPLASM = 35;
 	public static final String SEARCH_STRING = "Search String";
 	public static final String TEST_21_LENGTH_STRING = ">20LENGTHSTRING_ABCDE";
 	public static final String TEST_SHORT_STRING = "TEST_SHORT_STRING";
@@ -60,7 +61,6 @@ public class GermplasmQueryTest {
 	public static final Integer TEST_SEED_RES_COUNT = 10;
 	public static final Integer TEST_INVENTORY_COUNT = 10;
 	public static final int TEST_LOCATION_ID = 5;
-	public static final int GERMPLASM_SIZE = 20;
 	public static final Double AVAILABLE_BALANCE = 5.0d;
 
 	private final String[] itemPropertyIds = new String[] {"LOCATIONS", "GROUP ID", "GID_REF", "Tag All Column", "LOTS", "AVAILABLE",
@@ -68,14 +68,16 @@ public class GermplasmQueryTest {
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
 	@Mock
-	private LocationDataManager locationDataManager;
-	@Mock
 	private PedigreeService pedigreeService;
 	@Mock
 	private CrossExpansionProperties crossExpansionProperties;
 	private final GermplasmSearchParameter germplasmSearchParameter =
 			new GermplasmSearchParameter(GermplasmQueryTest.SEARCH_STRING, Operation.LIKE);
-	private final List<Germplasm> germplasms = new ArrayList<>();
+	private final List<Germplasm> allGermplasm = new ArrayList<>();
+	private final List<Germplasm> currentGermplasm = new ArrayList<>();
+	private final List<Integer> gids = new ArrayList<>();
+	private GermplasmSearchParameter searchAllParameter;
+			
 	@InjectMocks
 	private final GermplasmQuery query = new GermplasmQuery(Mockito.mock(ListManagerMain.class), false, false,
 			this.germplasmSearchParameter, Mockito.mock(Table.class), Mockito.mock(QueryDefinition.class));
@@ -84,46 +86,47 @@ public class GermplasmQueryTest {
 	public void setUp() throws Exception {
 		// create a test list of germplasms with inventory information
 		final Map<Integer, String> pedigreeString = new HashMap<>();
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < ALL_GERMPLASM; i++) {
 			GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(1, 10);
 
 			final Germplasm germplasm = GermplasmTestDataInitializer.createGermplasm(i);
-			final GermplasmInventory inventoryInfo = new GermplasmInventory(germplasm.getGid());
+			final Integer gid = germplasm.getGid();
+			final GermplasmInventory inventoryInfo = new GermplasmInventory(gid);
 			inventoryInfo.setStockIDs(GermplasmQueryTest.TEST_STOCK_ID_STRING);
 			inventoryInfo.setActualInventoryLotCount(GermplasmQueryTest.TEST_INVENTORY_COUNT);
 			inventoryInfo.setReservedLotCount(GermplasmQueryTest.TEST_SEED_RES_COUNT);
 			inventoryInfo.setScaleForGermplsm(GermplasmQueryTest.GERMPLSM_SCALE);
 			inventoryInfo.setTotalAvailableBalance(GermplasmQueryTest.AVAILABLE_BALANCE);
 			germplasm.setInventoryInfo(inventoryInfo);
-			pedigreeString.put(germplasm.getGid(), GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING);
-			this.germplasms.add(germplasm);
+			pedigreeString.put(gid, GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING);
+			if (i < NUMBER_OF_ITEMS_ON_PAGE){
+				this.currentGermplasm.add(germplasm);
+			} 
+			this.allGermplasm.add(germplasm);
+			this.gids.add(gid);
 		}
 
 		// initialize middleware service calls
 		Mockito.when(
 				this.pedigreeService.getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(), Matchers.eq(this.crossExpansionProperties)))
 				.thenReturn(pedigreeString);
-		Mockito.when(this.germplasmDataManager.searchForGermplasm(this.germplasmSearchParameter)).thenReturn(this.germplasms);
-		Mockito.when(this.germplasmDataManager.countSearchForGermplasm(Matchers.eq(GermplasmQueryTest.SEARCH_STRING),
-				Matchers.eq(Operation.LIKE), Matchers.eq(this.germplasmSearchParameter.isIncludeParents()),
-				Matchers.eq(this.germplasmSearchParameter.isWithInventoryOnly()),
-				Matchers.eq(this.germplasmSearchParameter.isIncludeMGMembers()))).thenReturn(this.germplasms.size());
+		Mockito.when(this.germplasmDataManager.searchForGermplasm(this.germplasmSearchParameter)).thenReturn(this.currentGermplasm);
+		this.searchAllParameter = new GermplasmSearchParameter(this.germplasmSearchParameter);
+		this.searchAllParameter.setStartingRow(0);
+		this.searchAllParameter.setNumberOfEntries(GermplasmQuery.RESULTS_LIMIT);
+		Mockito.when(this.germplasmDataManager.searchForGermplasm(this.searchAllParameter)).thenReturn(this.allGermplasm);
 
 		Mockito.when(this.germplasmDataManager.getNamesByGID(Matchers.anyInt(), Matchers.isNull(Integer.class),
-				Matchers.isNull(GermplasmNameType.class))).thenReturn(GermplasmTestDataInitializer.createNameList(this.germplasms.size()));
+				Matchers.isNull(GermplasmNameType.class))).thenReturn(GermplasmTestDataInitializer.createNameList(this.currentGermplasm.size()));
 
 		Mockito.when(this.germplasmDataManager.getMethodByID(Matchers.anyInt()))
 				.thenReturn(new MethodTestDataInitializer().createMethod(1, "testMethodType"));
-
-		Mockito.when(this.locationDataManager.getLocationByID(Matchers.anyInt()))
-				.thenReturn(new Location(GermplasmQueryTest.TEST_LOCATION_ID));
-
 	}
 
 	@Test
 	public void testGetGermplasmItem() throws Exception {
-		final Germplasm germplasm = this.germplasms.get(0);
-		final Item item = this.query.getGermplasmItem(this.germplasms.get(0), 1,
+		final Germplasm germplasm = this.allGermplasm.get(0);
+		final Item item = this.query.getGermplasmItem(germplasm, 1,
 				Collections.<Integer, String>singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING),
 				Collections.<Integer, String>singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_GERMPLASM_NAME));
 
@@ -170,10 +173,10 @@ public class GermplasmQueryTest {
 	public void testLoadItems() throws Exception {
 		assert this.query != null;
 
-		final List<Item> items = this.query.loadItems(0, GermplasmQueryTest.GERMPLASM_SIZE);
+		final List<Item> items = this.query.loadItems(0, GermplasmQueryTest.NUMBER_OF_ITEMS_ON_PAGE);
 
 		// Verify number of loaded items plus that key Middleware methods were called
-		Assert.assertEquals("Should return the correct number of items", 20, items.size());
+		Assert.assertEquals("Should return the correct number of items", NUMBER_OF_ITEMS_ON_PAGE, items.size());
 		Mockito.verify(this.pedigreeService, Mockito.times(1)).getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(),
 				Matchers.any(CrossExpansionProperties.class));
 		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
@@ -182,13 +185,14 @@ public class GermplasmQueryTest {
 
 	@Test
 	public void testGetGermplasmSearchResults() throws Exception {
-		Assert.assertEquals("Verify the call should return the expected list of germplasms", this.germplasms,
-				this.query.getGermplasmSearchResults(1, 20));
+		Assert.assertEquals("Verify the call should return the expected list of germplasms", this.currentGermplasm,
+				this.query.getGermplasmSearchResults(1, NUMBER_OF_ITEMS_ON_PAGE));
 	}
 
 	@Test
 	public void testSize() throws Exception {
-		Assert.assertEquals("The count call should be the same with the test germplasm list", this.germplasms.size(), this.query.size());
+		Assert.assertEquals("The count call should be the same with the test germplasm list", this.allGermplasm.size(), this.query.size());
+		Mockito.verify(this.germplasmDataManager).searchForGermplasm(this.searchAllParameter);
 	}
 
 	@Test
@@ -199,5 +203,11 @@ public class GermplasmQueryTest {
 		Assert.assertEquals(resultWithEllipses, GermplasmQueryTest.TEST_21_LENGTH_STRING.substring(0, 20) + "...");
 		Assert.assertEquals(resultWithoutElipses, GermplasmQueryTest.TEST_SHORT_STRING);
 
+	}
+	
+	@Test
+	public void testRetrieveGIDsofMatchingGermplasm() {
+		this.query.retrieveGIDsofMatchingGermplasm();
+		Assert.assertEquals(this.gids, this.query.getAllGids());
 	}
 }

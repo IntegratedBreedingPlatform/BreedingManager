@@ -26,9 +26,7 @@ import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
@@ -55,6 +53,8 @@ import com.vaadin.ui.themes.BaseTheme;
 @Configurable
 public class GermplasmQuery implements Query {
 	
+	public static final int RESULTS_LIMIT = 5000;
+
 	public  static final String GID_REF_PROPERTY = ColumnLabels.GID.getName() + "_REF";
 	
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
@@ -65,14 +65,13 @@ public class GermplasmQuery implements Query {
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
 	@Resource
-	private LocationDataManager locationDataManager;
-	@Resource
 	private PedigreeService pedigreeService;
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
 	private int size;
+	private List<Integer> allGids;
 
 	public GermplasmQuery(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
 			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable, final QueryDefinition definition) {
@@ -84,6 +83,7 @@ public class GermplasmQuery implements Query {
 		this.searchParameter = searchParameter;
 		this.matchingGermplasmsTable = matchingGermplasmsTable;
 		this.size = -1;
+		this.allGids = new ArrayList<>();
 		this.definition = definition;
 	}
 
@@ -135,13 +135,8 @@ public class GermplasmQuery implements Query {
 	@Override
 	public int size() {
 		if (this.size == -1) {
-			final String q = this.searchParameter.getSearchKeyword();
-			final Operation o = this.searchParameter.getOperation();
-			final boolean includeParents = this.searchParameter.isIncludeParents();
-			final boolean withInventoryOnly = this.searchParameter.isWithInventoryOnly();
-			final boolean includeMGMembers = this.searchParameter.isIncludeMGMembers();
-
-			this.size = this.germplasmDataManager.countSearchForGermplasm(q, o, includeParents, withInventoryOnly, includeMGMembers);
+			this.retrieveGIDsofMatchingGermplasm();
+			this.size = this.allGids.size();
 		}
 		return this.size;
 	}
@@ -295,4 +290,21 @@ public class GermplasmQuery implements Query {
 		stockLabel.setDescription(stockIDs);
 		return stockLabel;
 	}
+	
+	void retrieveGIDsofMatchingGermplasm(){
+		final GermplasmSearchParameter searchAllParameter = new GermplasmSearchParameter(this.searchParameter);
+		searchAllParameter.setStartingRow(0);
+		searchAllParameter.setNumberOfEntries(GermplasmQuery.RESULTS_LIMIT);
+		final List<Germplasm> allGermplasm = germplasmDataManager.searchForGermplasm(searchAllParameter);
+		
+		this.allGids = new ArrayList<>();
+		for (final Germplasm germplasm : allGermplasm) {
+			this.allGids.add(germplasm.getGid());
+		}
+	}
+	
+	public List<Integer> getAllGids() {
+		return allGids;
+	}
+	
 }
