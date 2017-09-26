@@ -52,11 +52,11 @@ import com.vaadin.ui.themes.BaseTheme;
  */
 @Configurable
 public class GermplasmQuery implements Query {
-	
+
 	public static final int RESULTS_LIMIT = 5000;
 
-	public  static final String GID_REF_PROPERTY = ColumnLabels.GID.getName() + "_REF";
-	
+	public static final String GID_REF_PROPERTY = ColumnLabels.GID.getName() + "_REF";
+
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
 	private final QueryDefinition definition;
 	private final ListManagerMain listManagerMain;
@@ -117,7 +117,8 @@ public class GermplasmQuery implements Query {
 			gids.add(germplasmToGeneratePedigreeStringsFor.getGid());
 		}
 
-		final Map<Integer, String> pedigreeStringMap = this.pedigreeService.getCrossExpansions(new HashSet<>(gids), null, this.crossExpansionProperties);
+		final Map<Integer, String> pedigreeStringMap =
+				this.pedigreeService.getCrossExpansions(new HashSet<>(gids), null, this.crossExpansionProperties);
 		final Map<Integer, String> preferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
 		for (int i = 0; i < germplasmResults.size(); i++) {
 			items.add(this.getGermplasmItem(germplasmResults.get(i), i + startIndex, pedigreeStringMap, preferredNamesMap));
@@ -162,7 +163,7 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.GROUP_ID.getName(), new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
 		propertyMap.put(ColumnLabels.GERMPLASM_LOCATION.getName(), new ObjectProperty<>(germplasm.getLocationName()));
 		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(), new ObjectProperty<>(germplasm.getMethodName()));
-		propertyMap.put(GID_REF_PROPERTY, new ObjectProperty<>(gid));
+		propertyMap.put(GermplasmQuery.GID_REF_PROPERTY, new ObjectProperty<>(gid));
 
 		for (final String propertyId : propertyMap.keySet()) {
 			item.addItemProperty(propertyId, propertyMap.get(propertyId));
@@ -290,21 +291,21 @@ public class GermplasmQuery implements Query {
 		stockLabel.setDescription(stockIDs);
 		return stockLabel;
 	}
-	
-	void retrieveGIDsofMatchingGermplasm(){
+
+	void retrieveGIDsofMatchingGermplasm() {
 		final GermplasmSearchParameter searchAllParameter = new GermplasmSearchParameter(this.searchParameter);
 		searchAllParameter.setStartingRow(0);
 		searchAllParameter.setNumberOfEntries(GermplasmQuery.RESULTS_LIMIT);
-		final List<Germplasm> allGermplasm = germplasmDataManager.searchForGermplasm(searchAllParameter);
-		
+		final List<Germplasm> allGermplasm = this.germplasmDataManager.searchForGermplasm(searchAllParameter);
+
 		this.allGids = new ArrayList<>();
 		for (final Germplasm germplasm : allGermplasm) {
 			this.allGids.add(germplasm.getGid());
 		}
 	}
-	
+
 	public List<Integer> getAllGids() {
-		return allGids;
+		return this.allGids;
 	}
-	
+
 }

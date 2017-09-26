@@ -78,7 +78,7 @@ public class GermplasmQueryFactory implements QueryFactory {
 		}
 		return 0;
 	}
-	
+
 	public List<Integer> getAllGids() {
 		if (this.query != null) {
 			return this.query.getAllGids();
