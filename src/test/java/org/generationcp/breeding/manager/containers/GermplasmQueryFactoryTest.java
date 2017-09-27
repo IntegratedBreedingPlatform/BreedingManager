@@ -1,7 +1,9 @@
 package org.generationcp.breeding.manager.containers;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -20,6 +22,7 @@ import com.vaadin.ui.Table;
 public class GermplasmQueryFactoryTest {
 
 	public static final int TEST_SAMPLE_QUERY_SIZE = 10;
+	private static final List<Integer> GID_LIST = Arrays.asList(11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
 	private GermplasmQueryFactory germplasmQueryFactory;
 	private GermplasmSearchParameter germplasmSearchParameter;
 
@@ -69,7 +72,18 @@ public class GermplasmQueryFactoryTest {
 		// set a test size on the query so we can bypass the middleware service call
 		ReflectionTestUtils.setField(query, "size", TEST_SAMPLE_QUERY_SIZE);
 
-		Assert.assertEquals("Query count/size should be the same", 10, this.germplasmQueryFactory.getNumberOfItems());
+		Assert.assertEquals("Query count/size should be the same", TEST_SAMPLE_QUERY_SIZE, this.germplasmQueryFactory.getNumberOfItems());
 
+	}
+	
+	@Test
+	public void testGetAllGids() {
+		final GermplasmQuery query = Mockito.mock(GermplasmQuery.class);
+		Mockito.doReturn(GID_LIST).when(query).getAllGids();
+		this.germplasmQueryFactory.setQuery(query);
+		
+		final List<Integer> allGids = this.germplasmQueryFactory.getAllGids();
+		Mockito.verify(query).getAllGids();
+		Assert.assertEquals(GID_LIST, allGids);
 	}
 }

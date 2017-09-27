@@ -26,9 +26,7 @@ import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
@@ -54,9 +52,11 @@ import com.vaadin.ui.themes.BaseTheme;
  */
 @Configurable
 public class GermplasmQuery implements Query {
-	
-	public  static final String GID_REF_PROPERTY = ColumnLabels.GID.getName() + "_REF";
-	
+
+	public static final int RESULTS_LIMIT = 5000;
+
+	public static final String GID_REF_PROPERTY = ColumnLabels.GID.getName() + "_REF";
+
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
 	private final QueryDefinition definition;
 	private final ListManagerMain listManagerMain;
@@ -65,14 +65,13 @@ public class GermplasmQuery implements Query {
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
 	@Resource
-	private LocationDataManager locationDataManager;
-	@Resource
 	private PedigreeService pedigreeService;
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
 	private int size;
+	private List<Integer> allGids;
 
 	public GermplasmQuery(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
 			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable, final QueryDefinition definition) {
@@ -84,6 +83,7 @@ public class GermplasmQuery implements Query {
 		this.searchParameter = searchParameter;
 		this.matchingGermplasmsTable = matchingGermplasmsTable;
 		this.size = -1;
+		this.allGids = new ArrayList<>();
 		this.definition = definition;
 	}
 
@@ -117,7 +117,8 @@ public class GermplasmQuery implements Query {
 			gids.add(germplasmToGeneratePedigreeStringsFor.getGid());
 		}
 
-		final Map<Integer, String> pedigreeStringMap = this.pedigreeService.getCrossExpansions(new HashSet<>(gids), null, this.crossExpansionProperties);
+		final Map<Integer, String> pedigreeStringMap =
+				this.pedigreeService.getCrossExpansions(new HashSet<>(gids), null, this.crossExpansionProperties);
 		final Map<Integer, String> preferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
 		for (int i = 0; i < germplasmResults.size(); i++) {
 			items.add(this.getGermplasmItem(germplasmResults.get(i), i + startIndex, pedigreeStringMap, preferredNamesMap));
@@ -135,13 +136,8 @@ public class GermplasmQuery implements Query {
 	@Override
 	public int size() {
 		if (this.size == -1) {
-			final String q = this.searchParameter.getSearchKeyword();
-			final Operation o = this.searchParameter.getOperation();
-			final boolean includeParents = this.searchParameter.isIncludeParents();
-			final boolean withInventoryOnly = this.searchParameter.isWithInventoryOnly();
-			final boolean includeMGMembers = this.searchParameter.isIncludeMGMembers();
-
-			this.size = this.germplasmDataManager.countSearchForGermplasm(q, o, includeParents, withInventoryOnly, includeMGMembers);
+			this.retrieveGIDsofMatchingGermplasm();
+			this.size = this.allGids.size();
 		}
 		return this.size;
 	}
@@ -167,7 +163,7 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.GROUP_ID.getName(), new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
 		propertyMap.put(ColumnLabels.GERMPLASM_LOCATION.getName(), new ObjectProperty<>(germplasm.getLocationName()));
 		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(), new ObjectProperty<>(germplasm.getMethodName()));
-		propertyMap.put(GID_REF_PROPERTY, new ObjectProperty<>(gid));
+		propertyMap.put(GermplasmQuery.GID_REF_PROPERTY, new ObjectProperty<>(gid));
 
 		for (final String propertyId : propertyMap.keySet()) {
 			item.addItemProperty(propertyId, propertyMap.get(propertyId));
@@ -295,4 +291,21 @@ public class GermplasmQuery implements Query {
 		stockLabel.setDescription(stockIDs);
 		return stockLabel;
 	}
+
+	void retrieveGIDsofMatchingGermplasm() {
+		final GermplasmSearchParameter searchAllParameter = new GermplasmSearchParameter(this.searchParameter);
+		searchAllParameter.setStartingRow(0);
+		searchAllParameter.setNumberOfEntries(GermplasmQuery.RESULTS_LIMIT);
+		final List<Germplasm> allGermplasm = this.germplasmDataManager.searchForGermplasm(searchAllParameter);
+
+		this.allGids = new ArrayList<>();
+		for (final Germplasm germplasm : allGermplasm) {
+			this.allGids.add(germplasm.getGid());
+		}
+	}
+
+	public List<Integer> getAllGids() {
+		return this.allGids;
+	}
+
 }

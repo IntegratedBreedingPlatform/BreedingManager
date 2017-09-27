@@ -71,7 +71,7 @@ public class AddedColumnsMapper {
 		
 		// Check if any of the columns are attribute types
 		if (attributeTypesAddable) {
-			final Map<String, Integer> attributeTypesMap = this.getAllAttributeTypes();
+			final Map<String, Integer> attributeTypesMap = this.getAllAttributeTypesMap();
 			for (final Object column : visibleColumns){
 				final String columnName = column.toString().toUpperCase();
 				final Integer attributeTypeId = attributeTypesMap.get(columnName);
@@ -82,12 +82,12 @@ public class AddedColumnsMapper {
 		}
 	}
 	
-	private Map<String, Integer> getAllAttributeTypes() {
+	Map<String, Integer> getAllAttributeTypesMap() {
 		final Map<String, Integer> attributeTypesMap = new HashMap<>();
 		// Add all attribute types as add-able columns
 		final List<UserDefinedField> attributesTypes = this.germplasmDataManager.getAllAttributesTypes();
 		for (final UserDefinedField attributeType : attributesTypes) {
-			attributeTypesMap.put(attributeType.getFname().toUpperCase(), attributeType.getFldno());
+			attributeTypesMap.put(attributeType.getFcode().toUpperCase(), attributeType.getFldno());
 		}
 		return attributeTypesMap;
 	}

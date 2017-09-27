@@ -113,6 +113,10 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 		return Arrays.asList(FillWithOption.FILL_WITH_ATTRIBUTE);
 	}
 
+	@Override
+	public List<Integer> getAllGids() {
+		return this.getGidsToProcess();
+	}
 	
 	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;

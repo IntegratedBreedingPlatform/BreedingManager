@@ -31,14 +31,15 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
 /**
- * This class opens a pop-up window for selecting attribute types available for GIDs to process. It will proceed to fill to add selected
- * attribute type as column to source table, if no existing propery specified, and fill up attribute values for chosen attribute type per
- * germplasm on target table.
+ * This class opens a pop-up window for selecting attribute types available for all GIDs of source screen. It will proceed to fill to add
+ * selected attribute type as column to source table, if no existing propery specified, and fill up attribute values for chosen attribute
+ * type per germplasm on target table.
  *
  */
 
 @Configurable
-public class FillWithAttributeWindow extends BaseSubWindow implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class FillWithAttributeWindow extends BaseSubWindow
+		implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = -8850686249688989080L;
 
@@ -50,7 +51,7 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 	private HorizontalLayout attributeLayout;
 	private ComboBox attributeBox;
 	private Button okButton;
-	private List<UserDefinedField> attributeList;
+	private List<UserDefinedField> attributeTypeList;
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
@@ -79,19 +80,18 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 
 	@Override
 	public void initializeValues() {
-		final List<Integer> gids = this.addColumnSource.getGidsToProcess();
-		this.attributeList = this.germplasmDataManager.getAttributeTypesByGIDList(gids);
+		final List<Integer> gids = this.addColumnSource.getAllGids();
+		this.attributeTypeList = this.germplasmDataManager.getAttributeTypesByGIDList(gids);
 
-		for (UserDefinedField attribute : this.attributeList) {
-			this.attributeBox.addItem(attribute.getFldno());
-			this.attributeBox.setItemCaption(attribute.getFldno(), attribute.getFname());
+		for (final UserDefinedField attributeType : this.attributeTypeList) {
+			this.attributeBox.addItem(attributeType.getFldno());
+			this.attributeBox.setItemCaption(attributeType.getFldno(), attributeType.getFcode());
 		}
 	}
 
 	@Override
 	public void addListeners() {
-		this.okButton.addListener(
-				new FillWithAttributeButtonClickListener(this.addColumnSource, this.attributeBox, this.targetPropertyId));
+		this.okButton.addListener(new FillWithAttributeButtonClickListener(this.addColumnSource, this.attributeBox, this.targetPropertyId));
 	}
 
 	@Override
@@ -127,23 +127,19 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 		this.messageSource.setCaption(this.okButton, Message.OK);
 	}
 
-	
 	public AddColumnSource getAddColumnSource() {
-		return addColumnSource;
+		return this.addColumnSource;
 	}
 
-	
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
-	
 	public ComboBox getAttributeBox() {
-		return attributeBox;
+		return this.attributeBox;
 	}
 
-	
 	public Button getOkButton() {
-		return okButton;
+		return this.okButton;
 	}
 }

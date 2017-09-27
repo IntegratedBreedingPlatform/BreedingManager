@@ -10,6 +10,9 @@
 
 package org.generationcp.breeding.manager.containers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.vaadin.addons.lazyquerycontainer.Query;
@@ -27,7 +30,7 @@ public class GermplasmQueryFactory implements QueryFactory {
 	private final ListManagerMain listManagerMain;
 	private final Table matchingGermplasmsTable;
 	private final GermplasmSearchParameter searchParameter;
-	private Query query;
+	private GermplasmQuery query;
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
 	private QueryDefinition definition;
@@ -74,6 +77,17 @@ public class GermplasmQueryFactory implements QueryFactory {
 			return this.query.size();
 		}
 		return 0;
+	}
+
+	public List<Integer> getAllGids() {
+		if (this.query != null) {
+			return this.query.getAllGids();
+		}
+		return new ArrayList<>();
+	}
+
+	public void setQuery(final GermplasmQuery query) {
+		this.query = query;
 	}
 
 }

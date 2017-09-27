@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,10 +26,10 @@ import junit.framework.Assert;
 
 public class GermplasmSearchLoadedItemsAddColumnSourceTest {
 
-	private static final List<Integer> ITEMS_LIST = Arrays.asList(11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
-
-	private static final List<Integer> GID_LIST = Arrays.asList(101, 102, 103, 104, 105, 106, 107, 108, 109, 110);
-
+	private static final List<Integer> CURRENT_ITEMS_LIST = Arrays.asList(11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
+	
+	private static final List<Integer> CURRENT_GID_LIST = Arrays.asList(101, 102, 103, 104, 105, 106, 107, 108, 109, 110);
+	
 	private static final int CURRENT_PAGE = 2;
 
 	private static final String LISTDATA_PROPERTY_ID = "LISTDATA_ID";
@@ -43,6 +44,9 @@ public class GermplasmSearchLoadedItemsAddColumnSourceTest {
 
 	@Mock
 	private LazyQueryDefinition definition;
+	
+	@Mock
+	private GermplasmSearchResultsComponent searchResultsComponent;
 
 	@Mock
 	private IndexedContainer container;
@@ -51,27 +55,37 @@ public class GermplasmSearchLoadedItemsAddColumnSourceTest {
 	private Window window;
 
 	private GermplasmSearchLoadedItemsAddColumnSource addColumnSource;
+	
+	private List<Integer> allGids;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.addColumnSource = new GermplasmSearchLoadedItemsAddColumnSource(this.targetTable, this.definition,
+		Mockito.doReturn(this.definition).when(this.searchResultsComponent).getDefinition();
+		
+		this.addColumnSource = new GermplasmSearchLoadedItemsAddColumnSource(this.targetTable, this.searchResultsComponent,
 				GermplasmSearchLoadedItemsAddColumnSourceTest.GID_PROPERTY_ID);
 		this.addColumnSource.setOntologyDataManager(this.ontologyDataManager);
-
+		
 		Mockito.doReturn(GermplasmSearchLoadedItemsAddColumnSourceTest.CURRENT_PAGE).when(this.targetTable).getCurrentPage();
-		Mockito.doReturn(GermplasmSearchLoadedItemsAddColumnSourceTest.ITEMS_LIST).when(this.targetTable)
+		Mockito.doReturn(GermplasmSearchLoadedItemsAddColumnSourceTest.CURRENT_ITEMS_LIST).when(this.targetTable)
 				.getAllEntriesForPage(GermplasmSearchLoadedItemsAddColumnSourceTest.CURRENT_PAGE);
 		Mockito.doReturn(this.container).when(this.targetTable).getContainerDataSource();
 		Mockito.doReturn(Arrays.asList(GermplasmSearchLoadedItemsAddColumnSourceTest.LISTDATA_PROPERTY_ID,
 				GermplasmSearchLoadedItemsAddColumnSourceTest.GID_PROPERTY_ID)).when(this.targetTable).getContainerPropertyIds();
 		Mockito.doReturn(this.window).when(this.targetTable).getWindow();
-		for (int i = 0; i < GermplasmSearchLoadedItemsAddColumnSourceTest.ITEMS_LIST.size(); i++) {
-			final Integer itemId = GermplasmSearchLoadedItemsAddColumnSourceTest.ITEMS_LIST.get(i);
+		
+		this.allGids = new ArrayList<>(Arrays.asList(91, 92, 93, 94, 95, 96, 97, 98, 99, 100));
+		this.allGids.addAll(CURRENT_GID_LIST);
+		this.allGids.addAll(Arrays.asList(111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123));
+		Mockito.doReturn(this.allGids).when(this.searchResultsComponent).getAllGids();
+		// Create items for current page
+		for (int i = 0; i < CURRENT_ITEMS_LIST.size(); i++) {
+			final Integer itemId = CURRENT_ITEMS_LIST.get(i);
 			final Item item = new PropertysetItem();
 			item.addItemProperty(GermplasmSearchLoadedItemsAddColumnSourceTest.LISTDATA_PROPERTY_ID, new ObjectProperty<Integer>(itemId));
 			item.addItemProperty(GermplasmSearchLoadedItemsAddColumnSourceTest.GID_PROPERTY_ID,
-					new ObjectProperty<String>(GermplasmSearchLoadedItemsAddColumnSourceTest.GID_LIST.get(i).toString()));
+					new ObjectProperty<String>(CURRENT_GID_LIST.get(i).toString()));
 			Mockito.doReturn(item).when(this.targetTable).getItem(itemId);
 			Mockito.doReturn(item).when(this.container).getItem(itemId);
 		}
@@ -79,26 +93,33 @@ public class GermplasmSearchLoadedItemsAddColumnSourceTest {
 
 	@Test
 	public void testGetItemIdsToProcess() {
-		Assert.assertEquals(GermplasmSearchLoadedItemsAddColumnSourceTest.ITEMS_LIST, this.addColumnSource.getItemIdsToProcess());
+		Assert.assertEquals(GermplasmSearchLoadedItemsAddColumnSourceTest.CURRENT_ITEMS_LIST, this.addColumnSource.getItemIdsToProcess());
 	}
 
 	@Test
 	public void testGetGidForItemId() {
-		for (int i = 0; i < GermplasmSearchLoadedItemsAddColumnSourceTest.ITEMS_LIST.size(); i++) {
-			final Integer itemId = GermplasmSearchLoadedItemsAddColumnSourceTest.ITEMS_LIST.get(i);
-			Assert.assertEquals(GermplasmSearchLoadedItemsAddColumnSourceTest.GID_LIST.get(i),
+		for (int i = 0; i < GermplasmSearchLoadedItemsAddColumnSourceTest.CURRENT_ITEMS_LIST.size(); i++) {
+			final Integer itemId = GermplasmSearchLoadedItemsAddColumnSourceTest.CURRENT_ITEMS_LIST.get(i);
+			Assert.assertEquals(GermplasmSearchLoadedItemsAddColumnSourceTest.CURRENT_GID_LIST.get(i),
 					this.addColumnSource.getGidForItemId(itemId));
 		}
 	}
 
 	@Test
 	public void testGetGidsToProcess() {
-		Assert.assertEquals(GermplasmSearchLoadedItemsAddColumnSourceTest.GID_LIST, this.addColumnSource.getGidsToProcess());
+		Assert.assertEquals(GermplasmSearchLoadedItemsAddColumnSourceTest.CURRENT_GID_LIST, this.addColumnSource.getGidsToProcess());
+	}
+	
+	@Test
+	public void testGetAllGids() {
+		final List<Integer> gids = this.addColumnSource.getAllGids();
+		Mockito.verify(this.searchResultsComponent).getAllGids();
+		Assert.assertEquals(this.allGids, gids);
 	}
 
 	@Test
 	public void testSetColumnValueForItem() {
-		final Integer itemId = GermplasmSearchLoadedItemsAddColumnSourceTest.ITEMS_LIST.get(1);
+		final Integer itemId = GermplasmSearchLoadedItemsAddColumnSourceTest.CURRENT_ITEMS_LIST.get(1);
 		final String dateValue = "20170717";
 		final String newGid = "1234";
 		// GERMPLASM_DATE column doesn't exist yet

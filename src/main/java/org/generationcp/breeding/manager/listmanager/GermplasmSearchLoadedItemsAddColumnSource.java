@@ -12,12 +12,12 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.Window;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 
 /**
  * This takes care of adding columns and generating values for those added columns when  there are items
@@ -30,15 +30,15 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 	private OntologyDataManager ontologyDataManager;
 
 	private PagedBreedingManagerTable targetTable;
-	private LazyQueryDefinition definition;
+	private GermplasmSearchResultsComponent searchResultsComponent;
 	private String gidPropertyId;
 
 	
-	public GermplasmSearchLoadedItemsAddColumnSource(final PagedBreedingManagerTable targetTable, final LazyQueryDefinition definition, final String gidPropertyId) {
+	public GermplasmSearchLoadedItemsAddColumnSource(final PagedBreedingManagerTable targetTable, final GermplasmSearchResultsComponent searchResultsComponent, final String gidPropertyId) {
 		super();
 		this.targetTable = targetTable;
 		this.gidPropertyId = gidPropertyId;
-		this.definition = definition;
+		this.searchResultsComponent = searchResultsComponent;
 	}
 
 	@Override
@@ -86,8 +86,9 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 			this.targetTable.addContainerProperty(columnLabel.getName(), String.class, "");
 			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
 		}
-		if (!this.definition.getPropertyIds().contains(columnLabel.getName())) {
-			this.definition.addProperty(columnLabel.getName(), String.class, "", false, false);
+		final LazyQueryDefinition definition = this.searchResultsComponent.getDefinition();
+		if (!definition.getPropertyIds().contains(columnLabel.getName())) {
+			definition.addProperty(columnLabel.getName(), String.class, "", false, false);
 		}
 	}
 
@@ -102,8 +103,9 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 			this.targetTable.addContainerProperty(columnName.toUpperCase(), String.class, "");
 			this.targetTable.setColumnHeader(columnName, columnName);
 		}
-		if (!this.definition.getPropertyIds().contains(columnName)) {
-			this.definition.addProperty(columnName, String.class, "", false, false);
+		final LazyQueryDefinition definition = this.searchResultsComponent.getDefinition();
+		if (!definition.getPropertyIds().contains(columnName)) {
+			definition.addProperty(columnName, String.class, "", false, false);
 		}
 	}
 
@@ -115,6 +117,11 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 	@Override
 	public List<FillWithOption> getColumnsToExclude() {
 		return Arrays.asList(FillWithOption.FILL_WITH_LOCATION, FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
+	}
+	
+	@Override
+	public List<Integer> getAllGids() {
+		return this.searchResultsComponent.getAllGids();
 	}
 
 	
