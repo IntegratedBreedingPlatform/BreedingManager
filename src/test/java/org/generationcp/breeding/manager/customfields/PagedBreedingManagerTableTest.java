@@ -134,6 +134,22 @@ public class PagedBreedingManagerTableTest {
 		Assert.assertEquals("The last page should only have 1 item", 1, result2.size());
 	}
 
+	@Test
+	public void testGetAllEntriesForPageWhenIndexExceedsListSize() {
+		final int numberOfItems = 8;
+		final int firstPage = 1;
+		final int lastPage = 1;
+		final int pageLength = 20;
+		this.pagedTable.setPageLength(pageLength);
+		this.setupContainerDataSource(numberOfItems);
+
+		final List<Object> result = this.pagedTable.getAllEntriesForPage(firstPage);
+		Assert.assertEquals(8, result.size());
+
+		final List<Object> result2 = this.pagedTable.getAllEntriesForPage(lastPage);
+		Assert.assertEquals(8, result2.size());
+	}
+
 	private void setupContainerDataSource(final int numberOfItems) {
 		final QueryDefinition queryDefinition = new LazyQueryDefinition(false, PagedBreedingManagerTableTest.BATCH_SIZE);
 		final QueryView queryView = Mockito.mock(QueryView.class);
