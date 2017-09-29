@@ -503,7 +503,14 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED));
 		} else {
-			this.listManagerMain.addPlantsToList(this.allGids);
+			final List<Integer> gids = new ArrayList<>();
+			for (final Integer id : selectedItems) {
+				// retrieve the actual GID from the itemId
+				final Integer gid =
+						(Integer) this.matchingGermplasmTable.getItem(id).getItemProperty(GermplasmQuery.GID_REF_PROPERTY).getValue();
+				gids.add(gid);
+			}
+			this.listManagerMain.addPlantsToList(gids);
 		}
 	}
 
