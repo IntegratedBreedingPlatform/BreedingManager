@@ -1,6 +1,9 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import com.jensjansson.pagedtable.PagedTable;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.containers.GermplasmQuery;
 import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
@@ -17,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -31,6 +35,7 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmSearchResultsComponentTest {
@@ -40,6 +45,12 @@ public class GermplasmSearchResultsComponentTest {
 	private static final String GERMPLASM_NAMES_WITH_20_CHARS = "ABCDEFGHIJKLMNOPQRST";
 
 	@Mock
+	private Window window;
+
+	@Mock
+	private Window parentWindow;
+
+	@Mock
 	private OntologyDataManager ontologyDataManager;
 
 	@Mock
@@ -47,6 +58,9 @@ public class GermplasmSearchResultsComponentTest {
 
 	@Mock
 	private PagedTableWithSelectAllLayout tableWithSelectAllLayout;
+
+	@Mock
+	private ListManagerMain listManagerMain;
 
 	@Mock
 	private PagedBreedingManagerTable pagedTable;
@@ -73,6 +87,10 @@ public class GermplasmSearchResultsComponentTest {
 
 		Mockito.doReturn(this.pagedTable).when(this.tableWithSelectAllLayout).getTable();
 		Mockito.doReturn(this.dataSource).when(this.pagedTable).getContainerDataSource();
+
+		Mockito.when(parentWindow.getWindow()).thenReturn(window);
+		germplasmSearchResultsComponent.setParent(parentWindow);
+
 	}
 
 	@Test
@@ -373,6 +391,62 @@ public class GermplasmSearchResultsComponentTest {
 
 		// There's no added column so addedColumnsMapper should not be called.
 		Mockito.verifyZeroInteractions(addedColumnsMapper);
+
+	}
+
+	@Test
+	public void testAddSelectedEntriesToNewListWithSelectedItems() {
+
+		final List<Integer> selectedItemIds = new ArrayList<>();
+		final List<Integer> expectedGids = new ArrayList<>();
+
+		final int firstItemId = 1001;
+		final int secondItemId = 1002;
+		final int firstItemGid = 1111;
+		final int secondItemGid = 2222;
+
+		selectedItemIds.add(firstItemId);
+		selectedItemIds.add(secondItemId);
+		expectedGids.add(firstItemGid);
+		expectedGids.add(secondItemGid);
+
+		Mockito.when(this.pagedTable.getValue()).thenReturn(selectedItemIds);
+
+		final Property firstItemProperty = Mockito.mock(Property.class);
+		Mockito.when(firstItemProperty.getValue()).thenReturn(firstItemGid);
+		final Property secondItemProperty = Mockito.mock(Property.class);
+		Mockito.when(secondItemProperty.getValue()).thenReturn(secondItemGid);
+
+		final Item firstItem  = Mockito.mock(Item.class);
+		Mockito.when(firstItem.getItemProperty(GermplasmQuery.GID_REF_PROPERTY)).thenReturn(firstItemProperty);
+		final Item secondItem  = Mockito.mock(Item.class);
+		Mockito.when(secondItem.getItemProperty(GermplasmQuery.GID_REF_PROPERTY)).thenReturn(secondItemProperty);
+
+		Mockito.when(this.pagedTable.getItem(firstItemId)).thenReturn(firstItem);
+		Mockito.when(this.pagedTable.getItem(secondItemId)).thenReturn(secondItem);
+
+		this.germplasmSearchResultsComponent.addSelectedEntriesToNewList();
+
+		Mockito.verify(this.listManagerMain).addPlantsToList(expectedGids);
+
+	}
+
+	@Test
+	public void testAddSelectedEntriesToNewListNoSelectedItems() {
+
+		final String expectedErrorMessage = "some error message";
+
+		final List<Integer> selectedItemIds = new ArrayList<>();
+
+		Mockito.when(this.messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED)).thenReturn(expectedErrorMessage);
+		Mockito.when(this.pagedTable.getValue()).thenReturn(selectedItemIds);
+
+		this.germplasmSearchResultsComponent.addSelectedEntriesToNewList();
+
+		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED);
+		Mockito.verify(this.window, Mockito.times(1)).showNotification(Mockito.any(Window.Notification.class));
+		Mockito.verify(this.listManagerMain, Mockito.times(0)).addPlantsToList(Mockito.anyList());
+		Mockito.verify(this.pagedTable, Mockito.times(0)).getItem(Mockito.anyInt());
 
 	}
 
