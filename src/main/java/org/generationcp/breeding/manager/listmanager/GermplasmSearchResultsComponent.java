@@ -86,7 +86,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 	private Action.Handler rightClickActionHandler;
 
-	private final org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
+	private org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
 
 	private final LazyQueryDefinition definition = new LazyQueryDefinition(true, 20);
 
