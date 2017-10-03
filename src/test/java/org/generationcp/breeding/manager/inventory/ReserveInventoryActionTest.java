@@ -66,7 +66,7 @@ public class ReserveInventoryActionTest {
 
 		List<GermplasmListData> germplasmListData = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 
-		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(germplasmListData);
 
 		boolean status = reserveInventoryAction.saveReserveTransactions(reservations, LIST_ID);
@@ -82,7 +82,7 @@ public class ReserveInventoryActionTest {
 		List<GermplasmListData> germplasmListData = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0).setWithdrawalStatus(ListDataInventory.RESERVED);
 
-		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(germplasmListData);
 
 		boolean status = reserveInventoryAction.saveReserveTransactions(reservations, LIST_ID);

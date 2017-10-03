@@ -299,7 +299,7 @@ public class ListInventoryTableTest {
 	private void initDataToInventoryTable() {
 		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 		Mockito.doReturn(inventoryDetails).when(this.inventoryDataManager)
-				.getLotDetailsForList(ListInventoryTableTest.LIST_ID, 0, Integer.MAX_VALUE);
+				.getLotDetailsForList(ListInventoryTableTest.LIST_ID, 0, Integer.MAX_VALUE, Mockito.anyString());
 
 		this.listInventoryTable.loadInventoryData();
 	}

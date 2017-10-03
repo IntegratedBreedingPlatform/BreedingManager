@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.util.FileDownloaderUtility;
 import org.generationcp.commons.service.FileService;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.util.StringUtil;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
@@ -68,6 +69,9 @@ public class SeedInventoryListExporter {
 	@Autowired
 	private org.generationcp.middleware.service.api.FieldbookService fieldbookMiddlewareService;
 
+	@Autowired
+	protected ContextUtil contextUtil;
+
 	protected Workbook excelWorkbook;
 
 	public SeedInventoryListExporter() {
@@ -118,7 +122,7 @@ public class SeedInventoryListExporter {
 
 	private void writeObservationSheet() {
 		final List<GermplasmListData> inventoryDetails =
-				this.inventoryDataManager.getReservedLotDetailsForExportList(this.germplasmList.getId());
+				this.inventoryDataManager.getReservedLotDetailsForExportList(this.germplasmList.getId(), contextUtil.getCurrentProgramUUID());
 
 		final Map<Integer, Transaction> transactionMap = createReservedTransactionMap(inventoryDetails);
 		Sheet observationSheet = excelWorkbook.getSheetAt(1);

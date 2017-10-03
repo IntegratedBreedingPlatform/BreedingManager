@@ -397,7 +397,7 @@ public class ListComponentTest {
 
 		List<GermplasmListData> germplasmListData = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 
-		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(germplasmListData);
 
 		this.listComponent.saveReservationChangesAction(this.window);
@@ -770,7 +770,7 @@ public class ListComponentTest {
 		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails(1);
 		inventoryDetails.get(0).getInventoryInfo().setLotRows(userSelectedLotEntriesToClose);
 
-		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(inventoryDetails);
 
 		Lot activeLot = new Lot();
@@ -802,7 +802,7 @@ public class ListComponentTest {
 		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails(1);
 		inventoryDetails.get(0).getInventoryInfo().setLotRows(userSelectedLotEntriesToClose);
 
-		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(inventoryDetails);
 
 		Lot activeLot = new Lot();

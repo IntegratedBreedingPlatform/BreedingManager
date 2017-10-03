@@ -2309,7 +2309,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private List<ListEntryLotDetails> getSelectedCloseLotEntryDetails(final List<ListEntryLotDetails> selectedLots)
 			throws CloseLotException {
 		final List<GermplasmListData> inventoryDetails =
-				this.inventoryDataManager.getLotDetailsForList(this.getGermplasmListId(), 0, Integer.MAX_VALUE);
+				this.inventoryDataManager.getLotDetailsForList(this.getGermplasmListId(), 0, Integer.MAX_VALUE, contextUtil.getCurrentProgramUUID());
 
 		final List<Integer> lotIdList = Lists.newArrayList();
 

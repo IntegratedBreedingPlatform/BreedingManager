@@ -90,7 +90,7 @@ public class SeedInventoryListExporterTest {
 		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class))).thenReturn(createReservedTransactions());
 
 		List<GermplasmListData> germplasmListDataForReservedEntries = createGermplasmListDataForReservedEntries();
-		Mockito.when(this.inventoryDataManager.getReservedLotDetailsForExportList(Mockito.anyInt())).thenReturn(germplasmListDataForReservedEntries);
+		Mockito.when(this.inventoryDataManager.getReservedLotDetailsForExportList(Mockito.anyInt(), Mockito.anyString())).thenReturn(germplasmListDataForReservedEntries);
 
 		seedInventoryListExporter.exportSeedPreparationList();
 

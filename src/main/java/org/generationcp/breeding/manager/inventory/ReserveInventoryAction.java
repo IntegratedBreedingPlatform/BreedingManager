@@ -200,7 +200,7 @@ public class ReserveInventoryAction implements Serializable {
 
 		if(!CollectionUtils.isEmpty(validReservationsToSave)) {
 
-			final List<GermplasmListData> inventoryData = this.inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
+			final List<GermplasmListData> inventoryData = this.inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE, contextUtil.getCurrentProgramUUID());
 
 			if (!CollectionUtils.isEmpty(inventoryData)) {
 				for (GermplasmListData germplasmListData : inventoryData) {

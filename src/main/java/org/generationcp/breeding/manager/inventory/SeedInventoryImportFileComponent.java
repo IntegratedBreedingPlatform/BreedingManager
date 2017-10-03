@@ -19,6 +19,7 @@ import org.generationcp.breeding.manager.pojos.ImportedSeedInventory;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventoryList;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.parsing.InvalidFileDataException;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -61,6 +62,9 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 	@Autowired
 	protected InventoryDataManager inventoryDataManager;
+
+	@Autowired
+	protected ContextUtil contextUtil;
 
 	private VerticalLayout mainLayout;
 
@@ -158,7 +162,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 		this.extensionSet.add("xlsx");
 
 		final List<GermplasmListData> inventoryDetails =
-				this.inventoryDataManager.getReservedLotDetailsForExportList(this.selectedGermplsmList.getId());
+				this.inventoryDataManager.getReservedLotDetailsForExportList(this.selectedGermplsmList.getId(), contextUtil.getCurrentProgramUUID());
 
 		this.selectedListReservedInventoryDetails = inventoryDetails;
 

@@ -204,7 +204,7 @@ public class ListCommonActionsUtilTest {
 		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0).setWithdrawalStatus(ListDataInventory.WITHDRAWN);
 
 		Mockito.when(this.inventoryDataManager.
-				getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt())).thenReturn(germplasmListData);
+				getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString())).thenReturn(germplasmListData);
 
 		ListCommonActionsUtil.handleCreateLabelsAction(1, this.inventoryDataManager, this.messageSource, null, null, this.window);
 

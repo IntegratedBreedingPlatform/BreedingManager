@@ -391,7 +391,7 @@ public class ListCommonActionsUtil {
 
 	public static void handleCreateLabelsAction(final Integer listId, InventoryDataManager inventoryDataManager,
 			SimpleResourceBundleMessageSource messageSource, ContextUtil contextUtil, Application application, Window window) {
-			final List<GermplasmListData> germplasmListDatas = inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
+			final List<GermplasmListData> germplasmListDatas = inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE, contextUtil.getCurrentProgramUUID());
 
 			if (!ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListDatas)) {
 				MessageNotifier.showError(window, messageSource.getMessage(Message.PRINT_LABELS),

@@ -293,7 +293,7 @@ public class ListBuilderComponentTest {
 	  	Mockito.when(this.inventoryDataManager.getLotCountsForList(this.currentlySavedGermplasmList.getId(), 0,1))
 			  .thenReturn(germplasmListData);
 
-		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(germplasmListData);
 
 	 	 Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(Mockito.isA(Integer.class)))

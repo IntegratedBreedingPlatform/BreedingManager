@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
@@ -77,6 +78,9 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	@Resource
 	protected CrossExpansionProperties crossExpansionProperties;
 
+	@Resource
+	protected ContextUtil contextUtil;
+
 	public ListInventoryTable(final Integer listId) {
 		super(ColumnLabels.TAG.getName());
 		this.listId = listId;
@@ -136,7 +140,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public void loadInventoryData() {
 		if (this.listId != null) {
 			final List<GermplasmListData> inventoryDetails =
-					this.inventoryDataManager.getLotDetailsForList(this.listId, 0, Integer.MAX_VALUE);
+					this.inventoryDataManager.getLotDetailsForList(this.listId, 0, Integer.MAX_VALUE, contextUtil.getCurrentProgramUUID());
 			this.displayInventoryDetails(inventoryDetails);
 		}
 
