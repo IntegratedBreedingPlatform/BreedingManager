@@ -93,6 +93,7 @@ public class GermplasmSearchResultsComponentTest {
 
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testInitMatchingGermplasmTableVerifyTableSettings() {
 		final PagedBreedingManagerTable actualTable = new PagedBreedingManagerTable(1, 20);
@@ -105,6 +106,13 @@ public class GermplasmSearchResultsComponentTest {
 		Assert.assertTrue(actualTable.isMultiSelect());
 		Assert.assertEquals(TableDragMode.ROW, actualTable.getDragMode());
 		Assert.assertFalse(actualTable.isColumnReorderingAllowed());
+		
+		Assert.assertEquals(GermplasmSearchResultsComponent.MATCHING_GEMRPLASM_TABLE_DATA, actualTable.getData());
+		final Object[] visibleColumns = {GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, GermplasmSearchResultsComponent.NAMES,
+				ColumnLabels.PARENTAGE.getName(), ColumnLabels.AVAILABLE_INVENTORY.getName(), ColumnLabels.TOTAL.getName(),
+				ColumnLabels.STOCKID.getName(), ColumnLabels.GID.getName(), ColumnLabels.GROUP_ID.getName(),
+				ColumnLabels.GERMPLASM_LOCATION.getName(), ColumnLabels.BREEDING_METHOD_NAME.getName()};
+		Assert.assertEquals(visibleColumns, actualTable.getVisibleColumns());
 	}
 
 	@Test
