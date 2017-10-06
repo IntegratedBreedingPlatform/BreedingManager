@@ -227,6 +227,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.matchingGermplasmTable.setMultiSelect(true);
 		this.matchingGermplasmTable.setSelectable(true);
 		this.matchingGermplasmTable.setImmediate(true);
+		this.matchingGermplasmTable.setColumnCollapsingAllowed(true);
 		this.matchingGermplasmTable.setDragMode(TableDragMode.ROW);
 		this.matchingGermplasmTable.setHeight("440px");
 
