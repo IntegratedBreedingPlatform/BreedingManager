@@ -354,47 +354,6 @@ public class GermplasmSearchResultsComponentTest {
 	}
 
 	@Test
-	public void testTablePageChangeListenerAddedColumn() {
-
-		final PagedBreedingManagerTable matchingGermplasmTable = Mockito.mock(PagedBreedingManagerTable.class);
-		final AddedColumnsMapper addedColumnsMapper = Mockito.mock(AddedColumnsMapper.class);
-		final GermplasmSearchResultsComponent.TablePageChangeListener pageChangeListener =
-				new GermplasmSearchResultsComponent().new TablePageChangeListener(matchingGermplasmTable, addedColumnsMapper);
-
-		Object[] columns = new Object[] {ColumnLabels.GERMPLASM_LOCATION, ColumnLabels.BREEDING_METHOD_NAME, ColumnLabels.PREFERRED_NAME};
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_NAME.name());
-
-		Mockito.when(matchingGermplasmTable.getVisibleColumns()).thenReturn(columns);
-
-		pageChangeListener.pageChanged(Mockito.mock(PagedTable.PagedTableChangeEvent.class));
-
-		// Verify that values will be generated for the added column Preferred Name. GERMPLASM_LOCATION and BREEDING_METHOD_NAME
-		// should be ignored.
-		Mockito.verify(addedColumnsMapper, Mockito.times(1))
-				.generateValuesForAddedColumns(new Object[] {ColumnLabels.PREFERRED_NAME}, true);
-
-	}
-
-	@Test
-	public void testTablePageChangeListenerNoAddedColumn() {
-
-		final PagedBreedingManagerTable matchingGermplasmTable = Mockito.mock(PagedBreedingManagerTable.class);
-		final AddedColumnsMapper addedColumnsMapper = Mockito.mock(AddedColumnsMapper.class);
-		final GermplasmSearchResultsComponent.TablePageChangeListener pageChangeListener =
-				new GermplasmSearchResultsComponent().new TablePageChangeListener(matchingGermplasmTable, addedColumnsMapper);
-
-		Object[] columns = new Object[] {ColumnLabels.GERMPLASM_LOCATION, ColumnLabels.BREEDING_METHOD_NAME};
-
-		Mockito.when(matchingGermplasmTable.getVisibleColumns()).thenReturn(columns);
-
-		pageChangeListener.pageChanged(Mockito.mock(PagedTable.PagedTableChangeEvent.class));
-
-		// There's no added column so addedColumnsMapper should not be called.
-		Mockito.verifyZeroInteractions(addedColumnsMapper);
-
-	}
-
-	@Test
 	public void testAddSelectedEntriesToNewListWithSelectedItems() {
 
 		final List<Integer> selectedItemIds = new ArrayList<>();

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vaadin.ui.Table;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
@@ -83,12 +84,19 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 	@Override
 	public void addColumn(final ColumnLabels columnLabel) {
 		if (!this.columnExists(columnLabel.getName())) {
-			this.targetTable.addContainerProperty(columnLabel.getName(), String.class, "");
 			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
+			targetTable.addGeneratedColumn(columnLabel.getName(), new Table.ColumnGenerator() {
+
+				@Override
+				public Object generateCell(final Table table, final Object o, final Object o1) {
+					return table.getItem(o).getItemProperty(o1).getValue();
+				}
+			});
+			targetTable.setSortContainerPropertyId(columnLabel.getName());
 		}
 		final LazyQueryDefinition definition = this.searchResultsComponent.getDefinition();
 		if (!definition.getPropertyIds().contains(columnLabel.getName())) {
-			definition.addProperty(columnLabel.getName(), String.class, "", false, false);
+			definition.addProperty(columnLabel.getName(), String.class, "", false, true);
 		}
 	}
 

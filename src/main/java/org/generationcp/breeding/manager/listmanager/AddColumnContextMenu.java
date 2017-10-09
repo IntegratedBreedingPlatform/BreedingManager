@@ -92,8 +92,10 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		}
 		
 		this.setupSubMenuItems();
+	}
 
-		this.sourceContextMenu.addListener(new AddColumnMenuItemClickListener(this.addColumnSource));
+	public void addListener(final ContextMenu.ClickListener listener) {
+		this.sourceContextMenu.addListener(listener);
 	}
 
 	void setupSubMenuItems() {

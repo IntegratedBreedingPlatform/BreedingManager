@@ -153,7 +153,7 @@ public class GermplasmQuery implements Query {
 
 		final Map<String, ObjectProperty> propertyMap = new HashMap<>();
 		propertyMap.put(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, new ObjectProperty<>(this.getItemCheckBox(index)));
-		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(gid)));
+		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(germplasm.getGermplasmNamesString(), germplasm.getGid())));
 		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(pedigreeStringMap.get(gid)));
 		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(),
 				new ObjectProperty<>(this.getInventoryInfoButton(germplasm, preferredNamesMap)));
@@ -164,6 +164,16 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.GERMPLASM_LOCATION.getName(), new ObjectProperty<>(germplasm.getLocationName()));
 		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(), new ObjectProperty<>(germplasm.getMethodName()));
 		propertyMap.put(GermplasmQuery.GID_REF_PROPERTY, new ObjectProperty<>(gid));
+		propertyMap.put(ColumnLabels.GERMPLASM_DATE.getName(), new ObjectProperty<>(germplasm.getGdate()));
+		propertyMap.put(ColumnLabels.PREFERRED_ID.getName(), new ObjectProperty<>(germplasm.getGermplasmPeferredId()));
+		propertyMap.put(ColumnLabels.PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getGermplasmPeferredName()));
+		propertyMap.put(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), new ObjectProperty<>(germplasm.getMethodCode()));
+		propertyMap.put(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), new ObjectProperty<>(germplasm.getMethodId()));
+		propertyMap.put(ColumnLabels.BREEDING_METHOD_GROUP.getName(), new ObjectProperty<>(germplasm.getMethodGroup()));
+		propertyMap.put(ColumnLabels.CROSS_FEMALE_GID.getName(), new ObjectProperty<>(germplasm.getFemaleParentPreferredID()));
+		propertyMap.put(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getFemaleParentPreferredName()));
+		propertyMap.put(ColumnLabels.CROSS_MALE_GID.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredID()));
+		propertyMap.put(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredName()));
 
 		for (final String propertyId : propertyMap.keySet()) {
 			item.addItemProperty(propertyId, propertyMap.get(propertyId));
@@ -229,14 +239,12 @@ public class GermplasmQuery implements Query {
 		return new GidLinkButtonClickListener(this.listManagerMain, String.valueOf(gid), this.viaToolUrl, this.showAddToList);
 	}
 
-	private Button getNamesButton(final Integer gid) {
-		final String germplasmFullName = this.getGermplasmNames(gid);
-		final String shortenedNames = this.getShortenedNames(germplasmFullName);
+	private Button getNamesButton(final String shortenedNames, final Integer gid) {
 
 		final Button namesButton = new Button(shortenedNames, this.createGermplasmListener(gid));
 		namesButton.setDebugId("namesButton");
 		namesButton.setStyleName(BaseTheme.BUTTON_LINK);
-		namesButton.setDescription(germplasmFullName);
+		namesButton.setDescription(shortenedNames);
 
 		return namesButton;
 	}

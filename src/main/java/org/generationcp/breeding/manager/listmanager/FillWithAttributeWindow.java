@@ -52,6 +52,7 @@ public class FillWithAttributeWindow extends BaseSubWindow
 	private ComboBox attributeBox;
 	private Button okButton;
 	private List<UserDefinedField> attributeTypeList;
+	private Button.ClickListener okButtonListener;
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
@@ -59,6 +60,13 @@ public class FillWithAttributeWindow extends BaseSubWindow
 	public FillWithAttributeWindow(final AddColumnSource addColumnSource, final String targetPropertyId) {
 		this.addColumnSource = addColumnSource;
 		this.targetPropertyId = targetPropertyId;
+		this.okButtonListener = new FillWithAttributeButtonClickListener(this.addColumnSource, this.attributeBox, this.targetPropertyId);
+	}
+
+	public FillWithAttributeWindow(final AddColumnSource addColumnSource, final String targetPropertyId, final Button.ClickListener okButtonListener) {
+		this.addColumnSource = addColumnSource;
+		this.targetPropertyId = targetPropertyId;
+		this.okButtonListener = okButtonListener;
 	}
 
 	@Override
@@ -91,7 +99,7 @@ public class FillWithAttributeWindow extends BaseSubWindow
 
 	@Override
 	public void addListeners() {
-		this.okButton.addListener(new FillWithAttributeButtonClickListener(this.addColumnSource, this.attributeBox, this.targetPropertyId));
+		this.okButton.addListener(okButtonListener);
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.containers.GermplasmQueryFactory;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
+import org.generationcp.breeding.manager.listmanager.listeners.AddColumnMenuItemClickListenerForGermplasmSearch;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -116,13 +117,13 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.definition.addProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null, false, false);
 		this.definition.addProperty(GermplasmSearchResultsComponent.NAMES, Button.class, null, false, false);
 		this.definition.addProperty(ColumnLabels.PARENTAGE.getName(), String.class, null, false, false);
-		this.definition.addProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null, false, false);
-		this.definition.addProperty(ColumnLabels.TOTAL.getName(), Button.class, null, false, false);
+		this.definition.addProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null, false, true);
+		this.definition.addProperty(ColumnLabels.TOTAL.getName(), Button.class, null, false, true);
 		this.definition.addProperty(ColumnLabels.STOCKID.getName(), Label.class, null, false, true);
-		this.definition.addProperty(ColumnLabels.GID.getName(), Button.class, null, false, false);
+		this.definition.addProperty(ColumnLabels.GID.getName(), Button.class, null, false, true);
 		this.definition.addProperty(ColumnLabels.GROUP_ID.getName(), String.class, null, false, true);
-		this.definition.addProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null, false, false);
-		this.definition.addProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null, false, false);
+		this.definition.addProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null, false, true);
+		this.definition.addProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null, false, true);
 		this.definition.addProperty(GermplasmQuery.GID_REF_PROPERTY, Integer.class, null, false, false);
 
 	}
@@ -185,7 +186,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.setAddColumnSource(
 				new GermplasmSearchLoadedItemsAddColumnSource(this.matchingGermplasmTable, this, GermplasmQuery.GID_REF_PROPERTY));
 
-		this.addActionMenuItems(new AddColumnContextMenu(this.getAddColumnSource(), this.getMenu(), null, this.messageSource));
+		final AddColumnContextMenu addColumnContextMenu = new AddColumnContextMenu(this.getAddColumnSource(), this.getMenu(), null, this.messageSource);
+		addColumnContextMenu.addListener(new AddColumnMenuItemClickListenerForGermplasmSearch(this.getAddColumnSource()));
+		this.addActionMenuItems(addColumnContextMenu);
 
 	}
 
@@ -374,8 +377,6 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 			}
 		});
 
-		this.matchingGermplasmTable
-				.addListener(new TablePageChangeListener(this.matchingGermplasmTable, new AddedColumnsMapper(this.getAddColumnSource())));
 	}
 
 	public void setRightClickActionHandlerEnabled(final Boolean isEnabled) {
@@ -631,34 +632,6 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 				this.germplasmSearchResultsComponent.addSelectedEntriesToNewList();
 			} else if (GermplasmSearchResultsComponent.ACTION_SELECT_ALL == action) {
 				this.germplasmSearchResultsComponent.getMatchingGermplasmTableWithSelectAll().selectAllEntriesOnCurrentPage();
-			}
-		}
-
-	}
-
-	public class TablePageChangeListener implements PagedTable.PageChangeListener {
-
-		private final PagedBreedingManagerTable matchingGermplasmTable;
-		private final AddedColumnsMapper addedColumnsMapper;
-
-		public TablePageChangeListener(final PagedBreedingManagerTable matchingGermplasmTable,
-				final AddedColumnsMapper addedColumnsMapper) {
-			this.matchingGermplasmTable = matchingGermplasmTable;
-			this.addedColumnsMapper = addedColumnsMapper;
-		}
-
-		// Generate values for added columns, if any were added
-		@Override
-		public void pageChanged(final PagedTableChangeEvent event) {
-
-			final List<Object> columns = new ArrayList<>(Arrays.asList(this.matchingGermplasmTable.getVisibleColumns()));
-			// Exclude Location and Breeding Method name for they are part of default columns
-			columns.remove(ColumnLabels.GERMPLASM_LOCATION);
-			columns.remove(ColumnLabels.BREEDING_METHOD_NAME);
-
-			if (AddColumnContextMenu.sourceHadAddedColumn(columns.toArray())) {
-				// Add Column > "Fill With Attribute" is disabled in Germplasm Search context hence 2nd parameter is true
-				this.addedColumnsMapper.generateValuesForAddedColumns(columns.toArray(), true);
 			}
 		}
 

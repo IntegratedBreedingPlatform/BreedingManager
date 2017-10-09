@@ -50,6 +50,7 @@ import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToLis
 import org.generationcp.breeding.manager.listmanager.listcomponent.GermplasmListTableContextMenu;
 import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.listcomponent.ListViewActionMenu;
+import org.generationcp.breeding.manager.listmanager.listeners.AddColumnMenuItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
@@ -465,6 +466,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				new ListComponentAddColumnSource(this.parentListDetailsComponent, this.listDataTable, ColumnLabels.GID.getName());
 		this.addColumnContextMenu =
 				new AddColumnContextMenu(addColumnSource, this.menu, this.menu.getListEditingOptions(), this.messageSource);
+		addColumnContextMenu.addListener(new AddColumnMenuItemClickListener(addColumnSource));
 	}
 
 	public void initializeListInventoryTable() {
