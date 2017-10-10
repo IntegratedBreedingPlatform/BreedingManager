@@ -252,22 +252,6 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		}
 	}
 
-	public static List<String> getTablePropertyIdsOfAddableColumns(Table table) {
-		if (table != null) {
-			List<String> propertyIds = new LinkedList<>();
-
-			for (String propertyId : (Collection<? extends String>) table.getContainerPropertyIds()) {
-				if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId)) {
-					propertyIds.add(propertyId);
-				}
-			}
-
-			return propertyIds;
-		} else {
-			return new ArrayList<String>();
-		}
-	}
-
 	@Override
 	public void updateLabels() {
 		// do nothing

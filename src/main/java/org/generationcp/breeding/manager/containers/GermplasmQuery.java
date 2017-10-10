@@ -11,14 +11,17 @@
 package org.generationcp.breeding.manager.containers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
@@ -189,7 +192,24 @@ public class GermplasmQuery implements Query {
 	protected List<Germplasm> getGermplasmSearchResults(final int startIndex, final int count) {
 		this.searchParameter.setStartingRow(startIndex);
 		this.searchParameter.setNumberOfEntries(count);
+
+		// Retrieve and set the names of 'Fill With' columns added to the table so that search query will generate values for them.
+		this.searchParameter.setAddedColumnsPropertyIds(getPropertyIdsOfAddableColumns(this.definition.getPropertyIds()));
+
 		return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
+	}
+
+	protected List<String> getPropertyIdsOfAddableColumns(final Collection<?> propertyIds) {
+
+		List<String> propertyIdsOfColumnsAdded = new LinkedList<>();
+
+		for (String propertyId : (Collection<? extends String>) propertyIds) {
+			if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId)) {
+				propertyIdsOfColumnsAdded.add(propertyId);
+			}
+		}
+		return propertyIdsOfColumnsAdded;
+
 	}
 
 	private Button getGidButton(final Integer gid) {

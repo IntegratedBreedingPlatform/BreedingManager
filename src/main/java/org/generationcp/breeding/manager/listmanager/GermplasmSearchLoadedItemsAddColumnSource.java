@@ -13,6 +13,7 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 
 import com.vaadin.data.Item;
@@ -83,7 +84,13 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 	@Override
 	public void addColumn(final ColumnLabels columnLabel) {
-		if (!this.columnExists(columnLabel.getName())) {
+
+		final LazyQueryDefinition definition = this.searchResultsComponent.getDefinition();
+
+		if (!definition.getPropertyIds().contains(columnLabel.getName())) {
+
+			definition.addProperty(columnLabel.getName(), String.class, "", false, true);
+
 			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
 			targetTable.addGeneratedColumn(columnLabel.getName(), new Table.ColumnGenerator() {
 
@@ -92,12 +99,9 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 					return table.getItem(o).getItemProperty(o1).getValue();
 				}
 			});
-			targetTable.setSortContainerPropertyId(columnLabel.getName());
+
 		}
-		final LazyQueryDefinition definition = this.searchResultsComponent.getDefinition();
-		if (!definition.getPropertyIds().contains(columnLabel.getName())) {
-			definition.addProperty(columnLabel.getName(), String.class, "", false, true);
-		}
+
 	}
 
 	@Override

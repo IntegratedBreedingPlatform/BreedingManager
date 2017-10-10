@@ -305,9 +305,6 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		searchParameter.setStartingRow(0);
 		searchParameter.setNumberOfEntries(this.matchingGermplasmTable.getPageLength());
 
-		// Retrieve and set the names of 'Fill With' columns added to the table so that search query will generate values for them.
-		searchParameter.setAddedColumnsPropertyIds(AddColumnContextMenu.getTablePropertyIdsOfAddableColumns(this.matchingGermplasmTable));
-
 		return new GermplasmQueryFactory(this.listManagerMain, this.viaToolUrl, this.showAddToList, searchParameter,
 				this.matchingGermplasmTable, this.definition);
 	}
