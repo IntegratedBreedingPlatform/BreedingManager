@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -245,6 +246,22 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		if (table != null) {
 			List<String> propertyIds = new ArrayList<String>();
 			propertyIds.addAll((Collection<? extends String>) table.getContainerPropertyIds());
+			return propertyIds;
+		} else {
+			return new ArrayList<String>();
+		}
+	}
+
+	public static List<String> getTablePropertyIdsOfAddableColumns(Table table) {
+		if (table != null) {
+			List<String> propertyIds = new LinkedList<>();
+
+			for (String propertyId : (Collection<? extends String>) table.getContainerPropertyIds()) {
+				if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId)) {
+					propertyIds.add(propertyId);
+				}
+			}
+
 			return propertyIds;
 		} else {
 			return new ArrayList<String>();
