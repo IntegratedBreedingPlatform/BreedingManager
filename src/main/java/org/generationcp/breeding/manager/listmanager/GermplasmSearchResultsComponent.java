@@ -115,7 +115,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.listManagerMain = listManagerMain;
 
 		this.definition.addProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null, false, false);
-		this.definition.addProperty(GermplasmSearchResultsComponent.NAMES, Button.class, null, false, false);
+		this.definition.addProperty(GermplasmSearchResultsComponent.NAMES, Button.class, null, false, true);
 		this.definition.addProperty(ColumnLabels.PARENTAGE.getName(), String.class, null, false, false);
 		this.definition.addProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null, false, true);
 		this.definition.addProperty(ColumnLabels.TOTAL.getName(), Button.class, null, false, true);
