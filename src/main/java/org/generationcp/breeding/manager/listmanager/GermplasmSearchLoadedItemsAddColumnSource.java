@@ -91,14 +91,15 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 			definition.addProperty(columnLabel.getName(), String.class, "", false, true);
 
-			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
-			targetTable.addGeneratedColumn(columnLabel.getName(), new Table.ColumnGenerator() {
+			this.targetTable.addGeneratedColumn(columnLabel.getName(), new Table.ColumnGenerator() {
 
 				@Override
 				public Object generateCell(final Table table, final Object o, final Object o1) {
 					return table.getItem(o).getItemProperty(o1).getValue();
 				}
 			});
+
+			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
 
 		}
 
@@ -111,14 +112,28 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 	@Override
 	public void addColumn(final String columnName) {
-		if (!this.columnExists(columnName.toUpperCase())) {
-			this.targetTable.addContainerProperty(columnName.toUpperCase(), String.class, "");
+
+		final LazyQueryDefinition definition = this.searchResultsComponent.getDefinition();
+
+		if (!definition.getPropertyIds().contains(columnName)) {
+
+			definition.addProperty(columnName, String.class, "", false, true);
+
+			targetTable.addGeneratedColumn(columnName, new Table.ColumnGenerator() {
+
+				@Override
+				public Object generateCell(final Table table, final Object o, final Object o1) {
+					if (table.getItem(o).getItemProperty(o1) != null) {
+						return table.getItem(o).getItemProperty(o1).getValue();
+					}
+					return "";
+				}
+			});
+
 			this.targetTable.setColumnHeader(columnName, columnName);
 		}
-		final LazyQueryDefinition definition = this.searchResultsComponent.getDefinition();
-		if (!definition.getPropertyIds().contains(columnName)) {
-			definition.addProperty(columnName, String.class, "", false, false);
-		}
+
+
 	}
 
 	@Override

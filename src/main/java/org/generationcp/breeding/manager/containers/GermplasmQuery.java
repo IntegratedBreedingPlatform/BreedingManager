@@ -33,6 +33,7 @@ import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -184,6 +185,12 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.CROSS_MALE_GID.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredID()));
 		propertyMap.put(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredName()));
 
+		for (Map.Entry<String, String> entry : germplasm.getAttributeTypesValueMap().entrySet()) {
+			String attributeTypePropertyId = entry.getKey();
+			String attributeTypeValue = entry.getValue();
+			propertyMap.put(attributeTypePropertyId, new ObjectProperty<>(attributeTypeValue));
+		}
+
 		for (final String propertyId : propertyMap.keySet()) {
 			item.addItemProperty(propertyId, propertyMap.get(propertyId));
 		}
@@ -199,21 +206,43 @@ public class GermplasmQuery implements Query {
 		this.searchParameter.setStartingRow(startIndex);
 		this.searchParameter.setNumberOfEntries(count);
 
+		Map<String, Integer> attributesTypeMap = this.createAttributesTypeMap();
+
 		// Retrieve and set the names of 'Fill With' columns added to the table so that search query will generate values for them.
-		this.searchParameter.setAddedColumnsPropertyIds(getPropertyIdsOfAddableColumns(this.definition.getPropertyIds()));
+		this.searchParameter.setAddedColumnsPropertyIds(getPropertyIdsOfAddableColumns(this.definition.getPropertyIds(), attributesTypeMap));
+		this.searchParameter.setAttributeTypesMap(attributesTypeMap);
 
 		return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
 	}
 
-	protected List<String> getPropertyIdsOfAddableColumns(final Collection<?> propertyIds) {
+	/**
+	 * Creates a map of Attribute Field Code and Field Number
+	 * @return
+	 */
+	private Map<String,Integer> createAttributesTypeMap() {
+
+		Map<String, Integer> attributeTypeMap = new HashMap<>();
+
+		List<UserDefinedField> userDefinedFields = germplasmDataManager.getAttributeTypesByGIDList(this.allGids);
+
+		for (UserDefinedField userDefinedField : userDefinedFields) {
+			attributeTypeMap.put(userDefinedField.getFcode(), userDefinedField.getFldno());
+		}
+
+		return attributeTypeMap;
+
+	}
+
+	protected List<String> getPropertyIdsOfAddableColumns(final Collection<?> propertyIds, final Map<String, Integer> attributesTypeMap) {
 
 		List<String> propertyIdsOfColumnsAdded = new LinkedList<>();
 
 		for (String propertyId : (Collection<? extends String>) propertyIds) {
-			if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId)) {
+			if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId) || attributesTypeMap.containsKey(propertyId)) {
 				propertyIdsOfColumnsAdded.add(propertyId);
 			}
 		}
+
 		return propertyIdsOfColumnsAdded;
 
 	}
