@@ -265,12 +265,14 @@ public class GermplasmQuery implements Query {
 		return new GidLinkButtonClickListener(this.listManagerMain, String.valueOf(gid), this.viaToolUrl, this.showAddToList);
 	}
 
-	private Button getNamesButton(final String shortenedNames, final Integer gid) {
+	private Button getNamesButton(final String germplasmFullNames, final Integer gid) {
+
+		final String shortenedNames = this.getShortenedNames(germplasmFullNames);
 
 		final Button namesButton = new Button(shortenedNames, this.createGermplasmListener(gid));
 		namesButton.setDebugId("namesButton");
 		namesButton.setStyleName(BaseTheme.BUTTON_LINK);
-		namesButton.setDescription(shortenedNames);
+		namesButton.setDescription(germplasmFullNames);
 
 		return namesButton;
 	}
