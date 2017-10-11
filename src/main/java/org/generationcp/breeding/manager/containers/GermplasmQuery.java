@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -65,12 +66,17 @@ public class GermplasmQuery implements Query {
 	private final ListManagerMain listManagerMain;
 	private final Table matchingGermplasmsTable;
 	private final GermplasmSearchParameter searchParameter;
+
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
+
 	@Resource
 	private PedigreeService pedigreeService;
+
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
+
+
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
 	private int size;
@@ -294,24 +300,6 @@ public class GermplasmQuery implements Query {
 		return itemCheckBox;
 	}
 
-	private String getGermplasmNames(final int gid) {
-		final StringBuilder germplasmNames = new StringBuilder("");
-
-		final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-
-		int i = 0;
-		for (final Name n : names) {
-			if (i < names.size() - 1) {
-				germplasmNames.append(n.getNval() + ", ");
-			} else {
-				germplasmNames.append(n.getNval());
-			}
-			i++;
-		}
-
-		return germplasmNames.toString();
-	}
-
 	private Label getStockIDs(final GermplasmInventory inventoryInfo) {
 		final String stockIDs = inventoryInfo.getStockIDs();
 		final Label stockLabel = new Label(stockIDs);
@@ -321,15 +309,14 @@ public class GermplasmQuery implements Query {
 	}
 
 	void retrieveGIDsofMatchingGermplasm() {
+
 		final GermplasmSearchParameter searchAllParameter = new GermplasmSearchParameter(this.searchParameter);
 		searchAllParameter.setStartingRow(0);
 		searchAllParameter.setNumberOfEntries(GermplasmQuery.RESULTS_LIMIT);
-		final List<Germplasm> allGermplasm = this.germplasmDataManager.searchForGermplasm(searchAllParameter);
+		final Set<Integer> allGermplasmGids = this.germplasmDataManager.retrieveGidsOfSearchGermplasmResult(searchAllParameter);
 
-		this.allGids = new ArrayList<>();
-		for (final Germplasm germplasm : allGermplasm) {
-			this.allGids.add(germplasm.getGid());
-		}
+		this.allGids = new ArrayList<>(allGermplasmGids);
+
 	}
 
 	public List<Integer> getAllGids() {
