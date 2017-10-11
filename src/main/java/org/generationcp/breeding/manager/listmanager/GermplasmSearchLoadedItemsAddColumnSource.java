@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.jensjansson.pagedtable.PagedTableContainer;
 import com.vaadin.ui.Table;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
@@ -101,6 +102,8 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
 
+			this.targetTable.refresh();
+
 		}
 
 	}
@@ -131,6 +134,8 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 			});
 
 			this.targetTable.setColumnHeader(columnName, columnName);
+
+			this.targetTable.refresh();
 		}
 
 
