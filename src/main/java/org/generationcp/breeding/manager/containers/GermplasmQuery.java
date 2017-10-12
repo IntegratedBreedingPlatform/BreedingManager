@@ -1,26 +1,24 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * <p>
+ * <p/>
  * Generation Challenge Programme (GCP)
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.containers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.vaadin.data.Item;
+import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.data.util.PropertysetItem;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
@@ -32,7 +30,6 @@ import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
@@ -42,15 +39,15 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.data.util.PropertysetItem;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
@@ -76,7 +73,6 @@ public class GermplasmQuery implements Query {
 
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
-
 
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
@@ -163,7 +159,8 @@ public class GermplasmQuery implements Query {
 
 		final Map<String, ObjectProperty> propertyMap = new HashMap<>();
 		propertyMap.put(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, new ObjectProperty<>(this.getItemCheckBox(index)));
-		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(germplasm.getGermplasmNamesString(), germplasm.getGid())));
+		propertyMap.put(GermplasmSearchResultsComponent.NAMES,
+				new ObjectProperty<>(this.getNamesButton(germplasm.getGermplasmNamesString(), germplasm.getGid())));
 		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(pedigreeStringMap.get(gid)));
 		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(),
 				new ObjectProperty<>(this.getInventoryInfoButton(germplasm, preferredNamesMap)));
@@ -185,9 +182,9 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.CROSS_MALE_GID.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredID()));
 		propertyMap.put(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredName()));
 
-		for (Map.Entry<String, String> entry : germplasm.getAttributeTypesValueMap().entrySet()) {
-			String attributeTypePropertyId = entry.getKey();
-			String attributeTypeValue = entry.getValue();
+		for (final Map.Entry<String, String> entry : germplasm.getAttributeTypesValueMap().entrySet()) {
+			final String attributeTypePropertyId = entry.getKey();
+			final String attributeTypeValue = entry.getValue();
 			propertyMap.put(attributeTypePropertyId, new ObjectProperty<>(attributeTypeValue));
 		}
 
@@ -206,10 +203,11 @@ public class GermplasmQuery implements Query {
 		this.searchParameter.setStartingRow(startIndex);
 		this.searchParameter.setNumberOfEntries(count);
 
-		Map<String, Integer> attributesTypeMap = this.createAttributesTypeMap();
+		final Map<String, Integer> attributesTypeMap = this.createAttributesTypeMap();
 
 		// Retrieve and set the names of 'Fill With' columns added to the table so that search query will generate values for them.
-		this.searchParameter.setAddedColumnsPropertyIds(getPropertyIdsOfAddableColumns(this.definition.getPropertyIds(), attributesTypeMap));
+		this.searchParameter
+				.setAddedColumnsPropertyIds(getPropertyIdsOfAddableColumns(this.definition.getPropertyIds(), attributesTypeMap));
 		this.searchParameter.setAttributeTypesMap(attributesTypeMap);
 
 		return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
@@ -219,13 +217,13 @@ public class GermplasmQuery implements Query {
 	 * Creates a map of Attribute Field Code and Field Number
 	 * @return
 	 */
-	protected Map<String,Integer> createAttributesTypeMap() {
+	protected Map<String, Integer> createAttributesTypeMap() {
 
-		Map<String, Integer> attributeTypeMap = new HashMap<>();
+		final Map<String, Integer> attributeTypeMap = new HashMap<>();
 
-		List<UserDefinedField> userDefinedFields = germplasmDataManager.getAttributeTypesByGIDList(this.allGids);
+		final List<UserDefinedField> userDefinedFields = germplasmDataManager.getAttributeTypesByGIDList(this.allGids);
 
-		for (UserDefinedField userDefinedField : userDefinedFields) {
+		for (final UserDefinedField userDefinedField : userDefinedFields) {
 			attributeTypeMap.put(userDefinedField.getFcode(), userDefinedField.getFldno());
 		}
 
@@ -235,9 +233,9 @@ public class GermplasmQuery implements Query {
 
 	protected List<String> getPropertyIdsOfAddableColumns(final Collection<?> propertyIds, final Map<String, Integer> attributesTypeMap) {
 
-		List<String> propertyIdsOfColumnsAdded = new LinkedList<>();
+		final List<String> propertyIdsOfColumnsAdded = new LinkedList<>();
 
-		for (String propertyId : (Collection<? extends String>) propertyIds) {
+		for (final String propertyId : (Collection<? extends String>) propertyIds) {
 			if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId) || attributesTypeMap.containsKey(propertyId)) {
 				propertyIdsOfColumnsAdded.add(propertyId);
 			}

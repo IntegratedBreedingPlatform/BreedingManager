@@ -1,14 +1,9 @@
-
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.vaadin.data.Item;
+import com.vaadin.ui.Table;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
-import org.generationcp.breeding.manager.listmanager.listeners.AddColumnMenuItemClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -19,15 +14,16 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Table;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent {
 
-	private SimpleResourceBundleMessageSource messageSource;
+	private final SimpleResourceBundleMessageSource messageSource;
 
-	private ContextMenu sourceContextMenu;
+	private final ContextMenu sourceContextMenu;
 	private ContextMenuItem addColumnItem;
 	private ContextMenuItem menuFillWithPreferredId;
 	private ContextMenuItem menuFillWithPreferredName;
@@ -44,11 +40,12 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	private ContextMenuItem menuFillWithCrossMaleInfo;
 	private ContextMenuItem menuFillWithCrossMaleGID;
 	private ContextMenuItem menuFillWithCrossMalePrefName;
-	private ContextMenuItem listEditingOptions;
+	private final ContextMenuItem listEditingOptions;
 
-	private AddColumnSource addColumnSource;
+	private final AddColumnSource addColumnSource;
 
 	public static List<String> ADDABLE_PROPERTY_IDS;
+
 	static {
 		AddColumnContextMenu.ADDABLE_PROPERTY_IDS = new ArrayList<>();
 
@@ -68,11 +65,11 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 	/**
 	 * Add "Add column" context menu to a parent context menu item
-	 * 
-	 * @param addColumnSource - source component where AddColumn was called from
+	 *
+	 * @param addColumnSource   - source component where AddColumn was called from
 	 * @param sourceContextMenu - parent context menu object
 	 * @param listEditingOption - parent context menu item to attach to
-	 * @param messageSource - internationalized message resource bundle
+	 * @param messageSource     - internationalized message resource bundle
 	 */
 	public AddColumnContextMenu(final AddColumnSource addColumnSource, final ContextMenu sourceContextMenu,
 			final ContextMenuItem listEditingOption, final SimpleResourceBundleMessageSource messageSource) {
@@ -91,7 +88,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		} else {
 			this.addColumnItem = this.sourceContextMenu.addItem(this.messageSource.getMessage(Message.ADD_COLUMN));
 		}
-		
+
 		this.setupSubMenuItems();
 	}
 
@@ -113,7 +110,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_LOCATION)) {
 			this.menuFillWithLocations = this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_LOCATION);
 		}
-		
+
 		// Breeding method Info and its sub-options. Excluded sub-options will be visible but disabled
 		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_BREEDING_METHOD_INFO)) {
 			this.menuFillWithMethodInfo = this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_BREEDING_METHOD_INFO);
@@ -129,12 +126,12 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 			this.menuFillWithMethodAbbrev.setEnabled(!doExcludeBreedingMethodAbbrev);
 
 			final boolean doExcludeBreedingMethodNumber = columnsToExclude.contains(FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER);
-			this.menuFillWithMethodNumber  =
+			this.menuFillWithMethodNumber =
 					this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER, this.menuFillWithMethodInfo);
 			this.menuFillWithMethodNumber.setEnabled(!doExcludeBreedingMethodNumber);
 
 			final boolean doExcludeBreedingMethodGroup = columnsToExclude.contains(FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
-			this.menuFillWithMethodGroup  =
+			this.menuFillWithMethodGroup =
 					this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP, this.menuFillWithMethodInfo);
 			this.menuFillWithMethodGroup.setEnabled(!doExcludeBreedingMethodGroup);
 		}
@@ -198,26 +195,26 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.CROSS_MALE_PREFERRED_NAME, this.menuFillWithCrossMalePrefName);
 
 		// Disable main "Breeding Method Information" menu item if columns were added for all sub-menu items
-		if (AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_NAME.getName(), table)
-				&& AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), table)
-				&& AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), table)
-				&& AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_GROUP.getName(), table)) {
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_NAME.getName(), table) && AddColumnContextMenu
+				.propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), table) && AddColumnContextMenu
+				.propertyExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), table) && AddColumnContextMenu
+				.propertyExists(ColumnLabels.BREEDING_METHOD_GROUP.getName(), table)) {
 			this.menuFillWithMethodInfo.setEnabled(false);
 		} else {
 			this.menuFillWithMethodInfo.setEnabled(true);
 		}
 
 		// Disable main "Cross Female Information" menu item if columns were added for all sub-menu items
-		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_FEMALE_GID.getName(), table)
-				&& AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), table)) {
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_FEMALE_GID.getName(), table) && AddColumnContextMenu
+				.propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), table)) {
 			this.menuFillWithCrossFemaleInfo.setEnabled(false);
 		} else {
 			this.menuFillWithCrossFemaleInfo.setEnabled(true);
 		}
 
 		// Disable main "Cross Male Information" menu item if columns were added for all sub-menu items
-		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_MALE_GID.getName(), table)
-				&& AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), table)) {
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_MALE_GID.getName(), table) && AddColumnContextMenu
+				.propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), table)) {
 			this.menuFillWithCrossMaleInfo.setEnabled(false);
 		} else {
 			this.menuFillWithCrossMaleInfo.setEnabled(true);
@@ -236,15 +233,15 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		}
 	}
 
-	public static Boolean propertyExists(String propertyId, Table table) {
-		List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
+	public static Boolean propertyExists(final String propertyId, final Table table) {
+		final List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
 		return propertyIds.contains(propertyId);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<String> getTablePropertyIds(Table table) {
+	public static List<String> getTablePropertyIds(final Table table) {
 		if (table != null) {
-			List<String> propertyIds = new ArrayList<String>();
+			final List<String> propertyIds = new ArrayList<String>();
 			propertyIds.addAll((Collection<? extends String>) table.getContainerPropertyIds());
 			return propertyIds;
 		} else {
@@ -259,17 +256,17 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 	/**
 	 * This has to be called after the list entries has been saved, because it'll need the germplasmListEntryId
-	 * 
+	 *
 	 * @return
 	 */
-	public List<ListDataInfo> getListDataCollectionFromTable(Table table) {
-		List<ListDataInfo> listDataCollection = new ArrayList<ListDataInfo>();
-		List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
+	public List<ListDataInfo> getListDataCollectionFromTable(final Table table) {
+		final List<ListDataInfo> listDataCollection = new ArrayList<ListDataInfo>();
+		final List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
 
-		for (Object itemId : table.getItemIds()) {
-			Item item = table.getItem(itemId);
-			List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
-			for (String propertyId : propertyIds) {
+		for (final Object itemId : table.getItemIds()) {
+			final Item item = table.getItem(itemId);
+			final List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
+			for (final String propertyId : propertyIds) {
 				if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId)) {
 					if (item.getItemProperty(propertyId).getValue() != null) {
 						columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
@@ -284,16 +281,16 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		return listDataCollection;
 	}
 
-	public void showHideAddColumnMenu(boolean visible) {
+	public void showHideAddColumnMenu(final boolean visible) {
 		this.addColumnItem.setVisible(visible);
 		this.sourceContextMenu.requestRepaint();
 	}
 
-	public void setEnabled(Boolean state) {
+	public void setEnabled(final Boolean state) {
 		this.addColumnItem.setEnabled(state);
 	}
 
-	public void setVisible(Boolean state) {
+	public void setVisible(final Boolean state) {
 		this.addColumnItem.setVisible(state);
 	}
 
@@ -306,88 +303,71 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		return false;
 	}
 
-	
 	public ContextMenuItem getAddColumnItem() {
 		return addColumnItem;
 	}
 
-	
-	public void setAddColumnItem(ContextMenuItem addColumnItem) {
+	public void setAddColumnItem(final ContextMenuItem addColumnItem) {
 		this.addColumnItem = addColumnItem;
 	}
 
-	
-	public void setMenuFillWithPreferredId(ContextMenuItem menuFillWithPreferredId) {
+	public void setMenuFillWithPreferredId(final ContextMenuItem menuFillWithPreferredId) {
 		this.menuFillWithPreferredId = menuFillWithPreferredId;
 	}
 
-	
-	public void setMenuFillWithPreferredName(ContextMenuItem menuFillWithPreferredName) {
+	public void setMenuFillWithPreferredName(final ContextMenuItem menuFillWithPreferredName) {
 		this.menuFillWithPreferredName = menuFillWithPreferredName;
 	}
 
-	
-	public void setMenuFillWithGermplasmDate(ContextMenuItem menuFillWithGermplasmDate) {
+	public void setMenuFillWithGermplasmDate(final ContextMenuItem menuFillWithGermplasmDate) {
 		this.menuFillWithGermplasmDate = menuFillWithGermplasmDate;
 	}
 
-	
-	public void setMenuFillWithLocations(ContextMenuItem menuFillWithLocations) {
+	public void setMenuFillWithLocations(final ContextMenuItem menuFillWithLocations) {
 		this.menuFillWithLocations = menuFillWithLocations;
 	}
 
-	
-	public void setMenuFillWithMethodInfo(ContextMenuItem menuFillWithMethodInfo) {
+	public void setMenuFillWithMethodInfo(final ContextMenuItem menuFillWithMethodInfo) {
 		this.menuFillWithMethodInfo = menuFillWithMethodInfo;
 	}
 
-	
-	public void setMenuFillWithMethodName(ContextMenuItem menuFillWithMethodName) {
+	public void setMenuFillWithMethodName(final ContextMenuItem menuFillWithMethodName) {
 		this.menuFillWithMethodName = menuFillWithMethodName;
 	}
 
-	
-	public void setMenuFillWithMethodAbbrev(ContextMenuItem menuFillWithMethodAbbrev) {
+	public void setMenuFillWithMethodAbbrev(final ContextMenuItem menuFillWithMethodAbbrev) {
 		this.menuFillWithMethodAbbrev = menuFillWithMethodAbbrev;
 	}
 
-	
-	public void setMenuFillWithMethodNumber(ContextMenuItem menuFillWithMethodNumber) {
+	public void setMenuFillWithMethodNumber(final ContextMenuItem menuFillWithMethodNumber) {
 		this.menuFillWithMethodNumber = menuFillWithMethodNumber;
 	}
 
-	
-	public void setMenuFillWithMethodGroup(ContextMenuItem menuFillWithMethodGroup) {
+	public void setMenuFillWithMethodGroup(final ContextMenuItem menuFillWithMethodGroup) {
 		this.menuFillWithMethodGroup = menuFillWithMethodGroup;
 	}
 
-	
-	public void setMenuFillWithCrossFemaleInfo(ContextMenuItem menuFillWithCrossFemaleInfo) {
+	public void setMenuFillWithCrossFemaleInfo(final ContextMenuItem menuFillWithCrossFemaleInfo) {
 		this.menuFillWithCrossFemaleInfo = menuFillWithCrossFemaleInfo;
 	}
 
-	
-	public void setMenuFillWithCrossFemaleGID(ContextMenuItem menuFillWithCrossFemaleGID) {
+	public void setMenuFillWithCrossFemaleGID(final ContextMenuItem menuFillWithCrossFemaleGID) {
 		this.menuFillWithCrossFemaleGID = menuFillWithCrossFemaleGID;
 	}
 
-	
-	public void setMenuFillWithCrossFemalePrefName(ContextMenuItem menuFillWithCrossFemalePrefName) {
+	public void setMenuFillWithCrossFemalePrefName(final ContextMenuItem menuFillWithCrossFemalePrefName) {
 		this.menuFillWithCrossFemalePrefName = menuFillWithCrossFemalePrefName;
 	}
 
-	
-	public void setMenuFillWithCrossMaleInfo(ContextMenuItem menuFillWithCrossMaleInfo) {
+	public void setMenuFillWithCrossMaleInfo(final ContextMenuItem menuFillWithCrossMaleInfo) {
 		this.menuFillWithCrossMaleInfo = menuFillWithCrossMaleInfo;
 	}
 
-	
-	public void setMenuFillWithCrossMaleGID(ContextMenuItem menuFillWithCrossMaleGID) {
+	public void setMenuFillWithCrossMaleGID(final ContextMenuItem menuFillWithCrossMaleGID) {
 		this.menuFillWithCrossMaleGID = menuFillWithCrossMaleGID;
 	}
 
-	
-	public void setMenuFillWithCrossMalePrefName(ContextMenuItem menuFillWithCrossMalePrefName) {
+	public void setMenuFillWithCrossMalePrefName(final ContextMenuItem menuFillWithCrossMalePrefName) {
 		this.menuFillWithCrossMalePrefName = menuFillWithCrossMalePrefName;
 	}
 }
