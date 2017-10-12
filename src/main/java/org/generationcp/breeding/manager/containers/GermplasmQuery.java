@@ -219,7 +219,7 @@ public class GermplasmQuery implements Query {
 	 * Creates a map of Attribute Field Code and Field Number
 	 * @return
 	 */
-	private Map<String,Integer> createAttributesTypeMap() {
+	protected Map<String,Integer> createAttributesTypeMap() {
 
 		Map<String, Integer> attributeTypeMap = new HashMap<>();
 

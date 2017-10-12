@@ -24,6 +24,7 @@ import org.generationcp.middleware.manager.GermplasmNameType;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
@@ -63,6 +64,8 @@ public class GermplasmQueryTest {
 	public static final Integer TEST_INVENTORY_COUNT = 10;
 	public static final int TEST_LOCATION_ID = 5;
 	public static final Double AVAILABLE_BALANCE = 5.0d;
+	public static final String ORI_COUN = "ORI_COUN";
+	public static final String NOTE = "NOTE";
 
 	private final String[] itemPropertyIds = new String[] {
 			"GROUP ID"
@@ -137,6 +140,8 @@ public class GermplasmQueryTest {
 			} 
 			this.allGermplasm.add(germplasm);
 			this.gids.add(gid);
+
+			Mockito.when(this.germplasmDataManager.getAttributeTypesByGIDList(Mockito.anyList())).thenReturn(this.createAttributeTypes());
 		}
 
 		// initialize middleware service calls
@@ -246,5 +251,83 @@ public class GermplasmQueryTest {
 
 		// compare the gid lists independent of order
 		Assert.assertEquals(new HashSet<>(this.gids), new HashSet<Integer>(this.query.getAllGids()));
+	}
+
+	@Test
+	public void testCreateAttributesTypeMap() {
+
+		Map<String, Integer> result = this.query.createAttributesTypeMap();
+
+		Assert.assertEquals(2, result.size());
+		Assert.assertTrue(result.containsKey(ORI_COUN));
+		Assert.assertTrue(result.containsKey(NOTE));
+		Assert.assertEquals(Integer.valueOf(100), result.get(ORI_COUN));
+		Assert.assertEquals(Integer.valueOf(101), result.get(NOTE));
+
+	}
+
+	@Test
+	public void testGetPropertyIdsOfAddableColumns() {
+
+		List<String> propertyIdsDefinition = new ArrayList<>();
+
+		// Add dummy propertyIds
+		propertyIdsDefinition.add("Column 1");
+		propertyIdsDefinition.add("Column 2");
+
+		// Add expected addable columns
+		propertyIdsDefinition.add(ColumnLabels.PREFERRED_ID.getName());
+		propertyIdsDefinition.add(ColumnLabels.PREFERRED_NAME.getName());
+		propertyIdsDefinition.add(ColumnLabels.GERMPLASM_DATE.getName());
+		propertyIdsDefinition.add(ColumnLabels.GERMPLASM_LOCATION.getName());
+		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_NAME.getName());
+		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
+		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_NUMBER.getName());
+		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_GROUP.getName());
+		propertyIdsDefinition.add(ColumnLabels.CROSS_FEMALE_GID.getName());
+		propertyIdsDefinition.add(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
+		propertyIdsDefinition.add(ColumnLabels.CROSS_MALE_GID.getName());
+		propertyIdsDefinition.add(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
+
+		// Add attribute type property Id
+		propertyIdsDefinition.add(ORI_COUN);
+		
+		List<String> result = query.getPropertyIdsOfAddableColumns(propertyIdsDefinition, this.query.createAttributesTypeMap());
+
+
+		// Only the expected addable columns and attribute type property Ids should be included in the
+		// result.
+		Assert.assertFalse(result.contains("Column 1"));
+		Assert.assertFalse(result.contains("Column 2"));
+		Assert.assertTrue(result.contains(ColumnLabels.PREFERRED_ID.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.PREFERRED_NAME.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.GERMPLASM_DATE.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.GERMPLASM_LOCATION.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_NAME.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_NUMBER.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_GROUP.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.CROSS_FEMALE_GID.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.CROSS_MALE_GID.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()));
+		Assert.assertTrue(result.contains(ORI_COUN));
+
+	}
+
+	private List<UserDefinedField> createAttributeTypes() {
+
+		List<UserDefinedField> attributeTypes = new ArrayList<>();
+
+		UserDefinedField userDefinedField1 = new UserDefinedField(100);
+		userDefinedField1.setFcode(ORI_COUN);
+		UserDefinedField userDefinedField2 = new UserDefinedField(101);
+		userDefinedField2.setFcode(NOTE);
+
+		attributeTypes.add(userDefinedField1);
+		attributeTypes.add(userDefinedField2);
+
+		return attributeTypes;
+
 	}
 }
