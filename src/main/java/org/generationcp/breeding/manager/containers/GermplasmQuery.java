@@ -342,8 +342,6 @@ public class GermplasmQuery implements Query {
 	void retrieveGIDsofMatchingGermplasm() {
 
 		final GermplasmSearchParameter searchAllParameter = new GermplasmSearchParameter(this.searchParameter);
-		searchAllParameter.setStartingRow(0);
-		searchAllParameter.setNumberOfEntries(GermplasmQuery.RESULTS_LIMIT);
 		final Set<Integer> allGermplasmGids = this.germplasmDataManager.retrieveGidsOfSearchGermplasmResult(searchAllParameter);
 
 		this.allGids = new ArrayList<>(allGermplasmGids);
