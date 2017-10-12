@@ -46,8 +46,8 @@ public class FillWithAttributeWindow extends BaseSubWindow
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	private final AddColumnSource addColumnSource;
-	private final String targetPropertyId;
+	private AddColumnSource addColumnSource;
+	private String targetPropertyId;
 	private HorizontalLayout attributeLayout;
 	private ComboBox attributeBox;
 	private Button okButton;
