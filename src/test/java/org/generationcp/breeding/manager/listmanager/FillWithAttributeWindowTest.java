@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.generationcp.breeding.manager.containers.GermplasmQuery;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.listeners.FillWithAttributeButtonClickListener;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -42,7 +43,7 @@ public class FillWithAttributeWindowTest {
 	private AddColumnSource addColumnSource;
 
 	@InjectMocks
-	private FillWithAttributeWindow fillWithAttributeWindow;
+	private FillWithAttributeWindow fillWithAttributeWindow = new FillWithAttributeWindow(addColumnSource, GermplasmQuery.GID_REF_PROPERTY);
 
 	private List<UserDefinedField> attributeTypes;
 

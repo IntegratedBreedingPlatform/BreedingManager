@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -63,8 +64,28 @@ public class GermplasmQueryTest {
 	public static final int TEST_LOCATION_ID = 5;
 	public static final Double AVAILABLE_BALANCE = 5.0d;
 
-	private final String[] itemPropertyIds = new String[] {"LOCATIONS", "GROUP ID", "GID_REF", "Tag All Column", "LOTS", "AVAILABLE",
-			"PARENTAGE", "METHOD NAME", "STOCKID", "NAMES", "GID"};
+	private final String[] itemPropertyIds = new String[] {
+			"GROUP ID"
+			,"METHOD ABBREV"
+			,"Tag All Column"
+			,"PREFERRED NAME"
+			,"PARENTAGE"
+			,"CROSS-MALE PREFERRED NAME"
+			,"AVAILABLE"
+			,"CROSS-FEMALE GID"
+			,"METHOD GROUP"
+			,"METHOD NUMBER"
+			,"GID"
+			,"LOCATIONS"
+			,"GERMPLASM DATE"
+			,"GID_REF"
+			,"LOTS"
+			,"CROSS-MALE GID"
+			,"PREFERRED ID"
+			,"CROSS-FEMALE PREFERRED NAME"
+			,"METHOD NAME"
+			,"STOCKID"
+			,"NAMES"} ;
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
 	@Mock
@@ -99,6 +120,18 @@ public class GermplasmQueryTest {
 			inventoryInfo.setTotalAvailableBalance(GermplasmQueryTest.AVAILABLE_BALANCE);
 			germplasm.setInventoryInfo(inventoryInfo);
 			pedigreeString.put(gid, GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING);
+			germplasm.setGermplasmNamesString("NAME 1, NAME 2, NAME 3");
+			germplasm.setGermplasmDate("20050101");
+			germplasm.setGermplasmPeferredId("Preferred Id");
+			germplasm.setGermplasmPeferredName("Preferred Name");
+			germplasm.setMethodCode("ABC");
+			germplasm.setMethodId(100);
+			germplasm.setMethodGroup("123");
+			germplasm.setFemaleParentPreferredID("101");
+			germplasm.setFemaleParentPreferredName("Female Preferred Name");
+			germplasm.setMaleParentPreferredID("102");
+			germplasm.setMaleParentPreferredName("Male Preferred Name");
+
 			if (i < NUMBER_OF_ITEMS_ON_PAGE){
 				this.currentGermplasm.add(germplasm);
 			} 
@@ -111,6 +144,8 @@ public class GermplasmQueryTest {
 				this.pedigreeService.getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(), Matchers.eq(this.crossExpansionProperties)))
 				.thenReturn(pedigreeString);
 		Mockito.when(this.germplasmDataManager.searchForGermplasm(this.germplasmSearchParameter)).thenReturn(this.currentGermplasm);
+		Mockito.when(this.germplasmDataManager.retrieveGidsOfSearchGermplasmResult(this.germplasmSearchParameter)).thenReturn(new HashSet<Integer>(this.gids));
+
 		this.searchAllParameter = new GermplasmSearchParameter(this.germplasmSearchParameter);
 		this.searchAllParameter.setStartingRow(0);
 		this.searchAllParameter.setNumberOfEntries(GermplasmQuery.RESULTS_LIMIT);
@@ -192,7 +227,7 @@ public class GermplasmQueryTest {
 	@Test
 	public void testSize() throws Exception {
 		Assert.assertEquals("The count call should be the same with the test germplasm list", this.allGermplasm.size(), this.query.size());
-		Mockito.verify(this.germplasmDataManager).searchForGermplasm(this.searchAllParameter);
+		Mockito.verify(this.germplasmDataManager).retrieveGidsOfSearchGermplasmResult(this.germplasmSearchParameter);
 	}
 
 	@Test
@@ -208,6 +243,8 @@ public class GermplasmQueryTest {
 	@Test
 	public void testRetrieveGIDsofMatchingGermplasm() {
 		this.query.retrieveGIDsofMatchingGermplasm();
-		Assert.assertEquals(this.gids, this.query.getAllGids());
+
+		// compare the gid lists independent of order
+		Assert.assertEquals(new HashSet<>(this.gids), new HashSet<Integer>(this.query.getAllGids()));
 	}
 }
