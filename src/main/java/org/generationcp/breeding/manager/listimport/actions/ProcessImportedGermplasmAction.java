@@ -253,8 +253,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	/**
-	 * Update GID to the existing germplasm's id if automatically accept checkbox was chosen and there is only one match for designation of
-	 * imported germplasm
+	 * If automatically accept checkbox was chosen and there is only one match for designation of imported germplasm, 
+	 * update to GID of matched germplasm. If automatically accept checkbox was chosen, try to find a match from
+	 * previous entries in the file that had no name match in DB and reuse that germplasm.
 	 *
 	 * @param index - index of entry in import file
 	 * @param importedGermplasm - imported germplasm as specified in file
@@ -264,10 +265,23 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	void updateGidForSingleMatch(final Integer index, final ImportedGermplasm importedGermplasm, final int germplasmMatchesCount) {
 		// If a single match is found on designation, add it to matched germplasm IDs so new germplasm won't be created
 		// Multiple matches will be handled by SelectGermplasmWindow
-		if (germplasmMatchesCount == 1 && this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
-			final List<Germplasm> foundGermplasm =
-					this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-			this.addToMatchedGermplasmIds(foundGermplasm.get(0).getGid(), index);
+		if (this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
+			final String designation = importedGermplasm.getDesig();
+			if (germplasmMatchesCount == 1) {
+				final List<Germplasm> foundGermplasm =
+						this.germplasmDataManager.getGermplasmByName(designation, 0, 1, Operation.EQUAL);
+				this.addToMatchedGermplasmIds(foundGermplasm.get(0).getGid(), index);
+			
+			// If name not yet in DB, try to find a match from previous entries in the file so that same germplasm can be reused
+			} else if (germplasmMatchesCount == 0) {
+				final Germplasm germplasmToReuse = this.retrieveGermplasmToReuseForDesignation(designation);
+				if (germplasmToReuse != null) {
+					this.germplasmNameObjects.get(index).getGermplasm().setGid(germplasmToReuse.getGid());
+				} else {
+					this.mapDesignationToGermplasmForReuse(designation, index);
+				}
+				
+			}
 		}
 	}
 
