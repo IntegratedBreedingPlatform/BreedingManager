@@ -254,19 +254,6 @@ public class GermplasmQueryTest {
 	}
 
 	@Test
-	public void testCreateAttributesTypeMap() {
-
-		Map<String, Integer> result = this.query.createAttributesTypeMap();
-
-		Assert.assertEquals(2, result.size());
-		Assert.assertTrue(result.containsKey(ORI_COUN));
-		Assert.assertTrue(result.containsKey(NOTE));
-		Assert.assertEquals(Integer.valueOf(100), result.get(ORI_COUN));
-		Assert.assertEquals(Integer.valueOf(101), result.get(NOTE));
-
-	}
-
-	@Test
 	public void testGetPropertyIdsOfAddableColumns() {
 
 		List<String> propertyIdsDefinition = new ArrayList<>();
@@ -292,7 +279,7 @@ public class GermplasmQueryTest {
 		// Add attribute type property Id
 		propertyIdsDefinition.add(ORI_COUN);
 		
-		List<String> result = query.getPropertyIdsOfAddableColumns(propertyIdsDefinition, this.query.createAttributesTypeMap());
+		List<String> result = query.getPropertyIdsOfAddableColumns(propertyIdsDefinition);
 
 
 		// Only the expected addable columns and attribute type property Ids should be included in the

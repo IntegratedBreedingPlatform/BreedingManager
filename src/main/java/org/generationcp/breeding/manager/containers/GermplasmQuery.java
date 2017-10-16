@@ -203,40 +203,21 @@ public class GermplasmQuery implements Query {
 		this.searchParameter.setStartingRow(startIndex);
 		this.searchParameter.setNumberOfEntries(count);
 
-		final Map<String, Integer> attributesTypeMap = this.createAttributesTypeMap();
 
 		// Retrieve and set the names of 'Fill With' columns added to the table so that search query will generate values for them.
 		this.searchParameter
-				.setAddedColumnsPropertyIds(getPropertyIdsOfAddableColumns(this.definition.getPropertyIds(), attributesTypeMap));
-		this.searchParameter.setAttributeTypesMap(attributesTypeMap);
+				.setAddedColumnsPropertyIds(getPropertyIdsOfAddableColumns(this.definition.getPropertyIds()));
+
 
 		return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
 	}
 
-	/**
-	 * Creates a map of Attribute Field Code and Field Number
-	 * @return
-	 */
-	protected Map<String, Integer> createAttributesTypeMap() {
-
-		final Map<String, Integer> attributeTypeMap = new HashMap<>();
-
-		final List<UserDefinedField> userDefinedFields = germplasmDataManager.getAttributeTypesByGIDList(this.allGids);
-
-		for (final UserDefinedField userDefinedField : userDefinedFields) {
-			attributeTypeMap.put(userDefinedField.getFcode(), userDefinedField.getFldno());
-		}
-
-		return attributeTypeMap;
-
-	}
-
-	protected List<String> getPropertyIdsOfAddableColumns(final Collection<?> propertyIds, final Map<String, Integer> attributesTypeMap) {
+	protected List<String> getPropertyIdsOfAddableColumns(final Collection<?> propertyIds) {
 
 		final List<String> propertyIdsOfColumnsAdded = new LinkedList<>();
 
 		for (final String propertyId : (Collection<? extends String>) propertyIds) {
-			if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId) || attributesTypeMap.containsKey(propertyId)) {
+			if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId)) {
 				propertyIdsOfColumnsAdded.add(propertyId);
 			}
 		}
