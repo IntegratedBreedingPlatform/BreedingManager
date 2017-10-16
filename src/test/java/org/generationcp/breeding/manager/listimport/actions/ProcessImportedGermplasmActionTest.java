@@ -515,7 +515,7 @@ public class ProcessImportedGermplasmActionTest {
 	}
 
 	@Test
-	public void testUpdateGidForSingleMatchWhenAutomaticallyAcceptSingleMatch() {
+	public void testUpdateGidForSingleMatchWhenAutomaticallyAcceptSingleMatchWhereMatchInDB() {
 		final Integer gid = 100;
 		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
 		importedGermplasm.setDesig("Name" + gid);
@@ -541,6 +541,56 @@ public class ProcessImportedGermplasmActionTest {
 		Assert.assertEquals("Expecting matched germplasm to be in list of matched GIDs", gid,
 				this.processImportedGermplasmAction.getMatchedGermplasmIds().get(0));
 		Assert.assertTrue("Expecting flag for tracking if GID is matched is true.", updatedGermplasmName.isGidMatched());
+	}
+	
+	@Test
+	public void testUpdateGidForSingleMatchWhenAutomaticallyAcceptSingleMatchWhereMatchNotInDBAndGermplasmToReuseIsNull() {
+		final Integer gid = 100;
+		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
+		importedGermplasm.setDesig("Name" + gid);
+		final List<Germplasm> germplasms = new ArrayList<Germplasm>();
+		germplasms.add(GermplasmTestDataInitializer.createGermplasm(gid));
+
+		this.initializeAndSetGermplasmNameObjects();
+
+		Mockito.doReturn(true).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+
+		// Method to test
+		final int germplasmMatchesCount = 0;
+		final Integer index = 0;
+		this.processImportedGermplasmAction.updateGidForSingleMatch(index, importedGermplasm, germplasmMatchesCount);
+
+		Assert.assertEquals("Expecting that the gid set is the same.", gid,
+				importedGermplasm.getGid());
+		Assert.assertEquals("Expecting the size of designationToGermplasmForReuseMap to be 2", 2, this.processImportedGermplasmAction.getDesignationToGermplasmForReuseMap().size());
+		
+	}
+	
+	@Test
+	public void testUpdateGidForSingleMatchWhenAutomaticallyAcceptSingleMatchWhereMatchNotInDBAndGermplasmToReuseIsNotNull() {
+		final Integer gid = 100;
+		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
+		importedGermplasm.setDesig("Name" + gid);
+		final List<Germplasm> germplasms = new ArrayList<Germplasm>();
+		germplasms.add(GermplasmTestDataInitializer.createGermplasm(gid));
+
+		this.initializeAndSetGermplasmNameObjects();
+
+		Mockito.doReturn(true).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+
+		final int germplasmMatchesCount = 0;
+		final Integer index = 0;
+		
+		//Add the designation in the map to make sure that there will be an existing germplasm to be reused. 
+		this.processImportedGermplasmAction.mapDesignationToGermplasmForReuse(importedGermplasm.getDesig(), index);
+		Assert.assertEquals("Expecting the size of designationToGermplasmForReuseMap to be 2", 2, this.processImportedGermplasmAction.getDesignationToGermplasmForReuseMap().size());
+		
+		// Method to test
+		this.processImportedGermplasmAction.updateGidForSingleMatch(index, importedGermplasm, germplasmMatchesCount);
+		
+		Assert.assertEquals("Expecting that the gid set is the same.", gid,
+				importedGermplasm.getGid());
+		Assert.assertEquals("Expecting the size of designationToGermplasmForReuseMap to be 2", 2, this.processImportedGermplasmAction.getDesignationToGermplasmForReuseMap().size());
 	}
 
 	@Test
