@@ -74,6 +74,24 @@ public class GermplasmQuery implements Query {
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 
+	private static final List<String> DEFAULT_COLUMNS = new ArrayList<>();
+
+	static {
+
+		DEFAULT_COLUMNS.add(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
+		DEFAULT_COLUMNS.add(GermplasmSearchResultsComponent.NAMES);
+		DEFAULT_COLUMNS.add(ColumnLabels.PARENTAGE.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.AVAILABLE_INVENTORY.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.TOTAL.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.STOCKID.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.GID.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.GROUP_ID.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.GERMPLASM_LOCATION.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.BREEDING_METHOD_NAME.getName());
+		DEFAULT_COLUMNS.add(GermplasmQuery.GID_REF_PROPERTY);
+
+	}
+
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
 	private int size;
@@ -217,7 +235,7 @@ public class GermplasmQuery implements Query {
 		final List<String> propertyIdsOfColumnsAdded = new LinkedList<>();
 
 		for (final String propertyId : (Collection<? extends String>) propertyIds) {
-			if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId)) {
+			if (!DEFAULT_COLUMNS.contains(propertyId)) {
 				propertyIdsOfColumnsAdded.add(propertyId);
 			}
 		}
