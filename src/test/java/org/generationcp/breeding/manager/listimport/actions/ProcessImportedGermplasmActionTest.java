@@ -555,7 +555,7 @@ public class ProcessImportedGermplasmActionTest {
 		final int index = 0;
 		this.processImportedGermplasmAction.updateGidForSingleMatch(index, importedGermplasm, germplasmMatchesCount);
 
-		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(0)).automaticallyAcceptSingleMatchesCheckbox();
+		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(1)).automaticallyAcceptSingleMatchesCheckbox();
 		Mockito.verify(this.germplasmDataManager, Mockito.times(0)).getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
 		Assert.assertEquals("Expecting that the temporary gid is used when there is no designation match.", gid,
 				germplasmToName.getGermplasm().getGid());
