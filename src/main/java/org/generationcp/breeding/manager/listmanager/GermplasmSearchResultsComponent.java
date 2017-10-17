@@ -2,7 +2,6 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,7 +14,7 @@ import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAll
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.listmanager.listeners.AddColumnMenuItemClickListenerForGermplasmSearch;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -35,8 +34,6 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import com.jensjansson.pagedtable.PagedTable;
-import com.jensjansson.pagedtable.PagedTable.PagedTableChangeEvent;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;

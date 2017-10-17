@@ -3,12 +3,10 @@ package org.generationcp.breeding.manager.listmanager.listeners.test;
 
 import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
-import org.generationcp.breeding.manager.listmanager.GermplasmColumnValuesGenerator;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
-import org.generationcp.breeding.manager.listmanager.listeners.AddColumnMenuItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.AddColumnMenuItemClickListenerForGermplasmSearch;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.junit.Assert;
 import org.junit.Before;

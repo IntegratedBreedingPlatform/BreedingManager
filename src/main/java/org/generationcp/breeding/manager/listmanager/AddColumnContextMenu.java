@@ -5,9 +5,10 @@ import com.vaadin.ui.Table;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.GermplasmColumnLabels;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -44,24 +45,6 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 	private final AddColumnSource addColumnSource;
 
-	public static List<String> ADDABLE_PROPERTY_IDS;
-
-	static {
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS = new ArrayList<>();
-
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_ID.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_NAME.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.GERMPLASM_DATE.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.GERMPLASM_LOCATION.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_NAME.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_NUMBER.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_GROUP.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_FEMALE_GID.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_MALE_GID.getName());
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
-	}
 
 	/**
 	 * Add "Add column" context menu to a parent context menu item
@@ -267,7 +250,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 			final Item item = table.getItem(itemId);
 			final List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
 			for (final String propertyId : propertyIds) {
-				if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(propertyId)) {
+				if (GermplasmColumnLabels.ADDABLE_PROPERTY_IDS.contains(propertyId)) {
 					if (item.getItemProperty(propertyId).getValue() != null) {
 						columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
 					} else {
@@ -296,7 +279,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 	public static boolean sourceHadAddedColumn(final Object[] visibleColumns) {
 		for (final Object column : visibleColumns) {
-			if (AddColumnContextMenu.ADDABLE_PROPERTY_IDS.contains(column.toString())) {
+			if (GermplasmColumnLabels.ADDABLE_PROPERTY_IDS.contains(column.toString())) {
 				return true;
 			}
 		}

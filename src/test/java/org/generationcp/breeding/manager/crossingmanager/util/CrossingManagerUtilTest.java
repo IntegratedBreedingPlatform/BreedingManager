@@ -5,9 +5,7 @@ import java.util.Collection;
 
 import junit.framework.Assert;
 
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
-import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.junit.Test;
 
 import com.vaadin.data.Item;
