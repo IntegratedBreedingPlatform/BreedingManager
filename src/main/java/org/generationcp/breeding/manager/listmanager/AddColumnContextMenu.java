@@ -1,23 +1,23 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Table;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.constant.GermplasmColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.vaadin.data.Item;
+import com.vaadin.ui.Table;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent {
@@ -250,7 +250,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 			final Item item = table.getItem(itemId);
 			final List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
 			for (final String propertyId : propertyIds) {
-				if (GermplasmColumnLabels.ADDABLE_PROPERTY_IDS.contains(propertyId)) {
+				if (ColumnLabels.getAddableGermplasmColumns().contains(propertyId)) {
 					if (item.getItemProperty(propertyId).getValue() != null) {
 						columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
 					} else {
@@ -279,7 +279,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 	public static boolean sourceHadAddedColumn(final Object[] visibleColumns) {
 		for (final Object column : visibleColumns) {
-			if (GermplasmColumnLabels.ADDABLE_PROPERTY_IDS.contains(column.toString())) {
+			if (ColumnLabels.getAddableGermplasmColumns().contains(column.toString())) {
 				return true;
 			}
 		}
