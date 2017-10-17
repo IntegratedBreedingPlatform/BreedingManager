@@ -258,16 +258,23 @@ public class GermplasmQueryTest {
 
 		List<String> propertyIdsDefinition = new ArrayList<>();
 
-		// Add dummy propertyIds
-		propertyIdsDefinition.add("Column 1");
-		propertyIdsDefinition.add("Column 2");
+		// Add default table propertyIds
+		propertyIdsDefinition.add(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
+		propertyIdsDefinition.add(GermplasmSearchResultsComponent.NAMES);
+		propertyIdsDefinition.add(ColumnLabels.PARENTAGE.getName());
+		propertyIdsDefinition.add(ColumnLabels.AVAILABLE_INVENTORY.getName());
+		propertyIdsDefinition.add(ColumnLabels.TOTAL.getName());
+		propertyIdsDefinition.add(ColumnLabels.STOCKID.getName());
+		propertyIdsDefinition.add(ColumnLabels.GID.getName());
+		propertyIdsDefinition.add(ColumnLabels.GROUP_ID.getName());
+		propertyIdsDefinition.add(ColumnLabels.GERMPLASM_LOCATION.getName());
+		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_NAME.getName());
+		propertyIdsDefinition.add(GermplasmQuery.GID_REF_PROPERTY);
 
 		// Add expected addable columns
 		propertyIdsDefinition.add(ColumnLabels.PREFERRED_ID.getName());
 		propertyIdsDefinition.add(ColumnLabels.PREFERRED_NAME.getName());
 		propertyIdsDefinition.add(ColumnLabels.GERMPLASM_DATE.getName());
-		propertyIdsDefinition.add(ColumnLabels.GERMPLASM_LOCATION.getName());
-		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_NAME.getName());
 		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
 		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_NUMBER.getName());
 		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_GROUP.getName());
@@ -281,16 +288,23 @@ public class GermplasmQueryTest {
 		
 		List<String> result = query.getPropertyIdsOfAddableColumns(propertyIdsDefinition);
 
+		Assert.assertFalse(result.contains(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID));
+		Assert.assertFalse(result.contains(GermplasmSearchResultsComponent.NAMES));
+		Assert.assertFalse(result.contains(ColumnLabels.PARENTAGE.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.AVAILABLE_INVENTORY.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.TOTAL.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.STOCKID.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.GID.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.GROUP_ID.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.GERMPLASM_LOCATION.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.BREEDING_METHOD_NAME.getName()));
+		Assert.assertFalse(result.contains(GermplasmQuery.GID_REF_PROPERTY));
 
 		// Only the expected addable columns and attribute type property Ids should be included in the
 		// result.
-		Assert.assertFalse(result.contains("Column 1"));
-		Assert.assertFalse(result.contains("Column 2"));
 		Assert.assertTrue(result.contains(ColumnLabels.PREFERRED_ID.getName()));
 		Assert.assertTrue(result.contains(ColumnLabels.PREFERRED_NAME.getName()));
 		Assert.assertTrue(result.contains(ColumnLabels.GERMPLASM_DATE.getName()));
-		Assert.assertTrue(result.contains(ColumnLabels.GERMPLASM_LOCATION.getName()));
-		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_NAME.getName()));
 		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName()));
 		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_NUMBER.getName()));
 		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_GROUP.getName()));
