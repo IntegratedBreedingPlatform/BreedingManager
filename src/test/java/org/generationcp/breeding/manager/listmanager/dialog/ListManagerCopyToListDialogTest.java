@@ -75,8 +75,6 @@ public class ListManagerCopyToListDialogTest {
 
 	private UserDefinedFieldTestDataInitializer userDefinedFieldTestDataInitializer;
 
-	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
-
 	private ComboBox comboBox;
 
 	private TextField txtDescription;
@@ -93,7 +91,6 @@ public class ListManagerCopyToListDialogTest {
 		this.initializeListManagerCopyToListDialog();
 		this.setValues();
 		this.userDefinedFieldTestDataInitializer = new UserDefinedFieldTestDataInitializer();
-		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 		Mockito.when(this.germplasmListManager.getGermplasmListTypes()).thenReturn(Arrays.asList(
 				this.userDefinedFieldTestDataInitializer.createUserDefinedField(ListManagerCopyToListDialogTest.LST, "GERMPLASMLISTS")));
 		Mockito.when(this.table.getValue()).thenReturn(new ArrayList<>());
@@ -126,7 +123,7 @@ public class ListManagerCopyToListDialogTest {
 	@Test
 	public void testPopulateComboBoxListNameGermplasmListTypeIsFolder() {
 		Mockito.when(this.germplasmListManager.getAllGermplasmListsByProgramUUID(Matchers.anyString())).thenReturn(Arrays
-				.asList(this.germplasmListTestDataInitializer.createGermplasmListWithType(1, ListManagerCopyToListDialog.FOLDER_TYPE)));
+				.asList(GermplasmListTestDataInitializer.createGermplasmListWithType(1, ListManagerCopyToListDialog.FOLDER_TYPE)));
 		this.listManagerCopyToListDialog.populateComboBoxListName();
 		Assert.assertEquals("The combo box's value should be an empty string", "", this.comboBox.getValue());
 		Assert.assertNull("The combo box should return a null value", this.comboBox.getItem(ListManagerCopyToListDialogTest.LIST_NAME));
