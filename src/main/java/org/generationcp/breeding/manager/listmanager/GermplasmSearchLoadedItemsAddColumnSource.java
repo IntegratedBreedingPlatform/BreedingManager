@@ -1,23 +1,22 @@
-
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This takes care of adding columns and generating values for those added columns when  there are items
@@ -29,12 +28,12 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
 
-	private PagedBreedingManagerTable targetTable;
-	private GermplasmSearchResultsComponent searchResultsComponent;
-	private String gidPropertyId;
+	private final PagedBreedingManagerTable targetTable;
+	private final GermplasmSearchResultsComponent searchResultsComponent;
+	private final String gidPropertyId;
 
-	
-	public GermplasmSearchLoadedItemsAddColumnSource(final PagedBreedingManagerTable targetTable, final GermplasmSearchResultsComponent searchResultsComponent, final String gidPropertyId) {
+	public GermplasmSearchLoadedItemsAddColumnSource(final PagedBreedingManagerTable targetTable,
+			final GermplasmSearchResultsComponent searchResultsComponent, final String gidPropertyId) {
 		super();
 		this.targetTable = targetTable;
 		this.gidPropertyId = gidPropertyId;
@@ -82,14 +81,27 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 	@Override
 	public void addColumn(final ColumnLabels columnLabel) {
-		if (!this.columnExists(columnLabel.getName())) {
-			this.targetTable.addContainerProperty(columnLabel.getName(), String.class, "");
-			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
-		}
+
 		final LazyQueryDefinition definition = this.searchResultsComponent.getDefinition();
+
 		if (!definition.getPropertyIds().contains(columnLabel.getName())) {
-			definition.addProperty(columnLabel.getName(), String.class, "", false, false);
+
+			definition.addProperty(columnLabel.getName(), String.class, "", false, true);
+
+			this.targetTable.addGeneratedColumn(columnLabel.getName(), new Table.ColumnGenerator() {
+
+				@Override
+				public Object generateCell(final Table table, final Object o, final Object o1) {
+					return table.getItem(o).getItemProperty(o1).getValue();
+				}
+			});
+
+			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
+
+			this.targetTable.refresh();
+
 		}
+
 	}
 
 	@Override
@@ -99,33 +111,47 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 	@Override
 	public void addColumn(final String columnName) {
-		if (!this.columnExists(columnName.toUpperCase())) {
-			this.targetTable.addContainerProperty(columnName.toUpperCase(), String.class, "");
-			this.targetTable.setColumnHeader(columnName, columnName);
-		}
+
 		final LazyQueryDefinition definition = this.searchResultsComponent.getDefinition();
+
 		if (!definition.getPropertyIds().contains(columnName)) {
-			definition.addProperty(columnName, String.class, "", false, false);
+
+			definition.addProperty(columnName, String.class, "", false, true);
+
+			targetTable.addGeneratedColumn(columnName, new Table.ColumnGenerator() {
+
+				@Override
+				public Object generateCell(final Table table, final Object o, final Object o1) {
+					if (table.getItem(o).getItemProperty(o1) != null) {
+						return table.getItem(o).getItemProperty(o1).getValue();
+					}
+					return "";
+				}
+			});
+
+			this.targetTable.setColumnHeader(columnName, columnName);
+
+			this.targetTable.refresh();
 		}
+
 	}
 
 	@Override
 	public Window getWindow() {
 		return this.targetTable.getWindow();
 	}
-	
+
 	@Override
 	public List<FillWithOption> getColumnsToExclude() {
 		return Arrays.asList(FillWithOption.FILL_WITH_LOCATION, FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
 	}
-	
+
 	@Override
 	public List<Integer> getAllGids() {
 		return this.searchResultsComponent.getAllGids();
 	}
 
-	
-	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
 	}
 

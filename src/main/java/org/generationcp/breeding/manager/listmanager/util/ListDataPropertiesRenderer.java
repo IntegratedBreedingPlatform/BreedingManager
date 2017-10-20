@@ -4,7 +4,7 @@ package org.generationcp.breeding.manager.listmanager.util;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.manager.api.GermplasmListManager;

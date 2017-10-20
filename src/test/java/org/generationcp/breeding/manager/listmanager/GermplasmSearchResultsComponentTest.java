@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listmanager;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -9,7 +10,7 @@ import org.generationcp.breeding.manager.containers.GermplasmQuery;
 import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.oms.Term;
@@ -372,47 +373,6 @@ public class GermplasmSearchResultsComponentTest {
 		rightClickHandler.handleAction(GermplasmSearchResultsComponent.ACTION_SELECT_ALL, null, null);
 
 		Mockito.verify(mockPagedTableWithSelectAllLayout, Mockito.times(1)).selectAllEntriesOnCurrentPage();
-
-	}
-
-	@Test
-	public void testTablePageChangeListenerAddedColumn() {
-
-		final PagedBreedingManagerTable matchingGermplasmTable = Mockito.mock(PagedBreedingManagerTable.class);
-		final AddedColumnsMapper addedColumnsMapper = Mockito.mock(AddedColumnsMapper.class);
-		final GermplasmSearchResultsComponent.TablePageChangeListener pageChangeListener =
-				new GermplasmSearchResultsComponent().new TablePageChangeListener(matchingGermplasmTable, addedColumnsMapper);
-
-		Object[] columns = new Object[] {ColumnLabels.GERMPLASM_LOCATION, ColumnLabels.BREEDING_METHOD_NAME, ColumnLabels.PREFERRED_NAME};
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_NAME.name());
-
-		Mockito.when(matchingGermplasmTable.getVisibleColumns()).thenReturn(columns);
-
-		pageChangeListener.pageChanged(Mockito.mock(PagedTable.PagedTableChangeEvent.class));
-
-		// Verify that values will be generated for the added column Preferred Name. GERMPLASM_LOCATION and BREEDING_METHOD_NAME
-		// should be ignored.
-		Mockito.verify(addedColumnsMapper, Mockito.times(1))
-				.generateValuesForAddedColumns(new Object[] {ColumnLabels.PREFERRED_NAME}, true);
-
-	}
-
-	@Test
-	public void testTablePageChangeListenerNoAddedColumn() {
-
-		final PagedBreedingManagerTable matchingGermplasmTable = Mockito.mock(PagedBreedingManagerTable.class);
-		final AddedColumnsMapper addedColumnsMapper = Mockito.mock(AddedColumnsMapper.class);
-		final GermplasmSearchResultsComponent.TablePageChangeListener pageChangeListener =
-				new GermplasmSearchResultsComponent().new TablePageChangeListener(matchingGermplasmTable, addedColumnsMapper);
-
-		Object[] columns = new Object[] {ColumnLabels.GERMPLASM_LOCATION, ColumnLabels.BREEDING_METHOD_NAME};
-
-		Mockito.when(matchingGermplasmTable.getVisibleColumns()).thenReturn(columns);
-
-		pageChangeListener.pageChanged(Mockito.mock(PagedTable.PagedTableChangeEvent.class));
-
-		// There's no added column so addedColumnsMapper should not be called.
-		Mockito.verifyZeroInteractions(addedColumnsMapper);
 
 	}
 

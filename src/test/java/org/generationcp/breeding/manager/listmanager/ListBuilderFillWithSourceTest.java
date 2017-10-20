@@ -1,7 +1,7 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

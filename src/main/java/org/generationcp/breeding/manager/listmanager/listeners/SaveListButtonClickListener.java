@@ -13,11 +13,10 @@ import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListen
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
-import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
-import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
@@ -410,7 +409,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 			final Item sourceItem = sourceTable.getItem(sourceItemId);
 			final Item newItem = newTable.addItem(sourceItemId);
 
-			for (final String addablePropertyId : AddColumnContextMenu.ADDABLE_PROPERTY_IDS) {
+			for (final String addablePropertyId : ColumnLabels.getAddableGermplasmColumns()) {
 				// copy only addable properties present in source table
 				if (AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable)) {
 					// setup added columns first before copying values

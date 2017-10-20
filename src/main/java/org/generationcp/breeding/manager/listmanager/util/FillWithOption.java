@@ -1,7 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 
 public enum FillWithOption {
 	

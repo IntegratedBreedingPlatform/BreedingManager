@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListe
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.data.initializer.MethodTestDataInitializer;
@@ -23,12 +24,12 @@ import org.generationcp.middleware.manager.GermplasmNameType;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -62,9 +63,31 @@ public class GermplasmQueryTest {
 	public static final Integer TEST_INVENTORY_COUNT = 10;
 	public static final int TEST_LOCATION_ID = 5;
 	public static final Double AVAILABLE_BALANCE = 5.0d;
+	public static final String ORI_COUN = "ORI_COUN";
+	public static final String NOTE = "NOTE";
 
-	private final String[] itemPropertyIds = new String[] {"LOCATIONS", "GROUP ID", "GID_REF", "Tag All Column", "LOTS", "AVAILABLE",
-			"PARENTAGE", "METHOD NAME", "STOCKID", "NAMES", "GID"};
+	private final String[] itemPropertyIds = new String[] {
+			"GROUP ID"
+			,"METHOD ABBREV"
+			,"Tag All Column"
+			,"PREFERRED NAME"
+			,"PARENTAGE"
+			,"CROSS-MALE PREFERRED NAME"
+			,"AVAILABLE"
+			,"CROSS-FEMALE GID"
+			,"METHOD GROUP"
+			,"METHOD NUMBER"
+			,"GID"
+			,"LOCATIONS"
+			,"GERMPLASM DATE"
+			,"GID_REF"
+			,"LOTS"
+			,"CROSS-MALE GID"
+			,"PREFERRED ID"
+			,"CROSS-FEMALE PREFERRED NAME"
+			,"METHOD NAME"
+			,"STOCKID"
+			,"NAMES"} ;
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
 	@Mock
@@ -99,11 +122,25 @@ public class GermplasmQueryTest {
 			inventoryInfo.setTotalAvailableBalance(GermplasmQueryTest.AVAILABLE_BALANCE);
 			germplasm.setInventoryInfo(inventoryInfo);
 			pedigreeString.put(gid, GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING);
+			germplasm.setGermplasmNamesString("NAME 1, NAME 2, NAME 3");
+			germplasm.setGermplasmDate("20050101");
+			germplasm.setGermplasmPeferredId("Preferred Id");
+			germplasm.setGermplasmPeferredName("Preferred Name");
+			germplasm.setMethodCode("ABC");
+			germplasm.setMethodId(100);
+			germplasm.setMethodGroup("123");
+			germplasm.setFemaleParentPreferredID("101");
+			germplasm.setFemaleParentPreferredName("Female Preferred Name");
+			germplasm.setMaleParentPreferredID("102");
+			germplasm.setMaleParentPreferredName("Male Preferred Name");
+
 			if (i < NUMBER_OF_ITEMS_ON_PAGE){
 				this.currentGermplasm.add(germplasm);
 			} 
 			this.allGermplasm.add(germplasm);
 			this.gids.add(gid);
+
+			Mockito.when(this.germplasmDataManager.getAttributeTypesByGIDList(Mockito.anyList())).thenReturn(this.createAttributeTypes());
 		}
 
 		// initialize middleware service calls
@@ -111,6 +148,8 @@ public class GermplasmQueryTest {
 				this.pedigreeService.getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(), Matchers.eq(this.crossExpansionProperties)))
 				.thenReturn(pedigreeString);
 		Mockito.when(this.germplasmDataManager.searchForGermplasm(this.germplasmSearchParameter)).thenReturn(this.currentGermplasm);
+		Mockito.when(this.germplasmDataManager.retrieveGidsOfSearchGermplasmResult(this.germplasmSearchParameter)).thenReturn(new HashSet<Integer>(this.gids));
+
 		this.searchAllParameter = new GermplasmSearchParameter(this.germplasmSearchParameter);
 		this.searchAllParameter.setStartingRow(0);
 		this.searchAllParameter.setNumberOfEntries(GermplasmQuery.RESULTS_LIMIT);
@@ -192,7 +231,7 @@ public class GermplasmQueryTest {
 	@Test
 	public void testSize() throws Exception {
 		Assert.assertEquals("The count call should be the same with the test germplasm list", this.allGermplasm.size(), this.query.size());
-		Mockito.verify(this.germplasmDataManager).searchForGermplasm(this.searchAllParameter);
+		Mockito.verify(this.germplasmDataManager).retrieveGidsOfSearchGermplasmResult(this.germplasmSearchParameter);
 	}
 
 	@Test
@@ -208,6 +247,87 @@ public class GermplasmQueryTest {
 	@Test
 	public void testRetrieveGIDsofMatchingGermplasm() {
 		this.query.retrieveGIDsofMatchingGermplasm();
-		Assert.assertEquals(this.gids, this.query.getAllGids());
+
+		// compare the gid lists independent of order
+		Assert.assertEquals(new HashSet<>(this.gids), new HashSet<Integer>(this.query.getAllGids()));
+	}
+
+	@Test
+	public void testGetPropertyIdsOfAddableColumns() {
+
+		List<String> propertyIdsDefinition = new ArrayList<>();
+
+		// Add default table propertyIds
+		propertyIdsDefinition.add(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
+		propertyIdsDefinition.add(GermplasmSearchResultsComponent.NAMES);
+		propertyIdsDefinition.add(ColumnLabels.PARENTAGE.getName());
+		propertyIdsDefinition.add(ColumnLabels.AVAILABLE_INVENTORY.getName());
+		propertyIdsDefinition.add(ColumnLabels.TOTAL.getName());
+		propertyIdsDefinition.add(ColumnLabels.STOCKID.getName());
+		propertyIdsDefinition.add(ColumnLabels.GID.getName());
+		propertyIdsDefinition.add(ColumnLabels.GROUP_ID.getName());
+		propertyIdsDefinition.add(ColumnLabels.GERMPLASM_LOCATION.getName());
+		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_NAME.getName());
+		propertyIdsDefinition.add(GermplasmQuery.GID_REF_PROPERTY);
+
+		// Add expected addable columns
+		propertyIdsDefinition.add(ColumnLabels.PREFERRED_ID.getName());
+		propertyIdsDefinition.add(ColumnLabels.PREFERRED_NAME.getName());
+		propertyIdsDefinition.add(ColumnLabels.GERMPLASM_DATE.getName());
+		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
+		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_NUMBER.getName());
+		propertyIdsDefinition.add(ColumnLabels.BREEDING_METHOD_GROUP.getName());
+		propertyIdsDefinition.add(ColumnLabels.CROSS_FEMALE_GID.getName());
+		propertyIdsDefinition.add(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
+		propertyIdsDefinition.add(ColumnLabels.CROSS_MALE_GID.getName());
+		propertyIdsDefinition.add(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
+
+		// Add attribute type property Id
+		propertyIdsDefinition.add(ORI_COUN);
+		
+		List<String> result = query.getPropertyIdsOfAddableColumns(propertyIdsDefinition);
+
+		Assert.assertFalse(result.contains(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID));
+		Assert.assertFalse(result.contains(GermplasmSearchResultsComponent.NAMES));
+		Assert.assertFalse(result.contains(ColumnLabels.PARENTAGE.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.AVAILABLE_INVENTORY.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.TOTAL.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.STOCKID.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.GID.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.GROUP_ID.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.GERMPLASM_LOCATION.getName()));
+		Assert.assertFalse(result.contains(ColumnLabels.BREEDING_METHOD_NAME.getName()));
+		Assert.assertFalse(result.contains(GermplasmQuery.GID_REF_PROPERTY));
+
+		// Only the expected addable columns and attribute type property Ids should be included in the
+		// result.
+		Assert.assertTrue(result.contains(ColumnLabels.PREFERRED_ID.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.PREFERRED_NAME.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.GERMPLASM_DATE.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_NUMBER.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.BREEDING_METHOD_GROUP.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.CROSS_FEMALE_GID.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.CROSS_MALE_GID.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()));
+		Assert.assertTrue(result.contains(ORI_COUN));
+
+	}
+
+	private List<UserDefinedField> createAttributeTypes() {
+
+		List<UserDefinedField> attributeTypes = new ArrayList<>();
+
+		UserDefinedField userDefinedField1 = new UserDefinedField(100);
+		userDefinedField1.setFcode(ORI_COUN);
+		UserDefinedField userDefinedField2 = new UserDefinedField(101);
+		userDefinedField2.setFcode(NOTE);
+
+		attributeTypes.add(userDefinedField1);
+		attributeTypes.add(userDefinedField2);
+
+		return attributeTypes;
+
 	}
 }

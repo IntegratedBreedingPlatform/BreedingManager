@@ -1,15 +1,12 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import com.vaadin.ui.Table;
-import org.apache.poi.ss.formula.functions.Column;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by cyrus on 04/04/2016.

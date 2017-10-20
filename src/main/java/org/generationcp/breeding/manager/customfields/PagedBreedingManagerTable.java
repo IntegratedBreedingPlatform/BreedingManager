@@ -109,6 +109,15 @@ public class PagedBreedingManagerTable extends PagedTable {
 		}
 	}
 
+	public void refresh() {
+
+		PagedTableContainer pagedTableContainger = (PagedTableContainer) this.getContainerDataSource();
+		LazyQueryContainer queryContainer = (LazyQueryContainer) pagedTableContainger.getContainer();
+		queryContainer.refresh();
+		this.refreshRowCache();
+
+	}
+
 	/**
 	 * Handler used to dispatch selectAll events to this table
 	 */

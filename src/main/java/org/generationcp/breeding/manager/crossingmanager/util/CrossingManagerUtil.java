@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.constant.ColumnLabels;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.Table;

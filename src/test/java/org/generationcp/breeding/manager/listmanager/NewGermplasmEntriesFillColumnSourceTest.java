@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.Arrays;
 import java.util.List;
 
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
