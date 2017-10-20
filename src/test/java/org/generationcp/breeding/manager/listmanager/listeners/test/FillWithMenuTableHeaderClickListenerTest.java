@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.listmanager.listeners.test;
 
 import org.generationcp.breeding.manager.listmanager.listeners.FillWithMenuTableHeaderClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.generationcp.breeding.manager.data.initializer.GermplasmListDataTestDataInitializer;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;

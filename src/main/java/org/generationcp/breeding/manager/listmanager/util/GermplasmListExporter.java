@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 import net.sf.jasperreports.engine.JRException;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;

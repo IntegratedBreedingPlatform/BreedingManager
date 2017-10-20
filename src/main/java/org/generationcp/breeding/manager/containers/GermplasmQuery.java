@@ -1,41 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * <p>
+ * <p/>
  * Generation Challenge Programme (GCP)
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.containers;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
-import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
-import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
-import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
-import org.generationcp.middleware.domain.inventory.GermplasmInventory;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.service.api.PedigreeService;
-import org.generationcp.middleware.util.CrossExpansionProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.vaadin.addons.lazyquerycontainer.Query;
-import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
@@ -46,6 +19,33 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
+import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
+import org.generationcp.middleware.constant.ColumnLabels;
+import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
+import org.generationcp.middleware.domain.inventory.GermplasmInventory;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.service.api.PedigreeService;
+import org.generationcp.middleware.util.CrossExpansionProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.addons.lazyquerycontainer.Query;
+import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
@@ -62,12 +62,34 @@ public class GermplasmQuery implements Query {
 	private final ListManagerMain listManagerMain;
 	private final Table matchingGermplasmsTable;
 	private final GermplasmSearchParameter searchParameter;
+
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
+
 	@Resource
 	private PedigreeService pedigreeService;
+
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
+
+	private static final List<String> DEFAULT_COLUMNS = new ArrayList<>();
+
+	static {
+
+		DEFAULT_COLUMNS.add(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
+		DEFAULT_COLUMNS.add(GermplasmSearchResultsComponent.NAMES);
+		DEFAULT_COLUMNS.add(ColumnLabels.PARENTAGE.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.AVAILABLE_INVENTORY.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.TOTAL.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.STOCKID.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.GID.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.GROUP_ID.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.GERMPLASM_LOCATION.getName());
+		DEFAULT_COLUMNS.add(ColumnLabels.BREEDING_METHOD_NAME.getName());
+		DEFAULT_COLUMNS.add(GermplasmQuery.GID_REF_PROPERTY);
+
+	}
+
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
 	private int size;
@@ -153,7 +175,8 @@ public class GermplasmQuery implements Query {
 
 		final Map<String, ObjectProperty> propertyMap = new HashMap<>();
 		propertyMap.put(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, new ObjectProperty<>(this.getItemCheckBox(index)));
-		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(gid)));
+		propertyMap.put(GermplasmSearchResultsComponent.NAMES,
+				new ObjectProperty<>(this.getNamesButton(germplasm.getGermplasmNamesString(), germplasm.getGid())));
 		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(pedigreeStringMap.get(gid)));
 		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(),
 				new ObjectProperty<>(this.getInventoryInfoButton(germplasm, preferredNamesMap)));
@@ -164,6 +187,22 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.GERMPLASM_LOCATION.getName(), new ObjectProperty<>(germplasm.getLocationName()));
 		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(), new ObjectProperty<>(germplasm.getMethodName()));
 		propertyMap.put(GermplasmQuery.GID_REF_PROPERTY, new ObjectProperty<>(gid));
+		propertyMap.put(ColumnLabels.GERMPLASM_DATE.getName(), new ObjectProperty<>(germplasm.getGermplasmDate()));
+		propertyMap.put(ColumnLabels.PREFERRED_ID.getName(), new ObjectProperty<>(germplasm.getGermplasmPeferredId()));
+		propertyMap.put(ColumnLabels.PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getGermplasmPeferredName()));
+		propertyMap.put(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), new ObjectProperty<>(germplasm.getMethodCode()));
+		propertyMap.put(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), new ObjectProperty<>(germplasm.getMethodId()));
+		propertyMap.put(ColumnLabels.BREEDING_METHOD_GROUP.getName(), new ObjectProperty<>(germplasm.getMethodGroup()));
+		propertyMap.put(ColumnLabels.CROSS_FEMALE_GID.getName(), new ObjectProperty<>(germplasm.getFemaleParentPreferredID()));
+		propertyMap.put(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getFemaleParentPreferredName()));
+		propertyMap.put(ColumnLabels.CROSS_MALE_GID.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredID()));
+		propertyMap.put(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredName()));
+
+		for (final Map.Entry<String, String> entry : germplasm.getAttributeTypesValueMap().entrySet()) {
+			final String attributeTypePropertyId = entry.getKey();
+			final String attributeTypeValue = entry.getValue();
+			propertyMap.put(attributeTypePropertyId, new ObjectProperty<>(attributeTypeValue));
+		}
 
 		for (final String propertyId : propertyMap.keySet()) {
 			item.addItemProperty(propertyId, propertyMap.get(propertyId));
@@ -179,7 +218,28 @@ public class GermplasmQuery implements Query {
 	protected List<Germplasm> getGermplasmSearchResults(final int startIndex, final int count) {
 		this.searchParameter.setStartingRow(startIndex);
 		this.searchParameter.setNumberOfEntries(count);
+
+
+		// Retrieve and set the names of 'Fill With' columns added to the table so that search query will generate values for them.
+		this.searchParameter
+				.setAddedColumnsPropertyIds(getPropertyIdsOfAddableColumns(this.definition.getPropertyIds()));
+
+
 		return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
+	}
+
+	protected List<String> getPropertyIdsOfAddableColumns(final Collection<?> propertyIds) {
+
+		final List<String> propertyIdsOfColumnsAdded = new LinkedList<>();
+
+		for (final String propertyId : (Collection<? extends String>) propertyIds) {
+			if (!DEFAULT_COLUMNS.contains(propertyId)) {
+				propertyIdsOfColumnsAdded.add(propertyId);
+			}
+		}
+
+		return propertyIdsOfColumnsAdded;
+
 	}
 
 	private Button getGidButton(final Integer gid) {
@@ -229,14 +289,14 @@ public class GermplasmQuery implements Query {
 		return new GidLinkButtonClickListener(this.listManagerMain, String.valueOf(gid), this.viaToolUrl, this.showAddToList);
 	}
 
-	private Button getNamesButton(final Integer gid) {
-		final String germplasmFullName = this.getGermplasmNames(gid);
-		final String shortenedNames = this.getShortenedNames(germplasmFullName);
+	private Button getNamesButton(final String germplasmFullNames, final Integer gid) {
+
+		final String shortenedNames = this.getShortenedNames(germplasmFullNames);
 
 		final Button namesButton = new Button(shortenedNames, this.createGermplasmListener(gid));
 		namesButton.setDebugId("namesButton");
 		namesButton.setStyleName(BaseTheme.BUTTON_LINK);
-		namesButton.setDescription(germplasmFullName);
+		namesButton.setDescription(germplasmFullNames);
 
 		return namesButton;
 	}
@@ -266,24 +326,6 @@ public class GermplasmQuery implements Query {
 		return itemCheckBox;
 	}
 
-	private String getGermplasmNames(final int gid) {
-		final StringBuilder germplasmNames = new StringBuilder("");
-
-		final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-
-		int i = 0;
-		for (final Name n : names) {
-			if (i < names.size() - 1) {
-				germplasmNames.append(n.getNval() + ", ");
-			} else {
-				germplasmNames.append(n.getNval());
-			}
-			i++;
-		}
-
-		return germplasmNames.toString();
-	}
-
 	private Label getStockIDs(final GermplasmInventory inventoryInfo) {
 		final String stockIDs = inventoryInfo.getStockIDs();
 		final Label stockLabel = new Label(stockIDs);
@@ -293,15 +335,12 @@ public class GermplasmQuery implements Query {
 	}
 
 	void retrieveGIDsofMatchingGermplasm() {
-		final GermplasmSearchParameter searchAllParameter = new GermplasmSearchParameter(this.searchParameter);
-		searchAllParameter.setStartingRow(0);
-		searchAllParameter.setNumberOfEntries(GermplasmQuery.RESULTS_LIMIT);
-		final List<Germplasm> allGermplasm = this.germplasmDataManager.searchForGermplasm(searchAllParameter);
 
-		this.allGids = new ArrayList<>();
-		for (final Germplasm germplasm : allGermplasm) {
-			this.allGids.add(germplasm.getGid());
-		}
+		final GermplasmSearchParameter searchAllParameter = new GermplasmSearchParameter(this.searchParameter);
+		final Set<Integer> allGermplasmGids = this.germplasmDataManager.retrieveGidsOfSearchGermplasmResult(searchAllParameter);
+
+		this.allGids = new ArrayList<>(allGermplasmGids);
+
 	}
 
 	public List<Integer> getAllGids() {

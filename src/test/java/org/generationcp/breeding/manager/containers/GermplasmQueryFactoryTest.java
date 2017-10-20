@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.manager.Operation;
 import org.junit.Assert;

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;

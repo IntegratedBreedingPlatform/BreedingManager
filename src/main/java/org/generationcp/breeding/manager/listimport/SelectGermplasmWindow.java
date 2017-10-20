@@ -25,7 +25,7 @@ import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;

@@ -14,7 +14,7 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.data.initializer.GermplasmListDataTestDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.GermplasmListEntryTestDataInitializer;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;

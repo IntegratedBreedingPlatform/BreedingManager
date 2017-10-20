@@ -9,7 +9,7 @@ import org.generationcp.breeding.manager.crossingmanager.MakeCrossesParentsCompo
 import org.generationcp.breeding.manager.crossingmanager.ParentTabComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.domain.oms.Term;
