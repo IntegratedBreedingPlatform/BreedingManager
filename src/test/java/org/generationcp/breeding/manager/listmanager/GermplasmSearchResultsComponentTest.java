@@ -1,9 +1,9 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import com.jensjansson.pagedtable.PagedTable;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.containers.GermplasmQuery;
 import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
@@ -20,22 +20,22 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import com.vaadin.data.Container.Indexed;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.jensjansson.pagedtable.PagedTable;
+import com.vaadin.data.Container.Indexed;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.Window;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmSearchResultsComponentTest {
@@ -91,6 +91,28 @@ public class GermplasmSearchResultsComponentTest {
 		Mockito.when(parentWindow.getWindow()).thenReturn(window);
 		germplasmSearchResultsComponent.setParent(parentWindow);
 
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testInitMatchingGermplasmTableVerifyTableSettings() {
+		final PagedBreedingManagerTable actualTable = new PagedBreedingManagerTable(1, 20);
+		Mockito.doReturn(actualTable).when(this.tableWithSelectAllLayout).getTable();
+		
+		this.germplasmSearchResultsComponent.initMatchingGermplasmTable();
+		Assert.assertTrue(actualTable.isColumnCollapsingAllowed());
+		Assert.assertTrue(actualTable.isImmediate());
+		Assert.assertTrue(actualTable.isSelectable());
+		Assert.assertTrue(actualTable.isMultiSelect());
+		Assert.assertEquals(TableDragMode.ROW, actualTable.getDragMode());
+		Assert.assertFalse(actualTable.isColumnReorderingAllowed());
+		
+		Assert.assertEquals(GermplasmSearchResultsComponent.MATCHING_GEMRPLASM_TABLE_DATA, actualTable.getData());
+		final Object[] visibleColumns = {GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, GermplasmSearchResultsComponent.NAMES,
+				ColumnLabels.PARENTAGE.getName(), ColumnLabels.AVAILABLE_INVENTORY.getName(), ColumnLabels.TOTAL.getName(),
+				ColumnLabels.STOCKID.getName(), ColumnLabels.GID.getName(), ColumnLabels.GROUP_ID.getName(),
+				ColumnLabels.GERMPLASM_LOCATION.getName(), ColumnLabels.BREEDING_METHOD_NAME.getName()};
+		Assert.assertEquals(visibleColumns, actualTable.getVisibleColumns());
 	}
 
 	@Test
