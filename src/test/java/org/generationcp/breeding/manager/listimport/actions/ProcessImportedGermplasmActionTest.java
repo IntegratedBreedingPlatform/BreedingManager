@@ -940,6 +940,8 @@ public class ProcessImportedGermplasmActionTest {
 		Assert.assertTrue(this.processImportedGermplasmAction.getGermplasmNameObjects().get(indexOfEntryForReuse)
 				.getGermplasm().getGid().equals(this.processImportedGermplasmAction.getGermplasmNameObjects()
 						.get(indexOfDupeEntry).getGermplasm().getGid()));
+		Assert.assertTrue(
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(indexOfDupeEntry).isGidMatched());
 
 	}
 
