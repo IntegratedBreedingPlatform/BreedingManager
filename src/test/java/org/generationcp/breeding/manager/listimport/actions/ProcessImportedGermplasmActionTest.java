@@ -1185,6 +1185,17 @@ public class ProcessImportedGermplasmActionTest {
 	}
 
 	@Test
+	public void testSetMatchedGermplasmGid() {
+		final GermplasmName germplasmName = new GermplasmName(GermplasmTestDataInitializer.createGermplasm(1),
+				NameTestDataInitializer.createName(GermplasmNameType.DERIVATIVE_NAME.getUserDefinedFieldID(), "name"));
+		final Integer gid = 2;
+		this.processImportedGermplasmAction.setMatchedGermplasmGid(gid, germplasmName);
+
+		Assert.assertTrue("The gid should be matched.", germplasmName.isGidMatched());
+		Assert.assertEquals("The gid should be " + gid, gid, germplasmName.getGermplasm().getGid());
+	}
+
+	@Test
 	public void testSearchOrAddANewGermplasmNoDesignationMatch() {
 		final int nameMatchesCount = 0;
 		final String designation = "WOW 001";

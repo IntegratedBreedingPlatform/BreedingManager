@@ -531,7 +531,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 							germplasmToReuse);
 
 				} else if (this.doSelectMatchingGermplasmWheneverFound()) {
-					this.germplasmNameObjects.get(index).getGermplasm().setGid(germplasmToReuse.getGid());
+					this.setMatchedGermplasmGid(germplasmToReuse.getGid(), this.germplasmNameObjects.get(index));
 				}
 				this.removeListener(listener);
 				this.processNextItems();
@@ -641,9 +641,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		this.matchedGermplasmIds.add(gid);
 		final GermplasmName germplasmToName = this.germplasmNameObjects.get(index);
 		if (germplasmToName != null) {
-			germplasmToName.setIsGidMatched(true);
-			germplasmToName.getGermplasm().setGid(gid);
+			this.setMatchedGermplasmGid(gid, germplasmToName);
 		}
+	}
+
+	void setMatchedGermplasmGid(final Integer gid, final GermplasmName germplasmToName) {
+		germplasmToName.setIsGidMatched(true);
+		germplasmToName.getGermplasm().setGid(gid);
 	}
 
 	void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
