@@ -1,6 +1,6 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 
 import com.vaadin.ui.Table;
 

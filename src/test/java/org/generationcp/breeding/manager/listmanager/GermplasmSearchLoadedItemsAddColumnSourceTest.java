@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Before;
 import org.junit.Test;

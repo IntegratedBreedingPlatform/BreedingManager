@@ -1,15 +1,16 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import com.jensjansson.pagedtable.PagedTable;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Window;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.containers.GermplasmQuery;
 import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.oms.Term;
@@ -20,22 +21,22 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import com.vaadin.data.Container.Indexed;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.jensjansson.pagedtable.PagedTable;
+import com.vaadin.data.Container.Indexed;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.Window;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmSearchResultsComponentTest {
@@ -91,6 +92,28 @@ public class GermplasmSearchResultsComponentTest {
 		Mockito.when(parentWindow.getWindow()).thenReturn(window);
 		germplasmSearchResultsComponent.setParent(parentWindow);
 
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testInitMatchingGermplasmTableVerifyTableSettings() {
+		final PagedBreedingManagerTable actualTable = new PagedBreedingManagerTable(1, 20);
+		Mockito.doReturn(actualTable).when(this.tableWithSelectAllLayout).getTable();
+		
+		this.germplasmSearchResultsComponent.initMatchingGermplasmTable();
+		Assert.assertTrue(actualTable.isColumnCollapsingAllowed());
+		Assert.assertTrue(actualTable.isImmediate());
+		Assert.assertTrue(actualTable.isSelectable());
+		Assert.assertTrue(actualTable.isMultiSelect());
+		Assert.assertEquals(TableDragMode.ROW, actualTable.getDragMode());
+		Assert.assertFalse(actualTable.isColumnReorderingAllowed());
+		
+		Assert.assertEquals(GermplasmSearchResultsComponent.MATCHING_GEMRPLASM_TABLE_DATA, actualTable.getData());
+		final Object[] visibleColumns = {GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, GermplasmSearchResultsComponent.NAMES,
+				ColumnLabels.PARENTAGE.getName(), ColumnLabels.AVAILABLE_INVENTORY.getName(), ColumnLabels.TOTAL.getName(),
+				ColumnLabels.STOCKID.getName(), ColumnLabels.GID.getName(), ColumnLabels.GROUP_ID.getName(),
+				ColumnLabels.GERMPLASM_LOCATION.getName(), ColumnLabels.BREEDING_METHOD_NAME.getName()};
+		Assert.assertEquals(visibleColumns, actualTable.getVisibleColumns());
 	}
 
 	@Test
@@ -350,47 +373,6 @@ public class GermplasmSearchResultsComponentTest {
 		rightClickHandler.handleAction(GermplasmSearchResultsComponent.ACTION_SELECT_ALL, null, null);
 
 		Mockito.verify(mockPagedTableWithSelectAllLayout, Mockito.times(1)).selectAllEntriesOnCurrentPage();
-
-	}
-
-	@Test
-	public void testTablePageChangeListenerAddedColumn() {
-
-		final PagedBreedingManagerTable matchingGermplasmTable = Mockito.mock(PagedBreedingManagerTable.class);
-		final AddedColumnsMapper addedColumnsMapper = Mockito.mock(AddedColumnsMapper.class);
-		final GermplasmSearchResultsComponent.TablePageChangeListener pageChangeListener =
-				new GermplasmSearchResultsComponent().new TablePageChangeListener(matchingGermplasmTable, addedColumnsMapper);
-
-		Object[] columns = new Object[] {ColumnLabels.GERMPLASM_LOCATION, ColumnLabels.BREEDING_METHOD_NAME, ColumnLabels.PREFERRED_NAME};
-		AddColumnContextMenu.ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_NAME.name());
-
-		Mockito.when(matchingGermplasmTable.getVisibleColumns()).thenReturn(columns);
-
-		pageChangeListener.pageChanged(Mockito.mock(PagedTable.PagedTableChangeEvent.class));
-
-		// Verify that values will be generated for the added column Preferred Name. GERMPLASM_LOCATION and BREEDING_METHOD_NAME
-		// should be ignored.
-		Mockito.verify(addedColumnsMapper, Mockito.times(1))
-				.generateValuesForAddedColumns(new Object[] {ColumnLabels.PREFERRED_NAME}, true);
-
-	}
-
-	@Test
-	public void testTablePageChangeListenerNoAddedColumn() {
-
-		final PagedBreedingManagerTable matchingGermplasmTable = Mockito.mock(PagedBreedingManagerTable.class);
-		final AddedColumnsMapper addedColumnsMapper = Mockito.mock(AddedColumnsMapper.class);
-		final GermplasmSearchResultsComponent.TablePageChangeListener pageChangeListener =
-				new GermplasmSearchResultsComponent().new TablePageChangeListener(matchingGermplasmTable, addedColumnsMapper);
-
-		Object[] columns = new Object[] {ColumnLabels.GERMPLASM_LOCATION, ColumnLabels.BREEDING_METHOD_NAME};
-
-		Mockito.when(matchingGermplasmTable.getVisibleColumns()).thenReturn(columns);
-
-		pageChangeListener.pageChanged(Mockito.mock(PagedTable.PagedTableChangeEvent.class));
-
-		// There's no added column so addedColumnsMapper should not be called.
-		Mockito.verifyZeroInteractions(addedColumnsMapper);
 
 	}
 

@@ -27,7 +27,7 @@ import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;

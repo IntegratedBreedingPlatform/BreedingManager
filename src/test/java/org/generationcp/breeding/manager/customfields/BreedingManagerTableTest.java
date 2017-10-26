@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.customfields;
 
 import java.util.Map;
 
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
