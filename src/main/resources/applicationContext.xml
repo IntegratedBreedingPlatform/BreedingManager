@@ -143,6 +143,21 @@
 		<aop:scoped-proxy />
 	</bean>
 
+	<bean id="sampleListService" factory-bean="managerFactory"
+		  factory-method="getSampleListService" scope="request">
+		<aop:scoped-proxy proxy-target-class="false" />
+	</bean>
+
+	<bean id="sampleService" factory-bean="managerFactory"
+		  factory-method="getSampleService" scope="request">
+		<aop:scoped-proxy proxy-target-class="false" />
+	</bean>
+
+	<bean id="plantService" factory-bean="managerFactory"
+		  factory-method="getPlantService" scope="request">
+		<aop:scoped-proxy proxy-target-class="false" />
+	</bean>
+
 	<bean id="contextUtil" class="org.generationcp.commons.spring.util.ContextUtil"
 		scope="request">
 		<aop:scoped-proxy />
