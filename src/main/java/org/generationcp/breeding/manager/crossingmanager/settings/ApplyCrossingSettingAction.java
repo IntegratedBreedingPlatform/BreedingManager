@@ -52,7 +52,7 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	@Override
 	public boolean updateCrossesMadeContainer(CrossesMadeContainer container) {
 		this.container = container;
-
+		//Check if this method can be removed
 		return this.applyBreedingMethodSetting() && this.applyNameSetting() && this.applyAdditionalDetailsSetting();
 	}
 
@@ -150,18 +150,8 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	 * @return
 	 */
 	private boolean applyNameSetting() {
-		CrossNameSetting nameSetting = this.setting.getCrossNameSetting();
-
 		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null) {
-
-			GenerateCrossNameAction generateNameAction = new GenerateCrossNameAction();
 			int ctr = 1;
-			try {
-				ctr = generateNameAction.getNextNumberInSequence(nameSetting);
-			} catch (MiddlewareQueryException e) {
-				LOG.error(e.getMessage(), e);
-				return false;
-			}
 
 			Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
 			List<GermplasmListEntry> oldCrossNames = new ArrayList<GermplasmListEntry>();
@@ -171,8 +161,7 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 				Germplasm germplasm = entry.getKey();
 				Name nameObject = entry.getValue();
 				String oldCrossName = nameObject.getNval();
-				String nextName = generateNameAction.buildNextNameInSequence(this.setting.getBreedingMethodSetting().getMethodId(), germplasm, ctr++);
-				nameObject.setNval(nextName);
+				nameObject.setNval(String.valueOf(ctr++));
 
 				Integer tempGid = germplasm.getGid();
 				GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, tempGid, oldCrossName);
