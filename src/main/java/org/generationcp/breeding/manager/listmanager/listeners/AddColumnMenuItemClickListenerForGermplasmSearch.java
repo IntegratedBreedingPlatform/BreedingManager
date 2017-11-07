@@ -135,7 +135,9 @@ public class AddColumnMenuItemClickListenerForGermplasmSearch implements Context
 	}
 
 	private void displayFillWithAttributeWindow() {
-		final Window mainWindow = this.addColumnSource.getWindow();
+		//Get the main window to make sure that the attribute window will be added to the main window instead of the sub window
+		Window mainWindow = this.addColumnSource.getWindow().getApplication().getMainWindow();
+		
 		// 2nd parameter is null because user is yet to select the attribute type, which will become column name
 		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null, true);
 		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
