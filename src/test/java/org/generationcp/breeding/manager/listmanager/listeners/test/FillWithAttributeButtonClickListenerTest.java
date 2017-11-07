@@ -50,6 +50,7 @@ public class FillWithAttributeButtonClickListenerTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		
 		this.clickListener.setValuesGenerator(this.valuesGenerator);
 
 		Mockito.doReturn(this.button).when(this.clickEvent).getSource();
@@ -63,8 +64,9 @@ public class FillWithAttributeButtonClickListenerTest {
 
 	@Test
 	public void testButtonClickWithNullTargetPropertyId() {
+		this.clickListener.setIsFromGermplasmSearchWindow(false);
 		this.clickListener.buttonClick(this.clickEvent);
-
+		
 		// Expecting column to be added for source since target property id (column) is not specified
 		Mockito.verify(this.addColumnSource).addColumn(FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_NAME.toUpperCase());
 		// Check that chosen attribute type name was capitalized
@@ -78,6 +80,7 @@ public class FillWithAttributeButtonClickListenerTest {
 		// Specify that ENTRY_CODE column will be filled up
 		final String columnName = ColumnLabels.ENTRY_CODE.getName();
 		this.clickListener.setTargetPropertyId(columnName);
+		this.clickListener.setIsFromGermplasmSearchWindow(false);
 		this.clickListener.buttonClick(this.clickEvent);
 
 		// Expecting no column to be added for source since target column was specified
@@ -88,12 +91,27 @@ public class FillWithAttributeButtonClickListenerTest {
 
 	@Test
 	public void testButtonClickWithNoAttributeTypeSelected() {
+		this.clickListener.setIsFromGermplasmSearchWindow(false);
 		Mockito.doReturn(null).when(this.attributeBox).getValue();
 		this.clickListener.buttonClick(this.clickEvent);
 
 		// Expecting no column to be added and filled up
 		Mockito.verifyZeroInteractions(this.addColumnSource);
 		Mockito.verifyZeroInteractions(this.valuesGenerator);
+		Mockito.verify(this.parentWindow).removeWindow(this.attributeWindow);
+	}
+	
+	@Test
+	public void testButtonWhereIsFromGermplasmSearchWindowTrue() {
+		this.clickListener.setIsFromGermplasmSearchWindow(true);
+		// Specify that ENTRY_CODE column will be filled up
+		final String columnName = ColumnLabels.ENTRY_CODE.getName();
+		this.clickListener.setTargetPropertyId(columnName);
+		this.clickListener.buttonClick(this.clickEvent);
+
+		// Expecting no column to be added for source since target column was specified
+		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(Matchers.anyString());
+		Mockito.verify(this.valuesGenerator, Mockito.never()).fillWithAttribute(FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_ID, columnName);
 		Mockito.verify(this.parentWindow).removeWindow(this.attributeWindow);
 	}
 

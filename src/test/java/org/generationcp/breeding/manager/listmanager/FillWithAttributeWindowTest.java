@@ -17,13 +17,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 
 import junit.framework.Assert;
-import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FillWithAttributeWindowTest {
@@ -46,7 +45,7 @@ public class FillWithAttributeWindowTest {
 	private AddColumnSource addColumnSource;
 
 	@InjectMocks
-	private FillWithAttributeWindow fillWithAttributeWindow = new FillWithAttributeWindow(this.addColumnSource, GermplasmQuery.GID_REF_PROPERTY);
+	private FillWithAttributeWindow fillWithAttributeWindow = new FillWithAttributeWindow(this.addColumnSource, GermplasmQuery.GID_REF_PROPERTY, false);
 
 	private List<UserDefinedField> attributeTypes;
 

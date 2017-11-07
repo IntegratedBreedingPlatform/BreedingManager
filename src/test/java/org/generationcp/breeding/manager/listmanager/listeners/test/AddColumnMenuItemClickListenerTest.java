@@ -6,21 +6,24 @@ import org.generationcp.breeding.manager.listmanager.GermplasmColumnValuesGenera
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.listeners.AddColumnMenuItemClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.Application;
 import com.vaadin.ui.Window;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AddColumnMenuItemClickListenerTest {
 
 	private static final String FILL_WITH_ATTRIBUTE = "Fill With Attribute";
@@ -45,8 +48,6 @@ public class AddColumnMenuItemClickListenerTest {
 
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
-
 		this.addColumnClickListener.setMessageSource(this.messageSource);
 		this.addColumnClickListener.setValuesGenerator(this.valuesGenerator);
 
@@ -197,9 +198,11 @@ public class AddColumnMenuItemClickListenerTest {
 	@Test
 	public void testFillWithAttributeItemClick() {
 		Mockito.doReturn(FILL_WITH_ATTRIBUTE).when(this.contextMenuItem).getName();
+		final Application application = Mockito.mock(Application.class);
 		final Window parentWindow = Mockito.mock(Window.class);
 		Mockito.doReturn(parentWindow).when(this.addColumnSource).getWindow();
-
+		Mockito.doReturn(application).when(parentWindow).getApplication();
+		Mockito.doReturn(parentWindow).when(application).getMainWindow();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		final ArgumentCaptor<Window> subWindowCaptor = ArgumentCaptor.forClass(Window.class);
