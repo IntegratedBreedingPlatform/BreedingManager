@@ -41,8 +41,8 @@ public class FillWithMenuItemClickListener implements ClickListener {
 	private final ContextMenu fillWithMenu;
 	private final GermplasmColumnValuesGenerator valuesGenerator;
 
-	public FillWithMenuItemClickListener(final FillWith fillWith, final AddColumnSource addColumnSource, final ContextMenu fillWithMenu,
-			final GermplasmColumnValuesGenerator valuesGenerator) {
+	public FillWithMenuItemClickListener(final FillWith fillWith, final AddColumnSource addColumnSource,
+			final ContextMenu fillWithMenu, final GermplasmColumnValuesGenerator valuesGenerator) {
 		super();
 		this.fillWith = fillWith;
 		this.addColumnSource = addColumnSource;
@@ -59,38 +59,50 @@ public class FillWithMenuItemClickListener implements ClickListener {
 
 		if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_EMPTY.getMessageKey()))) {
 			this.valuesGenerator.fillWithEmpty(columnName);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_LOCATION.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_LOCATION.getMessageKey()))) {
 			this.valuesGenerator.setLocationNameColumnValues(columnName);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_GERMPLASM_DATE.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_GERMPLASM_DATE.getMessageKey()))) {
 			this.valuesGenerator.setGermplasmDateColumnValues(columnName);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_NAME.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_NAME.getMessageKey()))) {
 			this.valuesGenerator.setPreferredNameColumnValues(columnName);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_ID.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_ID.getMessageKey()))) {
 			this.valuesGenerator.setPreferredIdColumnValues(columnName);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey()))) {
 			this.displayFillWithAttributeWindow(columnName);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.getMessageKey()))) {
 			this.valuesGenerator.setMethodInfoColumnValues(columnName, FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
-		} else if (clickedOptionName
-				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV.getMessageKey()))) {
+		} else if (clickedOptionName.equals(
+				this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV.getMessageKey()))) {
 			this.valuesGenerator.setMethodInfoColumnValues(columnName, FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV);
-		} else if (clickedOptionName
-				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER.getMessageKey()))) {
+		} else if (clickedOptionName.equals(
+				this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER.getMessageKey()))) {
 			this.valuesGenerator.setMethodInfoColumnValues(columnName, FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER);
-		} else if (clickedOptionName
-				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.getMessageKey()))) {
+		} else if (clickedOptionName.equals(
+				this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.getMessageKey()))) {
 			this.valuesGenerator.setMethodInfoColumnValues(columnName, FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_GID.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_GID.getMessageKey()))) {
 			this.valuesGenerator.setCrossFemaleInfoColumnValues(columnName, FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.getMessageKey()))) {
 			this.valuesGenerator.setCrossFemaleInfoColumnValues(columnName, FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey()))) {
 			this.valuesGenerator.setCrossMaleGIDColumnValues(columnName);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey()))) {
 			this.valuesGenerator.setCrossMalePrefNameColumnValues(columnName);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_EXPANSION.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_EXPANSION.getMessageKey()))) {
 			this.displayExpansionLevelPopupWindow(columnName);
-		} else if (clickedOptionName.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_SEQUENCE_NUMBMER.getMessageKey()))) {
+		} else if (clickedOptionName
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_SEQUENCE_NUMBMER.getMessageKey()))) {
 			this.displaySequenceNumberPopupWindow(columnName);
 		}
 	}
@@ -103,7 +115,8 @@ public class FillWithMenuItemClickListener implements ClickListener {
 	}
 
 	private void displayExpansionLevelPopupWindow(final String columnName) {
-		final Window specifyCrossExpansionLevelWindow = new BaseSubWindow(FillWithMenuItemClickListener.SPECIFY_EXPANSION_LEVEL);
+		final Window specifyCrossExpansionLevelWindow = new BaseSubWindow(
+				FillWithMenuItemClickListener.SPECIFY_EXPANSION_LEVEL);
 		specifyCrossExpansionLevelWindow.setHeight("135px");
 		specifyCrossExpansionLevelWindow.setWidth("250px");
 		specifyCrossExpansionLevelWindow.setModal(true);
@@ -131,8 +144,10 @@ public class FillWithMenuItemClickListener implements ClickListener {
 			@Override
 			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 				final Integer crossExpansionLevel = (Integer) levelComboBox.getValue();
-				FillWithMenuItemClickListener.this.valuesGenerator.fillWithCrossExpansion(crossExpansionLevel, columnName);
-				FillWithMenuItemClickListener.this.addColumnSource.getWindow().removeWindow(specifyCrossExpansionLevelWindow);
+				FillWithMenuItemClickListener.this.valuesGenerator.fillWithCrossExpansion(crossExpansionLevel,
+						columnName);
+				FillWithMenuItemClickListener.this.addColumnSource.getWindow()
+						.removeWindow(specifyCrossExpansionLevelWindow);
 			}
 		});
 		okButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
@@ -147,7 +162,8 @@ public class FillWithMenuItemClickListener implements ClickListener {
 
 			@Override
 			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-				FillWithMenuItemClickListener.this.addColumnSource.getWindow().removeWindow(specifyCrossExpansionLevelWindow);
+				FillWithMenuItemClickListener.this.addColumnSource.getWindow()
+						.removeWindow(specifyCrossExpansionLevelWindow);
 			}
 		});
 		layout.addComponent(cancelButton, "top:50px;left:60px");
@@ -158,13 +174,14 @@ public class FillWithMenuItemClickListener implements ClickListener {
 	}
 
 	private void displaySequenceNumberPopupWindow(final String propertyId) {
-		final Window specifySequenceNumberWindow = new BaseSubWindow(FillWithMenuItemClickListener.SPECIFY_SEQUENCE_NUMBER);
+		final Window specifySequenceNumberWindow = new BaseSubWindow(
+				FillWithMenuItemClickListener.SPECIFY_SEQUENCE_NUMBER);
 		specifySequenceNumberWindow.setHeight("320px");
 		specifySequenceNumberWindow.setWidth("530px");
 		specifySequenceNumberWindow.setModal(true);
 		specifySequenceNumberWindow.setResizable(false);
-		specifySequenceNumberWindow
-				.setContent(new AdditionalDetailsCrossNameComponent(this.fillWith, propertyId, specifySequenceNumberWindow));
+		specifySequenceNumberWindow.setContent(
+				new AdditionalDetailsCrossNameComponent(this.fillWith, propertyId, specifySequenceNumberWindow));
 		specifySequenceNumberWindow.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.addColumnSource.getWindow().addWindow(specifySequenceNumberWindow);
 	}

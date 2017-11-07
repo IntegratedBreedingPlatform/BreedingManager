@@ -45,7 +45,8 @@ public class FillWithAttributeWindowTest {
 	private AddColumnSource addColumnSource;
 
 	@InjectMocks
-	private FillWithAttributeWindow fillWithAttributeWindow = new FillWithAttributeWindow(this.addColumnSource, GermplasmQuery.GID_REF_PROPERTY, false);
+	private final FillWithAttributeWindow fillWithAttributeWindow = new FillWithAttributeWindow(this.addColumnSource,
+			GermplasmQuery.GID_REF_PROPERTY, false);
 
 	private List<UserDefinedField> attributeTypes;
 
@@ -53,9 +54,10 @@ public class FillWithAttributeWindowTest {
 	public void setup() {
 		this.fillWithAttributeWindow.setGermplasmDataManager(this.germplasmDataManager);
 
-		Mockito.doReturn(GID_LIST).when(this.addColumnSource).getAllGids();
+		Mockito.doReturn(FillWithAttributeWindowTest.GID_LIST).when(this.addColumnSource).getAllGids();
 		this.attributeTypes = this.getAttributeTypes();
-		Mockito.doReturn(this.attributeTypes).when(this.germplasmDataManager).getAttributeTypesByGIDList(Matchers.eq(GID_LIST));
+		Mockito.doReturn(this.attributeTypes).when(this.germplasmDataManager)
+				.getAttributeTypesByGIDList(Matchers.eq(FillWithAttributeWindowTest.GID_LIST));
 	}
 
 	@Test
@@ -64,7 +66,8 @@ public class FillWithAttributeWindowTest {
 		this.fillWithAttributeWindow.initializeValues();
 
 		Mockito.verify(this.addColumnSource).getAllGids();
-		Mockito.verify(this.germplasmDataManager).getAttributeTypesByGIDList(Matchers.eq(GID_LIST));
+		Mockito.verify(this.germplasmDataManager)
+				.getAttributeTypesByGIDList(Matchers.eq(FillWithAttributeWindowTest.GID_LIST));
 		final ComboBox attributeTypesComboBox = this.fillWithAttributeWindow.getAttributeBox();
 		Assert.assertNotNull(attributeTypesComboBox);
 		Assert.assertEquals(3, attributeTypesComboBox.size());

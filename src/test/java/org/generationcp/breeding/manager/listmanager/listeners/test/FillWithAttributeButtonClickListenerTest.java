@@ -50,7 +50,7 @@ public class FillWithAttributeButtonClickListenerTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		
+
 		this.clickListener.setValuesGenerator(this.valuesGenerator);
 
 		Mockito.doReturn(this.button).when(this.clickEvent).getSource();
@@ -66,11 +66,14 @@ public class FillWithAttributeButtonClickListenerTest {
 	public void testButtonClickWithNullTargetPropertyId() {
 		this.clickListener.setIsFromGermplasmSearchWindow(false);
 		this.clickListener.buttonClick(this.clickEvent);
-		
-		// Expecting column to be added for source since target property id (column) is not specified
-		Mockito.verify(this.addColumnSource).addColumn(FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_NAME.toUpperCase());
+
+		// Expecting column to be added for source since target property id
+		// (column) is not specified
+		Mockito.verify(this.addColumnSource)
+				.addColumn(FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_NAME.toUpperCase());
 		// Check that chosen attribute type name was capitalized
-		Mockito.verify(this.valuesGenerator).fillWithAttribute(FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_ID,
+		Mockito.verify(this.valuesGenerator).fillWithAttribute(
+				FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_ID,
 				FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_NAME.toUpperCase());
 		Mockito.verify(this.parentWindow).removeWindow(this.attributeWindow);
 	}
@@ -83,9 +86,11 @@ public class FillWithAttributeButtonClickListenerTest {
 		this.clickListener.setIsFromGermplasmSearchWindow(false);
 		this.clickListener.buttonClick(this.clickEvent);
 
-		// Expecting no column to be added for source since target column was specified
+		// Expecting no column to be added for source since target column was
+		// specified
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(Matchers.anyString());
-		Mockito.verify(this.valuesGenerator).fillWithAttribute(FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_ID, columnName);
+		Mockito.verify(this.valuesGenerator)
+				.fillWithAttribute(FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_ID, columnName);
 		Mockito.verify(this.parentWindow).removeWindow(this.attributeWindow);
 	}
 
@@ -100,7 +105,7 @@ public class FillWithAttributeButtonClickListenerTest {
 		Mockito.verifyZeroInteractions(this.valuesGenerator);
 		Mockito.verify(this.parentWindow).removeWindow(this.attributeWindow);
 	}
-	
+
 	@Test
 	public void testButtonWhereIsFromGermplasmSearchWindowTrue() {
 		this.clickListener.setIsFromGermplasmSearchWindow(true);
@@ -109,9 +114,11 @@ public class FillWithAttributeButtonClickListenerTest {
 		this.clickListener.setTargetPropertyId(columnName);
 		this.clickListener.buttonClick(this.clickEvent);
 
-		// Expecting no column to be added for source since target column was specified
+		// Expecting no column to be added for source since target column was
+		// specified
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(Matchers.anyString());
-		Mockito.verify(this.valuesGenerator, Mockito.never()).fillWithAttribute(FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_ID, columnName);
+		Mockito.verify(this.valuesGenerator, Mockito.never())
+				.fillWithAttribute(FillWithAttributeButtonClickListenerTest.ATTRIBUTE_TYPE_ID, columnName);
 		Mockito.verify(this.parentWindow).removeWindow(this.attributeWindow);
 	}
 

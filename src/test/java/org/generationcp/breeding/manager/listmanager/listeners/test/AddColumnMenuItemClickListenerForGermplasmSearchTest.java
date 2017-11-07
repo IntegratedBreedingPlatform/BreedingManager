@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -26,7 +27,7 @@ import com.vaadin.ui.Window;
 public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 
 	private static final String FILL_WITH_ATTRIBUTE = "Fill With Attribute";
-	
+
 	@Mock
 	private ClickEvent clickEvent;
 
@@ -47,7 +48,7 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 		this.addColumnClickListener.setMessageSource(this.messageSource);
 
 		Mockito.doReturn(this.contextMenuItem).when(this.clickEvent).getClickedItem();
-		Mockito.doReturn(false).when(this.addColumnSource).columnExists(Mockito.anyString());
+		Mockito.doReturn(false).when(this.addColumnSource).columnExists(Matchers.anyString());
 
 		Mockito.doReturn(ColumnLabels.PREFERRED_ID.getName()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_PREFERRED_ID.getMessageKey());
@@ -73,7 +74,8 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey());
 		Mockito.doReturn(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey());
-		Mockito.doReturn(FILL_WITH_ATTRIBUTE).when(this.messageSource).getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey());
+		Mockito.doReturn(AddColumnMenuItemClickListenerForGermplasmSearchTest.FILL_WITH_ATTRIBUTE)
+				.when(this.messageSource).getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey());
 	}
 
 	@Test
@@ -186,7 +188,8 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 
 	@Test
 	public void testFillWithAttributeItemClick() {
-		Mockito.doReturn(FILL_WITH_ATTRIBUTE).when(this.contextMenuItem).getName();
+		Mockito.doReturn(AddColumnMenuItemClickListenerForGermplasmSearchTest.FILL_WITH_ATTRIBUTE)
+				.when(this.contextMenuItem).getName();
 		final Application application = Mockito.mock(Application.class);
 		final Window parentWindow = Mockito.mock(Window.class);
 		Mockito.doReturn(parentWindow).when(this.addColumnSource).getWindow();
@@ -250,7 +253,8 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 
 	@Test
 	public void testFillWithBreedingMethodAbbreviationItemClickAndColumnExists() {
-		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
+		Mockito.doReturn(true).when(this.addColumnSource)
+				.columnExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
 		Mockito.doReturn(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
@@ -287,7 +291,8 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 
 	@Test
 	public void testFillWithCrossFemaleNameItemClickAndColumnExists() {
-		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
+		Mockito.doReturn(true).when(this.addColumnSource)
+				.columnExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
 		Mockito.doReturn(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
@@ -305,7 +310,8 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 
 	@Test
 	public void testFillWithCrossMaleNameItemClickAndColumnExists() {
-		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
+		Mockito.doReturn(true).when(this.addColumnSource)
+				.columnExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
 		Mockito.doReturn(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 

@@ -27,36 +27,49 @@ public class AddColumnMenuItemClickListenerForGermplasmSearch implements Context
 	public AddColumnMenuItemClickListenerForGermplasmSearch(final AddColumnSource addColumnSource) {
 		this.addColumnSource = addColumnSource;
 	}
-	
+
 	@Override
 	public void contextItemClick(final ClickEvent event) {
 		final ContextMenuItem clickedItem = event.getClickedItem();
 		final String clickedOptionName = clickedItem.getName();
-		if (this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_ID.getMessageKey()).equals(clickedOptionName)) {
+		if (this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_ID.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addPreferredIdColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_NAME.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_NAME.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addPreferredNameColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GERMPLASM_DATE.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GERMPLASM_DATE.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addGermplasmDateColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_LOCATION.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_LOCATION.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addLocationColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.getMessageKey()).equals(clickedOptionName)) { 
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addMethodNameColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addMethodAbbrevColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addMethodNumberColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addMethodGroupColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_GID.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_GID.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addCrossFemaleGidColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addCrossFemalePrefNameColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addCrossMaleGIDColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addCrossMalePrefNameColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey()).equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey())
+				.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.displayFillWithAttributeWindow();
 		}
 	}
@@ -135,18 +148,19 @@ public class AddColumnMenuItemClickListenerForGermplasmSearch implements Context
 	}
 
 	private void displayFillWithAttributeWindow() {
-		//Get the main window to make sure that the attribute window will be added to the main window instead of the sub window
-		Window mainWindow = this.addColumnSource.getWindow().getApplication().getMainWindow();
-		
-		// 2nd parameter is null because user is yet to select the attribute type, which will become column name
+		// Get the main window to make sure that the attribute window will be
+		// added to the main window instead of the sub window
+		final Window mainWindow = this.addColumnSource.getWindow().getApplication().getMainWindow();
+
+		// 2nd parameter is null because user is yet to select the attribute
+		// type, which will become column name
 		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null, true);
 		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
 		mainWindow.addWindow(attributeWindow);
 	}
-	
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	
 }
