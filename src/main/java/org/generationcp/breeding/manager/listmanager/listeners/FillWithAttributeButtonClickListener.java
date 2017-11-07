@@ -18,13 +18,15 @@ public class FillWithAttributeButtonClickListener implements ClickListener {
 	private final ComboBox attributeBox;
 	private String targetPropertyId;
 	private GermplasmColumnValuesGenerator valuesGenerator;
+	private Boolean isFromGermplasmSearchWindow;
 
-	public FillWithAttributeButtonClickListener(final AddColumnSource addColumnSource, final ComboBox attributeBox, final String targetPropertyId) {
+	public FillWithAttributeButtonClickListener(final AddColumnSource addColumnSource, final ComboBox attributeBox, final String targetPropertyId, final Boolean isFromGermplasmSearchWindow) {
 		super();
 		this.addColumnSource = addColumnSource;
 		this.attributeBox = attributeBox;
 		this.targetPropertyId = targetPropertyId;
 		this.valuesGenerator = new GermplasmColumnValuesGenerator(this.addColumnSource);
+		this.isFromGermplasmSearchWindow = isFromGermplasmSearchWindow;
 	}
 
 	@Override
@@ -38,14 +40,17 @@ public class FillWithAttributeButtonClickListener implements ClickListener {
 				this.addColumnSource.addColumn(attributeType);
 				finalProperty = attributeType;
 			}
-			// Generate values for target column
-			this.valuesGenerator.fillWithAttribute(attributeTypeId, finalProperty);
+			
+			//The generation of the values of the target column in germplasm search window is handled in another class.
+			if(!isFromGermplasmSearchWindow){
+				// Generate values for target column
+				this.valuesGenerator.fillWithAttribute(attributeTypeId, finalProperty);
+			}
 		}
 		
 		// Close pop-up
 		Window attributeWindow = ((Button) event.getSource()).getWindow();
 		attributeWindow.getParent().removeWindow(attributeWindow);
-
 	}
 
 	
@@ -56,6 +61,10 @@ public class FillWithAttributeButtonClickListener implements ClickListener {
 	
 	public void setTargetPropertyId(String targetPropertyId) {
 		this.targetPropertyId = targetPropertyId;
+	}
+
+	public void setIsFromGermplasmSearchWindow(Boolean isFromGermplasmSearchWindow) {
+		this.isFromGermplasmSearchWindow = isFromGermplasmSearchWindow;	
 	}
 
 }

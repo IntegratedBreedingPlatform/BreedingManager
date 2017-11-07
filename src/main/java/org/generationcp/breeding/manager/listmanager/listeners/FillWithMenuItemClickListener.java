@@ -97,7 +97,7 @@ public class FillWithMenuItemClickListener implements ClickListener {
 
 	private void displayFillWithAttributeWindow(final String columnName) {
 		final Window mainWindow = this.addColumnSource.getWindow();
-		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, columnName);
+		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, columnName, false);
 		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
 		mainWindow.addWindow(attributeWindow);
 	}

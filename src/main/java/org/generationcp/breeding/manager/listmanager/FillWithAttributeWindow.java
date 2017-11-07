@@ -50,22 +50,15 @@ public class FillWithAttributeWindow extends BaseSubWindow
 	private ComboBox attributeBox;
 	private Button okButton;
 	private List<UserDefinedField> attributeTypeList;
-	private final Button.ClickListener okButtonListener;
-
+	private final boolean isFromGermplasmSearchWindow;
+	
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 
-	public FillWithAttributeWindow(final AddColumnSource addColumnSource, final String targetPropertyId) {
+	public FillWithAttributeWindow(final AddColumnSource addColumnSource, final String targetPropertyId, final boolean isFromGermplasmSearchWindow) {
 		this.addColumnSource = addColumnSource;
 		this.targetPropertyId = targetPropertyId;
-		this.okButtonListener = new FillWithAttributeButtonClickListener(this.addColumnSource, this.attributeBox, this.targetPropertyId);
-	}
-
-	public FillWithAttributeWindow(final AddColumnSource addColumnSource, final String targetPropertyId,
-			final Button.ClickListener okButtonListener) {
-		this.addColumnSource = addColumnSource;
-		this.targetPropertyId = targetPropertyId;
-		this.okButtonListener = okButtonListener;
+		this.isFromGermplasmSearchWindow = isFromGermplasmSearchWindow;
 	}
 
 	@Override
@@ -98,7 +91,7 @@ public class FillWithAttributeWindow extends BaseSubWindow
 
 	@Override
 	public void addListeners() {
-		this.okButton.addListener(okButtonListener);
+		this.okButton.addListener(new FillWithAttributeButtonClickListener(this.addColumnSource, this.attributeBox, this.targetPropertyId, this.isFromGermplasmSearchWindow));
 	}
 
 	@Override

@@ -157,7 +157,7 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 	private void displayFillWithAttributeWindow() {
 		final Window mainWindow = this.addColumnSource.getWindow();
 		// 2nd parameter is null because user is yet to select the attribute type, which will become column name
-		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null);
+		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null, false);
 		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
 		mainWindow.addWindow(attributeWindow);
 	}

@@ -1,18 +1,18 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
+
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class AddColumnMenuItemClickListenerForGermplasmSearch implements ContextMenu.ClickListener {
@@ -137,24 +137,7 @@ public class AddColumnMenuItemClickListenerForGermplasmSearch implements Context
 	private void displayFillWithAttributeWindow() {
 		final Window mainWindow = this.addColumnSource.getWindow();
 		// 2nd parameter is null because user is yet to select the attribute type, which will become column name
-		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null , new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(final Button.ClickEvent clickEvent) {
-
-				FillWithAttributeWindow attributeWindow = (FillWithAttributeWindow) ((Button) clickEvent.getSource()).getWindow();
-
-				final Integer attributeTypeId = (Integer) attributeWindow.getAttributeBox().getValue();
-				if (attributeTypeId != null) {
-					final String attributeType = attributeWindow.getAttributeBox().getItemCaption(attributeTypeId).toUpperCase();
-						addColumnSource.addColumn(attributeType);
-					}
-
-				attributeWindow.getParent().removeWindow(attributeWindow);
-
-				}
-
-		});
+		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null, true);
 		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
 		mainWindow.addWindow(attributeWindow);
 	}
