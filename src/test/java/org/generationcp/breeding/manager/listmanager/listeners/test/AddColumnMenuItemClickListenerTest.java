@@ -6,25 +6,29 @@ import org.generationcp.breeding.manager.listmanager.GermplasmColumnValuesGenera
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.listeners.AddColumnMenuItemClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.Application;
 import com.vaadin.ui.Window;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AddColumnMenuItemClickListenerTest {
 
 	private static final String FILL_WITH_ATTRIBUTE = "Fill With Attribute";
-	
+
 	@Mock
 	private ClickEvent clickEvent;
 
@@ -45,13 +49,11 @@ public class AddColumnMenuItemClickListenerTest {
 
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
-
 		this.addColumnClickListener.setMessageSource(this.messageSource);
 		this.addColumnClickListener.setValuesGenerator(this.valuesGenerator);
 
 		Mockito.doReturn(this.contextMenuItem).when(this.clickEvent).getClickedItem();
-		Mockito.doReturn(false).when(this.addColumnSource).columnExists(Mockito.anyString());
+		Mockito.doReturn(false).when(this.addColumnSource).columnExists(Matchers.anyString());
 
 		Mockito.doReturn(ColumnLabels.PREFERRED_ID.getName()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_PREFERRED_ID.getMessageKey());
@@ -77,7 +79,8 @@ public class AddColumnMenuItemClickListenerTest {
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey());
 		Mockito.doReturn(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey());
-		Mockito.doReturn(FILL_WITH_ATTRIBUTE).when(this.messageSource).getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey());
+		Mockito.doReturn(AddColumnMenuItemClickListenerTest.FILL_WITH_ATTRIBUTE).when(this.messageSource)
+				.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey());
 	}
 
 	@Test
@@ -132,8 +135,8 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.BREEDING_METHOD_ABBREVIATION);
-		Mockito.verify(this.valuesGenerator).setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(),
-				FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV);
+		Mockito.verify(this.valuesGenerator).setMethodInfoColumnValues(
+				ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV);
 	}
 
 	@Test
@@ -172,8 +175,8 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME);
-		Mockito.verify(this.valuesGenerator).setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
-				FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
+		Mockito.verify(this.valuesGenerator).setCrossFemaleInfoColumnValues(
+				ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
 	}
 
 	@Test
@@ -191,15 +194,18 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.CROSS_MALE_PREFERRED_NAME);
-		Mockito.verify(this.valuesGenerator).setCrossMalePrefNameColumnValues(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
+		Mockito.verify(this.valuesGenerator)
+				.setCrossMalePrefNameColumnValues(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
 	}
 
 	@Test
 	public void testFillWithAttributeItemClick() {
-		Mockito.doReturn(FILL_WITH_ATTRIBUTE).when(this.contextMenuItem).getName();
+		Mockito.doReturn(AddColumnMenuItemClickListenerTest.FILL_WITH_ATTRIBUTE).when(this.contextMenuItem).getName();
+		final Application application = Mockito.mock(Application.class);
 		final Window parentWindow = Mockito.mock(Window.class);
 		Mockito.doReturn(parentWindow).when(this.addColumnSource).getWindow();
-
+		Mockito.doReturn(application).when(parentWindow).getApplication();
+		Mockito.doReturn(parentWindow).when(application).getMainWindow();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		final ArgumentCaptor<Window> subWindowCaptor = ArgumentCaptor.forClass(Window.class);
@@ -217,7 +223,8 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.PREFERRED_ID);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setPreferredIdColumnValues(ColumnLabels.PREFERRED_ID.getName());
+		Mockito.verify(this.valuesGenerator, Mockito.never())
+				.setPreferredIdColumnValues(ColumnLabels.PREFERRED_ID.getName());
 	}
 
 	@Test
@@ -227,7 +234,8 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.PREFERRED_NAME);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setPreferredNameColumnValues(ColumnLabels.PREFERRED_NAME.getName());
+		Mockito.verify(this.valuesGenerator, Mockito.never())
+				.setPreferredNameColumnValues(ColumnLabels.PREFERRED_NAME.getName());
 	}
 
 	@Test
@@ -237,7 +245,8 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.GERMPLASM_LOCATION);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setLocationNameColumnValues(ColumnLabels.GERMPLASM_LOCATION.getName());
+		Mockito.verify(this.valuesGenerator, Mockito.never())
+				.setLocationNameColumnValues(ColumnLabels.GERMPLASM_LOCATION.getName());
 	}
 
 	@Test
@@ -247,7 +256,8 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.GERMPLASM_DATE);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setGermplasmDateColumnValues(ColumnLabels.GERMPLASM_DATE.getName());
+		Mockito.verify(this.valuesGenerator, Mockito.never())
+				.setGermplasmDateColumnValues(ColumnLabels.GERMPLASM_DATE.getName());
 	}
 
 	@Test
@@ -257,19 +267,20 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.BREEDING_METHOD_NAME);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NAME.getName(),
-				FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
+		Mockito.verify(this.valuesGenerator, Mockito.never()).setMethodInfoColumnValues(
+				ColumnLabels.BREEDING_METHOD_NAME.getName(), FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
 	}
 
 	@Test
 	public void testFillWithBreedingMethodAbbreviationItemClickAndColumnExists() {
-		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
+		Mockito.doReturn(true).when(this.addColumnSource)
+				.columnExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
 		Mockito.doReturn(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.BREEDING_METHOD_ABBREVIATION);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(),
-				FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV);
+		Mockito.verify(this.valuesGenerator, Mockito.never()).setMethodInfoColumnValues(
+				ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV);
 	}
 
 	@Test
@@ -279,8 +290,8 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.BREEDING_METHOD_NUMBER);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NUMBER.getName(),
-				FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER);
+		Mockito.verify(this.valuesGenerator, Mockito.never()).setMethodInfoColumnValues(
+				ColumnLabels.BREEDING_METHOD_NUMBER.getName(), FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER);
 	}
 
 	@Test
@@ -290,8 +301,8 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.BREEDING_METHOD_GROUP);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_GROUP.getName(),
-				FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
+		Mockito.verify(this.valuesGenerator, Mockito.never()).setMethodInfoColumnValues(
+				ColumnLabels.BREEDING_METHOD_GROUP.getName(), FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
 	}
 
 	@Test
@@ -301,13 +312,14 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.CROSS_FEMALE_GID);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(),
-				FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
+		Mockito.verify(this.valuesGenerator, Mockito.never()).setCrossFemaleInfoColumnValues(
+				ColumnLabels.CROSS_FEMALE_GID.getName(), FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
 	}
 
 	@Test
 	public void testFillWithCrossFemaleNameItemClickAndColumnExists() {
-		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
+		Mockito.doReturn(true).when(this.addColumnSource)
+				.columnExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
 		Mockito.doReturn(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
@@ -323,12 +335,14 @@ public class AddColumnMenuItemClickListenerTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.CROSS_MALE_GID);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
+		Mockito.verify(this.valuesGenerator, Mockito.never())
+				.setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
 	}
 
 	@Test
 	public void testFillWithCrossMaleNameItemClickAndColumnExists() {
-		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
+		Mockito.doReturn(true).when(this.addColumnSource)
+				.columnExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
 		Mockito.doReturn(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
