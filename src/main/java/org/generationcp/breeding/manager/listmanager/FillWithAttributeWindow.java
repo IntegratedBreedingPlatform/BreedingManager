@@ -10,9 +10,8 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
@@ -26,12 +25,15 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.util.List;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
 
 /**
- * This class opens a pop-up window for selecting attribute types available for all GIDs of source screen. It will proceed to fill to add
- * selected attribute type as column to source table, if no existing propery specified, and fill up attribute values for chosen attribute
- * type per germplasm on target table.
+ * This class opens a pop-up window for selecting attribute types available for
+ * all GIDs of source screen. It will proceed to fill to add selected attribute
+ * type as column to source table, if no existing propery specified, and fill up
+ * attribute values for chosen attribute type per germplasm on target table.
  *
  */
 
@@ -45,27 +47,21 @@ public class FillWithAttributeWindow extends BaseSubWindow
 	private SimpleResourceBundleMessageSource messageSource;
 
 	private AddColumnSource addColumnSource;
-	private String targetPropertyId;
+	private final String targetPropertyId;
 	private HorizontalLayout attributeLayout;
 	private ComboBox attributeBox;
 	private Button okButton;
 	private List<UserDefinedField> attributeTypeList;
-	private final Button.ClickListener okButtonListener;
+	private final boolean isFromGermplasmSearchWindow;
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 
-	public FillWithAttributeWindow(final AddColumnSource addColumnSource, final String targetPropertyId) {
-		this.addColumnSource = addColumnSource;
-		this.targetPropertyId = targetPropertyId;
-		this.okButtonListener = new FillWithAttributeButtonClickListener(this.addColumnSource, this.attributeBox, this.targetPropertyId);
-	}
-
 	public FillWithAttributeWindow(final AddColumnSource addColumnSource, final String targetPropertyId,
-			final Button.ClickListener okButtonListener) {
+			final boolean isFromGermplasmSearchWindow) {
 		this.addColumnSource = addColumnSource;
 		this.targetPropertyId = targetPropertyId;
-		this.okButtonListener = okButtonListener;
+		this.isFromGermplasmSearchWindow = isFromGermplasmSearchWindow;
 	}
 
 	@Override
@@ -98,7 +94,8 @@ public class FillWithAttributeWindow extends BaseSubWindow
 
 	@Override
 	public void addListeners() {
-		this.okButton.addListener(okButtonListener);
+		this.okButton.addListener(new FillWithAttributeButtonClickListener(this.addColumnSource, this.attributeBox,
+				this.targetPropertyId, this.isFromGermplasmSearchWindow));
 	}
 
 	@Override
