@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listmanager.listcomponent;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -9,6 +8,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
 public class ListViewActionMenuTest {
 
@@ -48,8 +48,6 @@ public class ListViewActionMenuTest {
 		Assert.assertTrue(this.menu.getMenuAssignCodes().isVisible());
 		Assert.assertTrue(this.menu.getRemoveSelectedGermplasm().isVisible());
 	}
-
-
 
 	@Test
 	public void testSetActionMenuWhenListIsUnlockedWhenLocalUserIsNotTheListOwner() {
@@ -91,8 +89,8 @@ public class ListViewActionMenuTest {
 		this.menu.updateListViewActionMenu(fromUrl, listBuilderIsLocked, hasSource);
 
 		Assert.assertFalse("Export List option must be invisible.", this.menu.getMenuExportList().isVisible());
-		Assert.assertFalse("When the List Builder Section is locked, Copy to New List option must be invisible", this.menu
-				.getMenuCopyToList().isVisible());
+		Assert.assertFalse("When the List Builder Section is locked, Copy to New List option must be invisible",
+				this.menu.getMenuCopyToList().isVisible());
 	}
 
 	@Test
@@ -104,8 +102,8 @@ public class ListViewActionMenuTest {
 		this.menu.updateListViewActionMenu(fromUrl, listBuilderIsLocked, hasSource);
 
 		Assert.assertTrue("Export List option must be visible.", this.menu.getMenuExportList().isVisible());
-		Assert.assertFalse("When the List Builder Section is locked, Copy to New List option must be invisible", this.menu
-				.getMenuCopyToList().isVisible());
+		Assert.assertFalse("When the List Builder Section is locked, Copy to New List option must be invisible",
+				this.menu.getMenuCopyToList().isVisible());
 	}
 
 	@Test
@@ -117,8 +115,29 @@ public class ListViewActionMenuTest {
 		this.menu.updateListViewActionMenu(fromUrl, listBuilderIsLocked, hasSource);
 
 		Assert.assertTrue("Export List option must be visible.", this.menu.getMenuExportList().isVisible());
-		Assert.assertTrue("When the List Builder Section is locked, Copy to New List option must be visible", this.menu.getMenuCopyToList()
-				.isVisible());
+		Assert.assertTrue("When the List Builder Section is locked, Copy to New List option must be visible",
+				this.menu.getMenuCopyToList().isVisible());
+	}
+
+	@Test
+	public void testLayoutAdminLink() {
+
+		final String message = "removeSelectedGermplasm";
+
+		Mockito.when(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM)).thenReturn(message);
+
+		final ContextMenu.ContextMenuItem removeSelectedGermplasmContextMenuItem = Mockito.mock(ContextMenu.ContextMenuItem.class);
+		final ContextMenu.ContextMenuItem listEditiongOptionsContextMenuItem = Mockito.mock(ContextMenu.ContextMenuItem.class);
+		Mockito.when(listEditiongOptionsContextMenuItem.addItem(message)).thenReturn(removeSelectedGermplasmContextMenuItem);
+
+		this.menu.setListEditingOptions(listEditiongOptionsContextMenuItem);
+
+		this.menu.layoutAdminLink();
+
+		// Verify that removeSelectedGermplasmContextMenuItem is added inside listEditiongOptionsContextMenuItem
+		Mockito.verify(listEditiongOptionsContextMenuItem).addItem(message);
+		Assert.assertSame(removeSelectedGermplasmContextMenuItem, this.menu.getRemoveSelectedGermplasm());
+
 	}
 
 }
