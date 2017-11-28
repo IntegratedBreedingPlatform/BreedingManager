@@ -1,11 +1,6 @@
 
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.VerticalLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -24,6 +19,12 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class ManageCrossingSettingsMain extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -86,7 +87,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.tabSheet.setWidth("100%");
 		this.tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
 
-		this.detailComponent = new CrossingSettingsDetailComponent(this);
+		this.detailComponent = new CrossingSettingsDetailComponent();
 		this.detailComponent.setDebugId("detailComponent");
 		this.makeCrossesComponent = new CrossingManagerMakeCrossesComponent(this);
 		this.makeCrossesComponent.setDebugId("makeCrossesComponent");

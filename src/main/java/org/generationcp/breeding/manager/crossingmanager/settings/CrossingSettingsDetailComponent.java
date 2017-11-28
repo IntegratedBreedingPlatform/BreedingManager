@@ -59,9 +59,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	@Resource
 	private ContextUtil contextUtil;
 
-	private final ManageCrossingSettingsMain manageCrossingSettingsMain;
 	private DefineCrossingSettingComponent defineSettingComponent;
-	private CrossingSettingsNameComponent nameComponent;
 	private CrossingSettingsOtherDetailsComponent additionalDetailsComponent;
 	private Button nextButton;
 	private Button cancelButton;
@@ -70,10 +68,6 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	private Project project;
 	private Tool crossingManagerTool;
 	private TemplateSetting defaultSetting;
-
-	public CrossingSettingsDetailComponent(final ManageCrossingSettingsMain manageCrossingSettingsMain) {
-		this.manageCrossingSettingsMain = manageCrossingSettingsMain;
-	}
 
 	@Override
 	public void attach() {
@@ -101,8 +95,6 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		this.defineSettingComponent = new DefineCrossingSettingComponent(this);
 		this.defineSettingComponent.setDebugId("defineSettingComponent");
 
-		this.nameComponent = new CrossingSettingsNameComponent();
-		this.nameComponent.setDebugId("nameComponent");
 		this.additionalDetailsComponent = new CrossingSettingsOtherDetailsComponent();
 		this.additionalDetailsComponent.setDebugId("additionalDetailsComponent");
 
@@ -174,10 +166,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		// cs is our crossing settings namespace
 		sectionLayout.addStyleName("cs");
 		this.defineSettingComponent.addStyleName(CrossingSettingsDetailComponent.CS_PANEL_SECTION);
-		this.nameComponent.addStyleName(CrossingSettingsDetailComponent.CS_PANEL_SECTION);
 
 		sectionLayout.addComponent(this.defineSettingComponent);
-		sectionLayout.addComponent(this.nameComponent);
 		sectionLayout.addComponent(this.additionalDetailsComponent);
 
 		this.sectionPanel.setLayout(sectionLayout);
@@ -236,8 +226,6 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 			try {
 				templateSetting = this.readXmlStringForSetting(this.currentSetting.getConfiguration());
 
-                // TODO update the crossing setting functionality so that it is able to affect the breeding method selection found in the next screen
-				this.nameComponent.setFields(templateSetting.getCrossNameSetting());
 				this.additionalDetailsComponent.setFields(templateSetting.getAdditionalDetailsSetting(), templateSetting.getName(),
 						this.currentSetting.isDefault());
 
@@ -282,7 +270,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	}
 
 	private void doNextAction() {
-		if (this.nameComponent.validateInputFields() && this.additionalDetailsComponent.validateInputFields()) {
+		if (this.additionalDetailsComponent.validateInputFields()) {
 			if (this.additionalDetailsComponent.settingsFileNameProvided()) {
 
 				if (this.defaultSetting != null && !this.defaultSetting.equals(this.currentSetting)
@@ -538,7 +526,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	public CrossingManagerSetting getPartialCurrentSetting() {
 		final CrossingManagerSetting toreturn = new CrossingManagerSetting();
 
-		final CrossNameSetting crossNameSettingPojo = this.nameComponent.getCrossNameSettingObject();
+		final CrossNameSetting crossNameSettingPojo = new CrossNameSetting();
 		toreturn.setCrossNameSetting(crossNameSettingPojo);
 
 		final Integer locId = (Integer) this.additionalDetailsComponent.getHarvestLocComboBox().getValue();
@@ -576,7 +564,6 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	}
 
 	public void setDefaultManageCrossingSettingsFields() {
-		this.nameComponent.setFieldsDefaultValue();
 		this.additionalDetailsComponent.setFieldsDefaultValue();
 	}
 
