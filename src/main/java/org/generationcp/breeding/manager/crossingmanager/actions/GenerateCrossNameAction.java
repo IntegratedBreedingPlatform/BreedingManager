@@ -78,7 +78,7 @@ public class GenerateCrossNameAction {
 			this.nextNumberInSequence = startNumber;
 		} else {
 			String nextSequenceNumberString =
-					this.germplasmDataManager.getNextSequenceNumberForCrossName(lastPrefixUsed.toUpperCase().trim());
+					this.germplasmDataManager.getNextSequenceNumberForCrossName(lastPrefixUsed.toUpperCase().trim(), setting.getSuffix());
 			this.nextNumberInSequence = Integer.parseInt(nextSequenceNumberString);
 		}
 
