@@ -159,41 +159,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		Map<Germplasm, Name> crossesToInsert = new LinkedHashMap<Germplasm, Name>();
 		if (this.germplasmList == null) {
 			crossesToInsert = currentCrossesMap;
-
-			// when updating a list, determine which germplasms to insert
-		} else {
-			final GenerateCrossNameAction generateAction = new GenerateCrossNameAction();
-			final CrossingManagerSetting setting = crossesMade.getSetting();
-			int nextNumberInSequence = generateAction.getNextNumberInSequence(setting.getCrossNameSetting());
-
-			this.retrieveGermplasmsOfList();
-			int ctr = 0; // counter for index of added germplasms
-			for (final Germplasm currentGplasm : currentCrossesMap.keySet()) {
-				boolean existsAlready = false;
-				int index = 0; // counter for removed listdata record(s)
-				for (final Germplasm existingGplasm : this.existingGermplasms) {
-					if (this.haveSameParents(currentGplasm, existingGplasm)) {
-						existsAlready = true;
-						this.indicesOfRetainedCrosses.add(index);
-						break;
-					}
-					index++;
-				}
-				if (!existsAlready) {
-					/*
-					 * Regenerate name in the case entries are appended in the end and names were generated for existing listdata records
-					 */
-					final Name name = currentCrossesMap.get(currentGplasm);
-					if (setting != null) {
-						name.setNval(generateAction.buildNextNameInSequence(setting.getBreedingMethodSetting().getMethodId(), currentGplasm, nextNumberInSequence++));
-					}
-
-					crossesToInsert.put(currentGplasm, name);
-					this.indicesOfAddedCrosses.add(ctr); // keep track of index of new crosses
-				}
-				ctr++;
-			}
-		}
+		} 
 
 		if (!crossesToInsert.isEmpty()) {
 			germplasmIDs = this.germplasmManager.addGermplasm(crossesToInsert);
