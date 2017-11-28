@@ -196,9 +196,12 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.messageSource = messageSource;
 	}
 
-
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	private void layoutAdminLink() {
-		this.removeSelectedGermplasm = this.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM));
+	protected void layoutAdminLink() {
+		this.removeSelectedGermplasm = listEditingOptions.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM));
+	}
+
+	protected void setListEditingOptions(ContextMenuItem listEditingOptions) {
+		this.listEditingOptions = listEditingOptions;
 	}
 }

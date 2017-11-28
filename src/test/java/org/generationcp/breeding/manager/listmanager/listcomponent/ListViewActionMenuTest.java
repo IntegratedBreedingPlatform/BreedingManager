@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
 public class ListViewActionMenuTest {
 
@@ -119,6 +120,27 @@ public class ListViewActionMenuTest {
 		Assert.assertTrue("Export List option must be visible.", this.menu.getMenuExportList().isVisible());
 		Assert.assertTrue("When the List Builder Section is locked, Copy to New List option must be visible", this.menu.getMenuCopyToList()
 				.isVisible());
+	}
+
+	@Test
+	public void testLayoutAdminLink() {
+
+		String message = "removeSelectedGermplasm";
+
+		Mockito.when(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM)).thenReturn(message);
+
+		ContextMenu.ContextMenuItem removeSelectedGermplasmContextMenuItem = Mockito.mock(ContextMenu.ContextMenuItem.class);
+		ContextMenu.ContextMenuItem listEditiongOptionsContextMenuItem = Mockito.mock(ContextMenu.ContextMenuItem.class);
+		Mockito.when(listEditiongOptionsContextMenuItem.addItem(message)).thenReturn(removeSelectedGermplasmContextMenuItem);
+
+		this.menu.setListEditingOptions(listEditiongOptionsContextMenuItem);
+
+		this.menu.layoutAdminLink();
+
+		// Verify that removeSelectedGermplasmContextMenuItem is added inside listEditiongOptionsContextMenuItem
+		Mockito.verify(listEditiongOptionsContextMenuItem).addItem(message);
+		Assert.assertSame(removeSelectedGermplasmContextMenuItem, this.menu.getRemoveSelectedGermplasm());
+
 	}
 
 }
