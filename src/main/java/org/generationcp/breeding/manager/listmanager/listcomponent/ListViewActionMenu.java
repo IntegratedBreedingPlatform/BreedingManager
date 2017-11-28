@@ -1,7 +1,5 @@
-
 package org.generationcp.breeding.manager.listmanager.listcomponent;
 
-import com.vaadin.ui.Alignment;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -14,7 +12,6 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 
 /**
  * This class is used as the Context Menu for Action Buttons in View List Germplasm List Data Table
- * 
  */
 @Configurable
 public class ListViewActionMenu extends ContextMenu implements InitializingBean, InternationalizableComponent {
@@ -33,16 +30,12 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	private ContextMenuItem menuDeleteList;
 	private ContextMenuItem menuInventoryView;
 	private ContextMenuItem menuSelectAll;
-	private  ContextMenuItem listEditingOptions;
+	private ContextMenuItem listEditingOptions;
 	private ContextMenuItem codingAndFixingOptions;
 	private ContextMenuItem removeSelectedGermplasm;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-
-	public ListViewActionMenu() {
-
-	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -51,7 +44,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		// Generate main level items
 		//Re-arranging Menu Items
 		this.menuInventoryView = this.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
-		this.listEditingOptions=this.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
+		this.listEditingOptions = this.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
 		this.menuSaveChanges = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
 		this.menuSelectAll = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 		this.menuAddEntry = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.ADD_ENTRIES));
@@ -60,7 +53,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuDeleteList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
 		this.menuCopyToList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuExportList = this.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
-		this.codingAndFixingOptions=this.addItem(this.messageSource.getMessage(Message.CODING_AND_FIXING_OPTIONS));
+		this.codingAndFixingOptions = this.addItem(this.messageSource.getMessage(Message.CODING_AND_FIXING_OPTIONS));
 		this.menuAssignCodes = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
 		this.menuMarkLinesAsFixed = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
 
@@ -69,7 +62,6 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		} catch (final AccessDeniedException e) {
 			// do nothing if the user is not authorized to access Admin link
 		}
-
 
 	}
 
@@ -122,10 +114,13 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		return this.menuSelectAll;
 	}
 
-	public ContextMenuItem getListEditingOptions() {return listEditingOptions;}
+	public ContextMenuItem getListEditingOptions() {
+		return listEditingOptions;
+	}
 
-	public ContextMenuItem getRemoveSelectedGermplasm() {return this.removeSelectedGermplasm;}
-
+	public ContextMenuItem getRemoveSelectedGermplasm() {
+		return this.removeSelectedGermplasm;
+	}
 
 	/**
 	 * When the Germplasm List is not locked, and when not accessed directly from URL or popup window
@@ -149,7 +144,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	private void setRemoveSelectedGermplasmWhenListIsLocked(boolean visible) {
+	private void setRemoveSelectedGermplasmWhenListIsLocked(final boolean visible) {
 		if (this.removeSelectedGermplasm != null) {
 			this.removeSelectedGermplasm.setVisible(visible);
 		}
@@ -173,10 +168,10 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 
 	/**
 	 * Update the Action Menu in List View base on the following paramenters:
-	 * 
-	 * @param fromUrl - if it is loaded from the URL directly
+	 *
+	 * @param fromUrl             - if it is loaded from the URL directly
 	 * @param listBuilderIsLocked - if the list loaded in Build New List pane is locked
-	 * @param hasSource - if the source, ListManagerMain.class the parent component, is not null
+	 * @param hasSource           - if the source, ListManagerMain.class the parent component, is not null
 	 */
 	public void updateListViewActionMenu(final boolean fromUrl, final boolean listBuilderIsLocked, final boolean hasSource) {
 		if (fromUrl) {
@@ -201,7 +196,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.removeSelectedGermplasm = listEditingOptions.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM));
 	}
 
-	protected void setListEditingOptions(ContextMenuItem listEditingOptions) {
+	protected void setListEditingOptions(final ContextMenuItem listEditingOptions) {
 		this.listEditingOptions = listEditingOptions;
 	}
 }
