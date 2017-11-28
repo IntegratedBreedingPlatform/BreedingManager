@@ -1,7 +1,6 @@
 
 package org.generationcp.breeding.manager.crossingmanager.listeners;
 
-import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingMethodComponent;
 import org.slf4j.Logger;
@@ -35,10 +34,6 @@ public class CrossingManagerImportButtonClickListener implements Button.ClickLis
 
 		} else if (CrossingMethodComponent.GENERATE_CROSS_BUTTON_ID.equals(eventButtonData) && this.source instanceof CrossingMethodComponent) {
 			((CrossingMethodComponent) this.source).makeCrossButtonAction();
-
-		} else if (AdditionalDetailsCrossNameComponent.GENERATE_BUTTON_ID.equals(eventButtonData)
-				&& this.source instanceof AdditionalDetailsCrossNameComponent) {
-			((AdditionalDetailsCrossNameComponent) this.source).generateNextNameButtonAction();
 
 		} else {
 			CrossingManagerImportButtonClickListener.LOG

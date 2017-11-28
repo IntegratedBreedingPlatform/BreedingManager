@@ -18,20 +18,15 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -49,10 +44,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
 /**
- * This class contains the absolute layout of UI elements in Cross Name section in "Enter Additional Details..." tab in Crossing Manager
- * application
- *
- * @author Darla Ani
+ * This class contains the absolute layout of UI elements for "Fill with Sequence Number" pop-up screen
  *
  */
 @Configurable
@@ -161,20 +153,14 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 	public static final String GENERATE_BUTTON_ID = "Generate Next Name Id";
 
 	private static final long serialVersionUID = -1197900610042529900L;
-	private static final Logger LOG = LoggerFactory.getLogger(AdditionalDetailsCrossNameComponent.class);
 	private static final Integer MAX_NUM_OF_ALLOWED_DIGITS = 9;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	@Autowired
-	private GermplasmDataManager germplasmManager;
-
 	private Label specifyPrefixLabel;
 	private Label specifySuffixLabel;
 	private Label howManyDigitsLabel;
-	private Label nextNameInSequenceLabel;
-	private Label generatedNameLabel;
 	private Label specifyStartNumberLabel;
 
 	private TextField prefixTextField;
@@ -184,12 +170,11 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 	private CheckBox addSpaceCheckBox;
 	private CheckBox addSpaceAfterSuffixCheckBox;
 	private Select numOfAllowedDigitsSelect;
-	private Button generateButton;
 	private Button okButton;
 	private Button cancelButton;
 
 	private final AbstractComponent[] digitsToggableComponents = new AbstractComponent[2];
-	private final AbstractComponent[] otherToggableComponents = new AbstractComponent[9];
+	private final AbstractComponent[] otherToggableComponents = new AbstractComponent[6];
 
 	// store prefix used for MW method including zeros, if any
 	private String lastPrefixUsed;
@@ -199,17 +184,14 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
 	private FillWith fillWithSource;
 	private String propertyIdToFill;
-	private boolean forFillWith = false;
 	private Window parentWindow;
 
 	public AdditionalDetailsCrossNameComponent() {
 		super();
-		this.forFillWith = false;
 	}
 
 	public AdditionalDetailsCrossNameComponent(final FillWith fillWithSource, final String propertyIdToFill, final Window parentWindow) {
 		super();
-		this.forFillWith = true;
 		this.fillWithSource = fillWithSource;
 		this.propertyIdToFill = propertyIdToFill;
 		this.parentWindow = parentWindow;
@@ -264,49 +246,37 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		this.suffixTextField.setDebugId("suffixTextField");
 		this.suffixTextField.setWidth("300px");
 
-		this.nextNameInSequenceLabel = new Label();
-		this.nextNameInSequenceLabel.setDebugId("nextNameInSequenceLabel");
-		this.generatedNameLabel = new Label();
-		this.generatedNameLabel.setDebugId("generatedNameLabel");
+		this.setHeight("250px");
+		this.setWidth("490px");
+		this.specifyStartNumberLabel = new Label();
+		this.specifyStartNumberLabel.setDebugId("specifyStartNumberLabel");
 
-		this.generateButton = new Button();
-		this.generateButton.setDebugId("generateButton");
-		this.generateButton.setData(AdditionalDetailsCrossNameComponent.GENERATE_BUTTON_ID);
-		this.generateButton.addListener(new CrossingManagerImportButtonClickListener(this));
+		this.startNumberTextField = new TextField();
+		this.startNumberTextField.setDebugId("startNumberTextField");
+		this.startNumberTextField.setWidth("90px");
 
-		if (this.forFillWith) {
-			this.setHeight("250px");
-			this.setWidth("490px");
-			this.specifyStartNumberLabel = new Label();
-			this.specifyStartNumberLabel.setDebugId("specifyStartNumberLabel");
+		this.addSpaceAfterSuffixCheckBox = new CheckBox();
+		this.addSpaceAfterSuffixCheckBox.setDebugId("addSpaceAfterSuffixCheckBox");
+		this.addSpaceAfterSuffixCheckBox.setImmediate(true);
 
-			this.startNumberTextField = new TextField();
-			this.startNumberTextField.setDebugId("startNumberTextField");
-			this.startNumberTextField.setWidth("90px");
+		this.cancelButton = new Button();
+		this.cancelButton.setDebugId("cancelButton");
+		this.cancelButton.addListener(new Button.ClickListener() {
 
-			this.addSpaceAfterSuffixCheckBox = new CheckBox();
-			this.addSpaceAfterSuffixCheckBox.setDebugId("addSpaceAfterSuffixCheckBox");
-			this.addSpaceAfterSuffixCheckBox.setImmediate(true);
+			private static final long serialVersionUID = -3519880320817778816L;
 
-			this.cancelButton = new Button();
-			this.cancelButton.setDebugId("cancelButton");
-			this.cancelButton.addListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+				final Window parent = AdditionalDetailsCrossNameComponent.this.parentWindow.getParent();
+				parent.removeWindow(AdditionalDetailsCrossNameComponent.this.parentWindow);
+			}
+		});
 
-				private static final long serialVersionUID = -3519880320817778816L;
+		this.okButton = new Button();
+		this.okButton.setDebugId("okButton");
+		this.okButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.okButton.addListener(new OKButtonClickListener());
 
-				@Override
-				public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-					final Window parent = AdditionalDetailsCrossNameComponent.this.parentWindow.getParent();
-					parent.removeWindow(AdditionalDetailsCrossNameComponent.this.parentWindow);
-				}
-			});
-
-			this.okButton = new Button();
-			this.okButton.setDebugId("okButton");
-			this.okButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-			this.okButton.addListener(new OKButtonClickListener());
-
-		}
 
 		this.layoutComponents();
 		this.initializeToggableComponents();
@@ -325,52 +295,33 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		this.messageSource.setCaption(this.sequenceNumCheckBox, Message.SEQUENCE_NUMBER_SHOULD_HAVE);
 		this.messageSource.setCaption(this.addSpaceCheckBox, Message.ADD_SPACE_BETWEEN_PREFIX_AND_CODE);
 		this.messageSource.setCaption(this.howManyDigitsLabel, Message.DIGITS);
-
-		if (!this.forFillWith) {
-			this.messageSource.setCaption(this.nextNameInSequenceLabel, Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE);
-			this.messageSource.setCaption(this.generateButton, Message.GENERATE);
-		} else {
-			this.messageSource.setCaption(this.addSpaceAfterSuffixCheckBox, Message.ADD_SPACE_BETWEEN_SUFFIX_AND_CODE);
-			this.messageSource.setCaption(this.cancelButton, Message.CANCEL);
-			this.messageSource.setCaption(this.okButton, Message.OK);
-			this.messageSource.setCaption(this.specifyStartNumberLabel, Message.SPECIFY_START_NUMBER);
-		}
+		
+		this.messageSource.setCaption(this.addSpaceAfterSuffixCheckBox, Message.ADD_SPACE_BETWEEN_SUFFIX_AND_CODE);
+		this.messageSource.setCaption(this.cancelButton, Message.CANCEL);
+		this.messageSource.setCaption(this.okButton, Message.OK);
+		this.messageSource.setCaption(this.specifyStartNumberLabel, Message.SPECIFY_START_NUMBER);
 	}
 
 	private void layoutComponents() {
-		if (!this.forFillWith) {
-			this.addComponent(this.specifyPrefixLabel, "top:25px;left:0px");
-			this.addComponent(this.prefixTextField, "top:6px;left:165px");
-			this.addComponent(this.sequenceNumCheckBox, "top:37px;left:0px");
-			this.addComponent(this.howManyDigitsLabel, "top:53px;left:289px");
-			this.addComponent(this.numOfAllowedDigitsSelect, "top:35px;left:235px");
-			this.addComponent(this.addSpaceCheckBox, "top:65px;left:0px");
-			this.addComponent(this.specifySuffixLabel, "top:115px;left:0px");
-			this.addComponent(this.suffixTextField, "top:95px;left:165px");
-			this.addComponent(this.nextNameInSequenceLabel, "top:145px;left:0px");
-			this.addComponent(this.generatedNameLabel, "top:145px;left:265px");
-			this.addComponent(this.generateButton, "top:155px;left:0px");
-		} else {
-			this.addComponent(this.specifyPrefixLabel, "top:25px;left:10px");
-			this.addComponent(this.prefixTextField, "top:6px;left:175px");
-			this.addComponent(this.addSpaceCheckBox, "top:37px;left:10px");
-			this.addComponent(this.specifyStartNumberLabel, "top:87px;left:10px");
-			this.addComponent(this.startNumberTextField, "top:67px;left:175px");
-			this.addComponent(this.sequenceNumCheckBox, "top:100px;left:10px");
-			this.addComponent(this.numOfAllowedDigitsSelect, "top:98px;left:335px");
-			this.addComponent(this.howManyDigitsLabel, "top:119px;left:389px");
-			this.addComponent(this.specifySuffixLabel, "top:150px;left:10px");
-			this.addComponent(this.suffixTextField, "top:130px;left:175px");
-			this.addComponent(this.addSpaceAfterSuffixCheckBox, "top:162px;left:10px");
+		this.addComponent(this.specifyPrefixLabel, "top:25px;left:10px");
+		this.addComponent(this.prefixTextField, "top:6px;left:175px");
+		this.addComponent(this.addSpaceCheckBox, "top:37px;left:10px");
+		this.addComponent(this.specifyStartNumberLabel, "top:87px;left:10px");
+		this.addComponent(this.startNumberTextField, "top:67px;left:175px");
+		this.addComponent(this.sequenceNumCheckBox, "top:100px;left:10px");
+		this.addComponent(this.numOfAllowedDigitsSelect, "top:98px;left:335px");
+		this.addComponent(this.howManyDigitsLabel, "top:119px;left:389px");
+		this.addComponent(this.specifySuffixLabel, "top:150px;left:10px");
+		this.addComponent(this.suffixTextField, "top:130px;left:175px");
+		this.addComponent(this.addSpaceAfterSuffixCheckBox, "top:162px;left:10px");
 
-			final HorizontalLayout layoutButtonArea = new HorizontalLayout();
-			layoutButtonArea.setDebugId("layoutButtonArea");
-			layoutButtonArea.setSpacing(true);
-			layoutButtonArea.addComponent(this.cancelButton);
-			layoutButtonArea.addComponent(this.okButton);
+		final HorizontalLayout layoutButtonArea = new HorizontalLayout();
+		layoutButtonArea.setDebugId("layoutButtonArea");
+		layoutButtonArea.setSpacing(true);
+		layoutButtonArea.addComponent(this.cancelButton);
+		layoutButtonArea.addComponent(this.okButton);
 
-			this.addComponent(layoutButtonArea, "top:205px; left:200px");
-		}
+		this.addComponent(layoutButtonArea, "top:205px; left:200px");
 	}
 
 	private void initializeToggableComponents() {
@@ -379,13 +330,10 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
 		this.otherToggableComponents[0] = this.specifyPrefixLabel;
 		this.otherToggableComponents[1] = this.specifySuffixLabel;
-		this.otherToggableComponents[2] = this.nextNameInSequenceLabel;
-		this.otherToggableComponents[3] = this.prefixTextField;
-		this.otherToggableComponents[4] = this.suffixTextField;
-		this.otherToggableComponents[5] = this.sequenceNumCheckBox;
-		this.otherToggableComponents[6] = this.addSpaceCheckBox;
-		this.otherToggableComponents[7] = this.generatedNameLabel;
-		this.otherToggableComponents[8] = this.generateButton;
+		this.otherToggableComponents[2] = this.prefixTextField;
+		this.otherToggableComponents[3] = this.suffixTextField;
+		this.otherToggableComponents[4] = this.sequenceNumCheckBox;
+		this.otherToggableComponents[5] = this.addSpaceCheckBox;
 
 		this.enableSpecifyCrossNameComponents(true);
 	}
@@ -402,27 +350,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		for (final AbstractComponent component : this.digitsToggableComponents) {
 			component.setEnabled(enabled);
 		}
-	}
-
-	// Action handler for generating cross names
-	public void generateNextNameButtonAction() {
-		if (this.validateCrossNameFields()) {
-			final String suffix = ((String) this.suffixTextField.getValue()).trim();
-
-			try {
-				this.lastPrefixUsed = this.buildPrefixString();
-				final String nextSequenceNumberString = this.germplasmManager.getNextSequenceNumberForCrossName(this.lastPrefixUsed.trim(), suffix);
-
-				this.nextNumberInSequence = Integer.parseInt(nextSequenceNumberString);
-				this.generatedNameLabel.setCaption(this.buildNextNameInSequence(this.lastPrefixUsed, suffix, this.nextNumberInSequence));
-
-			} catch (final MiddlewareQueryException e) {
-				AdditionalDetailsCrossNameComponent.LOG.error(e.toString() + "\n" + e.getStackTrace(), e);
-				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-						this.messageSource.getMessage(Message.ERROR_IN_GETTING_NEXT_NUMBER_IN_CROSS_NAME_SEQUENCE));
-			}
-		}
-
 	}
 
 	private boolean validateCrossNameFields() {
