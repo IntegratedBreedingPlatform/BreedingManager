@@ -1,7 +1,6 @@
 
 package org.generationcp.breeding.manager.crossingmanager.listeners;
 
-import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingMethodComponent;
 import org.slf4j.Logger;
@@ -17,13 +16,13 @@ public class CrossingManagerImportButtonClickListener implements Button.ClickLis
 
 	private final Object source;
 
-	public CrossingManagerImportButtonClickListener(Object source) {
+	public CrossingManagerImportButtonClickListener(final Object source) {
 		this.source = source;
 	}
 
 	@Override
-	public void buttonClick(ClickEvent event) {
-		Object eventButtonData = event.getButton().getData();
+	public void buttonClick(final ClickEvent event) {
+		final Object eventButtonData = event.getButton().getData();
 
 		if (CrossingManagerMakeCrossesComponent.BACK_BUTTON_ID.equals(eventButtonData)
 				&& this.source instanceof CrossingManagerMakeCrossesComponent) {
@@ -33,12 +32,9 @@ public class CrossingManagerImportButtonClickListener implements Button.ClickLis
 				&& this.source instanceof CrossingManagerMakeCrossesComponent) {
 			((CrossingManagerMakeCrossesComponent) this.source).nextButtonClickAction();
 
-		} else if (CrossingMethodComponent.GENERATE_CROSS_BUTTON_ID.equals(eventButtonData) && this.source instanceof CrossingMethodComponent) {
+		} else if (CrossingMethodComponent.GENERATE_CROSS_BUTTON_ID.equals(eventButtonData)
+				&& this.source instanceof CrossingMethodComponent) {
 			((CrossingMethodComponent) this.source).makeCrossButtonAction();
-
-		} else if (AdditionalDetailsCrossNameComponent.GENERATE_BUTTON_ID.equals(eventButtonData)
-				&& this.source instanceof AdditionalDetailsCrossNameComponent) {
-			((AdditionalDetailsCrossNameComponent) this.source).generateNextNameButtonAction();
 
 		} else {
 			CrossingManagerImportButtonClickListener.LOG
