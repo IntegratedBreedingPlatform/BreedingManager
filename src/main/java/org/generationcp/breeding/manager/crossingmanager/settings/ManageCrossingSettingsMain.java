@@ -27,8 +27,8 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class ManageCrossingSettingsMain extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-	BreedingManagerLayout, CrossesMadeContainer {
+public class ManageCrossingSettingsMain extends VerticalLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, CrossesMadeContainer {
 
 	private static final long serialVersionUID = 1L;
 
@@ -92,9 +92,8 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.makeCrossesComponent = new CrossingManagerMakeCrossesComponent(this);
 		this.makeCrossesComponent.setDebugId("makeCrossesComponent");
 		if (this.germplasmList != null) {
-			this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(
-				this.germplasmList.getId(),
-				this.germplasmList.getName());
+			this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(this.germplasmList.getId(),
+					this.germplasmList.getName());
 		}
 
 		this.tabSheet.addTab(this.makeCrossesComponent);
@@ -114,14 +113,14 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 	public void layoutComponents() {
 		this.setMargin(false, false, false, true);
 
-		HorizontalLayout headingLayout = new HorizontalLayout();
+		final HorizontalLayout headingLayout = new HorizontalLayout();
 		headingLayout.setDebugId("headingLayout");
 		headingLayout.setSpacing(true);
 		headingLayout.setHeight("40px");
 		headingLayout.addComponent(this.toolTitle);
 		headingLayout.addComponent(new HelpButton(HelpModule.DESIGN_CROSSES, "View Design Crosses tutorial"));
 
-		HeaderLabelLayout subHeaderLabel = new HeaderLabelLayout(null, this.designCrossesHeaderLabel);
+		final HeaderLabelLayout subHeaderLabel = new HeaderLabelLayout(null, this.designCrossesHeaderLabel);
 		subHeaderLabel.setDebugId("subHeaderLabel");
 
 		this.addComponent(headingLayout);
@@ -129,10 +128,9 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.addComponent(this.tabSheet);
 	}
 
-	public void viewGermplasmListCreated(GermplasmList crossList, GermplasmList femaleList, GermplasmList maleList) {
-		CrossingManagerSummaryComponent summaryComponent =
-			new CrossingManagerSummaryComponent(this, crossList, femaleList, maleList,
-				this.compileCurrentSetting());
+	public void viewGermplasmListCreated(final GermplasmList crossList, final GermplasmList femaleList, final GermplasmList maleList) {
+		final CrossingManagerSummaryComponent summaryComponent =
+				new CrossingManagerSummaryComponent(this, crossList, femaleList, maleList, this.compileCurrentSetting());
 
 		this.removeComponent(this.tabSheet);
 
@@ -148,7 +146,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 		this.parent.removeAllComponents();
 
-		ManageCrossingSettingsMain crossingManagerMain = new ManageCrossingSettingsMain(this.parent);
+		final ManageCrossingSettingsMain crossingManagerMain = new ManageCrossingSettingsMain(this.parent);
 		crossingManagerMain.setDebugId("crossingManagerMain");
 
 		// remove the redundant left margin after reloading the choose setting page
@@ -168,7 +166,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 	}
 
 	@Override
-	public void setCrossesMade(CrossesMade crossesMade) {
+	public void setCrossesMade(final CrossesMade crossesMade) {
 		this.crossesMade = crossesMade;
 	}
 
@@ -177,8 +175,8 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 	}
 
 	public CrossingManagerSetting compileCurrentSetting() {
-		CrossingManagerSetting setting = detailComponent.getPartialCurrentSetting();
-		setting.setBreedingMethodSetting(makeCrossesComponent.getCurrentBreedingMethodSetting());
+		final CrossingManagerSetting setting = this.detailComponent.getPartialCurrentSetting();
+		setting.setBreedingMethodSetting(this.makeCrossesComponent.getCurrentBreedingMethodSetting());
 
 		return setting;
 	}

@@ -42,8 +42,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 
 @Configurable
-public class CrossingSettingsDetailComponent extends CssLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout {
+public class CrossingSettingsDetailComponent extends CssLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	public static final String CS_PANEL_SECTION = "cs-panel-section";
 	private static final long serialVersionUID = -7733004867121978697L;
@@ -284,8 +284,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 								if (dialog.isConfirmed()) {
 									CrossingSettingsDetailComponent.this.saveSetting();
 								} else {
-									CrossingSettingsDetailComponent.this.additionalDetailsComponent
-											.setSetAsDefaultSettingCheckbox(false);
+									CrossingSettingsDetailComponent.this.additionalDetailsComponent.setSetAsDefaultSettingCheckbox(false);
 									CrossingSettingsDetailComponent.this.saveSetting();
 								}
 							}
@@ -304,8 +303,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		} catch (final MiddlewareQueryException ex) {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					"Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.");
-			CrossingSettingsDetailComponent.LOG.error(
-					"Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", ex);
+			CrossingSettingsDetailComponent.LOG
+					.error("Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", ex);
 		}
 	}
 
@@ -313,7 +312,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 		this.updateTemplateSettingVariables();
 
-        // TODO clarify the saving of setting operation now that all settings are not on the same page
+		// TODO clarify the saving of setting operation now that all settings are not on the same page
 		final CrossingManagerSetting currentlyDefinedSettingsInUi = this.getPartialCurrentSetting();
 
 		if (this.currentSetting == null) {
@@ -338,9 +337,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 				try {
 					final Integer templateSettingId = this.workbenchDataManager.addTemplateSetting(templateSetting);
-					final List<TemplateSetting> results =
-							this.workbenchDataManager.getTemplateSettings(new TemplateSetting(templateSettingId, null, null, null, null,
-									null));
+					final List<TemplateSetting> results = this.workbenchDataManager
+							.getTemplateSettings(new TemplateSetting(templateSettingId, null, null, null, null, null));
 					if (!results.isEmpty()) {
 						this.currentSetting = results.get(0);
 						this.defineSettingComponent.setSettingsComboBox(this.currentSetting);
@@ -366,8 +364,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 			final String currentSettingNameInUi = this.getCurrentSettingNameinUI();
 
 			if (!this.currentSetting.getName().equals(currentSettingNameInUi)) {
-				if (!this.doesSettingNameExist(currentSettingNameInUi, this.project.getProjectId().intValue(),
-						this.crossingManagerTool)) {
+				if (!this.doesSettingNameExist(currentSettingNameInUi, this.project.getProjectId().intValue(), this.crossingManagerTool)) {
 					this.currentSetting.setName(currentSettingNameInUi);
 					thereIsAChange = true;
 				} else {
@@ -381,24 +378,25 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	}
 
 	public void confirmCrossingSettingOverwrite() {
-		ConfirmDialog.show(this.getWindow(), "Save Crossing Setting", "There is an existing setting with the same name you have specified."
-				+ " Do you want to overwrite the existing setting?", "Yes", "No", new ConfirmDialog.Listener() {
+		ConfirmDialog.show(this.getWindow(), "Save Crossing Setting",
+				"There is an existing setting with the same name you have specified." + " Do you want to overwrite the existing setting?",
+				"Yes", "No", new ConfirmDialog.Listener() {
 
-			private static final long serialVersionUID = 1L;
+					private static final long serialVersionUID = 1L;
 
-			@Override
-			public void onClose(final ConfirmDialog dialog) {
-				if (dialog.isConfirmed()) {
-					CrossingSettingsDetailComponent.this.overwriteSetting();
-				} else {
-					CrossingSettingsDetailComponent.this.additionalDetailsComponent.getSettingsNameTextfield().focus();
-				}
-			}
-		});
+					@Override
+					public void onClose(final ConfirmDialog dialog) {
+						if (dialog.isConfirmed()) {
+							CrossingSettingsDetailComponent.this.overwriteSetting();
+						} else {
+							CrossingSettingsDetailComponent.this.additionalDetailsComponent.getSettingsNameTextfield().focus();
+						}
+					}
+				});
 	}
 
 	public void overwriteSetting() {
-        // TODO clarify the saving of setting operation now that all settings are not on the same page
+		// TODO clarify the saving of setting operation now that all settings are not on the same page
 		final CrossingManagerSetting currentlyDefinedSettingsInUi = this.getPartialCurrentSetting();
 
 		// get the existing setting
@@ -472,8 +470,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 				return existingTemplateSetting;
 			}
 		} catch (final MiddlewareQueryException ex) {
-			CrossingSettingsDetailComponent.LOG.error("Error getting template settings for project:" + projectId
-					+ "and crossing manager tool.", ex);
+			CrossingSettingsDetailComponent.LOG
+					.error("Error getting template settings for project:" + projectId + "and crossing manager tool.", ex);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					"Error with checking for uniqueness of settings name.");
 		}
@@ -484,9 +482,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		String currentSettingNameInUi = (String) this.additionalDetailsComponent.getSettingsNameTextfield().getValue();
 		currentSettingNameInUi = currentSettingNameInUi.toString();
 		currentSettingNameInUi = currentSettingNameInUi.trim();
-		currentSettingNameInUi =
-				currentSettingNameInUi.substring(0,
-						Math.min(currentSettingNameInUi.length(), CrossingSettingsDetailComponent.SETTING_NAME_MAX_LENGTH));
+		currentSettingNameInUi = currentSettingNameInUi.substring(0,
+				Math.min(currentSettingNameInUi.length(), CrossingSettingsDetailComponent.SETTING_NAME_MAX_LENGTH));
 
 		return currentSettingNameInUi;
 	}
@@ -505,8 +502,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 				return true;
 			}
 		} catch (final MiddlewareQueryException ex) {
-			CrossingSettingsDetailComponent.LOG.error("Error getting template settings for project:" + projectId
-					+ "and crossing manager tool.", ex);
+			CrossingSettingsDetailComponent.LOG
+					.error("Error getting template settings for project:" + projectId + "and crossing manager tool.", ex);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					"Error with checking for uniqueness of settings name.");
 			return true;
@@ -517,7 +514,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	/**
 	 * Make sure to validate the input fields first before calling this method.
 	 *
-     * The method is named getPartialCurrentSetting because it does not include the breeding method setting
+	 * The method is named getPartialCurrentSetting because it does not include the breeding method setting
+	 *
 	 * @return
 	 */
 	public CrossingManagerSetting getPartialCurrentSetting() {
@@ -531,7 +529,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		final AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(locId, harvestDate);
 		toreturn.setAdditionalDetailsSetting(additionalDetails);
 
-        String settingName = (String) this.additionalDetailsComponent.getSettingsNameTextfield().getValue();
+		String settingName = (String) this.additionalDetailsComponent.getSettingsNameTextfield().getValue();
 		settingName = settingName.trim();
 		toreturn.setName(settingName);
 
