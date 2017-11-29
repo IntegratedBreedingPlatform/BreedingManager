@@ -33,7 +33,7 @@ import com.google.common.collect.ImmutableSet;
 @Configurable
 public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateListener {
 
-	private final static Logger LOG = LoggerFactory.getLogger(ApplyCrossingSettingAction.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ApplyCrossingSettingAction.class);
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;

@@ -25,7 +25,6 @@ import java.util.Set;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.CollectionTransformationUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -105,7 +104,6 @@ public class SaveCrossesMadeAction implements Serializable {
 	private final Map<Germplasm, GermplasmListData> germplasmToListDataMap = new LinkedHashMap<Germplasm, GermplasmListData>();
 
 	private final List<Integer> indicesOfAddedCrosses = new ArrayList<Integer>();
-	private final List<Integer> indicesOfRetainedCrosses = new ArrayList<Integer>();
 
 	public SaveCrossesMadeAction(final GermplasmList germplasmList) {
 		this.germplasmList = germplasmList;
@@ -222,8 +220,7 @@ public class SaveCrossesMadeAction implements Serializable {
 			listId = this.germplasmListManager.updateGermplasmList(this.germplasmList);
 		}
 
-		final GermplasmList list = this.germplasmListManager.getGermplasmListById(listId);
-		return list;
+		return this.germplasmListManager.getGermplasmListById(listId);
 	}
 
 	void saveGermplasmListDataRecords(final CrossesMade crossesMade, final List<Integer> germplasmIDs, final GermplasmList list) {
@@ -345,9 +342,8 @@ public class SaveCrossesMadeAction implements Serializable {
 	}
 
 	private String getParentageDesignation(final CrossesMade crossesMade, final int ctr, final String designation) {
-		final String groupNameSplit[] = this.getFemaleMaleCrossName(crossesMade, designation, ctr).split(",");
-		final String parentageDesignation = groupNameSplit[0];
-		return parentageDesignation;
+		final String[] groupNameSplit = this.getFemaleMaleCrossName(crossesMade, designation, ctr).split(",");
+		return groupNameSplit[0];
 	}
 
 	/*
@@ -366,7 +362,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	private GermplasmListData buildGermplasmListData(final GermplasmList list, final Integer gid, final int entryId,
 			final String designation, final String groupName, Map<Integer, String> pedigreeMap) {
 
-		final String groupNameSplit[] = groupName.split(",");
+		final String[] groupNameSplit = groupName.split(",");
 		final String seedSource = groupNameSplit[1];
 
 		final GermplasmListData germplasmListData = new GermplasmListData();

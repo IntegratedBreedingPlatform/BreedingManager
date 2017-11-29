@@ -270,32 +270,29 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	}
 
 	private void doNextAction() {
-		if (this.additionalDetailsComponent.validateInputFields()) {
-			if (this.additionalDetailsComponent.settingsFileNameProvided()) {
+		if (this.additionalDetailsComponent.validateInputFields() && this.additionalDetailsComponent.settingsFileNameProvided()) {
+			if (this.defaultSetting != null && !this.defaultSetting.equals(this.currentSetting)
+					&& (Boolean) this.additionalDetailsComponent.getSetAsDefaultSettingCheckbox().getValue()) {
+				ConfirmDialog.show(this.getWindow(), "Save Crossing Setting",
+						"There is already an existing default setting. Do you want to replace the default setting?", "Yes", "No",
+						new ConfirmDialog.Listener() {
 
-				if (this.defaultSetting != null && !this.defaultSetting.equals(this.currentSetting)
-						&& (Boolean) this.additionalDetailsComponent.getSetAsDefaultSettingCheckbox().getValue()) {
-					ConfirmDialog.show(this.getWindow(), "Save Crossing Setting",
-							"There is already an existing default setting. Do you want to replace the default setting?", "Yes", "No",
-							new ConfirmDialog.Listener() {
+							private static final long serialVersionUID = 1L;
 
-								private static final long serialVersionUID = 1L;
-
-								@Override
-								public void onClose(final ConfirmDialog dialog) {
-									if (dialog.isConfirmed()) {
-										CrossingSettingsDetailComponent.this.saveSetting();
-									} else {
-										CrossingSettingsDetailComponent.this.additionalDetailsComponent
-												.setSetAsDefaultSettingCheckbox(false);
-										CrossingSettingsDetailComponent.this.saveSetting();
-									}
+							@Override
+							public void onClose(final ConfirmDialog dialog) {
+								if (dialog.isConfirmed()) {
+									CrossingSettingsDetailComponent.this.saveSetting();
+								} else {
+									CrossingSettingsDetailComponent.this.additionalDetailsComponent
+											.setSetAsDefaultSettingCheckbox(false);
+									CrossingSettingsDetailComponent.this.saveSetting();
 								}
-							});
+							}
+						});
 
-				} else {
-					this.saveSetting();
-				}
+			} else {
+				this.saveSetting();
 			}
 		}
 	}
