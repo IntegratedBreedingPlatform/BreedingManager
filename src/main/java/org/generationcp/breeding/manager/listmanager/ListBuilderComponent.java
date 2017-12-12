@@ -41,6 +41,7 @@ import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToListDialog;
+import org.generationcp.breeding.manager.listmanager.listeners.AddColumnMenuItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
@@ -533,9 +534,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.menuDeleteSelectedEntries = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
 		this.menuCopyToList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.RESET_LIST));
-		this.addColumnContextMenu = new AddColumnContextMenu(
-				new ListBuilderAddColumnSource(this, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName()), this.menu,
-				this.listEditingOptions, this.messageSource);
+		
+		this.initializeAddColumnContextMenu();
+		
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
 
 		this.inventoryViewMenu = new ContextMenu();
@@ -595,6 +596,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		// reset the marker for unsaved changes on initial loading
 		this.resetUnsavedChangesFlag();
+	}
+
+	private void initializeAddColumnContextMenu() {
+		ListBuilderAddColumnSource addColumnSource = new ListBuilderAddColumnSource(this, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName());
+		this.addColumnContextMenu = new AddColumnContextMenu( addColumnSource, this.menu, this.listEditingOptions, this.messageSource);
+		addColumnContextMenu.addListener(new AddColumnMenuItemClickListener(addColumnSource));
 	}
 
 	public void resetMenuOptions() {
