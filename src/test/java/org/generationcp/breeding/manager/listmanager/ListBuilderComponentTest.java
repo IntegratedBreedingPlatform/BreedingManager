@@ -24,9 +24,9 @@ import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExport
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -52,6 +52,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
+
+import com.beust.jcommander.internal.Lists;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -59,8 +61,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
-
-import com.beust.jcommander.internal.Lists;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListBuilderComponentTest {
@@ -152,6 +152,9 @@ public class ListBuilderComponentTest {
 
 	@Mock
 	private ContextMenuItem contextMenuItem;
+	
+	@Mock
+	private ContextMenu contextMenu;
 
 	private static final Integer TEST_GERMPLASM_LIST_ID = 111;
 	private static final Integer TEST_GERMPLASM_NO_OF_ENTRIES = 5;
@@ -187,6 +190,7 @@ public class ListBuilderComponentTest {
 				.thenReturn(new Term(1, ListBuilderComponentTest.SEED_SOURCE, ""));
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.STOCKID.getId()))
 				.thenReturn(new Term(1, ListBuilderComponentTest.STOCKID, ""));
+		this.listBuilderComponent.setTableWithSelectAllLayout(this.tableWithSelectAllLayout);
 	}
 
 	@Test
@@ -218,8 +222,6 @@ public class ListBuilderComponentTest {
 		final Collection<? extends Integer> selectedItems = Arrays.asList(new Integer[] {});
 		Mockito.when(this.breedingManagerTable.getValue()).thenReturn(selectedItems);
 
-		this.listBuilderComponent.setTableWithSelectAllLayout(this.tableWithSelectAllLayout);
-
 		this.listBuilderComponent.deleteSelectedEntries();
 		try {
 			Mockito.verify(source, Mockito.times(1)).getWindow();
@@ -237,7 +239,6 @@ public class ListBuilderComponentTest {
 
 		final Collection<? extends Integer> selectedItems = Arrays.asList(new Integer[] {1});
 		Mockito.when(this.breedingManagerTable.getValue()).thenReturn(selectedItems);
-		this.listBuilderComponent.setTableWithSelectAllLayout(this.tableWithSelectAllLayout);
 
 		final Table listDataTable = Mockito.mock(Table.class);
 		listDataTable.addItem(1);
@@ -316,7 +317,6 @@ public class ListBuilderComponentTest {
 		this.listBuilderComponent.setContextUtil(contextUtil);
 		this.listBuilderComponent.setUnlockButton(button);
 		this.listBuilderComponent.setLockButton(button);
-		this.listBuilderComponent.setTableWithSelectAllLayout(this.tableWithSelectAllLayout);
 		final Collection<? extends Integer> selectedItems = Arrays.asList(new Integer[] {1});
 		Mockito.when(this.breedingManagerTable.getValue()).thenReturn(selectedItems);
 
@@ -546,5 +546,15 @@ public class ListBuilderComponentTest {
 		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_CANCELLING_RESERVATION);
 		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.WARNING_CANCEL_RESERVATION_IF_NO_LOT_IS_SELECTED);
 		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.WARNING_IF_THERE_IS_NO_RESERVATION_FOR_SELECTED_LOT);
+	}
+	
+	@Test
+	public void testInitializeAddColumnContextMenu () {
+		this.listBuilderComponent.setContextMenu(contextMenu);
+		ContextMenuItem item = Mockito.mock(ContextMenuItem.class);
+		Mockito.when(this.contextMenu.addItem(Matchers.anyString())).thenReturn(item);
+		Mockito.when(item.addItem(Matchers.anyString())).thenReturn(item);
+		this.listBuilderComponent.initializeAddColumnContextMenu();
+		Mockito.verify(this.contextMenu).addListener(Matchers.any(ContextMenu.ClickListener.class));
 	}
 }

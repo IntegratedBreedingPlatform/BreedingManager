@@ -628,7 +628,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.resetUnsavedChangesFlag();
 	}
 
-	private void initializeAddColumnContextMenu() {
+	void initializeAddColumnContextMenu() {
 		final ListBuilderAddColumnSource addColumnSource = new ListBuilderAddColumnSource(this,
 				this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName());
 		this.addColumnContextMenu = new AddColumnContextMenu(addColumnSource, this.menu, this.listEditingOptions,
@@ -2235,4 +2235,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.inventoryViewMenu = inventoryViewMenu;
 	}
 
+	public void setContextMenu(ContextMenu menu) {
+		this.menu = menu;
+	}
+	
+	
 }
