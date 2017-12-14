@@ -2235,9 +2235,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.inventoryViewMenu = inventoryViewMenu;
 	}
 
-	public void setContextMenu(ContextMenu menu) {
+	public void setContextMenu(final ContextMenu menu) {
 		this.menu = menu;
 	}
-	
-	
+
 }
