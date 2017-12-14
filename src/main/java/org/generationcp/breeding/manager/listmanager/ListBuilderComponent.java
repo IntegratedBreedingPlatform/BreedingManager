@@ -622,7 +622,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.resetButton.addStyleName(Bootstrap.Buttons.DEFAULT.styleName());
 
 		// Inventory Related Variables
-		this.validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
+		this.validReservationsToSave = new HashMap<>();
 
 		// reset the marker for unsaved changes on initial loading
 		this.resetUnsavedChangesFlag();
@@ -1115,7 +1115,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	 */
 	@SuppressWarnings("unchecked")
 	private List<Integer> getItemIds(final Table table) {
-		final List<Integer> itemIds = new ArrayList<Integer>();
+		final List<Integer> itemIds = new ArrayList<>();
 		itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
 
 		return itemIds;
@@ -1267,7 +1267,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	public List<GermplasmListData> getListEntriesFromTable() {
-		final List<GermplasmListData> toreturn = new ArrayList<GermplasmListData>();
+		final List<GermplasmListData> toreturn = new ArrayList<>();
 
 		this.assignSerializedEntryNumber();
 
@@ -1654,7 +1654,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		} else {
 			if (this.hasUnsavedChanges()) {
 
-				final List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
+				final List<Integer> alreadyAddedEntryIds = new ArrayList<>();
 				final List<ListDataAndLotDetails> listDataAndLotDetails = this.listInventoryTable
 						.getInventoryTableDropHandler().getListDataAndLotDetails();
 				for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
