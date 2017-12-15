@@ -17,6 +17,7 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.UserDefinedFieldTestDataInitializer;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +44,9 @@ public class ListManagerCopyToListDialogTest {
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
+
+	@Mock
+	private GermplasmDataManager germplasmDataManager;
 
 	@Mock
 	private ContextUtil contextUtil;
@@ -225,6 +229,8 @@ public class ListManagerCopyToListDialogTest {
 
 	private void setValues() {
 		this.listManagerCopyToListDialog.setGermplasmListManager(this.germplasmListManager);
+		this.listManagerCopyToListDialog.setGermplasmDataManager(this.germplasmDataManager);
+
 		this.listManagerCopyToListDialog.setContextUtil(this.contextUtil);
 		this.listManagerCopyToListDialog.setMessageSource(this.messageSource);
 
