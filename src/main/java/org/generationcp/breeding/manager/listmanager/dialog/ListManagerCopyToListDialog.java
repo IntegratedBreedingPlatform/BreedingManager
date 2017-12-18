@@ -11,6 +11,7 @@
 
 package org.generationcp.breeding.manager.listmanager.dialog;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,8 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -35,6 +38,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.VaadinComponentsUtil;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -73,7 +77,6 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 
 	public static final Object SAVE_BUTTON_ID = "Save New List Entries";
 	public static final String CANCEL_BUTTON_ID = "Cancel Copying New List Entries";
-	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 
 	private Label labelListName;
 	private Label labelListNameDescription;
@@ -102,6 +105,9 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -344,19 +350,26 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 		final int localRecordId = 0;
 		int germplasmListDataEntryId = entryid;
 		final Collection<?> selectedIds = (Collection<?>) this.listEntriesTable.getValue();
+		final List<Integer> selectedGids = new ArrayList<>();
+		for (final Object itemId : selectedIds) {
+			final Property gidProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName());
+			final Button gidLinkButton = (Button) gidProperty.getValue();
+			final int gid = Integer.valueOf(gidLinkButton.getCaption().toString());
+			selectedGids.add(gid);
+		}
+
+		final Map<Integer, String> preferredNames = this.germplasmDataManager.getPreferredNamesByGids(selectedGids);
 		for (final Object itemId : selectedIds) {
 			final Property parentageProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName());
 			final Property entryIdProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName());
 			final Property gidProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName());
-			final Property designationProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.DESIGNATION.getName());
 			final Property seedSourceProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
 
 			final Button gidLinkButton = (Button) gidProperty.getValue();
 			final int gid = Integer.valueOf(gidLinkButton.getCaption().toString());
 			final String entryIdOfList = String.valueOf(entryIdProperty.getValue().toString());
 			final String seedSource = String.valueOf(seedSourceProperty.getValue().toString());
-			final Button designationLinkButton = (Button) designationProperty.getValue();
-			final String designation = String.valueOf(designationLinkButton.getCaption().toString());
+			final String designation = preferredNames.get(gid);
 			final String groupName = String.valueOf(parentageProperty.getValue().toString());
 
 			final GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, germplasmListDataEntryId, entryIdOfList,
@@ -482,5 +495,9 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 
 	void setMapExistingList(final Map<String, Integer> mapExistingList) {
 		this.mapExistingList = mapExistingList;
+	}
+
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
 	}
 }
