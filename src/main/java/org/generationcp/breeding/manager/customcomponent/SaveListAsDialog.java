@@ -7,13 +7,10 @@ import java.util.Date;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.ParentTabComponent;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.ListDateField;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
-import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
-import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.commons.util.DateUtil;
@@ -412,8 +409,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	protected Long getCurrentParsedListDate(final String listDate) {
 		Date date;
 		try {
-			final SimpleDateFormat sdf = (SimpleDateFormat) DateUtil.getSimpleDateFormat("E MMM dd HH:mm:ss Z yyyy").clone();
-			sdf.setLenient(true);
+			final SimpleDateFormat sdf = DateUtil.getSimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
 			date = sdf.parse(listDate);
 		} catch (final ParseException e) {
 			date = new Date();

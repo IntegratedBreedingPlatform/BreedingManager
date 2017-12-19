@@ -16,31 +16,31 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
 
 @Configurable
-public class SelectTreeItemOnSaveListener extends AbsoluteLayout implements InitializingBean, InternationalizableComponent,
-		ListTreeActionsListener {
+public class SelectTreeItemOnSaveListener extends AbsoluteLayout
+		implements InitializingBean, InternationalizableComponent, ListTreeActionsListener {
 
 	private static final long serialVersionUID = 1L;
 	private final SaveListAsDialog saveListAsDialog;
 	private final Component parentComponent;
 
-	public SelectTreeItemOnSaveListener(SaveListAsDialog saveListAsDialog, Component parentComponent) {
+	public SelectTreeItemOnSaveListener(final SaveListAsDialog saveListAsDialog, final Component parentComponent) {
 		this.saveListAsDialog = saveListAsDialog;
 		this.parentComponent = parentComponent;
 	}
 
 	@Override
-	public void updateUIForRenamedList(GermplasmList list, String newName) {
+	public void updateUIForRenamedList(final GermplasmList list, final String newName) {
 		if (this.parentComponent instanceof ListManagerMain) {
-			ListManagerMain listManagerMain = (ListManagerMain) this.parentComponent;
+			final ListManagerMain listManagerMain = (ListManagerMain) this.parentComponent;
 			listManagerMain.getListSelectionComponent().updateUIForRenamedList(list, newName);
 		}
 
 		if (this.parentComponent instanceof ManageCrossingSettingsMain) {
-			ManageCrossingSettingsMain manageCrossingSettingsMain = (ManageCrossingSettingsMain) this.parentComponent;
+			final ManageCrossingSettingsMain manageCrossingSettingsMain = (ManageCrossingSettingsMain) this.parentComponent;
 			manageCrossingSettingsMain.getMakeCrossesComponent().getSelectParentsComponent().updateUIForRenamedList(list, newName);
 		}
 
-		ListNameField listNameField = this.saveListAsDialog.getListDetailsComponent().getListNameField();
+		final ListNameField listNameField = this.saveListAsDialog.getListDetailsComponent().getListNameField();
 		listNameField.getListNameValidator().setCurrentListName(newName);
 		listNameField.setValue(newName);
 		listNameField.setListNameValidator(listNameField.getListNameValidator());
@@ -48,12 +48,12 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout implements Init
 	}
 
 	@Override
-	public void studyClicked(GermplasmList list) {
+	public void studyClicked(final GermplasmList list) {
 		if (this.saveListAsDialog != null && !list.getType().equals("FOLDER")) {
 			this.saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
 
 			if (this.saveListAsDialog.getSource() instanceof ListBuilderComponent) {
-				ListBuilderComponent LBC = (ListBuilderComponent) this.saveListAsDialog.getSource();
+				final ListBuilderComponent LBC = (ListBuilderComponent) this.saveListAsDialog.getSource();
 				LBC.getSaveListButtonListener().setForceHasChanges(true);
 			}
 
@@ -61,18 +61,14 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout implements Init
 	}
 
 	@Override
-	public void folderClicked(GermplasmList list) {
+	public void folderClicked(final GermplasmList list) {
 		if (this.saveListAsDialog != null) {
 			// Check also if folder is clicked (or list is null == central/local folders)
 			if (list != null && list.getType().equals("FOLDER") || list == null) {
-				// Check if list old (with ID), if so, remove list details
-				if (this.saveListAsDialog.getDetailsComponent().getCurrentGermplasmList() != null
-						&& this.saveListAsDialog.getDetailsComponent().getCurrentGermplasmList().getId() != null) {
-					this.saveListAsDialog.getDetailsComponent().setGermplasmListDetails(null);
-					this.saveListAsDialog.setGermplasmList(null);// reset also the current list to save
+				if (!(this.saveListAsDialog.getDetailsComponent().getCurrentGermplasmList() != null
+						&& this.saveListAsDialog.getDetailsComponent().getCurrentGermplasmList().getId() != null)) {
+					this.saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
 				}
-			} else {
-				this.saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
 			}
 		}
 	}
