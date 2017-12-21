@@ -615,7 +615,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		final String stockIds = entry.getInventoryInfo().getStockIDs();
 		final Label stockIdsLbl = new Label(stockIds);
 		stockIdsLbl.setDebugId("stockIdsLbl");
-		stockIdsLbl.setDescription(stockIds);
+		if(stockIds == null) {
+			stockIdsLbl.setDescription("");
+		}
+		else {
+			stockIdsLbl.setDescription(stockIds);
+		}
 		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
 
 	}
