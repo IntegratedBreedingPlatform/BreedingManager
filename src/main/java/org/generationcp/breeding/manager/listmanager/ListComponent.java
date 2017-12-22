@@ -617,6 +617,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		stockIdsLbl.setDebugId("stockIdsLbl");
 		if(stockIds == null) {
 			stockIdsLbl.setDescription("");
+			stockIdsLbl.getPropertyDataSource().setValue("");
 		}
 		else {
 			stockIdsLbl.setDescription(stockIds);
