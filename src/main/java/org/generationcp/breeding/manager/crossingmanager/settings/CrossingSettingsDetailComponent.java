@@ -59,7 +59,6 @@ public class CrossingSettingsDetailComponent extends CssLayout
 	@Resource
 	private ContextUtil contextUtil;
 
-	private DefineCrossingSettingComponent defineSettingComponent;
 	private CrossingSettingsOtherDetailsComponent additionalDetailsComponent;
 	private Button nextButton;
 	private Button cancelButton;
@@ -91,10 +90,6 @@ public class CrossingSettingsDetailComponent extends CssLayout
 
 	@Override
 	public void instantiateComponents() {
-
-		this.defineSettingComponent = new DefineCrossingSettingComponent(this);
-		this.defineSettingComponent.setDebugId("defineSettingComponent");
-
 		this.additionalDetailsComponent = new CrossingSettingsOtherDetailsComponent();
 		this.additionalDetailsComponent.setDebugId("additionalDetailsComponent");
 
@@ -117,10 +112,6 @@ public class CrossingSettingsDetailComponent extends CssLayout
 		this.project = null;
 		this.crossingManagerTool = null;
 
-		if (this.defineSettingComponent.getSelectedTemplateSetting() != null) {
-			this.setCurrentSetting(this.defineSettingComponent.getSelectedTemplateSetting());
-			this.setManageCrossingSettingsFields();
-		}
 	}
 
 	@Override
@@ -165,9 +156,6 @@ public class CrossingSettingsDetailComponent extends CssLayout
 
 		// cs is our crossing settings namespace
 		sectionLayout.addStyleName("cs");
-		this.defineSettingComponent.addStyleName(CrossingSettingsDetailComponent.CS_PANEL_SECTION);
-
-		sectionLayout.addComponent(this.defineSettingComponent);
 		sectionLayout.addComponent(this.additionalDetailsComponent);
 
 		this.sectionPanel.setLayout(sectionLayout);
@@ -249,7 +237,6 @@ public class CrossingSettingsDetailComponent extends CssLayout
 						try {
 							CrossingSettingsDetailComponent.this.workbenchDataManager
 									.deleteTemplateSetting(CrossingSettingsDetailComponent.this.currentSetting);
-							CrossingSettingsDetailComponent.this.defineSettingComponent.setSettingsComboBox(null);
 							CrossingSettingsDetailComponent.this.setDefaultManageCrossingSettingsFields();
 
 							MessageNotifier.showMessage(CrossingSettingsDetailComponent.this.getWindow(),
@@ -341,8 +328,6 @@ public class CrossingSettingsDetailComponent extends CssLayout
 							.getTemplateSettings(new TemplateSetting(templateSettingId, null, null, null, null, null));
 					if (!results.isEmpty()) {
 						this.currentSetting = results.get(0);
-						this.defineSettingComponent.setSettingsComboBox(this.currentSetting);
-
 					} else {
 						templateSetting.setTemplateSettingId(templateSettingId);
 						this.currentSetting = templateSetting;
@@ -439,7 +424,6 @@ public class CrossingSettingsDetailComponent extends CssLayout
 			if (settingChangeResult) {
 				this.workbenchDataManager.updateTemplateSetting(this.currentSetting);
 				// must reload settings combobox to solve out of sync when going back to this screen
-				this.defineSettingComponent.setSettingsComboBox(this.currentSetting);
 				MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 						"Crossing Manager Setting has been updated.");
 			}
