@@ -13,7 +13,6 @@ import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.service.api.FieldbookService;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -167,30 +166,4 @@ public class CrossingManagerMakeCrossesComponentTest {
 		Assert.assertNotNull("Expecting nursery back button initialized when navigating to crossing manager from a Nursery.",
 				this.makeCrosses.getNurseryBackButton());
 	}
-
-	@Test
-	public void testBackNavigationControlsWhenNotComingFromNursery() {
-
-		// Setup Mocks
-		this.makeCrosses.setSelectParentsComponent(Mockito.mock(SelectParentsComponent.class));
-		this.makeCrosses.setParentsComponent(Mockito.mock(MakeCrossesParentsComponent.class));
-		this.makeCrosses.setCrossingMethodComponent(Mockito.mock(CrossingMethodComponent.class));
-		this.makeCrosses.setCrossingSettingsMethodComponent(Mockito.mock(CrossingSettingsMethodComponent.class));
-		this.makeCrosses.setCrossesTableComponent(Mockito.mock(MakeCrossesTableComponent.class));
-		this.makeCrosses.setNextButton(Mockito.mock(Button.class));
-		this.makeCrosses.setBackButton(Mockito.mock(Button.class));
-
-		// Set "from nursery" flag to false
-		this.makeCrosses.setNavigatedFromNursery(false);
-
-		// Layout components
-		this.makeCrosses.layoutComponents();
-
-		// Expect cancel and back to nursery buttons to not be initialized (null)
-		Assert.assertNull("Expecting cancel button to not be initialized when not navigating to crossing manager from a Nursery.",
-				this.makeCrosses.getNurseryCancelButton());
-		Assert.assertNull("Expecting nursery back button to not be initialized when not navigating to crossing manager from a Nursery.",
-				this.makeCrosses.getNurseryBackButton());
-	}
-
 }

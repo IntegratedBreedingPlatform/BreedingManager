@@ -456,10 +456,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			MessageNotifier.showWarning(this.getWindow(), "Warning!", this.messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED));
 		}
 
-		if (this.tableCrossesMade.getItemIds().isEmpty() && this.getParent() instanceof CrossingManagerMakeCrossesComponent) {
-			((CrossingManagerMakeCrossesComponent) this.getParent()).disableNextButton();
-		}
-
 		this.updateCrossesMadeUI();
 	}
 

@@ -66,10 +66,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	private final ManageCrossingSettingsMain source;
 
-	private Button backButton;
-	// TODO Is next button used somewhere?
-	private Button nextButton;
-
 	private SelectParentsComponent selectParentsComponent;
 	private MakeCrossesParentsComponent parentsComponent;
 	private CrossingMethodComponent crossingMethodComponent;
@@ -134,8 +130,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	@Override
 	public void updateLabels() {
-		this.messageSource.setCaption(this.backButton, Message.BACK);
-		this.messageSource.setCaption(this.nextButton, Message.NEXT);
+		
 	}
 
 	/*
@@ -207,11 +202,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		}
 	}
 
-	// TODO Is next button used somewhere?
-	public void toggleNextButton() {
-		this.nextButton.setEnabled(this.isAllListsSaved());
-	}
-
 	public void toggleNurseryBackButton() {
 		this.nurseryBackButton.setEnabled(this.isCrossListMade());
 	}
@@ -248,10 +238,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	}
 
-	public void disableNextButton() {
-		this.nextButton.setEnabled(false);
-	}
-
 	@Override
 	public void instantiateComponents() {
 		this.selectParentsComponent = new SelectParentsComponent(this);
@@ -264,19 +250,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.crossesTableComponent.setDebugId("crossesTableComponent");
 		this.crossingSettingsMethodComponent = new CrossingSettingsMethodComponent();
 		this.crossingSettingsMethodComponent.setDebugId("crossingSettingsMethodComponent");
-
-		this.backButton = new Button();
-		this.backButton.setDebugId("backButton");
-		this.backButton.setData(CrossingManagerMakeCrossesComponent.BACK_BUTTON_ID);
-		this.backButton.setWidth("80px");
-
-		this.nextButton = new Button();
-		this.nextButton.setDebugId("nextButton");
-		this.nextButton.setData(CrossingManagerMakeCrossesComponent.NEXT_BUTTON_ID);
-		this.nextButton.setWidth("80px");
-		this.nextButton.setEnabled(false);
-		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-
 		fieldbookMiddlewareService.loadAllObservations(nurseryWorkbook);
 	}
 
@@ -287,10 +260,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	@Override
 	public void addListeners() {
-		final CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
-		this.backButton.addListener(listener);
-		this.nextButton.addListener(listener);
-
 		this.crossingSettingsMethodComponent.registerBreedingMethodChangeListener(new Property.ValueChangeListener() {
 
 			@Override
@@ -312,18 +281,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		layoutButtonArea.setMargin(true, true, true, true);
 		layoutButtonArea.setSpacing(true);
 
-		// show the link to navigate back to the Crossing Manager only if we came from the Nursery Manager previously
-		if (this.isNavigatedFromNursery) {
-			this.nurseryCancelButton = this.constructNurseryCancelButton(BreedingManagerUtil.getApplicationRequest());
-			this.nurseryBackButton = this.constructNurseryBackButton();
-			this.nurseryBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-			this.nurseryBackButton.setEnabled(false);
-			layoutButtonArea.addComponent(this.nurseryCancelButton);
-			layoutButtonArea.addComponent(this.nurseryBackButton);
-		} else {
-			layoutButtonArea.addComponent(this.backButton);
-			layoutButtonArea.addComponent(this.nextButton);
-		}
+		this.nurseryCancelButton = this.constructNurseryCancelButton(BreedingManagerUtil.getApplicationRequest());
+		this.nurseryBackButton = this.constructNurseryBackButton();
+		this.nurseryBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.nurseryBackButton.setEnabled(false);
+		layoutButtonArea.addComponent(this.nurseryCancelButton);
+		layoutButtonArea.addComponent(this.nurseryBackButton);
+	
 
 		sheetDesignCrosses.addComponent(this.selectParentsComponent);
 		sheetDesignCrosses.addComponent(this.parentsComponent);
@@ -480,13 +444,4 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	void setCrossingSettingsMethodComponent(final CrossingSettingsMethodComponent crossingSettingsMethodComponent) {
 		this.crossingSettingsMethodComponent = crossingSettingsMethodComponent;
 	}
-
-	void setBackButton(final Button backButton) {
-		this.backButton = backButton;
-	}
-
-	void setNextButton(final Button nextButton) {
-		this.nextButton = nextButton;
-	}
-
 }
