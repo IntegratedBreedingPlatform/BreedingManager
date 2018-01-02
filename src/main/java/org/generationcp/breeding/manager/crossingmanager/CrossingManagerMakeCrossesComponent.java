@@ -240,13 +240,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return tableCrossesMade != null && tableCrossesMade.size() > 0;
 	}
 
-	public void nextButtonClickAction() {
-		if (this.crossesTableComponent.getCrossList() != null) {
-			this.source.viewGermplasmListCreated(this.crossesTableComponent.getCrossList(), this.parentsComponent.getFemaleList(),
-				this.parentsComponent.getMaleList());
-		}
-	}
-
 	public void backButtonClickAction() {
 		if (this.crossesTableComponent.getCrossList() != null) {
 			MessageNotifier.showWarning(this.getWindow(), "Invalid Action", "Cannot change settings once crosses have been saved");

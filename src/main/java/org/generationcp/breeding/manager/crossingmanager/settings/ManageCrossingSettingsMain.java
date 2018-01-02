@@ -6,7 +6,6 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerSummaryComponent;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.help.document.HelpButton;
@@ -126,16 +125,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 		this.addComponent(headingLayout);
 		this.addComponent(this.designCrossesHeaderLabel);
 		this.addComponent(this.tabSheet);
-	}
-
-	public void viewGermplasmListCreated(final GermplasmList crossList, final GermplasmList femaleList, final GermplasmList maleList) {
-		final CrossingManagerSummaryComponent summaryComponent =
-				new CrossingManagerSummaryComponent(this, crossList, femaleList, maleList, this.compileCurrentSetting());
-
-		this.removeComponent(this.tabSheet);
-
-		this.addComponent(summaryComponent);
-		this.getWindow().setScrollTop(0);
 	}
 
 	public void reset() {
