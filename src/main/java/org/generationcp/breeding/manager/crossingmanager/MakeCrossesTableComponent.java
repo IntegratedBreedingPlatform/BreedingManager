@@ -752,7 +752,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		crossesMade.setSetting(this.makeCrossesMain.getCurrentCrossingSetting());
 		crossesMade.setGermplasmList(list);
 		crossesMade.setCrossesMap(this.generateCrossesMadeMap());
-		final ApplyCrossingSettingAction applySetting = new ApplyCrossingSettingAction(this.makeCrossesMain.getCurrentCrossingSetting());
+		final ApplyCrossingSettingAction applySetting = new ApplyCrossingSettingAction();
 		return applySetting.updateCrossesMadeContainer(container);
 	}
 
