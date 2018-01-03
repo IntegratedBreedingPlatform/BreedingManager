@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsMethodComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -148,7 +147,6 @@ public class CrossingManagerMakeCrossesComponentTest {
 		this.makeCrosses.setSelectParentsComponent(Mockito.mock(SelectParentsComponent.class));
 		this.makeCrosses.setParentsComponent(Mockito.mock(MakeCrossesParentsComponent.class));
 		this.makeCrosses.setCrossingMethodComponent(Mockito.mock(CrossingMethodComponent.class));
-		this.makeCrosses.setCrossingSettingsMethodComponent(Mockito.mock(CrossingSettingsMethodComponent.class));
 		this.makeCrosses.setCrossesTableComponent(Mockito.mock(MakeCrossesTableComponent.class));
 
 		Mockito.doReturn(new LinkButton(new ExternalResource("url"), "Back")).when(this.makeCrosses)

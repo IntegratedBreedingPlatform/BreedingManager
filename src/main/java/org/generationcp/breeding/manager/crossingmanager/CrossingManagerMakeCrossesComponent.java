@@ -12,7 +12,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsMethodComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
@@ -36,7 +35,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.vaadin.data.Property;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -69,8 +67,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private MakeCrossesParentsComponent parentsComponent;
 	private CrossingMethodComponent crossingMethodComponent;
 	private MakeCrossesTableComponent crossesTableComponent;
-	private CrossingSettingsMethodComponent crossingSettingsMethodComponent;
-
+	
 	private LinkButton nurseryCancelButton;
 
 	@Autowired
@@ -238,8 +235,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.crossingMethodComponent.setDebugId("crossingMethodComponent");
 		this.crossesTableComponent = new MakeCrossesTableComponent(this);
 		this.crossesTableComponent.setDebugId("crossesTableComponent");
-		this.crossingSettingsMethodComponent = new CrossingSettingsMethodComponent();
-		this.crossingSettingsMethodComponent.setDebugId("crossingSettingsMethodComponent");
 		fieldbookMiddlewareService.loadAllObservations(nurseryWorkbook);
 	}
 
@@ -250,13 +245,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	@Override
 	public void addListeners() {
-		this.crossingSettingsMethodComponent.registerBreedingMethodChangeListener(new Property.ValueChangeListener() {
-
-			@Override
-			public void valueChange(final Property.ValueChangeEvent event) {
-				CrossingManagerMakeCrossesComponent.this.crossesTableComponent.showOrHideGroupInheritanceOptions();
-			}
-		});
 	}
 
 	@Override
@@ -408,11 +396,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public BreedingMethodSetting getCurrentBreedingMethodSetting() {
-		final Integer methodId = this.crossingSettingsMethodComponent.getSelectedBreedingMethodId();
-		final boolean isBasedOnStatusOfParentalLines = this.crossingSettingsMethodComponent.isBasedOnStatusOfParentalLines();
-
-		final BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
-		return breedingMethodSetting;
+		return new BreedingMethodSetting(101, true);
 	}
 
 	void setNavigatedFromNursery(final boolean isNavigatedFromNursery) {
@@ -429,9 +413,5 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	void setCrossingMethodComponent(final CrossingMethodComponent crossingMethodComponent) {
 		this.crossingMethodComponent = crossingMethodComponent;
-	}
-
-	void setCrossingSettingsMethodComponent(final CrossingSettingsMethodComponent crossingSettingsMethodComponent) {
-		this.crossingSettingsMethodComponent = crossingSettingsMethodComponent;
 	}
 }
