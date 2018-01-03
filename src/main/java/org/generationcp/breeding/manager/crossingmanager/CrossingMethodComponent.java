@@ -7,7 +7,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
-import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -114,7 +114,15 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	@Override
 	public void addListeners() {
-		this.btnGenerateCross.addListener(new CrossingManagerImportButtonClickListener(this));
+		this.btnGenerateCross.addListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+				CrossingMethodComponent.this.makeCrossButtonAction();
+			}
+
+		});
 	}
 
 	@SuppressWarnings("deprecation")
