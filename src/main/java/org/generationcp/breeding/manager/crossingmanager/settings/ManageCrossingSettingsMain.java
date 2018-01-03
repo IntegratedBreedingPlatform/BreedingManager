@@ -7,6 +7,8 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
+import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
+import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.help.document.HelpButton;
 import org.generationcp.commons.help.document.HelpModule;
@@ -37,7 +39,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 	private Label toolTitle;
 	private Label designCrossesHeaderLabel;
 
-	private CrossingSettingsDetailComponent detailComponent;
 	private CrossingManagerMakeCrossesComponent makeCrossesComponent;
 	private TabSheet tabSheet;
 
@@ -86,8 +87,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 		this.tabSheet.setWidth("100%");
 		this.tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
 
-		this.detailComponent = new CrossingSettingsDetailComponent();
-		this.detailComponent.setDebugId("detailComponent");
 		this.makeCrossesComponent = new CrossingManagerMakeCrossesComponent(this);
 		this.makeCrossesComponent.setDebugId("makeCrossesComponent");
 		if (this.germplasmList != null) {
@@ -144,11 +143,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 		this.parent.addComponent(crossingManagerMain);
 	}
 
-	// SETTER AND GETTERS
-	public CrossingSettingsDetailComponent getDetailComponent() {
-		return this.detailComponent;
-	}
-
 	@Override
 	public CrossesMade getCrossesMade() {
 		return this.crossesMade;
@@ -164,7 +158,13 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 	}
 
 	public CrossingManagerSetting compileCurrentSetting() {
-		final CrossingManagerSetting setting = this.detailComponent.getPartialCurrentSetting();
+		final CrossingManagerSetting setting = new CrossingManagerSetting();
+		setting.setCrossNameSetting(new CrossNameSetting());
+
+		final AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(0, "");
+		setting.setAdditionalDetailsSetting(additionalDetails);
+
+		setting.setName("");
 		setting.setBreedingMethodSetting(this.makeCrossesComponent.getCurrentBreedingMethodSetting());
 
 		return setting;

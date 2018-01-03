@@ -206,10 +206,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public void sendToNurseryAction(final Integer id) {
-		final BreedingMethodSetting methodSetting = CrossingManagerMakeCrossesComponent.this.getCurrentBreedingMethodSetting();
-		final Integer methodId = methodSetting.isBasedOnStatusOfParentalLines()
-			? CrossingManagerMakeCrossesComponent.BASED_ON_PARENTAGE : methodSetting.getMethodId();
-
 		// get the cancel button returning to nursery link as a root url
 		final String urlToSpecificNurseryWithParams =
 			CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource().getURL() + "?"
@@ -217,11 +213,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 		final ExternalResource urlToNursery = new ExternalResource(urlToSpecificNurseryWithParams);
 		CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
-	}
-
-	private boolean isAllListsSaved() {
-		return this.parentsComponent.getFemaleList() != null && this.parentsComponent.getMaleList() != null
-			&& this.crossesTableComponent.getCrossList() != null;
 	}
 
 	private boolean isCrossListMade() {

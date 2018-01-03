@@ -329,34 +329,6 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 		this.addComponent(breedingMethodPanel);
 	}
 
-	public void setFields(final BreedingMethodSetting breedingMethodSetting) {
-		if (breedingMethodSetting.isBasedOnStatusOfParentalLines()) {
-			this.selectMethod.setValue(false);
-		} else {
-			this.selectMethod.setValue(true);
-			final Integer methodId = breedingMethodSetting.getMethodId();
-
-			if (!this.isMethodGenerative(methodId)) {
-				this.favoriteMethodsCheckbox.setValue(true);
-				this.populateBreedingMethods(true, this.programUniqueId);
-			} else {
-				this.favoriteMethodsCheckbox.setValue(false);
-				this.populateBreedingMethods(false, this.programUniqueId);
-			}
-			this.breedingMethods.select(methodId);
-			this.showMethodDescription(methodId);
-		}
-	}
-
-	private boolean isMethodGenerative(final Integer methodId) {
-		for (final Method method : this.methods) {
-			if (method.getMid().equals(methodId)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public void setFieldsDefaultValue() {
 		this.selectMethod.setValue(false);
 		this.breedingMethods.setValue(null);
