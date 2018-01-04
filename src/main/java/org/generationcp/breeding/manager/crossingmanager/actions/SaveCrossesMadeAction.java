@@ -151,10 +151,10 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	// Here is where crossed germplasm is saved.
 	List<Integer> saveGermplasmsAndNames(final CrossesMade crossesMade) {
-		List<Integer> germplasmIDs = new ArrayList<Integer>();
+		List<Integer> germplasmIDs = new ArrayList<>();
 
 		final Map<Germplasm, Name> currentCrossesMap = crossesMade.getCrossesMap();
-		Map<Germplasm, Name> crossesToInsert = new LinkedHashMap<Germplasm, Name>();
+		Map<Germplasm, Name> crossesToInsert = new LinkedHashMap<>();
 		if (this.germplasmList == null) {
 			crossesToInsert = currentCrossesMap;
 		}
@@ -172,7 +172,7 @@ public class SaveCrossesMadeAction implements Serializable {
 				this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
 
 		// Add only non deleted list data
-		this.existingListEntries = new ArrayList<GermplasmListData>();
+		this.existingListEntries = new ArrayList<>();
 
 		for (final GermplasmListData germplasmListData : allExistingEntries) {
 			if (germplasmListData.getStatus() != 9) {
@@ -180,7 +180,7 @@ public class SaveCrossesMadeAction implements Serializable {
 			}
 		}
 
-		final List<Integer> gids = new ArrayList<Integer>();
+		final List<Integer> gids = new ArrayList<>();
 		for (final GermplasmListData entry : this.existingListEntries) {
 			gids.add(entry.getGid());
 		}
@@ -230,7 +230,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	}
 
 	private void deleteRemovedListData(final CrossesMade crossesMade) {
-		final List<GermplasmListData> retainedCrosses = new ArrayList<GermplasmListData>();
+		final List<GermplasmListData> retainedCrosses = new ArrayList<>();
 		for (int i = 0; i < this.existingGermplasms.size(); i++) {
 			final Germplasm existingGermplasm = this.existingGermplasms.get(i);
 			for (final Germplasm currentGermplasm : crossesMade.getCrossesMap().keySet()) {
@@ -242,7 +242,7 @@ public class SaveCrossesMadeAction implements Serializable {
 			}
 		}
 
-		final List<GermplasmListData> listToDelete = new ArrayList<GermplasmListData>(this.existingListEntries);
+		final List<GermplasmListData> listToDelete = new ArrayList<>(this.existingListEntries);
 		listToDelete.removeAll(retainedCrosses);
 
 		if (!listToDelete.isEmpty()) {
@@ -250,9 +250,9 @@ public class SaveCrossesMadeAction implements Serializable {
 		}
 
 		// Update "exsitingListEntries", this is used to assign the entry id
-		this.existingListEntries = new ArrayList<GermplasmListData>();
+		this.existingListEntries = new ArrayList<>();
 
-		final List<GermplasmListData> allExistingEntries = new ArrayList<GermplasmListData>();
+		final List<GermplasmListData> allExistingEntries = new ArrayList<>();
 
 		if (this.germplasmList != null) {
 			allExistingEntries.addAll(this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId()));
@@ -282,7 +282,7 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	private void addNewGermplasmListData(final CrossesMade crossesMade, final List<Integer> germplasmIDs, final GermplasmList list) {
 		final Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
-		final List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
+		final List<GermplasmListData> listToSave = new ArrayList<>();
 
 		int ctr = 0;
 		int entryId = this.existingListEntries.size() + 1;
@@ -314,7 +314,7 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	void savePedigreeDesignationName(final CrossesMade crossesMade, final List<Integer> germplasmIDs) {
 
-		final List<Name> parentageDesignationNames = new ArrayList<Name>();
+		final List<Name> parentageDesignationNames = new ArrayList<>();
 		final Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
 		int ctr = 0;
 		for (final Map.Entry<Germplasm, Name> entry : crossesMade.getCrossesMap().entrySet()) {

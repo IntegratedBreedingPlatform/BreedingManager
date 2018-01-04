@@ -27,7 +27,7 @@ public class PreviewCrossesTabCheckBoxListener implements Button.ClickListener{
 	public void buttonClick(Button.ClickEvent event) {
 		boolean checkBoxValue = event.getButton().booleanValue();
 		Collection<CrossParents> selectedEntries = (Collection<CrossParents>) this.makeCrossTable.getValue();
-		Set<CrossParents> entriesToSelect = new HashSet<CrossParents>();
+		Set<CrossParents> entriesToSelect = new HashSet<>();
 		if (selectedEntries != null) {
 			entriesToSelect.addAll(selectedEntries);
 			if (checkBoxValue) {

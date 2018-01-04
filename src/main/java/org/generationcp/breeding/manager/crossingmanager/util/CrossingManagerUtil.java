@@ -17,7 +17,7 @@ public class CrossingManagerUtil {
 	}
 
 	public static Collection<?> getOddEntries(Table listDataTable) {
-		List<Object> oddIds = new ArrayList<Object>();
+		List<Object> oddIds = new ArrayList<>();
 
 		Collection<?> itemIds = listDataTable.getItemIds();
 		for (Object itemId : itemIds) {
@@ -32,7 +32,7 @@ public class CrossingManagerUtil {
 	}
 
 	public static Collection<?> getEvenEntries(Table listDataTable) {
-		List<Object> evenIds = new ArrayList<Object>();
+		List<Object> evenIds = new ArrayList<>();
 
 		Collection<?> itemIds = listDataTable.getItemIds();
 		for (Object itemId : itemIds) {
