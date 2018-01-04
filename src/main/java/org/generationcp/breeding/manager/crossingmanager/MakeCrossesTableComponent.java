@@ -14,7 +14,6 @@ package org.generationcp.breeding.manager.crossingmanager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -30,7 +29,6 @@ import org.generationcp.breeding.manager.crossingmanager.actions.SaveCrossesMade
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.PreviewCrossesTabCheckBoxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
-import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
@@ -39,10 +37,7 @@ import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.service.impl.SeedSourceGenerator;
 import org.generationcp.commons.util.CollectionTransformationUtil;
 import org.generationcp.commons.util.DateUtil;
@@ -50,6 +45,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.Workbook;
@@ -57,11 +53,9 @@ import org.generationcp.middleware.domain.gms.GermplasmListType;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.middleware.util.Util;
@@ -103,7 +97,6 @@ import com.vaadin.ui.themes.BaseTheme;
 public class MakeCrossesTableComponent extends VerticalLayout
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
-	private static final int PAGE_LENGTH = 5;
 	private static final int PARENTS_TABLE_ROW_COUNT = 5;
 	public static final String PARENTS_DELIMITER = ",";
 	private static final long serialVersionUID = 3702324761498666369L;
@@ -119,9 +112,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-
-	@Autowired
-	private GermplasmListManager germplasmListManager;
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
@@ -152,7 +142,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	// Tables
 	private TableWithSelectAllLayout tableWithSelectAllLayout;
 	private Table tableCrossesMade;
-	@SuppressWarnings("unused")
 	private CheckBox selectAll;
 
 	private Button actionButton;
@@ -459,50 +448,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.updateCrossesMadeUI();
 	}
 
-	private Map<Germplasm, Name> generateCrossesMadeMap() {
-		final Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
-
-		// get ID of User Defined Field for Crossing Name
-		final Integer crossingNameTypeId =
-				BreedingManagerUtil.getIDForUserDefinedFieldCrossingName(this.germplasmListManager, this.getWindow(), this.messageSource);
-
-		int ctr = 1;
-		for (final Object itemId : this.tableCrossesMade.getItemIds()) {
-			final Property crossSourceProp = this.tableCrossesMade.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
-			final String crossSource = String.valueOf(crossSourceProp.toString());
-
-			// get GIDs and entryIDs of female and male parents
-			final CrossParents parents = (CrossParents) itemId;
-			final Integer gpId1 = parents.getFemaleParent().getGid();
-			final Integer gpId2 = parents.getMaleParent().getGid();
-			final Integer entryId1 = parents.getFemaleParent().getEntryId();
-			final Integer entryId2 = parents.getMaleParent().getEntryId();
-
-			final Germplasm germplasm = new Germplasm();
-			germplasm.setGid(ctr);
-			germplasm.setGpid1(gpId1);
-			germplasm.setGpid2(gpId2);
-
-			final Name name = new Name();
-			name.setNval("," + crossSource);
-			name.setTypeId(crossingNameTypeId);
-
-			final ImportedGermplasmCross cross = new ImportedGermplasmCross();
-			cross.setCross(ctr);
-			cross.setFemaleGId(gpId1);
-			cross.setMaleGId(gpId2);
-			cross.setFemaleEntryId(entryId1);
-			cross.setMaleEntryId(entryId2);
-			cross.setMaleDesignation(parents.getMaleParent().getDesignation());
-			cross.setFemaleDesignation(parents.getFemaleParent().getDesignation());
-
-			crossesMadeMap.put(germplasm, name);
-			ctr++;
-		}
-
-		return crossesMadeMap;
-	}
-
 	// internal POJO for ad ID of each row in Crosses Made table (need both GID and entryid of parents)
 
 	public void clearCrossesTable() {
@@ -748,10 +693,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	}
 
 	private boolean updateCrossesMadeContainer(final CrossesMadeContainer container, final GermplasmList list) {
-		final CrossesMade crossesMade = container.getCrossesMade();
-		crossesMade.setSetting(this.makeCrossesMain.getCurrentCrossingSetting());
-		crossesMade.setGermplasmList(list);
-		crossesMade.setCrossesMap(this.generateCrossesMadeMap());
 		final ApplyCrossingSettingAction applySetting = new ApplyCrossingSettingAction();
 		return applySetting.updateCrossesMadeContainer(container);
 	}

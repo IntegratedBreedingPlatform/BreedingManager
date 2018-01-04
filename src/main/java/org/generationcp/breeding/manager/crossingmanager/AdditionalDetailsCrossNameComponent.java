@@ -11,22 +11,13 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.constant.ColumnLabels;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Name;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -49,7 +40,7 @@ import com.vaadin.ui.Window;
  */
 @Configurable
 public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
-		implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener {
+		implements InitializingBean, InternationalizableComponent {
 
 	private final class OKButtonClickListener implements Button.ClickListener {
 
@@ -175,12 +166,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
 	private final AbstractComponent[] digitsToggableComponents = new AbstractComponent[2];
 	private final AbstractComponent[] otherToggableComponents = new AbstractComponent[6];
-
-	// store prefix used for MW method including zeros, if any
-	private String lastPrefixUsed;
-	private Integer nextNumberInSequence;
-
-	private CrossesMadeContainer container;
 
 	private FillWith fillWithSource;
 	private String propertyIdToFill;
@@ -350,111 +335,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		for (final AbstractComponent component : this.digitsToggableComponents) {
 			component.setEnabled(enabled);
 		}
-	}
-
-	private boolean validateCrossNameFields() {
-		final Window window = this.getWindow();
-		final String prefix = ((String) this.prefixTextField.getValue()).trim();
-
-		if (StringUtils.isEmpty(prefix)) {
-			MessageNotifier.showError(window, this.messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE),
-					this.messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST));
-			return false;
-		}
-
-		return true;
-	}
-
-	private boolean validateGeneratedName() {
-
-		// if Generate button never pressed
-		if (this.nextNumberInSequence == null) {
-			MessageNotifier.showError(this.getWindow(), "Error with Cross Code",
-					MessageFormat.format(this.messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), ""));
-			return false;
-
-			// if prefix specifications were changed and next name in sequence not generated first
-		} else {
-			final String currentPrefixString = this.buildPrefixString();
-			if (!currentPrefixString.equals(this.lastPrefixUsed)) {
-				MessageNotifier.showError(this.getWindow(), "Error with Cross Code", MessageFormat.format(
-						this.messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), " (" + currentPrefixString + ")"));
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	private String buildPrefixString() {
-		if (this.addSpaceCheckBox.booleanValue()) {
-			return ((String) this.prefixTextField.getValue()).trim() + " ";
-		}
-		return ((String) this.prefixTextField.getValue()).trim();
-	}
-
-	private String buildNextNameInSequence(final String prefix, final String suffix, final Integer number) {
-		final StringBuilder sb = new StringBuilder();
-		sb.append(prefix);
-		sb.append(this.getNumberWithLeadingZeroesAsString(number));
-		if (!StringUtils.isEmpty(suffix)) {
-			sb.append(" ");
-			sb.append(suffix);
-		}
-		return sb.toString();
-	}
-
-	private String getNumberWithLeadingZeroesAsString(final Integer number) {
-		final StringBuilder sb = new StringBuilder();
-		final String numberString = number.toString();
-		if (this.sequenceNumCheckBox.booleanValue()) {
-			final Integer numOfZeros = (Integer) this.numOfAllowedDigitsSelect.getValue();
-			final int numOfZerosNeeded = numOfZeros - numberString.length();
-			if (numOfZerosNeeded > 0) {
-				for (int i = 0; i < numOfZerosNeeded; i++) {
-					sb.append("0");
-				}
-			}
-		}
-		sb.append(number);
-		return sb.toString();
-	}
-
-	@Override
-	public boolean updateCrossesMadeContainer(final CrossesMadeContainer container) {
-
-		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null
-				&& this.validateCrossNameFields() && this.validateGeneratedName()) {
-
-			int ctr = this.nextNumberInSequence;
-			final String suffix = (String) this.suffixTextField.getValue();
-
-			final Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
-			final List<GermplasmListEntry> oldCrossNames = new ArrayList<GermplasmListEntry>();
-
-			// Store old cross name and generate new names based on prefix, suffix specifications
-			for (final Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()) {
-				final Name nameObject = entry.getValue();
-				final String oldCrossName = nameObject.getNval();
-				nameObject.setNval(this.buildNextNameInSequence(this.lastPrefixUsed, suffix, ctr++));
-
-				final Germplasm germplasm = entry.getKey();
-				final Integer tempGid = germplasm.getGid();
-				final GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, tempGid, oldCrossName);
-
-				oldCrossNames.add(oldNameEntry);
-			}
-			// Only store the "original" cross names, would not store previous names on 2nd, 3rd, ... change
-			if (this.container.getCrossesMade().getOldCrossNames() == null
-					|| this.container.getCrossesMade().getOldCrossNames().isEmpty()) {
-				this.container.getCrossesMade().setOldCrossNames(oldCrossNames);
-			}
-
-			return true;
-
-		}
-
-		return false;
 	}
 
 	Button getOkButton() {
