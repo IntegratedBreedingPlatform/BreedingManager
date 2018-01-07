@@ -101,7 +101,6 @@ import com.vaadin.ui.themes.BaseTheme;
 public class MakeCrossesTableComponent extends VerticalLayout
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
-	private static final int PAGE_LENGTH = 5;
 	private static final int PARENTS_TABLE_ROW_COUNT = 5;
 	public static final String PARENTS_DELIMITER = ",";
 	private static final long serialVersionUID = 3702324761498666369L;
@@ -195,8 +194,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	public void makeTopToBottomCrosses(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
 			final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
 		// make a copy first of the parents lists
-		final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
-		final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
+		final List<GermplasmListEntry> femaleParents = new ArrayList<>();
+		final List<GermplasmListEntry> maleParents = new ArrayList<>();
 		femaleParents.addAll(parents1);
 		maleParents.addAll(parents2);
 
@@ -315,8 +314,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
 
 		// make a copy first of the parents lists
-		final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
-		final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
+		final List<GermplasmListEntry> femaleParents = new ArrayList<>();
+		final List<GermplasmListEntry> maleParents = new ArrayList<>();
 		femaleParents.addAll(parents1);
 		maleParents.addAll(parents2);
 
@@ -406,16 +405,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
 				final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
 
-				if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
-					if (plotNumberData != null) {
-						femalePlotNo = plotNumberData.getValue();
-					}
+				if (gidData != null && gidData.getValue().equals(femaleParentGid.toString()) && plotNumberData != null) {
+					femalePlotNo = plotNumberData.getValue();
 				}
 
-				if (gidData != null && gidData.getValue().equals(maleParentGid.toString())) {
-					if (plotNumberData != null) {
-						malePlotNo = plotNumberData.getValue();
-					}
+				if (gidData != null && gidData.getValue().equals(maleParentGid.toString()) && plotNumberData != null) {
+					malePlotNo = plotNumberData.getValue();
 				}
 			}
 
@@ -454,7 +449,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	}
 
 	private Map<Germplasm, Name> generateCrossesMadeMap() {
-		final Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
+		final Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<>();
 
 		// get ID of User Defined Field for Crossing Name
 		final Integer crossingNameTypeId =

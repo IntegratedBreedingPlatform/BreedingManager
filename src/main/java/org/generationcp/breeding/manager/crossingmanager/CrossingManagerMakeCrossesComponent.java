@@ -47,10 +47,9 @@ import com.vaadin.ui.VerticalLayout;
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
 	BreedingManagerLayout, StepChangeListener {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
+	private static final int DEFAULT_BREEDING_METHOD_ID = 101;
 
-	public static final String NEXT_BUTTON_ID = "next button";
-	public static final String BACK_BUTTON_ID = "back button";
+	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
 
 	private static final long serialVersionUID = 9097810121003895303L;
 	public static final int BASED_ON_PARENTAGE = 0;
