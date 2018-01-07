@@ -7,11 +7,11 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
-import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.help.document.HelpButton;
 import org.generationcp.commons.help.document.HelpModule;
+import org.generationcp.commons.settings.AdditionalDetailsSetting;
+import org.generationcp.commons.settings.CrossNameSetting;
+import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -157,8 +157,8 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 		return this.makeCrossesComponent;
 	}
 
-	public CrossingManagerSetting compileCurrentSetting() {
-		final CrossingManagerSetting setting = new CrossingManagerSetting();
+	public CrossSetting compileCurrentSetting() {
+		final CrossSetting setting = new CrossSetting();
 		setting.setCrossNameSetting(new CrossNameSetting());
 
 		final AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(0, "");

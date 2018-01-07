@@ -35,7 +35,6 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
-import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -54,11 +53,6 @@ import com.google.common.collect.Iterables;
  */
 @Configurable
 public class SaveCrossesMadeAction implements Serializable {
-
-	private static final int PREFERRED_NAME = 1;
-
-	private static final int PEDIGREE_NAME_TYPE = 18;
-
 	// Save temp list as deleted
 	// TODO Refactor liststatus to bit array so a list can have multiple status
 	public static final Integer GERMPLASM_LIST_STATUS = 9;
@@ -129,10 +123,6 @@ public class SaveCrossesMadeAction implements Serializable {
 				SaveCrossesMadeAction.this.updateConstantFields(crossesMade);
 
 				final List<Integer> germplasmIDs = SaveCrossesMadeAction.this.saveGermplasmsAndNames(crossesMade);
-
-				if (crossesMade.getSetting().getCrossNameSetting().isSaveParentageDesignationAsAString()) {
-					SaveCrossesMadeAction.this.savePedigreeDesignationName(crossesMade, germplasmIDs);
-				}
 
 				final GermplasmList list = SaveCrossesMadeAction.this.saveGermplasmListRecord(crossesMade);
 				SaveCrossesMadeAction.this.saveGermplasmListDataRecords(crossesMade, germplasmIDs, list);
@@ -310,42 +300,6 @@ public class SaveCrossesMadeAction implements Serializable {
 		if (!listToSave.isEmpty()) {
 			this.germplasmListManager.addGermplasmListData(listToSave);
 		}
-	}
-
-	void savePedigreeDesignationName(final CrossesMade crossesMade, final List<Integer> germplasmIDs) {
-
-		final List<Name> parentageDesignationNames = new ArrayList<>();
-		final Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
-		int ctr = 0;
-		for (final Map.Entry<Germplasm, Name> entry : crossesMade.getCrossesMap().entrySet()) {
-			if (this.germplasmList == null || this.indicesOfAddedCrosses.contains(ctr)) {
-
-				final Integer gid = germplasmIdIterator.next();
-				final String designation = entry.getValue().getNval();
-				final String parentageDesignation = this.getParentageDesignation(crossesMade, ctr, designation);
-				final Integer locationId = crossesMade.getSetting().getAdditionalDetailsSetting().getHarvestLocationId();
-
-				final Name parentageDesignationName = new Name();
-				parentageDesignationName.setGermplasmId(gid);
-				parentageDesignationName.setTypeId(SaveCrossesMadeAction.PEDIGREE_NAME_TYPE);
-				parentageDesignationName.setUserId(this.contextUtil.getCurrentUserLocalId());
-				parentageDesignationName.setNval(parentageDesignation);
-				parentageDesignationName.setNstat(SaveCrossesMadeAction.PREFERRED_NAME);
-				parentageDesignationName.setLocationId(locationId);
-				parentageDesignationName.setNdate(Util.getCurrentDateAsIntegerValue());
-				parentageDesignationName.setReferenceId(0);
-
-				parentageDesignationNames.add(parentageDesignationName);
-			}
-			ctr++;
-		}
-
-		this.germplasmManager.addGermplasmName(parentageDesignationNames);
-	}
-
-	private String getParentageDesignation(final CrossesMade crossesMade, final int ctr, final String designation) {
-		final String[] groupNameSplit = this.getFemaleMaleCrossName(crossesMade, designation, ctr).split(",");
-		return groupNameSplit[0];
 	}
 
 	/*

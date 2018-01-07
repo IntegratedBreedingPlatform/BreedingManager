@@ -13,12 +13,12 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
-import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.commons.settings.BreedingMethodSetting;
+import org.generationcp.commons.settings.CrossNameSetting;
+import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -341,7 +341,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return crossNameSetting.getSeparator();
 	}
 
-	public CrossingManagerSetting getCurrentCrossingSetting() {
+	public CrossSetting getCurrentCrossingSetting() {
 		return this.source.compileCurrentSetting();
 	}
 
@@ -396,7 +396,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public BreedingMethodSetting getCurrentBreedingMethodSetting() {
-		return new BreedingMethodSetting(101, true);
+		return new BreedingMethodSetting(101, true, false);
 	}
 
 	void setNavigatedFromNursery(final boolean isNavigatedFromNursery) {
