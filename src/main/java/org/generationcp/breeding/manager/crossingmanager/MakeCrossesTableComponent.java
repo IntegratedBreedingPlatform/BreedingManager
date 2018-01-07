@@ -33,7 +33,6 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
-import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
@@ -90,7 +89,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
@@ -142,10 +140,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	private Label totalCrossesLabel;
 	private Label totalSelectedCrossesLabel;
-
-	private PopupView applyGroupingToNewCrossesOnlyHelpPopup;
-	private Label applyGroupingToNewCrossesOnlyHelpText;
-	private CheckBox applyGroupingToNewCrossesOnly;
 
 	private ContextMenu actionMenu;
 
@@ -529,20 +523,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.totalSelectedCrossesLabel.setContentMode(Label.CONTENT_XHTML);
 		this.totalSelectedCrossesLabel.setWidth("95px");
 
-		// TODO Move Grouping logic to Nursery since breeding method is there now
-		this.applyGroupingToNewCrossesOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
-		this.applyGroupingToNewCrossesOnly.setDebugId("applyGroupingToNewCrossesOnly");
-
-		this.applyGroupingToNewCrossesOnlyHelpText = new Label(this.messageSource.getMessage(Message.GROUP_INHERITANCE_OPTION_MESSAGE));
-		this.applyGroupingToNewCrossesOnlyHelpText.setDebugId("applyGroupingToNewCrossesOnlyHelpText");
-		this.applyGroupingToNewCrossesOnlyHelpText.setWidth("300px");
-		this.applyGroupingToNewCrossesOnlyHelpText.addStyleName("gcp-content-help-text");
-
-		this.applyGroupingToNewCrossesOnlyHelpPopup = new PopupView("?", this.applyGroupingToNewCrossesOnlyHelpText);
-		this.applyGroupingToNewCrossesOnlyHelpPopup.setDebugId("applyGroupingToNewCrossesOnlyHelpPopup");
-		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
-		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName("cs-inline-icon");
-
 		this.actionButton = new ActionButton();
 		this.actionButton.setDebugId("actionButton");
 
@@ -704,20 +684,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		reviewCrossesLayout.setDebugId("reviewCrossesLayout");
 		this.addComponent(reviewCrossesLayout);
 		this.addComponent(makeCrossesPanel);
-	}
-
-	// TODO Move Grouping logic to Nursery since breeding method is there now
-	public void showOrHideGroupInheritanceOptions() {
-		// Only show group inheritance options if breeding method chosen is hybrid
-		final BreedingMethodSetting currentBreedingSetting = this.makeCrossesMain.getCurrentBreedingMethodSetting();
-		final Integer selectedBreedingMethodId = currentBreedingSetting.getMethodId();
-		if (this.crossExpansionProperties.getHybridBreedingMethods().contains(selectedBreedingMethodId)) {
-			this.applyGroupingToNewCrossesOnlyHelpPopup.setVisible(true);
-			this.applyGroupingToNewCrossesOnly.setVisible(true);
-		} else {
-			this.applyGroupingToNewCrossesOnlyHelpPopup.setVisible(false);
-			this.applyGroupingToNewCrossesOnly.setVisible(false);
-		}
 	}
 
 	/**
@@ -917,17 +883,5 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	public void setTableWithSelectAllLayout(final TableWithSelectAllLayout tableWithSelectAllLayout) {
 		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
-	}
-
-	private void updateNoOfSelectedEntries(final int count) {
-		this.totalSelectedCrossesLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
-			+ "</b></i>");
-	}
-
-	private void updateNoOfSelectedEntries() {
-		int count = 0;
-			final Collection<?> selectedItems = (Collection<?>) this.tableWithSelectAllLayout.getTable().getValue();
-			count = selectedItems.size();
-		this.updateNoOfSelectedEntries(count);
 	}
 }
