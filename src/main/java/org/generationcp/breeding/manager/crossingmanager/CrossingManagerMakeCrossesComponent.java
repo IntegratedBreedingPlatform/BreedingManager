@@ -396,7 +396,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public BreedingMethodSetting getCurrentBreedingMethodSetting() {
-		return new BreedingMethodSetting(101, true, false);
+		//Return default breeding method id, the proper breeding method id will be set in Fieldbook 
+		return new BreedingMethodSetting(DEFAULT_BREEDING_METHOD_ID, true, false);
 	}
 
 	void setNavigatedFromNursery(final boolean isNavigatedFromNursery) {

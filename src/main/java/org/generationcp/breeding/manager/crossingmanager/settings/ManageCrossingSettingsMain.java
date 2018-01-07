@@ -160,11 +160,9 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 	public CrossSetting compileCurrentSetting() {
 		final CrossSetting setting = new CrossSetting();
 		setting.setCrossNameSetting(new CrossNameSetting());
-
+		//Set the additional details values to 0 and empty string, proper values will be set in Fieldbook
 		final AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(0, "");
 		setting.setAdditionalDetailsSetting(additionalDetails);
-
-		setting.setName("");
 		setting.setBreedingMethodSetting(this.makeCrossesComponent.getCurrentBreedingMethodSetting());
 
 		return setting;
