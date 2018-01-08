@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
@@ -453,7 +454,7 @@ public class ListCommonActionsUtil {
 		if (lotCount != 0) {
 			lots = lotCount.toString();
 		}
-		final Button inventoryButton = new Button(lots, new LotDetailsButtonClickListener(gid, germplasmName, source, lotId));
+		final Button inventoryButton = new SortableButton(lots, new LotDetailsButtonClickListener(gid, germplasmName, source, lotId));
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		inventoryButton.setDescription(ListCommonActionsUtil.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		return inventoryButton;
