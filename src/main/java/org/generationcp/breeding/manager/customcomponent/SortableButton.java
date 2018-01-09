@@ -11,6 +11,10 @@ public class SortableButton extends Button implements Comparable<Button> {
 		super(caption, listener);
 	}
 
+	public SortableButton() {
+		super();
+	}
+
 	@Override
 	public int compareTo(final Button o) {
 		if (o == null
