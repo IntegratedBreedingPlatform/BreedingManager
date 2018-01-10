@@ -238,7 +238,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	public void openBrowseForListDialog() {
 		final SaveTreeStateListener saveTreeStateListener = new SaveTreeStateListener(
-				(TreeTable) listTreeComponent.getGermplasmListSource(), ListTreeState.GERMPLASM_LIST.name(), ListSelectorComponent.LISTS);
+				(TreeTable) listTreeComponent.getGermplasmListSource(), ListTreeState.GERMPLASM_LIST.name(), ListSelectorComponent.PROGRAM_LISTS);
 		listTreeComponent.showAddRenameFolderSection(false);
 		listTreeComponent.reinitializeTree(false);
 		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS))

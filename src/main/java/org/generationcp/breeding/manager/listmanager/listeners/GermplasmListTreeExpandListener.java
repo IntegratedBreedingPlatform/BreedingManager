@@ -35,7 +35,7 @@ public class GermplasmListTreeExpandListener implements Tree.ExpandListener {
 	@Override
 	public void nodeExpand(ExpandEvent event) {
 		if (this.source instanceof ListSelectorComponent) {
-			if (!event.getItemId().toString().equals(ListSelectorComponent.LISTS)) {
+			if (!event.getItemId().toString().equals(ListSelectorComponent.PROGRAM_LISTS)) {
 				try {
 					((ListSelectorComponent) this.source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
 				} catch (InternationalizableException e) {

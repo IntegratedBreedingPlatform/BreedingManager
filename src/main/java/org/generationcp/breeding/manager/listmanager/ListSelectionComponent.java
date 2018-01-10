@@ -150,7 +150,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	public void openListBrowseDialog() {
 		this.listTreeComponent.showAddRenameFolderSection(false);
 		this.treeStateSaver = new SaveTreeStateListener((TreeTable) this.listTreeComponent.getGermplasmListSource(),
-				ListTreeState.GERMPLASM_LIST.name(), ListSelectorComponent.LISTS);
+				ListTreeState.GERMPLASM_LIST.name(), ListSelectorComponent.PROGRAM_LISTS);
 		this.launchListSelectionWindow(this.getWindow(), this.listTreeComponent,
 				this.messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(this.treeStateSaver);
 

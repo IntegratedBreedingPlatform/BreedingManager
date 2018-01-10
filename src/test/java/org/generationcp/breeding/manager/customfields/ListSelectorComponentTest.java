@@ -69,7 +69,7 @@ public class ListSelectorComponentTest {
 
 	@Before
 	public void setUp() {
-		Mockito.when(this.messageSource.getMessage(Message.LISTS)).thenReturn("Lists");
+		Mockito.when(this.messageSource.getMessage(Message.LISTS)).thenReturn("Program lists");
 
 		Mockito.doReturn(ListSelectorComponentTest.PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
 	}
@@ -299,7 +299,7 @@ public class ListSelectorComponentTest {
 		listManagerTreeComponent.instantiateComponents();
 
 		// Root Folder in Browse Lists
-		listManagerTreeComponent.updateButtons("Lists");
+		listManagerTreeComponent.updateButtons("Program lists");
 
 		Assert.assertTrue("Add Item button must be enabled but didn't.", listManagerTreeComponent.getAddFolderBtn().isEnabled());
 		Assert.assertFalse("Rename Item button must be disabled but didn't.", listManagerTreeComponent.getRenameFolderBtn().isEnabled());
@@ -340,7 +340,7 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testTreeInitializationNotSaveListDialog() {
-		final List<String> navigationState = Arrays.asList(ListSelectorComponent.LISTS, "1", "2");
+		final List<String> navigationState = Arrays.asList(ListSelectorComponent.PROGRAM_LISTS, "1", "2");
 		Mockito.when(
 				userTreeStateService.getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, PROGRAM_UUID,
 						ListTreeState.GERMPLASM_LIST.name())).thenReturn(navigationState);
@@ -352,7 +352,7 @@ public class ListSelectorComponentTest {
 
 		Mockito.verify(userTreeStateService).getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, PROGRAM_UUID,
 				ListTreeState.GERMPLASM_LIST.name());
-		Mockito.verify(source).expandItem(ListSelectorComponent.LISTS);
+		Mockito.verify(source).expandItem(ListSelectorComponent.PROGRAM_LISTS);
 		Mockito.verify(source).expandItem(Integer.parseInt(navigationState.get(1)));
 		Mockito.verify(source).expandItem(Integer.parseInt(navigationState.get(2)));
 		Mockito.verify(source).clearSelection();
@@ -360,7 +360,7 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testTreeInitializationSaveDialog() {
-		final List<String> saveHierarchy = Arrays.asList(ListSelectorComponent.LISTS, "1", "2");
+		final List<String> saveHierarchy = Arrays.asList(ListSelectorComponent.PROGRAM_LISTS, "1", "2");
 		Mockito.when(userTreeStateService.getUserProgramTreeStateForSaveList(TEST_USER_ID, PROGRAM_UUID)).thenReturn(saveHierarchy);
 		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(TEST_USER_ID);
 		final GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
@@ -369,7 +369,7 @@ public class ListSelectorComponentTest {
 		listSelectorComponent.reinitializeTree(true);
 
 		Mockito.verify(userTreeStateService).getUserProgramTreeStateForSaveList(TEST_USER_ID, PROGRAM_UUID);
-		Mockito.verify(source).expandItem(ListSelectorComponent.LISTS);
+		Mockito.verify(source).expandItem(ListSelectorComponent.PROGRAM_LISTS);
 		Mockito.verify(source).expandItem(Integer.parseInt(saveHierarchy.get(1)));
 		Mockito.verify(source).expandItem(Integer.parseInt(saveHierarchy.get(2)));
 

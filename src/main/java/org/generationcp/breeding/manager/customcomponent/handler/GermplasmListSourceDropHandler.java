@@ -66,13 +66,13 @@ public class GermplasmListSourceDropHandler implements DropHandler {
 			GermplasmListSourceDropHandler.LOG.error(e.getMessage(), e);
 		}
 
-		// Dropped on a folder / root "Lists" folder
+		// Dropped on a folder / root "Program lists" folder
 		if (targetItemId instanceof String || targetList == null || "FOLDER".equalsIgnoreCase(targetList.getType())) {
 			this.utilSource.setParent(sourceItemId, targetItemId);
 			// Dropped on a list
 		} else if (targetList != null) {
 			if (targetList.getParentId() == null && (Integer) targetItemId > 0) {
-				targetItemId = ListSelectorComponent.LISTS;
+				targetItemId = ListSelectorComponent.PROGRAM_LISTS;
 			} else {
 				targetItemId = targetList.getParentId();
 			}
