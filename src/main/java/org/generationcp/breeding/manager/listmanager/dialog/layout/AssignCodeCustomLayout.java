@@ -17,6 +17,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -39,13 +40,13 @@ public class AssignCodeCustomLayout {
 
 	private HorizontalLayout codeControlsLayoutLevel1;
 	private HorizontalLayout codeControlsLayoutLevel2;
-	private HorizontalLayout codeControlsLayoutLevel3;
+	private AbsoluteLayout codeControlsLayoutLevel3;
 
 	//items we are getting from general layout
 	private final GermplasmNamingReferenceDataResolver germplasmNamingReferenceDataResolver;
 	private final ContextUtil contextUtil;
 	private final SimpleResourceBundleMessageSource messageSource;
-	private final AssignCodesDefaultLayout assignCodesDefaultLayout;
+	private final AssignCodesNamingLayout assignCodesDefaultLayout;
 	private final OptionGroup codingLevelOptions;
 	private final VerticalLayout codesLayout;
 	private final Label exampleText;
@@ -54,7 +55,7 @@ public class AssignCodeCustomLayout {
 	public AssignCodeCustomLayout(final GermplasmNamingReferenceDataResolver germplasmNamingReferenceDataResolver,
 			final ContextUtil contextUtil,
 			final SimpleResourceBundleMessageSource messageSource,
-			final AssignCodesDefaultLayout assignCodesDefaultLayout, final OptionGroup codingLevelOptions,
+			final AssignCodesNamingLayout assignCodesDefaultLayout, final OptionGroup codingLevelOptions,
 			final VerticalLayout codesLayout, final Label exampleText, final VerticalLayout exampleLayout) {
 		this.germplasmNamingReferenceDataResolver = germplasmNamingReferenceDataResolver;
 		this.messageSource = messageSource;
@@ -297,7 +298,7 @@ public class AssignCodeCustomLayout {
 		return this.codeControlsLayoutLevel2;
 	}
 
-	public HorizontalLayout getCodeControlsLayoutLevel3() {
+	public AbsoluteLayout getCodeControlsLayoutLevel3() {
 		return this.codeControlsLayoutLevel3;
 	}
 

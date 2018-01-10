@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.listmanager.dialog;
 import com.vaadin.ui.Window;
 import junit.framework.Assert;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodeCustomLayout;
-import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesDefaultLayout;
+import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNamingLayout;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -46,7 +46,7 @@ public class AssignCodesDialogTest {
 	private AssignCodeCustomLayout assignCodeCustomLayout;
 
 	@Mock
-	private AssignCodesDefaultLayout assignCodesDefaultLayout;
+	private AssignCodesNamingLayout assignCodesDefaultLayout;
 
 	@Mock
 	private Window parent;
