@@ -483,10 +483,13 @@ public class GermplasmListExporter {
 				.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()))));
 
 		int j = 6;
-		for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
-			final String column = columnEntry.getKey();
-			exportColumnHeaders.add(new ExportColumnHeader(j, column, true));
-			j++;
+
+		if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null && currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
+			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
+				final String column = columnEntry.getKey();
+				exportColumnHeaders.add(new ExportColumnHeader(j, column, true));
+				j++;
+			}
 		}
 
 		return exportColumnHeaders;
@@ -517,13 +520,16 @@ public class GermplasmListExporter {
 			row.put(5, new ExportColumnValue(5, seedSourceValue));
 
 			int i = 6;
-			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
-				for (final ListDataColumnValues columnValue : columnEntry.getValue()) {
-					final String value = columnValue.getValue();
-					row.put(i, new ExportColumnValue(i, value));
+			if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null && currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
+				for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
+					for (final ListDataColumnValues columnValue : columnEntry.getValue()) {
+						final String value = columnValue.getValue();
+						row.put(i, new ExportColumnValue(i, value));
+					}
+					i++;
 				}
-				i++;
 			}
+
 
 			exportColumnValues.add(row);
 		}
