@@ -184,7 +184,7 @@ public class GermplasmListExporter {
 		try {
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			final Reporter customReport =
-					this.reportService.getStreamGermplasmListReport(reportCode, germplasmListID, contextUtil.getProjectInContext()
+					this.reportService.getStreamGermplasmListReport(reportCode, germplasmListID, this.contextUtil.getProjectInContext()
 							.getProjectName(), baos);
 			final File createdFile = new File(fileName);
 			baos.writeTo(new FileOutputStream(createdFile));
@@ -221,7 +221,7 @@ public class GermplasmListExporter {
 
 		input.setVariateVariableMap(this.getVariateVariables());
 
-		input.setGermplasmParents(this.getGermplasmParentsMap(listDataTable, germplasmListID));
+		input.setGermplasmParents(this.getGermplasmParentsMap(listDataTable));
 
 		input.setCurrentColumnsInfo(currentColumnsInfo);
 
@@ -229,11 +229,10 @@ public class GermplasmListExporter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<Integer, GermplasmParents> getGermplasmParentsMap(final Table listDataTable, final Integer listId) {
+	private Map<Integer, GermplasmParents> getGermplasmParentsMap(final Table listDataTable) {
 		final Map<Integer, GermplasmParents> germplasmParentsMap = new HashMap<>();
 
-		final List<Integer> itemIds = new ArrayList<>();
-		itemIds.addAll((Collection<? extends Integer>) listDataTable.getItemIds());
+		final List<Integer> itemIds = new ArrayList<>((Collection<? extends Integer>) listDataTable.getItemIds());
 
 		if (this.hasParentsColumn(listDataTable)) {
 			for (final Integer itemId : itemIds) {
