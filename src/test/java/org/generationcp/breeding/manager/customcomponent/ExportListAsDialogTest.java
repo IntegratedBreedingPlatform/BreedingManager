@@ -171,7 +171,7 @@ public class ExportListAsDialogTest {
 
 		this.dialog.exportListAsCSV(ExportListAsDialogTest.listDataTable);
 		Mockito.verify(this.listExporter, Mockito.times(1)).exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME,
-				ExportListAsDialogTest.listDataTable);
+				ExportListAsDialogTest.listDataTable, this.germplasmList.getId());
 	}
 
 	@Test
@@ -198,7 +198,7 @@ public class ExportListAsDialogTest {
 	@Test
 	public void testExportListAsCSVWithException() throws GermplasmListExporterException {
 		Mockito.doThrow(new GermplasmListExporterException()).when(this.listExporter)
-				.exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.emptyTable);
+				.exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.emptyTable, this.germplasmList.getId());
 		this.dialog.exportListAsCSV(ExportListAsDialogTest.emptyTable);
 		Mockito.verify(this.window, Mockito.times(0)).open(this.fileDownloadResource);
 	}

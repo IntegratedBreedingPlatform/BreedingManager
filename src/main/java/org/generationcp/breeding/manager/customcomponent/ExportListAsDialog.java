@@ -6,8 +6,11 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.util.IndexedContainer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.util.FileDownloaderUtility;
@@ -237,7 +240,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	protected void exportListAsCSV(final Table table) {
 		try {
 
-			this.germplasmListExporter.exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, table);
+			this.germplasmListExporter.exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, table, this.germplasmList.getId());
 			final String visibleFileName = this.germplasmList.getName() + ExportListAsDialog.CSV_EXT;
 
 			this.fileDownloaderUtility.initiateFileDownload(ExportListAsDialog.TEMP_FILENAME, visibleFileName, this.source);

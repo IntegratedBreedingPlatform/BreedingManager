@@ -1,12 +1,6 @@
 
 package org.generationcp.breeding.manager.listmanager.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -18,7 +12,6 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
@@ -27,6 +20,8 @@ import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.service.impl.GermplasmExportServiceImpl;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
+import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -52,6 +47,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class GermplasmListExporterTest {
 
 	private static final String SEED_SOURCE = "SEED_SOURCE";
@@ -62,6 +63,8 @@ public class GermplasmListExporterTest {
 	private static final String ENTRY_ID = "ENTRY_ID";
 	private static final String OWNER_NAME = "User User";
 	private static final String FILE_NAME = "testGermplasmListExporter.csv";
+	private static final Integer GERMPLASM_LIST_ID = 10970378;
+	private static final GermplasmListNewColumnsInfo CURRENT_COLUMNS_INFO = new GermplasmListNewColumnsInfo(GERMPLASM_LIST_ID);
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -371,7 +374,8 @@ public class GermplasmListExporterTest {
 
 		try {
 
-			this.germplasmListExporter.exportGermplasmListCSV(GermplasmListExporterTest.FILE_NAME, GermplasmListExporterTest.listDataTable);
+			this.germplasmListExporter.exportGermplasmListCSV(GermplasmListExporterTest.FILE_NAME, GermplasmListExporterTest.listDataTable,
+				GERMPLASM_LIST_ID);
 			// make sure that generateCSVFile is called and without errors
 			Mockito.verify(this.germplasmExportService, Mockito.times(1)).generateCSVFile(Matchers.any(List.class), Matchers.any(List.class),
 					Matchers.anyString());
@@ -386,7 +390,8 @@ public class GermplasmListExporterTest {
 
 		Mockito.doThrow(new IOException()).when(this.germplasmExportService)
 		.generateCSVFile(Matchers.any(List.class), Matchers.any(List.class), Matchers.anyString());
-		this.germplasmListExporter.exportGermplasmListCSV(GermplasmListExporterTest.FILE_NAME, GermplasmListExporterTest.listDataTable);
+		this.germplasmListExporter.exportGermplasmListCSV(GermplasmListExporterTest.FILE_NAME, GermplasmListExporterTest.listDataTable,
+			GERMPLASM_LIST_ID);
 
 	}
 
@@ -396,7 +401,7 @@ public class GermplasmListExporterTest {
 		this.configureTermNamesFromDefault();
 
 		final List<ExportColumnHeader> exportColumnHeaders =
-				this.germplasmListExporter.getExportColumnHeadersFromTable(GermplasmListExporterTest.listDataTable);
+				this.germplasmListExporter.getExportColumnHeadersFromTable(GermplasmListExporterTest.listDataTable, CURRENT_COLUMNS_INFO);
 
 		// no columns in the table are hidden/collapsed, therefore the isDisplay is always true for all headers
 		Assert.assertEquals(6, exportColumnHeaders.size());
@@ -430,7 +435,8 @@ public class GermplasmListExporterTest {
 		collapsedColumnTable.setColumnCollapsed(ColumnLabels.ENTRY_CODE.getName(), true);
 		collapsedColumnTable.setColumnCollapsed(ColumnLabels.SEED_SOURCE.getName(), true);
 
-		final List<ExportColumnHeader> exportColumnHeaders = this.germplasmListExporter.getExportColumnHeadersFromTable(collapsedColumnTable);
+		final List<ExportColumnHeader> exportColumnHeaders = this.germplasmListExporter.getExportColumnHeadersFromTable(collapsedColumnTable,
+			CURRENT_COLUMNS_INFO);
 
 		// EntryID, GID and DESIGNATION are all required columns, so their isDisplay is always true.
 		Assert.assertEquals(6, exportColumnHeaders.size());
@@ -454,7 +460,7 @@ public class GermplasmListExporterTest {
 	public void testGetExportColumnValuesFromTable() {
 
 		final List<Map<Integer, ExportColumnValue>> exportColumnValues =
-				this.germplasmListExporter.getExportColumnValuesFromTable(GermplasmListExporterTest.listDataTable);
+				this.germplasmListExporter.getExportColumnValuesFromTable(GermplasmListExporterTest.listDataTable, CURRENT_COLUMNS_INFO);
 		Assert.assertEquals(10, exportColumnValues.size());
 
 		// check if the values from the table match the created pojos

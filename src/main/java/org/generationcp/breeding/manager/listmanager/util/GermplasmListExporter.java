@@ -1,23 +1,9 @@
 
 package org.generationcp.breeding.manager.listmanager.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.Resource;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 import net.sf.jasperreports.engine.JRException;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
@@ -25,6 +11,9 @@ import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.GermplasmExportService;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.constant.ColumnLabels;
+import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
+import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -50,6 +39,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import javax.annotation.Resource;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Configurable
 public class GermplasmListExporter {
@@ -194,7 +195,7 @@ public class GermplasmListExporter {
 	}
 
 	public FileOutputStream exportGermplasmListXLS(final int germplasmListID, final String fileName, final Table listDataTable) throws GermplasmListExporterException {
-
+		final GermplasmListNewColumnsInfo currentColumnsInfo = this.germplasmListManager.getAdditionalColumnsForList(germplasmListID);
 		final Integer currentLocalIbdbUserId = this.getCurrentLocalIbdbUserId();
 
 		final GermplasmListExportInputValues input = new GermplasmListExportInputValues();
@@ -221,6 +222,8 @@ public class GermplasmListExporter {
 		input.setVariateVariableMap(this.getVariateVariables());
 
 		input.setGermplasmParents(this.getGermplasmParentsMap(listDataTable, germplasmListID));
+
+		input.setCurrentColumnsInfo(currentColumnsInfo);
 
 		return this.germplasmExportService.generateGermplasmListExcelFile(input);
 	}
@@ -439,10 +442,11 @@ public class GermplasmListExporter {
 		}
 	}
 
-	public void exportGermplasmListCSV(final String fileName, final Table listDataTable) throws GermplasmListExporterException {
+	public void exportGermplasmListCSV(final String fileName, final Table listDataTable, final Integer germplasmListId) throws GermplasmListExporterException {
 
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getExportColumnValuesFromTable(listDataTable);
-		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeadersFromTable(listDataTable);
+		final GermplasmListNewColumnsInfo currentColumnsInfo = this.germplasmListManager.getAdditionalColumnsForList(germplasmListId);
+		final List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getExportColumnValuesFromTable(listDataTable, currentColumnsInfo);
+		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeadersFromTable(listDataTable, currentColumnsInfo);
 
 		try {
 
@@ -454,7 +458,8 @@ public class GermplasmListExporter {
 
 	}
 
-	protected List<ExportColumnHeader> getExportColumnHeadersFromTable(final Table listDataTable) {
+	protected List<ExportColumnHeader> getExportColumnHeadersFromTable(final Table listDataTable,
+		final GermplasmListNewColumnsInfo currentColumnsInfo) {
 
 		final Map<String, Boolean> visibleColumns = this.getVisibleColumnMap(listDataTable);
 
@@ -478,10 +483,18 @@ public class GermplasmListExporter {
 		exportColumnHeaders.add(new ExportColumnHeader(5, this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns.get(String
 				.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()))));
 
+		int j = 6;
+		for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
+			final String column = columnEntry.getKey();
+			exportColumnHeaders.add(new ExportColumnHeader(j, column, true));
+			j++;
+		}
+
 		return exportColumnHeaders;
 	}
 
-	protected List<Map<Integer, ExportColumnValue>> getExportColumnValuesFromTable(final Table listDataTable) {
+	protected List<Map<Integer, ExportColumnValue>> getExportColumnValuesFromTable(final Table listDataTable,
+		final GermplasmListNewColumnsInfo currentColumnsInfo) {
 
 		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
 
@@ -503,6 +516,15 @@ public class GermplasmListExporter {
 			row.put(3, new ExportColumnValue(3, designationValue));
 			row.put(4, new ExportColumnValue(4, parentageValue));
 			row.put(5, new ExportColumnValue(5, seedSourceValue));
+
+			int i = 6;
+			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
+				for (final ListDataColumnValues columnValue : columnEntry.getValue()) {
+					final String value = columnValue.getValue();
+					row.put(i, new ExportColumnValue(i, value));
+				}
+				i++;
+			}
 
 			exportColumnValues.add(row);
 		}
