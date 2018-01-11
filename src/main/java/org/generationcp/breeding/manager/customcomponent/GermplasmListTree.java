@@ -60,4 +60,9 @@ public class GermplasmListTree extends Tree implements GermplasmListSource {
 	public Collection<?> getItemIds() {
 		return super.getItemIds();
 	}
+
+	@Override
+	public Object getParent(Object itemId) {
+		return super.getParent(itemId);
+	}
 }

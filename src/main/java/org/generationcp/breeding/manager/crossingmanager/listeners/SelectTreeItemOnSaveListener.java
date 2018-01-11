@@ -50,7 +50,7 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	@Override
 	public void studyClicked(final GermplasmList list) {
 		if (this.saveListAsDialog != null && !list.getType().equals("FOLDER")) {
-			this.saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
+			this.saveListAsDialog.getDetailsComponent().populateGermplasmListDetails(list);
 
 			if (this.saveListAsDialog.getSource() instanceof ListBuilderComponent) {
 				final ListBuilderComponent LBC = (ListBuilderComponent) this.saveListAsDialog.getSource();
@@ -67,7 +67,7 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 			if (list != null && list.getType().equals("FOLDER") || list == null) {
 				if (!(this.saveListAsDialog.getDetailsComponent().getCurrentGermplasmList() != null
 						&& this.saveListAsDialog.getDetailsComponent().getCurrentGermplasmList().getId() != null)) {
-					this.saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
+					this.saveListAsDialog.getDetailsComponent().populateGermplasmListDetails(list);
 				}
 			}
 		}

@@ -83,4 +83,9 @@ public class GermplasmListTreeTable extends TreeTable implements GermplasmListSo
 	public Collection<?> getItemIds() {
 		return super.getItemIds();
 	}
+
+	@Override
+	public Object getParent(Object itemId) {
+		return super.getParent(itemId);
+	}
 }

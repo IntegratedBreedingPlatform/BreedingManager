@@ -113,7 +113,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 
 	@Override
 	public void initializeValues() {
-		this.setGermplasmListDetails(this.germplasmList);
+		this.populateGermplasmListDetails(this.germplasmList);
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		}
 	}
 
-	public GermplasmList getGermplasmList() {
+	public GermplasmList createGermplasmListFromListDetails(final boolean isCropList) {
 		final String listName = this.listNameField.getValue().toString();
 		final String listDescription = this.listDescriptionField.getValue().toString();
 		final Date date = this.listDateField.getValue();
@@ -195,12 +195,18 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		list.setNotes(this.listNotesField.getValue().toString());
 		list.setUserId(0);
 
-		list.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
+		// If the germplasm list is saved in 'Crop lists' folder, we must set the programUUID to null
+		// so that the germplasm list will be accessible to all programs of the same crop.
+		if (!isCropList) {
+			list.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
+			// germplasm list saved in 'Crop lists' folder is locked by default.
+			list.setStatus(101);
+		}
 
 		return list;
 	}
 
-	public void setGermplasmListDetails(final GermplasmList germplasmList) {
+	public void populateGermplasmListDetails(final GermplasmList germplasmList) {
 		this.germplasmList = germplasmList;
 
 		if (germplasmList != null) {

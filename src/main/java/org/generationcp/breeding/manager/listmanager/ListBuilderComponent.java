@@ -1509,10 +1509,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		return this.dialog;
 	}
 
-	public GermplasmList getCurrentListInSaveDialog() {
-		return this.dialog.getGermplasmListToSave();
-	}
-
 	/**
 	 * This method is called by the SaveListAsDialog window displayed when Edit
 	 * Header button is clicked.

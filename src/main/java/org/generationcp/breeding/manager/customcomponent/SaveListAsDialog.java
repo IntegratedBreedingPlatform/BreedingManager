@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.ListDateField;
+import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
@@ -138,9 +139,9 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	@Override
 	public void initializeValues() {
 		if (this.germplasmList != null) {
-			this.listDetailsComponent.setGermplasmListDetails(this.germplasmList);
+			this.listDetailsComponent.populateGermplasmListDetails(this.germplasmList);
 		} else {
-			this.listDetailsComponent.setGermplasmListDetails(null);
+			this.listDetailsComponent.populateGermplasmListDetails(null);
 		}
 
 		this.germplasmListTree.reinitializeTree(true);
@@ -252,13 +253,20 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 			// If not, use old method, get germplasm list the old way
 		} else {
-			this.germplasmList = this.listDetailsComponent.getGermplasmList();
+			this.germplasmList = this.listDetailsComponent.createGermplasmListFromListDetails(this.isCropList(germplasmListTree.getSelectedListId()));
 			this.germplasmList.setId(currentId);
 			this.germplasmList.setStatus(SaveListAsDialog.LIST_NAMES_STATUS);
 		}
 
 		this.germplasmList.setParent(selectedList);
 		return this.germplasmList;
+	}
+
+	boolean isCropList(Object selectedListId) {
+
+		return ListSelectorComponent.CROP_LISTS.equals(selectedListId)
+				|| ListSelectorComponent.CROP_LISTS.equals(this.germplasmListTree.getParentOfListItem(selectedListId));
+
 	}
 
 	protected boolean validateAllFields() {

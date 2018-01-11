@@ -17,6 +17,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListTree;
+import org.generationcp.breeding.manager.customcomponent.GermplasmListTreeTable;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
@@ -984,6 +985,10 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		germplasmListSource.setChildrenAllowed(germplasmList.getId(), germplasmList.isFolder());
 		germplasmListSource.setParent(germplasmList.getId(), parentId);
 
+	}
+
+	public Object getParentOfListItem(Object listItemId) {
+		return this.getGermplasmListSource().getParent(listItemId);
 	}
 
 	// logic used when expanding nodes
