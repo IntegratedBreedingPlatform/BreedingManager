@@ -2,7 +2,13 @@ package org.generationcp.breeding.manager.listmanager.dialog.layout;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
+import org.generationcp.commons.exceptions.InvalidInputException;
+import org.generationcp.commons.service.CrossNamingService;
+import org.generationcp.commons.settings.CrossNameSetting;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -16,11 +22,18 @@ import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+@Configurable
 public class AssignCodesNamingLayout {
 
 	private static final String NO = "N";
 	private static final String YES = "Y";
 	private static final Integer MAX_NUM_OF_ALLOWED_DIGITS = 9;
+	
+	@Autowired
+	private CrossNamingService crossNamingService;
+	
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
 	
 	private TextField prefixTextField;
 	private TextField suffixTextField;
@@ -42,11 +55,9 @@ public class AssignCodesNamingLayout {
 	
 	// the value we are getting from the common layout
 	private final VerticalLayout codesLayout;
-	private final SimpleResourceBundleMessageSource messageSource;
 
-	public AssignCodesNamingLayout(final VerticalLayout codesLayout, final SimpleResourceBundleMessageSource messageSource) {
+	public AssignCodesNamingLayout(final VerticalLayout codesLayout) {
 		this.codesLayout = codesLayout;
-		this.messageSource = messageSource;
 	}
 
 	public void instantiateComponents() {
@@ -95,6 +106,7 @@ public class AssignCodesNamingLayout {
 			
 		this.startNumberTextField = new TextField();
 		this.startNumberTextField.setDebugId("startNumberTextField");
+		this.startNumberTextField.setImmediate(true);
 		this.startNumberTextField.addValidator(new IntegerValidator(this.messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER)));
 		
 		this.nextNameLabel = new Label(this.messageSource.getMessage(Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE));
@@ -158,6 +170,7 @@ public class AssignCodesNamingLayout {
 		namingLayout.addComponent(this.addSpaceBeforeSuffixLabel, "top:160px;left:0px");
 		namingLayout.addComponent(this.addSpaceBeforeSuffixOptionGroup, "top:155px;left:290px");
 		namingLayout.addComponent(this.nextNameLabel, "top:190px;left:290px");
+		namingLayout.addComponent(this.nextValueLabel, "top:190px;left:455px");
 		namingLayout.addComponent(this.startNumberLabel , "top:220px;left:0px");
 		namingLayout.addComponent(this.startNumberTextField, "top:225px;left:290px");
 		
@@ -178,10 +191,32 @@ public class AssignCodesNamingLayout {
 		this.numOfAllowedDigitsSelect.addListener(valueChangeListener);
 		this.addSpaceAfterPrefixOptionGroup.addListener(valueChangeListener);
 		this.addSpaceBeforeSuffixOptionGroup.addListener(valueChangeListener);
+		this.startNumberTextField.addListener(valueChangeListener);
 	}
 	
 	public void updateNextNameValue() {
+		final CrossNameSetting setting = this.generateCrossNameSetting();
 		
+		String nextName = "";
+		try {
+			nextName = this.crossNamingService.getNextNameInSequence(setting);
+		} catch (final InvalidInputException e) {
+			MessageNotifier.showError(this.codesLayout.getWindow(),
+					this.messageSource.getMessage(Message.ERROR), e.getMessage());
+		}
+		this.nextValueLabel.setValue(nextName);
+	}
+
+	CrossNameSetting generateCrossNameSetting() {
+		final CrossNameSetting setting = new CrossNameSetting();
+		setting.setPrefix(this.prefixTextField.getValue().toString());
+		setting.setSuffix(this.suffixTextField.getValue().toString());
+		setting.setNumOfDigits((Integer)this.numOfAllowedDigitsSelect.getValue());
+		final String startNumberString = this.startNumberTextField.getValue().toString();
+		setting.setStartNumber(startNumberString.isEmpty() ?  0 : Integer.valueOf(startNumberString));
+		setting.setAddSpaceBetweenPrefixAndCode(YES.equals(this.addSpaceAfterPrefixOptionGroup.getValue()));
+		setting.setAddSpaceBetweenSuffixAndCode(YES.equals(this.addSpaceBeforeSuffixOptionGroup.getValue()));
+		return setting;
 	}
 
 	public String getGroupNamePrefix() {
