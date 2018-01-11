@@ -1857,21 +1857,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
 		// LOTS
-		final StringBuilder available = new StringBuilder();
-
-		if (listData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
-			available.append("-");
-		} else if (listData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1) {
-			available.append(listData.getInventoryInfo().getTotalAvailableBalance());
-			available.append(" ");
-
-			if (!StringUtils.isEmpty(listData.getInventoryInfo().getScaleForGermplsm())) {
-				available.append(listData.getInventoryInfo().getScaleForGermplsm());
-			}
-
-		} else {
-			available.append(GermplasmInventory.MIXED);
-		}
+		final String available = listData.getInventoryInfo().getAvailable();
 
 		final Button availableButton = new Button(available.toString(), new InventoryLinkButtonClickListener(
 				this.source, this.currentlySavedGermplasmList.getId(), listData.getId(), listData.getGid()));

@@ -450,21 +450,7 @@ public class DropHandlerMethods {
 								germplasmListData.getGid(), germplasmListData.getDesignation(), this.listManagerMain, null);
 				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
-				final StringBuilder available = new StringBuilder();
-
-				if (germplasmListData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
-					available.append("-");
-				} else if (germplasmListData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1) {
-					available.append(germplasmListData.getInventoryInfo().getTotalAvailableBalance());
-					available.append(" ");
-
-					if (!StringUtils.isEmpty(germplasmListData.getInventoryInfo().getScaleForGermplsm())) {
-						available.append(germplasmListData.getInventoryInfo().getScaleForGermplsm());
-					}
-
-				} else {
-					available.append(GermplasmInventory.MIXED);
-				}
+				final String available = germplasmListData.getInventoryInfo().getAvailable();
 
 				final Button availableButton = new Button(available.toString(),
 						new InventoryLinkButtonClickListener(this.listManagerMain, germplasmListData.getGid()));
