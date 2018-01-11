@@ -11,39 +11,8 @@
 
 package org.generationcp.breeding.manager.listimport;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.generationcp.breeding.manager.application.BreedingManagerLayout;
-import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
-import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
-import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
-import org.generationcp.middleware.constant.ColumnLabels;
-import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.commons.vaadin.ui.BaseSubWindow;
-import org.generationcp.middleware.manager.Operation;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Method;
-import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.service.api.PedigreeService;
-import org.generationcp.middleware.util.CrossExpansionProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -61,6 +30,39 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
+import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
+import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
+import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
+import org.generationcp.middleware.constant.ColumnLabels;
+import org.generationcp.middleware.manager.Operation;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.PedigreeService;
+import org.generationcp.middleware.util.CrossExpansionProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import javax.annotation.Nullable;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 @Configurable
 public class SelectGermplasmWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
@@ -105,6 +107,9 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
+
+	@Autowired
+	private InventoryDataManager inventoryDataManager;
 
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
@@ -240,6 +245,8 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		this.germplasmTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
 		this.germplasmTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
 		this.germplasmTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+		this.germplasmTable.addContainerProperty(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), String.class, null);
+		this.germplasmTable.addContainerProperty(ColumnLabels.TOTAL.getName(), String.class, null);
 
 		this.germplasmTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
 		this.germplasmTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
@@ -411,23 +418,38 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 		// Collect gids of matched germplasm and make one-off lookup to cross expansions, locations, methods, preferred names
 		final List<Integer> gids = new ArrayList<>();
+		final List<Integer> gidsMaleParents = new ArrayList<>();
 		for (final Germplasm germplasm : this.germplasmMatches) {
 			gids.add(germplasm.getGid());
+			gidsMaleParents.add(germplasm.getGpid2());
 		}
-		final Map<Integer, String> preferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
+		final Map<Integer, String> preferredNamesByGids = this.germplasmDataManager.getPreferredNamesByGids(gids);
+		final Map<Integer, String> preferredNamesMaleParentsByGID = this.germplasmDataManager.getPreferredNamesByGids(gidsMaleParents);
 		final Map<Integer, String> crossExpansionsMap =
 				this.pedigreeService.getCrossExpansions(new HashSet<>(gids), null, this.crossExpansionProperties);
 		final Map<Integer, String> locationNamesMap = this.germplasmDataManager.getLocationNamesByGids(gids);
 		final Map<Integer, Object> methodsMap = this.germplasmDataManager.getMethodsByGids(gids);
 
+		final Map<Integer, Germplasm> germplasmWithInventoryByGID =
+			Maps.uniqueIndex(this.inventoryDataManager.getAvailableBalanceForGermplasms(this.germplasmMatches),
+				new Function<Germplasm, Integer>() {
+
+					@Nullable
+					@Override
+					public Integer apply(@Nullable final Germplasm germplasm) {
+						return germplasm.getGid();
+					}
+				});
+
 		for (int i = 0; i < this.germplasmMatches.size(); i++) {
-			final Integer gid = this.germplasmMatches.get(i).getGid();
+			final Germplasm germplasm = this.germplasmMatches.get(i);
+			final Integer gid = germplasm.getGid();
 
 			final Button gidButton =
 					new Button(String.format("%s", gid.toString()), new GidLinkClickListener(gid.toString(), this.parentWindow));
 			gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-			final String preferredName = preferredNamesMap.get(gid);
+			final String preferredName = preferredNamesByGids.get(gid);
 			final Button desigButton = new Button(preferredName, new GidLinkClickListener(gid.toString(), this.parentWindow));
 			desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 
@@ -439,7 +461,15 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 				methodName = method.getMname();
 			}
 
-			this.germplasmTable.addItem(new Object[] {desigButton, gidButton, locationName, methodName, crossExpansion}, gid);
+			final String preferredNameMaleParent = preferredNamesMaleParentsByGID.get(germplasm.getGpid2());
+			final Germplasm germplasmWithInventory = germplasmWithInventoryByGID.get(gid);
+			String available = "";
+			if (germplasmWithInventory != null) {
+				available = germplasmWithInventory.getInventoryInfo().getAvailable();
+			}
+
+			this.germplasmTable.addItem(new Object[] {desigButton, gidButton, locationName, methodName, crossExpansion,
+				preferredNameMaleParent, available}, gid);
 		}
 
 		this.germplasmTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
