@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -74,7 +75,7 @@ public class AssignCodesDialogTest {
 	public void testAssignCodes() {
 
 		final UserDefinedField nameType = this.createUserDefinedField();
-		Mockito.when(germplasmNamingReferenceDataResolver.resolveNameType(assignCodesDialog.getLevel())).thenReturn(nameType);
+		Mockito.when(germplasmNamingReferenceDataResolver.resolveNameType(Matchers.anyInt())).thenReturn(nameType);
 
 		assignCodesDialog.assignCodes();
 

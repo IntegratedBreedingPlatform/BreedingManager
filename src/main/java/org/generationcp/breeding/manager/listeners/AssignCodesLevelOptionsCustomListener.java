@@ -25,11 +25,11 @@ public class AssignCodesLevelOptionsCustomListener implements Property.ValueChan
 	public void valueChange(final Property.ValueChangeEvent event) {
 		//toggle codes controls panel
 		this.codesLayout.removeAllComponents();
-		if (this.codingLevelOptions.getValue().equals(AssignCodesDialog.LEVEL1)) {
+		if (this.codingLevelOptions.getValue().equals(1)) {
 			this.codesLayout.addComponent(this.assignCodeCustomLayout.getCodeControlsLayoutLevel1());
-		} else if (this.codingLevelOptions.getValue().equals(AssignCodesDialog.LEVEL2)) {
+		} else if (this.codingLevelOptions.getValue().equals(2)) {
 			this.codesLayout.addComponent(this.assignCodeCustomLayout.getCodeControlsLayoutLevel2());
-		} else if (this.codingLevelOptions.getValue().equals(AssignCodesDialog.LEVEL3)) {
+		} else if (this.codingLevelOptions.getValue().equals(3)) {
 			this.codesLayout.addComponent(this.assignCodeCustomLayout.getCodeControlsLayoutLevel3());
 		}
 		this.codesLayout.addComponent(this.exampleLayout);

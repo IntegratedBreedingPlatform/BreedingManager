@@ -200,11 +200,11 @@ public class AssignCodeCustomLayout {
 
 	private int getCodingLevel() {
 		int level = 1;
-		if (this.codingLevelOptions.getValue().equals(AssignCodesDialog.LEVEL1)) {
+		if (this.codingLevelOptions.getValue().equals(1)) {
 			level = 1;
-		} else if (this.codingLevelOptions.getValue().equals(AssignCodesDialog.LEVEL2)) {
+		} else if (this.codingLevelOptions.getValue().equals(2)) {
 			level = 2;
-		} else if (this.codingLevelOptions.getValue().equals(AssignCodesDialog.LEVEL3)) {
+		} else if (this.codingLevelOptions.getValue().equals(3)) {
 			level = 3;
 		}
 		return level;

@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
 import org.generationcp.middleware.service.api.GermplasmNamingReferenceDataResolver;
@@ -44,9 +46,8 @@ public class AssignCodesDialog extends BaseSubWindow
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, Window.CloseListener {
 
 	public static final String SEQUENCE_PLACEHOLDER = "[SEQ]";
-	public static final String LEVEL1 = "Level1";
-	public static final String LEVEL2 = "Level2";
-	public static final String LEVEL3 = "Level3";
+	private static final String CODE_NAME_WITH_SPACE_REGEX = "^CODE \\d$";
+	private static final String CODE_NAME_REGEX = "^CODE\\d$";
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -62,6 +63,9 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Autowired
 	private ContextUtil contextUtil;
+	
+	@Autowired
+	private GermplasmListManager germplasmListManager;
 
 	private AssignCodesNamingLayout assignCodesNamingLayout;
 	private AssignCodeCustomLayout assignCodesCustomLayout;
@@ -140,19 +144,27 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Override
 	public void initializeValues() {
-		//TODO There could be custom number of levels in the future
-		this.codingLevelOptions.addItem(LEVEL1);
-		this.codingLevelOptions.addItem(LEVEL2);
-		this.codingLevelOptions.addItem(LEVEL3);
-		this.codingLevelOptions.setItemCaption(LEVEL1, this.messageSource.getMessage(Message.LEVEL1));
-		this.codingLevelOptions.setItemCaption(LEVEL2, this.messageSource.getMessage(Message.LEVEL2));
-		this.codingLevelOptions.setItemCaption(LEVEL3, this.messageSource.getMessage(Message.LEVEL3));
-
-		// by default the level 1 is selected
-		this.codingLevelOptions.select(LEVEL1);
+		this.populateCodingNameTypes();
 
 		if (this.isCustomLayout) {
 			this.assignCodesCustomLayout.initializeValues();
+		}
+	}
+	
+	void populateCodingNameTypes() {
+		final List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
+		UserDefinedField firstId = null;
+		for (final UserDefinedField userDefinedField : userDefinedFieldList) {
+			if (this.isCodingNameType(userDefinedField.getFname())) {
+				if (firstId == null) {
+					firstId = userDefinedField;
+				}
+				this.codingLevelOptions.addItem(userDefinedField);
+				this.codingLevelOptions.setItemCaption(userDefinedField, userDefinedField.getFcode());
+			}
+		}
+		if (firstId != null) {
+			this.codingLevelOptions.setValue(firstId);
 		}
 	}
 
@@ -211,8 +223,8 @@ public class AssignCodesDialog extends BaseSubWindow
 
 				@Override
 				protected void doInTransactionWithoutResult(final TransactionStatus status) {
-					final UserDefinedField nameType =
-							AssignCodesDialog.this.germplasmNamingReferenceDataResolver.resolveNameType(AssignCodesDialog.this.getLevel());
+					final UserDefinedField nameType = (UserDefinedField) AssignCodesDialog.this.codingLevelOptions.getValue();
+						
 
 					// TODO performance tuning when processing large number of list entries..
 					for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
@@ -228,17 +240,9 @@ public class AssignCodesDialog extends BaseSubWindow
 			this.closeWindow();
 		}
 	}
-
-	int getLevel() {
-		int level = 1;
-		if (this.codingLevelOptions.getValue().equals(LEVEL1)) {
-			level = 1;
-		} else if (this.codingLevelOptions.getValue().equals(LEVEL2)) {
-			level = 2;
-		} else if (this.codingLevelOptions.getValue().equals(LEVEL3)) {
-			level = 3;
-		}
-		return level;
+	
+	boolean isCodingNameType(final String nameType){
+		return nameType.toUpperCase().matches(CODE_NAME_REGEX) || nameType.toUpperCase().matches(CODE_NAME_WITH_SPACE_REGEX);
 	}
 
 	String getGroupNamePrefix(final boolean isCustomLayout) {
@@ -261,7 +265,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	public void layoutComponents() {
 		this.setModal(true);
 		this.setWidth("650px");
-		this.setHeight("450px");
+		this.setHeight("550px");
 		this.setResizable(false);
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 
@@ -284,7 +288,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		// Area with level options
 		final HorizontalLayout optionsLabelLayout = new HorizontalLayout();
 		optionsLabelLayout.setDebugId("optionsLabelLayout");
-		optionsLabelLayout.setWidth("290px");
+		optionsLabelLayout.setWidth("350px");
 		this.codingLevelLabel.setWidth("90px");
 		this.codingLevelMandatoryLabel.setWidth("160px");
 		optionsLabelLayout.addComponent(this.codingLevelLabel);
