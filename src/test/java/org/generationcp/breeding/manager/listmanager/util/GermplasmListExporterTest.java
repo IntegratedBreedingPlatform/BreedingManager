@@ -1,12 +1,13 @@
 
 package org.generationcp.breeding.manager.listmanager.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
+import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.generationcp.breeding.manager.application.Message;
@@ -18,10 +19,10 @@ import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.service.impl.GermplasmExportServiceImpl;
-import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
+import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -47,12 +48,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GermplasmListExporterTest {
 
@@ -67,6 +68,8 @@ public class GermplasmListExporterTest {
 	private static final Integer GERMPLASM_LIST_ID = 10970378;
 	private static final GermplasmListNewColumnsInfo CURRENT_COLUMNS_INFO =
 			new GermplasmListNewColumnsInfo(GermplasmListExporterTest.GERMPLASM_LIST_ID);
+	public static final String LIST_NAME = "ABCD";
+	public static final String PREFERRED_NAME = "PREFERRED_NAME";
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -82,9 +85,6 @@ public class GermplasmListExporterTest {
 
 	@Mock
 	private OntologyVariableDataManager ontologyVariableDataManager;
-
-	@Mock
-	private ContextUtil contextUtil;
 
 	@Mock
 	private InventoryDataManager inventoryDataManager;
@@ -494,6 +494,32 @@ public class GermplasmListExporterTest {
 		listDataTable.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), Button.class, null);
 		Assert.assertFalse("Expected to return true for table with Parents Column but didn't.",
 				this.germplasmListExporter.hasParentsColumn(listDataTable));
+	}
+
+	@Test
+	public void testAddedPreferredNameColumn() {
+		final GermplasmListNewColumnsInfo currentColumnsInfo = new GermplasmListNewColumnsInfo(GermplasmListExporterTest.GERMPLASM_LIST_ID);
+
+		final Map<String, List<ListDataColumnValues>> map = new HashMap<>();
+		final ListDataColumnValues ldcv = new ListDataColumnValues(PREFERRED_NAME, GermplasmListExporterTest.GERMPLASM_LIST_ID, LIST_NAME);
+		map.put(PREFERRED_NAME, Lists.newArrayList(ldcv));
+		currentColumnsInfo.setColumnValuesMap(map);
+
+		final List<Map<Integer, ExportColumnValue>> exportColumnValues =
+			this.germplasmListExporter.getExportColumnValuesFromTable(GermplasmListExporterTest.listDataTable, currentColumnsInfo);
+		Assert.assertEquals(10, exportColumnValues.size());
+
+		// check if the values from the table match the created pojos
+		for (int x = 0; x < exportColumnValues.size(); x++) {
+			final Map<Integer, ExportColumnValue> row = exportColumnValues.get(x);
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getEntryId().toString(), row.get(0).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getGid().toString(), row.get(1).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getEntryCode(), row.get(2).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getDesignation(), row.get(3).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getGroupName(), row.get(4).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getSeedSource(), row.get(5).getValue());
+			Assert.assertEquals(LIST_NAME, row.get(6).getValue()); //PREFERRED_NAME
+		}
 	}
 
 	private static Table generateTestTable() {
