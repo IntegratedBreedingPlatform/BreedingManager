@@ -19,6 +19,7 @@ import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.service.impl.GermplasmExportServiceImpl;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
@@ -85,6 +86,9 @@ public class GermplasmListExporterTest {
 
 	@Mock
 	private OntologyVariableDataManager ontologyVariableDataManager;
+
+	@Mock
+	private ContextUtil contextUtil;
 
 	@Mock
 	private InventoryDataManager inventoryDataManager;
