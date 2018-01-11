@@ -16,6 +16,7 @@ import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Select;
@@ -55,9 +56,11 @@ public class AssignCodesNamingLayout {
 	
 	// the value we are getting from the common layout
 	private final VerticalLayout codesLayout;
+	private final Button applyCodesButton;
 
-	public AssignCodesNamingLayout(final VerticalLayout codesLayout) {
+	public AssignCodesNamingLayout(final VerticalLayout codesLayout, final Button applyCodesButton) {
 		this.codesLayout = codesLayout;
+		this.applyCodesButton = applyCodesButton;
 	}
 
 	public void instantiateComponents() {
@@ -199,11 +202,14 @@ public class AssignCodesNamingLayout {
 		
 		String nextName = "";
 		try {
-			nextName = this.crossNamingService.getNextNameInSequence(setting);
+			if (!setting.getPrefix().trim().isEmpty()) {
+				nextName = this.crossNamingService.getNextNameInSequence(setting);
+			}
 		} catch (final InvalidInputException e) {
 			MessageNotifier.showError(this.codesLayout.getWindow(),
 					this.messageSource.getMessage(Message.ERROR), e.getMessage());
 		}
+		this.applyCodesButton.setEnabled(!nextName.isEmpty());
 		this.nextValueLabel.setValue(nextName);
 	}
 
