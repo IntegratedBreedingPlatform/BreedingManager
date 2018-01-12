@@ -41,6 +41,15 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	private ContextMenuItem menuFillWithCrossMaleInfo;
 	private ContextMenuItem menuFillWithCrossMaleGID;
 	private ContextMenuItem menuFillWithCrossMalePrefName;
+
+	private ContextMenuItem menuFillWithGroupSourceInfo;
+	private ContextMenuItem menuFillWithGroupSourceGID;
+	private ContextMenuItem menuFillWithGroupSourcePreferredName;
+
+	private ContextMenuItem menuFillWithImmediateSourceInfo;
+	private ContextMenuItem menuFillWithImmediateSourceGID;
+	private ContextMenuItem menuFillWithImmediateSourcePreferredName;
+
 	private final ContextMenuItem listEditingOptions;
 
 	private final AddColumnSource addColumnSource;
@@ -147,6 +156,40 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 			this.menuFillWithCrossMalePrefName =
 					this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_CROSS_MALE_NAME, this.menuFillWithCrossMaleInfo);
 			this.menuFillWithCrossMalePrefName.setEnabled(!doExcludeCrossMaleName);
+		}
+
+		// Group source information and its sub-options.
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_GROUP_SOURCE_INFO)) {
+			this.menuFillWithGroupSourceInfo = this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_GROUP_SOURCE_INFO);
+
+			final boolean doExcludeGroupSourceGid = columnsToExclude.contains(FillWithOption.FILL_WITH_GROUP_SOURCE_GID);
+			this.menuFillWithGroupSourceGID =
+				this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_GROUP_SOURCE_GID, this.menuFillWithGroupSourceInfo);
+			this.menuFillWithGroupSourceGID.setEnabled(!doExcludeGroupSourceGid);
+
+			final boolean doExcludeGroupSourcePreferredName =
+				columnsToExclude.contains(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME);
+			this.menuFillWithGroupSourcePreferredName =
+				this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME, this.menuFillWithGroupSourceInfo);
+			this.menuFillWithGroupSourcePreferredName.setEnabled(!doExcludeGroupSourcePreferredName);
+
+		}
+
+		// Immediate Group source information and its sub-options.
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_INFO)) {
+			this.menuFillWithImmediateSourceInfo = this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_INFO);
+
+			final boolean doExcludeImmediateSourceGid = columnsToExclude.contains(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID);
+			this.menuFillWithImmediateSourceGID =
+				this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID, this.menuFillWithImmediateSourceInfo);
+			this.menuFillWithImmediateSourceGID.setEnabled(!doExcludeImmediateSourceGid);
+
+			final boolean doExcludeImmediateSourcePreferredName =
+				columnsToExclude.contains(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME);
+			this.menuFillWithImmediateSourcePreferredName =
+				this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME, this.menuFillWithImmediateSourceInfo);
+			this.menuFillWithImmediateSourcePreferredName.setEnabled(!doExcludeImmediateSourcePreferredName);
+			this.sourceContextMenu.setWidth("325px");
 		}
 
 		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_ATTRIBUTE)) {
