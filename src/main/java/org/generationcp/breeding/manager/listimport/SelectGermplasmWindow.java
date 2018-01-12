@@ -531,6 +531,14 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
+	public InventoryDataManager getInventoryDataManager() {
+		return inventoryDataManager;
+	}
+
+	public void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
 	public void setPedigreeService(final PedigreeService pedigreeService) {
 		this.pedigreeService = pedigreeService;
 	}
