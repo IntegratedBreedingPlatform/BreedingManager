@@ -267,11 +267,11 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	@SuppressWarnings("unchecked")
 	public static List<String> getTablePropertyIds(final Table table) {
 		if (table != null) {
-			final List<String> propertyIds = new ArrayList<String>();
+			final List<String> propertyIds = new ArrayList<>();
 			propertyIds.addAll((Collection<? extends String>) table.getContainerPropertyIds());
 			return propertyIds;
 		} else {
-			return new ArrayList<String>();
+			return new ArrayList<>();
 		}
 	}
 
@@ -286,12 +286,12 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	 * @return
 	 */
 	public List<ListDataInfo> getListDataCollectionFromTable(final Table table) {
-		final List<ListDataInfo> listDataCollection = new ArrayList<ListDataInfo>();
+		final List<ListDataInfo> listDataCollection = new ArrayList<>();
 		final List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
 
 		for (final Object itemId : table.getItemIds()) {
 			final Item item = table.getItem(itemId);
-			final List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
+			final List<ListDataColumn> columns = new ArrayList<>();
 			for (final String propertyId : propertyIds) {
 				if (ColumnLabels.getAddableGermplasmColumns().contains(propertyId)) {
 					if (item.getItemProperty(propertyId).getValue() != null) {

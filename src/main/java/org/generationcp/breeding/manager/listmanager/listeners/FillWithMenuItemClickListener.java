@@ -102,7 +102,7 @@ public class FillWithMenuItemClickListener implements ClickListener {
 				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_EXPANSION.getMessageKey()))) {
 			this.displayExpansionLevelPopupWindow(columnName);
 		} else if (clickedOptionName
-				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_SEQUENCE_NUMBMER.getMessageKey()))) {
+				.equals(this.messageSource.getMessage(FillWithOption.FILL_WITH_SEQUENCE_NUMBER.getMessageKey()))) {
 			this.displaySequenceNumberPopupWindow(columnName);
 		}
 	}

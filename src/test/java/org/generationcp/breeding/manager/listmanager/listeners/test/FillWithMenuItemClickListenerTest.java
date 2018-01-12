@@ -97,7 +97,7 @@ public class FillWithMenuItemClickListenerTest {
 		Mockito.doReturn(FillWithMenuItemClickListenerTest.FILL_WITH_CROSS_EXPANSION).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_EXPANSION.getMessageKey());
 		Mockito.doReturn(FillWithMenuItemClickListenerTest.FILL_WITH_SEQUENCE).when(this.messageSource)
-				.getMessage(FillWithOption.FILL_WITH_SEQUENCE_NUMBMER.getMessageKey());
+				.getMessage(FillWithOption.FILL_WITH_SEQUENCE_NUMBER.getMessageKey());
 	}
 
 	@Test
