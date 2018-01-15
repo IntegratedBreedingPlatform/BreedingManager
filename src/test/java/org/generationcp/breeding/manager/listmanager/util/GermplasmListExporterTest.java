@@ -505,9 +505,15 @@ public class GermplasmListExporterTest {
 		final GermplasmListNewColumnsInfo currentColumnsInfo = new GermplasmListNewColumnsInfo(GermplasmListExporterTest.GERMPLASM_LIST_ID);
 
 		final Map<String, List<ListDataColumnValues>> map = new HashMap<>();
-		final ListDataColumnValues ldcv = new ListDataColumnValues(PREFERRED_NAME, GermplasmListExporterTest.GERMPLASM_LIST_ID, LIST_NAME);
-		map.put(PREFERRED_NAME, Lists.newArrayList(ldcv));
+		List list = new ArrayList();
+		for (final Object itemId : GermplasmListExporterTest.listDataTable.getItemIds()){
+			ListDataColumnValues ldcv = new ListDataColumnValues(PREFERRED_NAME, (Integer) itemId, LIST_NAME);
+			list.add(ldcv);
+		}
+		map.put(PREFERRED_NAME, list);
 		currentColumnsInfo.setColumnValuesMap(map);
+
+		listDataTable.addContainerProperty(ColumnLabels.PREFERRED_NAME.getName(), String.class, null);
 
 		final List<Map<Integer, ExportColumnValue>> exportColumnValues =
 			this.germplasmListExporter.getExportColumnValuesFromTable(GermplasmListExporterTest.listDataTable, currentColumnsInfo);
