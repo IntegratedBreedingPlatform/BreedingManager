@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.listmanager.util;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 import net.sf.jasperreports.engine.JRException;
+import org.apache.commons.collections.CollectionUtils;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
@@ -520,12 +521,19 @@ public class GermplasmListExporter {
 			row.put(5, new ExportColumnValue(5, seedSourceValue));
 
 			int i = 6;
-			if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null && currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
+			if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null
+				&& currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
 				for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
-					for (final ListDataColumnValues columnValue : columnEntry.getValue()) {
-						final String value = columnValue.getValue();
-						row.put(i, new ExportColumnValue(i, value));
-					}
+					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
+					ListDataColumnValues listDataColumnValues =
+						(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
+
+							public boolean evaluate(Object object) {
+								return ((ListDataColumnValues) object).getListDataId().equals(itemId);
+							}
+						});
+					final String value = listDataColumnValues.getValue();
+					row.put(i, new ExportColumnValue(i, value));
 					i++;
 				}
 			}
