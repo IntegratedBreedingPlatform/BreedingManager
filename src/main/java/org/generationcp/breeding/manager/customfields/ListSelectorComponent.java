@@ -292,7 +292,8 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			this.addFolderBtn.setEnabled(true);
 			this.renameFolderBtn.setEnabled(true);
 			this.deleteFolderBtn.setEnabled(true);
-		} else if (itemId.toString().equals(ListSelectorComponent.PROGRAM_LISTS)) {
+		} else if (ListSelectorComponent.PROGRAM_LISTS.equals(itemId.toString())
+				|| ListSelectorComponent.CROP_LISTS.equals(itemId.toString())) {
 			this.addFolderBtn.setEnabled(true);
 			this.renameFolderBtn.setEnabled(false);
 			this.deleteFolderBtn.setEnabled(false);

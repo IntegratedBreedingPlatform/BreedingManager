@@ -45,7 +45,7 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
 				listTreeComponent.updateButtons(event.getItemId());
 				listTreeComponent.toggleFolderSectionForItemSelected();
 
-				if (!item.equals(ListSelectorComponent.LISTS)) {
+				if (!item.equals(ListSelectorComponent.PROGRAM_LISTS) && !item.equals(ListSelectorComponent.CROP_LISTS)) {
 					int germplasmListId = Integer.valueOf(event.getItemId().toString());
 					try {
 						listTreeComponent.treeItemClickAction(germplasmListId);

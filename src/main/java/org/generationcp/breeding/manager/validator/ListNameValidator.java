@@ -95,8 +95,11 @@ public class ListNameValidator implements Validator {
 			this.errorDetails = this.messageSource.getMessage(Message.INVALID_ITEM_NAME);
 			isValid = false;
 
-		} else if (ListSelectorComponent.LISTS.equalsIgnoreCase(newName)) {
-			this.errorDetails = "Cannot use \"" + ListSelectorComponent.LISTS + "\" as item name.";
+		} else if (ListSelectorComponent.PROGRAM_LISTS.equalsIgnoreCase(newName)) {
+			this.errorDetails = "Cannot use \"" + ListSelectorComponent.PROGRAM_LISTS + "\" as item name.";
+			isValid = false;
+		} else if (ListSelectorComponent.CROP_LISTS.equalsIgnoreCase(newName)) {
+			this.errorDetails = "Cannot use \"" + ListSelectorComponent.CROP_LISTS + "\" as item name.";
 			isValid = false;
 		} else if (ListNameValidator.invalidListNamePattern.matcher(newName).find()) {
 			this.errorDetails = this.messageSource.getMessage(Message.INVALID_LIST_NAME);

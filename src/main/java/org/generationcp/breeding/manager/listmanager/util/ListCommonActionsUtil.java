@@ -91,6 +91,7 @@ public class ListCommonActionsUtil {
 				listFromDB.setType(listToSave.getType());
 				listFromDB.setNotes(listToSave.getNotes());
 				listFromDB.setParent(listToSave.getParent());
+				listFromDB.setProgramUUID(listToSave.getProgramUUID());
 
 				listId = dataManager.updateGermplasmList(listFromDB);
 			}
