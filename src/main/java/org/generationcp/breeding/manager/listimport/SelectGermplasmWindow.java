@@ -32,11 +32,13 @@ import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
 import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
+import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -242,11 +244,11 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 		this.germplasmTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		this.germplasmTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		this.germplasmTable.addContainerProperty(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), String.class, null);
+		this.germplasmTable.addContainerProperty(ColumnLabels.TOTAL.getName(), Button.class, null);
 		this.germplasmTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
 		this.germplasmTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
 		this.germplasmTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
-		this.germplasmTable.addContainerProperty(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), String.class, null);
-		this.germplasmTable.addContainerProperty(ColumnLabels.TOTAL.getName(), String.class, null);
 
 		this.germplasmTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
 		this.germplasmTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
@@ -463,13 +465,17 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 			final String preferredNameMaleParent = preferredNamesMaleParentsByGID.get(germplasm.getGpid2());
 			final Germplasm germplasmWithInventory = germplasmWithInventoryByGID.get(gid);
+
 			String available = "";
 			if (germplasmWithInventory != null) {
 				available = germplasmWithInventory.getInventoryInfo().getAvailable();
 			}
+			final Button availableButton = new Button(available.toString(), new InventoryLinkButtonClickListener(this.parentWindow, gid));
+			availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+			availableButton.setDescription(ListBuilderComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 
-			this.germplasmTable.addItem(new Object[] {desigButton, gidButton, locationName, methodName, crossExpansion,
-				preferredNameMaleParent, available}, gid);
+			this.germplasmTable.addItem(new Object[] {desigButton, gidButton,
+				preferredNameMaleParent, availableButton, locationName, methodName, crossExpansion}, gid);
 		}
 
 		this.germplasmTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
