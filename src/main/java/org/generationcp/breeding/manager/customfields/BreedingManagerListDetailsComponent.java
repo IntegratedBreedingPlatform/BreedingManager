@@ -181,6 +181,9 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 
 		list.setName(listName);
 
+		// Set the defaul list status to 1
+		list.setStatus(1);
+
 		if (listDescription != null) {
 			list.setDescription(listDescription);
 		}
@@ -199,8 +202,6 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		// so that the germplasm list will be accessible to all programs of the same crop.
 		if (!isCropList) {
 			list.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
-			// germplasm list saved in 'Crop lists' folder is locked by default.
-			list.setStatus(101);
 		}
 
 		return list;

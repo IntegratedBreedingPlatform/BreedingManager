@@ -74,6 +74,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	private GermplasmList germplasmList;
 
 	public static final Integer LIST_NAMES_STATUS = 1;
+	public static final Integer LIST_LOCKED_STATUS = 101;
 
 	public SaveListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList) {
 		this(source, germplasmList, null);
@@ -357,6 +358,12 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 					final GermplasmList gl = this.getGermplasmListToSave();
 					this.setGermplasmListDetails(gl);
+
+					// if the germplasm lis has null programUUID it means that it is saved in
+					// the 'Crop lists' folder.
+					if (gl.getProgramUUID() == null) {
+						gl.setStatus(LIST_LOCKED_STATUS);
+					}
 
 					this.source.saveList(gl);
 					this.saveListChangesAction();

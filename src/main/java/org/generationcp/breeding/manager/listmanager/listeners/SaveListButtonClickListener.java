@@ -112,7 +112,6 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				}
 
 				if (currentlySavedList == null || listToSave.getId() == null) {
-					listToSave.setStatus(1);
 
 					try {
 
