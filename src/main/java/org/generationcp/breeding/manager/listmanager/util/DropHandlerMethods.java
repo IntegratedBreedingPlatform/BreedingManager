@@ -195,14 +195,14 @@ public class DropHandlerMethods {
 				newItemIds.add(newItemId);
 				final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
 
-				final Button gidButton = new Button(String.format("%s", gid),
+				final Button gidButton = new SortableButton(String.format("%s", gid),
 						new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 				final String crossExpansion = crossExpansions.get(gid);
 				final String preferredName = preferredNames.get(gid);
 				final Button designationButton =
-						new Button(preferredName, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
+						new SortableButton(preferredName, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 				designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 				designationButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
@@ -238,7 +238,7 @@ public class DropHandlerMethods {
 					availInv = availInvGid.toString();
 				}
 
-				final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+				final Button inventoryButton = new SortableButton(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
 				inventoryButton.setDebugId("inventoryButton");
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -275,7 +275,7 @@ public class DropHandlerMethods {
 				}
 
 				final Button availableButton =
-						new Button(available.toString(), new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+						new SortableButton(available.toString(), new InventoryLinkButtonClickListener(this.listManagerMain, gid));
 				availableButton.setDebugId("availableButton");
 				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 				availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
