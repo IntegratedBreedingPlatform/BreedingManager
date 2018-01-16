@@ -2,13 +2,17 @@ package org.generationcp.breeding.manager.listmanager.dialog.layout;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
-import org.generationcp.commons.exceptions.InvalidInputException;
-import org.generationcp.commons.service.CrossNamingService;
-import org.generationcp.commons.settings.CrossNameSetting;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.InvalidGermplasmNameSettingException;
+import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
+import org.generationcp.middleware.service.api.GermplasmNamingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -31,7 +35,10 @@ public class AssignCodesNamingLayout {
 	private static final Integer MAX_NUM_OF_ALLOWED_DIGITS = 9;
 	
 	@Autowired
-	private CrossNamingService crossNamingService;
+	private GermplasmNamingService germplasmNamingService;
+	
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -198,23 +205,31 @@ public class AssignCodesNamingLayout {
 	}
 	
 	public void updateNextNameValue() {
-		final CrossNameSetting setting = this.generateCrossNameSetting();
-		
-		String nextName = "";
-		try {
-			if (!setting.getPrefix().trim().isEmpty()) {
-				nextName = this.crossNamingService.getNextNameInSequence(setting);
+		final GermplasmNameSetting setting = this.generateGermplasmNameSetting();
+		if (!setting.getPrefix().trim().isEmpty()) {
+			synchronized (AssignCodesNamingLayout.class) {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+						String nextName = "";
+						try {
+							nextName = AssignCodesNamingLayout.this.germplasmNamingService.getNextNameInSequence(setting);
+						} catch (InvalidGermplasmNameSettingException e) {
+							MessageNotifier.showError(AssignCodesNamingLayout.this.codesLayout.getWindow(),
+									AssignCodesNamingLayout.this.messageSource.getMessage(Message.ERROR), e.getMessage());
+						}
+						AssignCodesNamingLayout.this.applyCodesButton.setEnabled(!nextName.isEmpty());
+						AssignCodesNamingLayout.this.nextValueLabel.setValue(nextName);
+					}
+				});
 			}
-		} catch (final InvalidInputException e) {
-			MessageNotifier.showError(this.codesLayout.getWindow(),
-					this.messageSource.getMessage(Message.ERROR), e.getMessage());
+
 		}
-		this.applyCodesButton.setEnabled(!nextName.isEmpty());
-		this.nextValueLabel.setValue(nextName);
 	}
 
-	CrossNameSetting generateCrossNameSetting() {
-		final CrossNameSetting setting = new CrossNameSetting();
+	public GermplasmNameSetting generateGermplasmNameSetting() {
+		final GermplasmNameSetting setting = new GermplasmNameSetting();
 		setting.setPrefix(this.prefixTextField.getValue().toString());
 		setting.setSuffix(this.suffixTextField.getValue().toString());
 		setting.setNumOfDigits((Integer)this.numOfAllowedDigitsSelect.getValue());

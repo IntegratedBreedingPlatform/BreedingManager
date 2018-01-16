@@ -289,9 +289,6 @@
 
     <bean id="userTreeStateService" class="org.generationcp.commons.service.impl.UserTreeStateServiceImpl"/>
     
-    <bean id="crossNamingService" class="org.generationcp.commons.service.impl.CrossNamingServiceImpl"/>
-    
-    
 
     <!-- Data Source and Transaction Configuration -->
 

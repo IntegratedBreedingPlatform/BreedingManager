@@ -229,9 +229,8 @@ public class AssignCodesDialog extends BaseSubWindow
 					// TODO performance tuning when processing large number of list entries..
 					for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
 						// TODO pass user and location. Hardcoded to 0 = unknown for now.
-						final String groupNamePrefix = AssignCodesDialog.this.getGroupNamePrefix(AssignCodesDialog.this.isCustomLayout);
 						final GermplasmGroupNamingResult result =
-								AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, groupNamePrefix, nameType, 0, 0);
+								AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, AssignCodesDialog.this.assignCodesNamingLayout.generateGermplasmNameSetting(), nameType, 0, 0);
 						assignCodesResultsMap.put(gid, result);
 					}
 				}

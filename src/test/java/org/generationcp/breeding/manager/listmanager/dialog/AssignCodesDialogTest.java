@@ -1,12 +1,14 @@
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import com.vaadin.ui.Window;
-import junit.framework.Assert;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodeCustomLayout;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNamingLayout;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
 import org.generationcp.middleware.service.api.GermplasmNamingReferenceDataResolver;
 import org.generationcp.middleware.service.api.GermplasmNamingService;
 import org.junit.Before;
@@ -19,14 +21,16 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import com.vaadin.ui.Window;
+
+import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AssignCodesDialogTest {
 
 	private static final String GROUP_NAME_PREFIX_CUSTOM = "CAL";
 	private static final String GROUP_NAME_PREFIX_DEFAULT = "AAA";
+	private static final String SUFFIX = "XYZ";
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -80,9 +84,10 @@ public class AssignCodesDialogTest {
 		assignCodesDialog.assignCodes();
 
 		// Make sure that the codes are assigned to all GIDs
-		Mockito.verify(this.germplasmNamingService).applyGroupName(1, GROUP_NAME_PREFIX_DEFAULT, nameType, 0, 0);
-		Mockito.verify(this.germplasmNamingService).applyGroupName(2, GROUP_NAME_PREFIX_DEFAULT, nameType, 0, 0);
-		Mockito.verify(this.germplasmNamingService).applyGroupName(3, GROUP_NAME_PREFIX_DEFAULT, nameType, 0, 0);
+		final GermplasmNameSetting setting = this.createGermplasmNameSetting();
+		Mockito.verify(this.germplasmNamingService).applyGroupName(1, setting, nameType, 0, 0);
+		Mockito.verify(this.germplasmNamingService).applyGroupName(2, setting, nameType, 0, 0);
+		Mockito.verify(this.germplasmNamingService).applyGroupName(3, setting, nameType, 0, 0);
 
 		Mockito.verify(parent).addWindow(Mockito.any(AssignCodesResultsDialog.class));
 		Mockito.verify(parent).removeWindow(assignCodesDialog);
@@ -114,6 +119,18 @@ public class AssignCodesDialogTest {
 		userDefinedField.setFldno(1);
 		return userDefinedField;
 
+	}
+	
+	private GermplasmNameSetting createGermplasmNameSetting() {
+		final GermplasmNameSetting setting = new GermplasmNameSetting();
+
+		setting.setPrefix(AssignCodesDialogTest.GROUP_NAME_PREFIX_DEFAULT);
+		setting.setSuffix(AssignCodesDialogTest.SUFFIX);
+		setting.setAddSpaceBetweenPrefixAndCode(true);
+		setting.setAddSpaceBetweenSuffixAndCode(true);
+		setting.setNumOfDigits(7);
+
+		return setting;
 	}
 
 }
