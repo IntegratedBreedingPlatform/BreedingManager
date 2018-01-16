@@ -1,9 +1,12 @@
 
 package org.generationcp.breeding.manager.customcomponent.handler;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -20,14 +23,22 @@ import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbstractSelect;
 
+import javax.annotation.Resource;
+
 @Configurable
 public class GermplasmListSourceDropHandler implements DropHandler {
 
 	private static final long serialVersionUID = -6676297159926786216L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListSourceDropHandler.class);
+
+	@Resource
+	private SimpleResourceBundleMessageSource messageSource;
+
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+
+
 	private final GermplasmListSource targetListSource;
 	private final ListSelectorComponent source;
 	private final GermplasmListTreeUtil utilSource;
@@ -55,6 +66,15 @@ public class GermplasmListSourceDropHandler implements DropHandler {
 
 		if (location != VerticalDropLocation.MIDDLE || sourceItemId.equals(targetItemId)) {
 			return;
+		}
+
+
+		if (ListSelectorComponent.CROP_LISTS.equals(targetItemId)) {
+			GermplasmList sourceItem = this.germplasmListManager.getGermplasmListById((Integer) sourceItemId);
+			if (sourceItem.isFolder()) {
+				MessageNotifier.showError(dropEvent.getTransferable().getSourceComponent().getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.CANNOT_MOVE_FOLDER_TO_CROP_LISTS_FOLDER));
+				return;
+			}
 		}
 
 		GermplasmList targetList = null;
