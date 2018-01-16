@@ -378,7 +378,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	private GermplasmList saveGermplasmListRecord(final GermplasmList germplasmList) {
 		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
-		germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 
 		final int newListId = this.germplasmListManager.addGermplasmList(germplasmList);
 		return this.germplasmListManager.getGermplasmListById(newListId);
