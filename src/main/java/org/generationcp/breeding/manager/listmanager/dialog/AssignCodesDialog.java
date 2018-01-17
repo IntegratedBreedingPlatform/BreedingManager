@@ -42,7 +42,6 @@ import com.vaadin.ui.themes.Reindeer;
 public class AssignCodesDialog extends BaseSubWindow
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, Window.CloseListener {
 
-	public static final String SEQUENCE_PLACEHOLDER = "[SEQ]";
 	private static final String CODE_NAME_WITH_SPACE_REGEX = "^CODE \\d$";
 	private static final String CODE_NAME_REGEX = "^CODE\\d$";
 
@@ -99,13 +98,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.codingLevelMandatoryLabel = new MandatoryMarkLabel();
 		this.codingLevelMandatoryLabel.setDebugId("codingLevelMandatoryLabel");
 		
-		this.cancelButton = new Button();
-		this.cancelButton.setDebugId("cancelButton");
-		
-		this.continueButton = new Button();
-		this.continueButton.setDebugId("continueButton");
-		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		this.continueButton.setEnabled(false);
+		this.instantiateButtons();
 		
 		this.codesLayout = new VerticalLayout();
 		this.codesLayout.setDebugId("codesLayout");
@@ -116,6 +109,16 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.assignCodesNamingLayout = new AssignCodesNamingLayout(this.codesLayout, this.continueButton);
 		this.assignCodesNamingLayout.instantiateComponents();
 
+	}
+
+	void instantiateButtons() {
+		this.cancelButton = new Button();
+		this.cancelButton.setDebugId("cancelButton");
+		
+		this.continueButton = new Button();
+		this.continueButton.setDebugId("continueButton");
+		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.continueButton.setEnabled(false);
 	}
 
 	@Override
@@ -188,7 +191,6 @@ public class AssignCodesDialog extends BaseSubWindow
 				@Override
 				protected void doInTransactionWithoutResult(final TransactionStatus status) {
 					final UserDefinedField nameType = (UserDefinedField) AssignCodesDialog.this.codingLevelOptions.getValue();
-						
 
 					// TODO performance tuning when processing large number of list entries..
 					for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
@@ -295,6 +297,41 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	void setAssignCodesNamingLayout(final AssignCodesNamingLayout assignCodesNamingLayout) {
 		this.assignCodesNamingLayout = assignCodesNamingLayout;
+	}
+
+	
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	
+	public void setCodingLevelOptions(OptionGroup codingLevelOptions) {
+		this.codingLevelOptions = codingLevelOptions;
+	}
+
+	
+	public void setGermplasmNamingService(GermplasmNamingService germplasmNamingService) {
+		this.germplasmNamingService = germplasmNamingService;
+	}
+
+	
+	
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	public Button getContinueButton() {
+		return continueButton;
+	}
+
+	
+	public Button getCancelButton() {
+		return cancelButton;
 	}
 
 }

@@ -30,9 +30,9 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class AssignCodesNamingLayout {
 
-	private static final String NO = "N";
-	private static final String YES = "Y";
-	private static final Integer MAX_NUM_OF_ALLOWED_DIGITS = 9;
+	public static final Integer MAX_NUM_OF_ALLOWED_DIGITS = 9;
+	public static final String NO = "N";
+	public static final String YES = "Y";
 	
 	@Autowired
 	private GermplasmNamingService germplasmNamingService;
@@ -204,7 +204,7 @@ public class AssignCodesNamingLayout {
 		this.startNumberTextField.addListener(valueChangeListener);
 	}
 	
-	public void updateNextNameValue() {
+	void updateNextNameValue() {
 		final GermplasmNameSetting setting = this.generateGermplasmNameSetting();
 		if (!setting.getPrefix().trim().isEmpty()) {
 			synchronized (AssignCodesNamingLayout.class) {
@@ -250,5 +250,70 @@ public class AssignCodesNamingLayout {
 		this.prefixTextField.validate();
 		this.suffixTextField.validate();
 		this.startNumberTextField.validate();
+	}
+
+	
+	public void setGermplasmNamingService(GermplasmNamingService germplasmNamingService) {
+		this.germplasmNamingService = germplasmNamingService;
+	}
+
+	
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	
+	public TextField getPrefixTextField() {
+		return prefixTextField;
+	}
+
+	
+	public TextField getSuffixTextField() {
+		return suffixTextField;
+	}
+
+	
+	public Select getNumOfAllowedDigitsSelect() {
+		return numOfAllowedDigitsSelect;
+	}
+
+	
+	public OptionGroup getAddSpaceAfterPrefixOptionGroup() {
+		return addSpaceAfterPrefixOptionGroup;
+	}
+
+	
+	public OptionGroup getAddSpaceBeforeSuffixOptionGroup() {
+		return addSpaceBeforeSuffixOptionGroup;
+	}
+
+	
+	public TextField getStartNumberTextField() {
+		return startNumberTextField;
+	}
+
+	
+	
+	public void setPrefixTextField(TextField prefixTextField) {
+		this.prefixTextField = prefixTextField;
+	}
+
+	
+	public void setSuffixTextField(TextField suffixTextField) {
+		this.suffixTextField = suffixTextField;
+	}
+
+	
+	public void setStartNumberTextField(TextField startNumberTextField) {
+		this.startNumberTextField = startNumberTextField;
+	}
+
+	public Label getNextValueLabel() {
+		return nextValueLabel;
 	}
 }
