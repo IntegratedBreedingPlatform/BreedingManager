@@ -148,7 +148,9 @@ public class ListComponentAddColumnSourceTest {
 
 	@Test
 	public void testGetColumnsToExclude() {
-		Assert.assertEquals(Arrays.asList(FillWithOption.FILL_WITH_ATTRIBUTE), this.addColumnSource.getColumnsToExclude());
+		Assert.assertEquals(Arrays.asList(FillWithOption.FILL_WITH_ATTRIBUTE,
+			FillWithOption.FILL_WITH_GROUP_SOURCE_INFO,
+			FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_INFO), this.addColumnSource.getColumnsToExclude());
 	}
 
 }
