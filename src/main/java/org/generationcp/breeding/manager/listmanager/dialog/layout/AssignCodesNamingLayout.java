@@ -240,14 +240,6 @@ public class AssignCodesNamingLayout {
 		return setting;
 	}
 
-	public String getGroupNamePrefix() {
-		return this.prefixTextField.getValue().toString();
-	}
-
-	public TextField getPrefixDefault() {
-		return this.prefixTextField;
-	}
-
 	public void layoutComponents() {
 		final AbsoluteLayout codeControlsLayoutDefault = this.constructDefaultCodeControlsLayout();
 		this.codesLayout.addComponent(codeControlsLayoutDefault);

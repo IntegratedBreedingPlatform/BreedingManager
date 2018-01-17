@@ -9,9 +9,7 @@ import java.util.Set;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
-import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodeCustomLayout;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNamingLayout;
-import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -20,7 +18,6 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
-import org.generationcp.middleware.service.api.GermplasmNamingReferenceDataResolver;
 import org.generationcp.middleware.service.api.GermplasmNamingService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,20 +53,12 @@ public class AssignCodesDialog extends BaseSubWindow
 	private GermplasmNamingService germplasmNamingService;
 
 	@Autowired
-	private GermplasmNamingReferenceDataResolver germplasmNamingReferenceDataResolver;
-
-	@Autowired
 	private PlatformTransactionManager transactionManager;
 
-	@Autowired
-	private ContextUtil contextUtil;
-	
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 
 	private AssignCodesNamingLayout assignCodesNamingLayout;
-	private AssignCodeCustomLayout assignCodesCustomLayout;
-	private HorizontalLayout codeControlsLayoutDefault;
 
 	private MandatoryMarkLabel mandatoryLabel;
 	private MandatoryMarkLabel codingLevelMandatoryLabel;
@@ -80,16 +69,9 @@ public class AssignCodesDialog extends BaseSubWindow
 	private Button cancelButton;
 	private Button continueButton;
 	private Set<Integer> gidsToProcess = new HashSet<>();
-	private final boolean isCustomLayout;
 
-	// will be used for unit tests
-	AssignCodesDialog(final boolean isCustomLayout) {
-		this.isCustomLayout = isCustomLayout;
-	}
-
-	public AssignCodesDialog(final Set<Integer> gidsToProcess, final boolean isCustomLayout) {
+	public AssignCodesDialog(final Set<Integer> gidsToProcess) {
 		this.gidsToProcess = gidsToProcess;
-		this.isCustomLayout = isCustomLayout;
 	}
 
 	@Override
@@ -134,21 +116,11 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.assignCodesNamingLayout = new AssignCodesNamingLayout(this.codesLayout, this.continueButton);
 		this.assignCodesNamingLayout.instantiateComponents();
 
-		if (this.isCustomLayout) {
-			this.assignCodesCustomLayout =
-					new AssignCodeCustomLayout(this.germplasmNamingReferenceDataResolver, this.contextUtil, this.messageSource,
-							this.assignCodesNamingLayout, this.codingLevelOptions, this.codesLayout, null, null);
-			this.assignCodesCustomLayout.instantiateComponents();
-		}
 	}
 
 	@Override
 	public void initializeValues() {
 		this.populateCodingNameTypes();
-
-		if (this.isCustomLayout) {
-			this.assignCodesCustomLayout.initializeValues();
-		}
 	}
 	
 	void populateCodingNameTypes() {
@@ -170,12 +142,14 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Override
 	public void addListeners() {
-		if (this.isCustomLayout) {
-			this.assignCodesCustomLayout.addListeners(this.codingLevelOptions);
-		}
 		this.assignCodesNamingLayout.addListeners();
 
 		this.cancelButton.addListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
@@ -187,22 +161,12 @@ public class AssignCodesDialog extends BaseSubWindow
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				if (AssignCodesDialog.this.isCustomLayout) {
-					try {
-						AssignCodesDialog.this.assignCodesCustomLayout.validate();
-					} catch (final Validator.InvalidValueException ex) {
-						MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
-								AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), ex.getMessage());
-						return;
-					}
-				} else {
-					try {
-						AssignCodesDialog.this.assignCodesNamingLayout.validate();
-					} catch (final Validator.InvalidValueException ex) {
-						MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
-								AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), ex.getMessage());
-						return;
-					}
+				try {
+					AssignCodesDialog.this.assignCodesNamingLayout.validate();
+				} catch (final Validator.InvalidValueException ex) {
+					MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
+							AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), ex.getMessage());
+					return;
 				}
 				AssignCodesDialog.this.assignCodes();
 			}
@@ -242,16 +206,6 @@ public class AssignCodesDialog extends BaseSubWindow
 	
 	boolean isCodingNameType(final String nameType){
 		return nameType.toUpperCase().matches(CODE_NAME_REGEX) || nameType.toUpperCase().matches(CODE_NAME_WITH_SPACE_REGEX);
-	}
-
-	String getGroupNamePrefix(final boolean isCustomLayout) {
-
-		if (isCustomLayout) {
-			return AssignCodesDialog.this.assignCodesCustomLayout.getGroupNamePrefix();
-		} else {
-			return AssignCodesDialog.this.assignCodesNamingLayout.getGroupNamePrefix();
-		}
-
 	}
 
 	@Override
@@ -303,11 +257,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		this.codesLayout.setWidth("100%");
 		this.codesLayout.setHeight("270px");
-		if (this.isCustomLayout) {
-			this.assignCodesCustomLayout.layoutComponents();
-		} else {
-			this.assignCodesNamingLayout.layoutComponents();
-		}
+		this.assignCodesNamingLayout.layoutComponents();
 		
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setDebugId("buttonLayout");
@@ -343,11 +293,8 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.gidsToProcess = gidsToProcess;
 	}
 
-	void setAssignCodesDefaultLayout(final AssignCodesNamingLayout assignCodesDefaultLayout) {
-		this.assignCodesNamingLayout = assignCodesDefaultLayout;
+	void setAssignCodesNamingLayout(final AssignCodesNamingLayout assignCodesNamingLayout) {
+		this.assignCodesNamingLayout = assignCodesNamingLayout;
 	}
 
-	void setAssignCodesCustomLayout(final AssignCodeCustomLayout assignCodesCustomLayout) {
-		this.assignCodesCustomLayout = assignCodesCustomLayout;
-	}
 }

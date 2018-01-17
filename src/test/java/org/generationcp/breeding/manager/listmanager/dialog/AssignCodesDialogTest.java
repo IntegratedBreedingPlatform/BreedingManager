@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listmanager.dialog;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodeCustomLayout;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNamingLayout;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -48,27 +47,20 @@ public class AssignCodesDialogTest {
 	private ContextUtil contextUtil;
 
 	@Mock
-	private AssignCodeCustomLayout assignCodeCustomLayout;
-
-	@Mock
 	private AssignCodesNamingLayout assignCodesDefaultLayout;
 
 	@Mock
 	private Window parent;
 
 	@InjectMocks
-	private final AssignCodesDialog assignCodesDialog = new AssignCodesDialog(false);
+	private AssignCodesDialog assignCodesDialog;
 
 	@Before
 	public void setUp() throws Exception {
 
 		this.assignCodesDialog.afterPropertiesSet();
 
-		this.assignCodesDialog.setAssignCodesCustomLayout(assignCodeCustomLayout);
-		this.assignCodesDialog.setAssignCodesDefaultLayout(assignCodesDefaultLayout);
-
-		Mockito.when(assignCodesDefaultLayout.getGroupNamePrefix()).thenReturn(GROUP_NAME_PREFIX_DEFAULT);
-		Mockito.when(assignCodeCustomLayout.getGroupNamePrefix()).thenReturn(GROUP_NAME_PREFIX_CUSTOM);
+		this.assignCodesDialog.setAssignCodesNamingLayout(assignCodesDefaultLayout);
 
 		this.assignCodesDialog.setParent(parent);
 		this.assignCodesDialog.setGidsToProcess(this.createGidsToProcess());
@@ -93,12 +85,18 @@ public class AssignCodesDialogTest {
 		Mockito.verify(parent).removeWindow(assignCodesDialog);
 
 	}
-
+	
 	@Test
-	public void testGetGroupNamePrefix() {
-
-		Assert.assertEquals(GROUP_NAME_PREFIX_CUSTOM, this.assignCodesDialog.getGroupNamePrefix(true));
-		Assert.assertEquals(GROUP_NAME_PREFIX_DEFAULT, this.assignCodesDialog.getGroupNamePrefix(false));
+	public void testIsCodingNameType() {
+		Assert.assertTrue(this.assignCodesDialog.isCodingNameType("CODE 1"));
+		Assert.assertTrue(this.assignCodesDialog.isCodingNameType("Code 2"));
+		Assert.assertTrue(this.assignCodesDialog.isCodingNameType("code 3"));
+		Assert.assertTrue(this.assignCodesDialog.isCodingNameType("CODE1"));
+		Assert.assertTrue(this.assignCodesDialog.isCodingNameType("Code2"));
+		Assert.assertTrue(this.assignCodesDialog.isCodingNameType("code3"));
+		
+		Assert.assertFalse(this.assignCodesDialog.isCodingNameType("CODE 1 ABC"));
+		Assert.assertFalse(this.assignCodesDialog.isCodingNameType("CROSS CODE"));
 	}
 
 	private Set<Integer> createGidsToProcess() {
