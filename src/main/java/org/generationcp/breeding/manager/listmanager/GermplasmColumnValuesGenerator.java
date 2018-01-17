@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listmanager.api.FillColumnSource;
@@ -16,7 +17,6 @@ import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
-import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -387,5 +387,70 @@ public class GermplasmColumnValuesGenerator {
 		this.pedigreeService = pedigreeService;
 	}
 
+	public void setGroupSourceGidColumnValues(final String columnName) {
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		if (!itemIds.isEmpty()) {
+			final Map<Integer, Germplasm> germplasmMap = getGermplasmMapByGid();
+			for (final Object itemId : itemIds) {
+				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, germplasmMap.get(gid).getGpid1());
+			}
+			this.fillColumnSource.propagateUIChanges();
+		}
+	}
 
+	public void setGroupSourcePreferredNameColumnValues(final String columnName) {
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		if (!itemIds.isEmpty()) {
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			final Map<Integer, String> gidAndPreferredNameMap = this.germplasmDataManager.getGroupSourcePreferredNamesByGids(gids);
+			fillColumnsWithPreferredName(itemIds, gidAndPreferredNameMap, columnName);
+		}
+	}
+
+	public void setImmediateSourceGidColumnValues(final String columnName) {
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		if (!itemIds.isEmpty()) {
+			final Map<Integer, Germplasm> germplasmMap = getGermplasmMapByGid();
+			for (final Object itemId : itemIds) {
+				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, germplasmMap.get(gid).getGpid2());
+			}
+			this.fillColumnSource.propagateUIChanges();
+		}
+	}
+
+	public void setImmediateSourcePreferredNameColumnValues(final String columnName) {
+		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
+		if (!itemIds.isEmpty()) {
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			final Map<Integer, String> gidAndPreferredNameMap = this.germplasmDataManager.getGroupSourcePreferredNamesByGids(gids);
+			fillColumnsWithPreferredName(itemIds, gidAndPreferredNameMap, columnName);
+		}
+	}
+
+	private void fillColumnsWithPreferredName(final List<Object> itemIds, final Map<Integer, String> gidAndPreferredNameMap,
+		final String columnName) {
+		for (final Object itemId : itemIds) {
+
+			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+			final String preferredName = gidAndPreferredNameMap.get(gid);
+			this.fillColumnSource.setColumnValueForItem(itemId, columnName, preferredName);
+			this.fillColumnSource.propagateUIChanges();
+		}
+	}
+
+	private Map<Integer, Germplasm> getGermplasmMapByGid() {
+		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+		final Map<Integer, Germplasm> germplasmMap =
+			Maps.uniqueIndex(this.germplasmDataManager.getGermplasms(gids), new Function<Germplasm, Integer>() {
+
+				@Nullable
+				@Override
+				public Integer apply(@Nullable final Germplasm germplasm) {
+					return germplasm.getGid();
+				}
+			});
+		return germplasmMap;
+	}
 }
