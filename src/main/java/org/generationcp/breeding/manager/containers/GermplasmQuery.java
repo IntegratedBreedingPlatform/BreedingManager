@@ -201,9 +201,11 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getFemaleParentPreferredName()));
 		propertyMap.put(ColumnLabels.CROSS_MALE_GID.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredID()));
 		propertyMap.put(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredName()));
-		propertyMap.put(ColumnLabels.GROUP_SOURCE_GID.getName(), new ObjectProperty<>(germplasm.getGpid1()));
+		final String groupSourceGid = germplasm.getGnpgs() == -1 && null != germplasm.getGpid1() ? germplasm.getGpid1().toString() : "-";
+		propertyMap.put(ColumnLabels.GROUP_SOURCE_GID.getName(), new ObjectProperty<>(groupSourceGid));
 		propertyMap.put(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), new ObjectProperty<>(groupSourcepreferredNameByGidMap.get(gid)));
-		propertyMap.put(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), new ObjectProperty<>(germplasm.getGpid2()));
+		final String immediateSourceGid = germplasm.getGnpgs() == -1 && null != germplasm.getGpid2() ? germplasm.getGpid2().toString() : "-";
+		propertyMap.put(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), new ObjectProperty<>(immediateSourceGid));
 		propertyMap.put(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), new ObjectProperty<>(immediatePreferredNameByGidMap.get(gid)));
 
 		for (final Map.Entry<String, String> entry : germplasm.getAttributeTypesValueMap().entrySet()) {
