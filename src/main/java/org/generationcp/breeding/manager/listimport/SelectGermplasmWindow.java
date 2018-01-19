@@ -463,7 +463,11 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 				methodName = method.getMname();
 			}
 
-			final String preferredNameMaleParent = preferredNamesMaleParentsByGID.get(germplasm.getGpid2());
+			String immediateSource = "-";
+			if (germplasm.getGnpgs().equals(-1)) {
+				// only for Derivative and Maintenance lines
+				immediateSource = preferredNamesMaleParentsByGID.get(germplasm.getGpid2());
+			}
 			final Germplasm germplasmWithInventory = germplasmWithInventoryByGID.get(gid);
 
 			String available = "";
@@ -475,7 +479,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 			availableButton.setDescription(ListBuilderComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 
 			this.germplasmTable.addItem(new Object[] {desigButton, gidButton,
-				preferredNameMaleParent, availableButton, locationName, methodName, crossExpansion}, gid);
+				immediateSource, availableButton, locationName, methodName, crossExpansion}, gid);
 		}
 
 		this.germplasmTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
