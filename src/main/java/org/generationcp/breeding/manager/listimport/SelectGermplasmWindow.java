@@ -464,7 +464,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 			}
 
 			String immediateSource = "-";
-			if (germplasm.getGnpgs().equals(-1)) {
+			if (germplasm.getGnpgs() == -1) {
 				// only for Derivative and Maintenance lines
 				immediateSource = preferredNamesMaleParentsByGID.get(germplasm.getGpid2());
 			}
