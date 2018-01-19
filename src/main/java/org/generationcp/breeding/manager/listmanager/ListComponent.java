@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -67,6 +68,8 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.gms.ListDataColumn;
+import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -81,6 +84,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.generationcp.middleware.pojos.ims.Transaction;
@@ -154,6 +158,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ListTabComponent parentListDetailsComponent;
 	private GermplasmList germplasmList;
 
+	private Set<String> attributeList;
 	private long listEntriesCount;
 	private String designationOfListEntriesDeleted = "";
 
@@ -531,6 +536,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.newColumnsRenderer.render();
 			} catch (final MiddlewareQueryException ex) {
 				ListComponent.LOG.error("Error with displaying added columns for entries of list: " + this.germplasmList.getId(), ex);
+			}
+
+			final List<Integer> gids = this.addColumnContextMenu.getAddColumnSource().getAllGids();
+			final List<UserDefinedField> attributeTypeList = this.germplasmDataManager.getAttributeTypesByGIDList(gids);
+
+			this.attributeList = new HashSet<>();
+
+			for (final UserDefinedField attributeType : attributeTypeList) {
+				this.attributeList.add(attributeType.getFcode());
 			}
 
 		}
@@ -1688,9 +1702,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 		// save the list of Germplasm List Data to the database
 		try {
-
 			this.germplasmListManager.updateGermplasmListData(listEntries);
-			this.germplasmListManager.saveListDataColumns(this.addColumnContextMenu.getListDataCollectionFromTable(this.listDataTable));
+			this.germplasmListManager.saveListDataColumns(this.getListDataCollectionFromTable(this.listDataTable, this.attributeList));
 
 			if (!CollectionUtils.isEmpty(this.validReservationsToSave)) {
 				this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
@@ -1718,6 +1731,27 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.refreshTreeOnSave();
 
 		return true;
+	}
+
+	private List<ListDataInfo> getListDataCollectionFromTable(final Table listDataTable, final Set<String> attributeList) {
+		final List<ListDataInfo> listDataCollection = new ArrayList<>();
+		final List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(listDataTable);
+
+		for (final Object itemId : listDataTable.getItemIds()) {
+			final Item item = listDataTable.getItem(itemId);
+			final List<ListDataColumn> columns = new ArrayList<>();
+			for (final String propertyId : propertyIds) {
+				if (ColumnLabels.getAddableGermplasmColumns().contains(propertyId) || attributeList.contains(propertyId)) {
+					if (item.getItemProperty(propertyId).getValue() != null) {
+						columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
+					} else {
+						columns.add(new ListDataColumn(propertyId, null));
+					}
+				}
+			}
+			listDataCollection.add(new ListDataInfo(Integer.valueOf(itemId.toString()), columns));
+		}
+		return listDataCollection;
 	}
 
 	// saveChangesAction()
