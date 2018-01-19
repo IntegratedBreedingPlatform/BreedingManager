@@ -113,7 +113,6 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 				if (currentlySavedList == null || listToSave.getId() == null) {
 
-					try {
 
 						listToSave.setUserId(SaveListButtonClickListener.this.contextUtil.getCurrentUserLocalId());
 
@@ -133,11 +132,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 							SaveListButtonClickListener.this.showErrorOnSavingGermplasmList(showMessages);
 							return;
 						}
-					} catch (final MiddlewareQueryException ex) {
-						SaveListButtonClickListener.LOG.error("Error in saving germplasm list: " + listToSave, ex);
-						SaveListButtonClickListener.this.showErrorOnSavingGermplasmList(showMessages);
-						return;
-					}
+
 
 					if (!listEntries.isEmpty()) {
 						SaveListButtonClickListener.this.setNeededValuesForNewListEntries(currentlySavedList, listEntries);
@@ -180,16 +175,12 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					}
 				}
 
-				try {
-					SaveListButtonClickListener.this.contextUtil.logProgramActivity("List Manager Save List",
-							"Successfully saved list and list entries for: " + currentlySavedList.getId() + " - " + currentlySavedList
-									.getName());
+				SaveListButtonClickListener.this.contextUtil.logProgramActivity("List Manager Save List",
+						"Successfully saved list and list entries for: " + currentlySavedList.getId() + " - " + currentlySavedList
+								.getName());
 
-					SaveListButtonClickListener.this.source.getBuildNewListDropHandler().setChanged(false);
+				SaveListButtonClickListener.this.source.getBuildNewListDropHandler().setChanged(false);
 
-				} catch (final MiddlewareQueryException ex) {
-					SaveListButtonClickListener.LOG.error("Error with saving Workbench activity.", ex);
-				}
 
 				boolean success = true;
 				if (callSaveReservation) {

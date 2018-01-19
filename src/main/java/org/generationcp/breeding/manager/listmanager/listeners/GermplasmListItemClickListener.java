@@ -11,7 +11,6 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -35,31 +34,6 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
 
 	@Override
 	public void itemClick(ItemClickEvent event) {
-
-		if (this.source instanceof ListSelectorComponent) {
-			String item = event.getItemId().toString();
-
-			if (event.getButton() == ClickEvent.BUTTON_LEFT) {
-				ListSelectorComponent listTreeComponent = (ListSelectorComponent) this.source;
-				listTreeComponent.setSelectedListId(event.getItemId());
-				listTreeComponent.updateButtons(event.getItemId());
-				listTreeComponent.toggleFolderSectionForItemSelected();
-
-				if (!item.equals(ListSelectorComponent.PROGRAM_LISTS) && !item.equals(ListSelectorComponent.CROP_LISTS)) {
-					int germplasmListId = Integer.valueOf(event.getItemId().toString());
-					try {
-						listTreeComponent.treeItemClickAction(germplasmListId);
-					} catch (InternationalizableException e) {
-						GermplasmListItemClickListener.LOG.error(e.getMessage(), e);
-						MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-					}
-				} else {
-					listTreeComponent.expandOrCollapseListTreeNode(item);
-					listTreeComponent.folderClickedAction(null);
-				}
-
-			}
-		}
 
 		if (this.source instanceof AddEntryDialog) {
 			if (event.getButton() == ClickEvent.BUTTON_LEFT && event.isDoubleClick()) {

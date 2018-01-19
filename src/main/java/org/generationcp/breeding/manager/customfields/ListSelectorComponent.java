@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.MouseEvents;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -17,13 +19,11 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListTree;
-import org.generationcp.breeding.manager.customcomponent.GermplasmListTreeTable;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listimport.util.ToolTipGenerator;
-import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -920,7 +920,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		}
 	}
 
-	private void addGermplasmListsToTheTreeList() {
+	void addGermplasmListsToTheTreeList() {
 
 		final List<UserDefinedField> listTypes =
 				this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(),
@@ -939,6 +939,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		// Add "Program lists" root folder
 		germplasmListSource.addItem(this.generateCellInfo(ListSelectorComponent.PROGRAM_LISTS, "", "", "", ""),
 				ListSelectorComponent.PROGRAM_LISTS);
+
 		this.setNodeItemIcon(ListSelectorComponent.PROGRAM_LISTS, true);
 		germplasmListSource.setItemCaption(ListSelectorComponent.PROGRAM_LISTS, ListSelectorComponent.PROGRAM_LISTS);
 
@@ -960,6 +961,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		germplasmListSource.addItem(this.generateCellInfo(ListSelectorComponent.CROP_LISTS, "", "", "", ""),
 				ListSelectorComponent.CROP_LISTS);
 		germplasmListSource.setItemCaption(ListSelectorComponent.CROP_LISTS, ListSelectorComponent.CROP_LISTS);
+
 		this.setNodeItemIcon(ListSelectorComponent.CROP_LISTS, true);
 
 		final Map<Integer, GermplasmListMetadata> germplasmListMetadata = germplasmListManager.getGermplasmListMetadata(cropLevelGermplasmLists);
@@ -1074,6 +1076,42 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	 */
 	public void setUserDataManager(final UserDataManager userDataManager) {
 		this.userDataManager = userDataManager;
+	}
+
+	protected class GermplasmListItemClickListener implements ItemClickEvent.ItemClickListener {
+
+		private ListSelectorComponent listSelectorComponent;
+
+		public GermplasmListItemClickListener(final ListSelectorComponent listSelectorComponent) {
+			this.listSelectorComponent = listSelectorComponent;
+		}
+
+		@Override
+		public void itemClick(final ItemClickEvent event) {
+
+			String item = event.getItemId().toString();
+
+			if (event.getButton() == MouseEvents.ClickEvent.BUTTON_LEFT) {
+				listSelectorComponent.setSelectedListId(event.getItemId());
+				listSelectorComponent.updateButtons(event.getItemId());
+				listSelectorComponent.toggleFolderSectionForItemSelected();
+
+				if (!item.equals(ListSelectorComponent.PROGRAM_LISTS) && !item.equals(ListSelectorComponent.CROP_LISTS)) {
+					int germplasmListId = Integer.valueOf(event.getItemId().toString());
+					try {
+						listSelectorComponent.treeItemClickAction(germplasmListId);
+					} catch (InternationalizableException e) {
+						LOG.error(e.getMessage(), e);
+						MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+					}
+				} else {
+					listSelectorComponent.expandOrCollapseListTreeNode(item);
+					listSelectorComponent.folderClickedAction(null);
+				}
+
+			}
+
+		}
 	}
 
 }

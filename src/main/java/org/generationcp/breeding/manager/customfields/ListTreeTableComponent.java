@@ -12,8 +12,8 @@ public abstract class ListTreeTableComponent extends ListSelectorComponent {
 
 	private static final long serialVersionUID = -4025353842975688857L;
 
-	private final ThemeResource folderResource = new ThemeResource("images/folder-icon.png");
-	private final ThemeResource leafResource = new ThemeResource("images/document-icon.png");
+	private ThemeResource folderResource = new ThemeResource("images/folder-icon.png");
+	private ThemeResource leafResource = new ThemeResource("images/document-icon.png");
 
 	public ListTreeTableComponent() {
 		this.selectListsFolderByDefault = false;
@@ -86,4 +86,12 @@ public abstract class ListTreeTableComponent extends ListSelectorComponent {
 		}
 	}
 
+	// for unit testing use only
+	public void setFolderResource(ThemeResource folderResource) {
+		this.folderResource = folderResource;
+	}
+	// for unit testing use only
+	public void setLeafResource(final ThemeResource leafResource) {
+		this.leafResource = leafResource;
+	}
 }

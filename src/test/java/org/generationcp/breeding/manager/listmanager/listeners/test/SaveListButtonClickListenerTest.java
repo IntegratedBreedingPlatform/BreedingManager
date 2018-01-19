@@ -112,20 +112,6 @@ public class SaveListButtonClickListenerTest {
 	}
 
 	@Test
-	public void testShowErrorOnSavingGermplasmListIsCalledWhenErrorEncounteredOnSaveList() throws MiddlewareQueryException {
-		Mockito.when(this.source.getCurrentlySavedGermplasmList()).thenReturn(null);
-		Mockito.when(this.source.getCurrentlySetGermplasmListInfo()).thenReturn(this.germplasmList);
-		Mockito.when(this.dataManager.addGermplasmList(this.germplasmList)).thenReturn(null);
-
-		this.saveListener.doSaveAction(true, true);
-		Mockito.verify(this.saveListener, Mockito.times(1)).showErrorOnSavingGermplasmList(true);
-
-		Mockito.doThrow(new MiddlewareQueryException("There is an error")).when(this.dataManager).addGermplasmList(this.germplasmList);
-		this.saveListener.doSaveAction(true, true);
-		Mockito.verify(this.saveListener, Mockito.times(2)).showErrorOnSavingGermplasmList(true);
-	}
-
-	@Test
 	public void testValidateListDetailsForListNameThatIsNull() {
 		this.initializeGermplasmList();
 		this.germplasmList.setName(null);
@@ -236,6 +222,8 @@ public class SaveListButtonClickListenerTest {
 
 		Mockito.when(this.source.getSource()).thenReturn(listManagerMain);
 		GermplasmList currentlySavedGermplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListData(1, 1);
+		currentlySavedGermplasmList.setProgramUUID(null);
+		currentlySavedGermplasmList.setStatus(101);
 		Mockito.when(this.source.getCurrentlySavedGermplasmList()).thenReturn(currentlySavedGermplasmList);
 		Mockito.when(this.source.getCurrentlySetGermplasmListInfo()).thenReturn(this.germplasmList);
 		Mockito.when(this.source.getBuildNewListDropHandler()).thenReturn(buildNewListDropHandler);
@@ -271,6 +259,10 @@ public class SaveListButtonClickListenerTest {
 		Mockito.verify(this.messageSource).getMessage(Message.LIST_DATA_SAVED_SUCCESS);
 		Mockito.verify(this.listDataTable).requestRepaint();
 		Mockito.verify(this.source).resetListInventoryTableValues();
+
+		// Verify that the programUUID and status remain the same and not overwritten by this method.
+		Assert.assertNull(currentlySavedGermplasmList.getProgramUUID());
+		Assert.assertEquals(101, currentlySavedGermplasmList.getStatus().intValue());
 
 	}
 }

@@ -44,7 +44,7 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class SaveListAsDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
-	private static final String FOLDER_TYPE = "FOLDER";
+	public static final String FOLDER_TYPE = "FOLDER";
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(SaveListAsDialog.class);
 
@@ -66,6 +66,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -213,6 +214,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	}
 
 	public GermplasmList getSelectedListOnTree() {
+
 		Integer folderId = null;
 		if (this.germplasmListTree.getSelectedListId() instanceof Integer) {
 			folderId = (Integer) this.germplasmListTree.getSelectedListId();
@@ -220,11 +222,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 		GermplasmList folder = null;
 		if (folderId != null) {
-			try {
-				folder = this.germplasmListManager.getGermplasmListById(folderId);
-			} catch (final MiddlewareQueryException e) {
-				SaveListAsDialog.LOG.error("Error with retrieving list with id: " + folderId, e);
-			}
+			folder = this.germplasmListManager.getGermplasmListById(folderId);
 		}
 
 		return folder;
@@ -246,11 +244,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 			this.source.setCurrentlySavedGermplasmList(this.germplasmList);
 
 			// If selected item is a folder, get parent of that folder
-			try {
-				selectedList = this.germplasmListManager.getGermplasmListById(selectedList.getParentId());
-			} catch (final MiddlewareQueryException e) {
-				SaveListAsDialog.LOG.error("Error with getting parent list: " + selectedList.getParentId(), e);
-			}
+			selectedList = this.germplasmListManager.getGermplasmListById(selectedList.getParentId());
 
 			// If not, use old method, get germplasm list the old way
 		} else {
@@ -260,6 +254,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		}
 
 		this.germplasmList.setParent(selectedList);
+
 		return this.germplasmList;
 	}
 
@@ -316,7 +311,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		this.originalGermplasmList = originalGermplasmList;
 	}
 
-	private void doSaveAction(final ClickEvent event) {
+	void doSaveAction(final ClickEvent event) {
 		// Call method so that the variables will be updated, values will be used for the logic below
 		this.germplasmList = this.getGermplasmListToSave();
 
@@ -352,14 +347,14 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 							}
 						});
 
-				// If target list to be overwritten is itself
+				// If target list to be overwritten is itself or a folder
 			} else {
 				if (this.validateAllFields()) {
 
 					final GermplasmList gl = this.getGermplasmListToSave();
 					this.setGermplasmListDetails(gl);
 
-					// if the germplasm lis has null programUUID it means that it is saved in
+					// if the germplasm list has null programUUID it means that it is saved in
 					// the 'Crop lists' folder.
 					if (gl.getProgramUUID() == null) {
 						gl.setStatus(LIST_LOCKED_STATUS);
@@ -440,5 +435,13 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	public void setGermplasmListTree(final LocalListFoldersTreeComponent germplasmListTree) {
 		this.germplasmListTree = germplasmListTree;
+	}
+
+	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 }

@@ -386,4 +386,8 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		this.messageSource = messageSource;
 	}
 
+	public void setContextUtil(final ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
 }

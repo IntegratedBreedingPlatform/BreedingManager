@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.MouseEvents;
+import com.vaadin.terminal.ThemeResource;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
@@ -23,11 +26,14 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListMetadata;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -45,6 +51,7 @@ public class ListSelectorComponentTest {
 
 	private static final String PROGRAM_UUID = "1234567";
 	private static final Integer TEST_USER_ID = 1;
+	public static final String ALL_LISTS = "All Lists";
 
 	@Mock
 	private UserTreeStateService userTreeStateService;
@@ -62,6 +69,9 @@ public class ListSelectorComponentTest {
 	private ContextUtil contextUtil;
 
 	@Mock
+	private GermplasmListSource germplasmListSource;
+
+	@Mock
 	private UserDataManager userDataManager;
 	
 	@InjectMocks
@@ -70,8 +80,12 @@ public class ListSelectorComponentTest {
 	@Before
 	public void setUp() {
 		Mockito.when(this.messageSource.getMessage(Message.LISTS)).thenReturn("Program lists");
-
 		Mockito.doReturn(ListSelectorComponentTest.PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
+
+		((ListManagerTreeComponent) listSelectorComponent).setFolderResource(Mockito.mock(ThemeResource.class));
+		((ListManagerTreeComponent) listSelectorComponent).setLeafResource(Mockito.mock(ThemeResource.class));
+
+		listSelectorComponent.setGermplasmListSource(germplasmListSource);
 	}
 
 	@Test
@@ -264,7 +278,7 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testUpdateButtonsWhenTheSelectedItemisAListOrFolder() throws MiddlewareQueryException {
-		Mockito.when(this.messageSource.getMessage(Message.ALL_LISTS)).thenReturn("All Lists");
+		Mockito.when(this.messageSource.getMessage(Message.ALL_LISTS)).thenReturn(ALL_LISTS);
 		Mockito.when(this.germplasmListManager.getAllTopLevelLists(ListSelectorComponentTest.PROGRAM_UUID))
 				.thenReturn(new ArrayList<GermplasmList>());
 
@@ -273,7 +287,7 @@ public class ListSelectorComponentTest {
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
 		listManagerTreeComponent.setGermplasmDataManager(this.germplasmDataManager);
 		listManagerTreeComponent.setUtil(this.contextUtil);
-		Mockito.doReturn("All Lists").when(listManagerTreeComponent).getTreeHeading();
+		Mockito.doReturn(ALL_LISTS).when(listManagerTreeComponent).getTreeHeading();
 		listManagerTreeComponent.instantiateComponents();
 
 		// Root Folder in Browse Lists
@@ -285,8 +299,8 @@ public class ListSelectorComponentTest {
 	}
 
 	@Test
-	public void testUpdateButtonsWhenTheSelectedItemisARootFolder() throws MiddlewareQueryException {
-		Mockito.when(this.messageSource.getMessage(Message.ALL_LISTS)).thenReturn("All Lists");
+	public void testUpdateButtonsWhenTheSelectedItemisARootProgramListsFolder() throws MiddlewareQueryException {
+		Mockito.when(this.messageSource.getMessage(Message.ALL_LISTS)).thenReturn(ALL_LISTS);
 		Mockito.when(this.germplasmListManager.getAllTopLevelLists(ListSelectorComponentTest.PROGRAM_UUID))
 				.thenReturn(new ArrayList<GermplasmList>());
 
@@ -295,11 +309,11 @@ public class ListSelectorComponentTest {
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
 		listManagerTreeComponent.setGermplasmDataManager(this.germplasmDataManager);
 		listManagerTreeComponent.setUtil(this.contextUtil);
-		Mockito.doReturn("All Lists").when(listManagerTreeComponent).getTreeHeading();
+		Mockito.doReturn(ALL_LISTS).when(listManagerTreeComponent).getTreeHeading();
 		listManagerTreeComponent.instantiateComponents();
 
 		// Root Folder in Browse Lists
-		listManagerTreeComponent.updateButtons("Program lists");
+		listManagerTreeComponent.updateButtons(ListSelectorComponent.PROGRAM_LISTS);
 
 		Assert.assertTrue("Add Item button must be enabled but didn't.", listManagerTreeComponent.getAddFolderBtn().isEnabled());
 		Assert.assertFalse("Rename Item button must be disabled but didn't.", listManagerTreeComponent.getRenameFolderBtn().isEnabled());
@@ -307,7 +321,29 @@ public class ListSelectorComponentTest {
 	}
 
 	@Test
-	public void testCreateGermplasmList_TestNoOfEntries() throws Exception {
+	public void testUpdateButtonsWhenTheSelectedItemisARootCropListsFolder() throws MiddlewareQueryException {
+		Mockito.when(this.messageSource.getMessage(Message.ALL_LISTS)).thenReturn(ALL_LISTS);
+		Mockito.when(this.germplasmListManager.getAllTopLevelLists(ListSelectorComponentTest.PROGRAM_UUID))
+				.thenReturn(new ArrayList<GermplasmList>());
+
+		final ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
+		listManagerTreeComponent.setMessageSource(this.messageSource);
+		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
+		listManagerTreeComponent.setGermplasmDataManager(this.germplasmDataManager);
+		listManagerTreeComponent.setUtil(this.contextUtil);
+		Mockito.doReturn(ALL_LISTS).when(listManagerTreeComponent).getTreeHeading();
+		listManagerTreeComponent.instantiateComponents();
+
+		// Root Folder in Browse Lists
+		listManagerTreeComponent.updateButtons(ListSelectorComponent.CROP_LISTS);
+
+		Assert.assertTrue("Add Item button must be enabled but didn't.", listManagerTreeComponent.getAddFolderBtn().isEnabled());
+		Assert.assertFalse("Rename Item button must be disabled but didn't.", listManagerTreeComponent.getRenameFolderBtn().isEnabled());
+		Assert.assertFalse("Delete Item button must be disabled but didn't.", listManagerTreeComponent.getDeleteFolderBtn().isEnabled());
+	}
+
+	@Test
+	public void testCreateGermplasmListTestNoOfEntries() throws Exception {
 		final UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
 		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
@@ -376,5 +412,200 @@ public class ListSelectorComponentTest {
         // we need to ensure that the last item in the saveHierarchy is selected
         Mockito.verify(source).select(saveHierarchy.get(2));
 	}
+
+
+	@Test
+	public void testAddGermplasmListsToTheTreeList() {
+
+		final GermplasmList germplasmListForCrop = createGermplasmList(123, "Test Crop List", "Test Crop List Description");
+		final List<GermplasmList> cropLists = new ArrayList<>();
+		cropLists.add(germplasmListForCrop);
+
+		final GermplasmList germplasmListForProgram = createGermplasmList(456, "Test Program List", "Test Program List Description");
+		final List<GermplasmList> programLists = new ArrayList<>();
+		programLists.add(germplasmListForProgram);
+
+		Mockito.when(germplasmListManager.getAllTopLevelLists(null)).thenReturn(cropLists);
+		Mockito.when(germplasmListManager.getAllTopLevelLists(PROGRAM_UUID)).thenReturn(programLists);
+		Mockito.when(germplasmListManager.getGermplasmListMetadata(cropLists)).thenReturn(createGermplasmListMetaData(germplasmListForCrop, 100));
+		Mockito.when(germplasmListManager.getGermplasmListMetadata(programLists)).thenReturn(createGermplasmListMetaData(germplasmListForProgram, 200));
+
+		listSelectorComponent.addGermplasmListsToTheTreeList();
+
+		// Verify root folders are created
+		Mockito.verify(germplasmListSource).addItem(
+				listSelectorComponent.generateCellInfo(ListSelectorComponent.CROP_LISTS, "", "", "", ""), ListSelectorComponent.CROP_LISTS);
+		Mockito.verify(germplasmListSource).addItem(
+				listSelectorComponent.generateCellInfo(ListSelectorComponent.PROGRAM_LISTS, "", "", "", ""), ListSelectorComponent.PROGRAM_LISTS);
+
+		// Verify germplasm lists are added to their respective folder
+		Mockito.verify(germplasmListSource).addItem(listSelectorComponent.generateCellInfo("Test Crop List", "",  "Test Crop List Description", "Germplasm List",
+				"100"), 123);
+		Mockito.verify(germplasmListSource).setParent(Mockito.eq(123), Mockito.eq(ListSelectorComponent.CROP_LISTS));
+
+		Mockito.verify(germplasmListSource).addItem(listSelectorComponent.generateCellInfo("Test Program List", "",  "Test Program List Descripti...", "Germplasm List",
+				"200"), 456);
+		Mockito.verify(germplasmListSource).setParent(Mockito.eq(456), Mockito.eq(ListSelectorComponent.PROGRAM_LISTS));
+
+	}
+
+
+	@Test
+	public void testAddProgramLevelLists() {
+
+		final Integer germplasmListId = 123;
+		final String name = "Test Name";
+		final String description = "Test Description";
+		final Integer numberOfEntries = 999;
+		final GermplasmList germplasmList = createGermplasmList(germplasmListId, name, description);
+		final List<GermplasmList> germplasmLists = new ArrayList<>();
+		germplasmLists.add(germplasmList);
+
+		Mockito.when(germplasmListManager.getAllTopLevelLists(Mockito.anyString())).thenReturn(germplasmLists);
+		Mockito.when(germplasmListManager.getGermplasmListMetadata(germplasmLists)).thenReturn(createGermplasmListMetaData(germplasmList, numberOfEntries));
+
+		listSelectorComponent.addProgramLevelLists(germplasmListSource, new ArrayList<UserDefinedField>());
+
+		Mockito.verify(germplasmListManager).getAllTopLevelLists(ListSelectorComponentTest.PROGRAM_UUID);
+
+		// Verify root folder 'Program lists' is created
+		Mockito.verify(germplasmListSource).addItem(
+				listSelectorComponent.generateCellInfo(ListSelectorComponent.PROGRAM_LISTS, "", "", "", ""), ListSelectorComponent.PROGRAM_LISTS);
+
+
+		// Verify that the germplasm lists are added to the 'Program lists' folder
+		Mockito.verify(germplasmListSource).addItem(listSelectorComponent.generateCellInfo(name, "", description, "Germplasm List",
+				numberOfEntries.toString()), germplasmList.getId());
+		Mockito.verify(germplasmListSource).setParent(Mockito.eq(germplasmListId), Mockito.eq(ListSelectorComponent.PROGRAM_LISTS));
+
+	}
+
+
+	@Test
+	public void testAddCropLevelLists() {
+
+		final Integer germplasmListId = 123;
+		final String name = "Test Name";
+		final String description = "Test Description";
+		final Integer numberOfEntries = 999;
+		final GermplasmList germplasmList = createGermplasmList(germplasmListId, name, description);
+		final List<GermplasmList> germplasmLists = new ArrayList<>();
+		germplasmLists.add(germplasmList);
+
+		Mockito.when(germplasmListManager.getAllTopLevelLists(Mockito.anyString())).thenReturn(germplasmLists);
+		Mockito.when(germplasmListManager.getGermplasmListMetadata(germplasmLists)).thenReturn(createGermplasmListMetaData(germplasmList, numberOfEntries));
+
+		listSelectorComponent.addCropLevelLists(germplasmListSource, new ArrayList<UserDefinedField>());
+
+		Mockito.verify(germplasmListManager).getAllTopLevelLists(null);
+
+		// Verify root folder 'Crop lists' is created
+		Mockito.verify(germplasmListSource).addItem(
+				listSelectorComponent.generateCellInfo(ListSelectorComponent.CROP_LISTS, "", "", "", ""), ListSelectorComponent.CROP_LISTS);
+
+
+		// Verify that the germplasm lists are added to the 'Crop lists' folder
+		Mockito.verify(germplasmListSource).addItem(listSelectorComponent.generateCellInfo(name, "", description, "Germplasm List",
+				numberOfEntries.toString()), germplasmList.getId());
+		Mockito.verify(germplasmListSource).setParent(Mockito.eq(germplasmListId), Mockito.eq(ListSelectorComponent.CROP_LISTS));
+
+	}
+
+
+	@Test
+	public void testAddGermplasmList() {
+
+		final Integer parentId = 111;
+		final Integer germplasmListId = 123;
+		final String name = "Test Name";
+		final String description = "Test Description";
+		final Integer numberOfEntries = 999;
+		final GermplasmList germplasmList = createGermplasmList(germplasmListId, name, description);
+		final Map<Integer, GermplasmListMetadata> metadataMap = createGermplasmListMetaData(germplasmList, numberOfEntries);
+
+		listSelectorComponent.addGermplasmList(parentId, germplasmList, metadataMap, germplasmListSource, new ArrayList<UserDefinedField>());
+
+		ArgumentCaptor<Object[]> argumentCaptor = ArgumentCaptor.forClass(Object[].class);
+
+		Mockito.verify(germplasmListSource).addItem(argumentCaptor.capture(), Mockito.eq(germplasmList.getId()));
+
+		Object[] cellInfo =  argumentCaptor.getValue();
+
+		Assert.assertEquals(" " + name, cellInfo[0]);
+		Assert.assertEquals("", cellInfo[1]);
+		Assert.assertEquals(description, cellInfo[2]);
+		Assert.assertEquals("Germplasm List", cellInfo[3]);
+		Assert.assertEquals(numberOfEntries.toString(), cellInfo[4]);
+
+		Mockito.verify(germplasmListSource).setItemCaption(Mockito.eq(germplasmListId), Mockito.eq(name));
+		Mockito.verify(germplasmListSource).setChildrenAllowed(Mockito.eq(germplasmListId), Mockito.eq(germplasmList.isFolder()));
+		Mockito.verify(germplasmListSource).setParent(Mockito.eq(germplasmListId), Mockito.eq(parentId));
+
+	}
+
+	@Test
+	public void testGermplasmListItemClickListenerItemIsList() {
+
+		final Object itemId = 1;
+		ListSelectorComponent listSelectorComponent = Mockito.mock(ListSelectorComponent.class);
+		ListSelectorComponent.GermplasmListItemClickListener listener = listSelectorComponent.new GermplasmListItemClickListener(listSelectorComponent);
+
+		ItemClickEvent event = Mockito.mock(ItemClickEvent.class);
+		Mockito.when(event.getButton()).thenReturn(MouseEvents.ClickEvent.BUTTON_LEFT);
+		Mockito.when(event.getItemId()).thenReturn(itemId);
+
+		listener.itemClick(event);
+
+		Mockito.verify(listSelectorComponent).setSelectedListId(itemId);
+		Mockito.verify(listSelectorComponent).updateButtons(itemId);
+		Mockito.verify(listSelectorComponent).toggleFolderSectionForItemSelected();
+		Mockito.verify(listSelectorComponent).treeItemClickAction(Integer.valueOf(itemId.toString()));
+
+		Mockito.verify(listSelectorComponent, Mockito.times(0)).expandOrCollapseListTreeNode(itemId);
+		Mockito.verify(listSelectorComponent, Mockito.times(0)).folderClickedAction(null);
+
+	}
+
+	@Test
+	public void testGermplasmListItemClickListenerItemIsRootFolder() {
+
+		final Object itemId = ListSelectorComponent.CROP_LISTS;
+		ListSelectorComponent listSelectorComponent = Mockito.mock(ListSelectorComponent.class);
+		ListSelectorComponent.GermplasmListItemClickListener listener = listSelectorComponent.new GermplasmListItemClickListener(listSelectorComponent);
+
+		ItemClickEvent event = Mockito.mock(ItemClickEvent.class);
+		Mockito.when(event.getButton()).thenReturn(MouseEvents.ClickEvent.BUTTON_LEFT);
+		Mockito.when(event.getItemId()).thenReturn(itemId);
+
+		listener.itemClick(event);
+
+		Mockito.verify(listSelectorComponent).setSelectedListId(itemId);
+		Mockito.verify(listSelectorComponent).updateButtons(itemId);
+		Mockito.verify(listSelectorComponent).toggleFolderSectionForItemSelected();
+		Mockito.verify(listSelectorComponent).expandOrCollapseListTreeNode(itemId);
+		Mockito.verify(listSelectorComponent).folderClickedAction(null);
+
+		Mockito.verify(listSelectorComponent, Mockito.times(0)).treeItemClickAction(Mockito.anyInt());
+
+	}
+
+
+	private GermplasmList createGermplasmList(Integer id, String name, String description) {
+		final GermplasmList germplasmList = new GermplasmList();
+		germplasmList.setId(id);
+		germplasmList.setName(name);
+		germplasmList.setDescription(description);
+		germplasmList.setType(GermplasmList.FOLDER_TYPE);
+		return germplasmList;
+	}
+
+	private Map<Integer, GermplasmListMetadata> createGermplasmListMetaData(GermplasmList germplasmList, Integer numberOfEntries) {
+		Map<Integer, GermplasmListMetadata> metadataMap = new HashMap<>();
+		GermplasmListMetadata metadata = new GermplasmListMetadata();
+		metadata.setNumberOfEntries(numberOfEntries);
+		metadataMap.put(germplasmList.getId(), metadata);
+		return metadataMap;
+	}
+
 
 }
