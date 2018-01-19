@@ -220,7 +220,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	public void layoutComponents() {
 		this.setModal(true);
 		this.setWidth("650px");
-		this.setHeight("550px");
+		this.setHeight("530px");
 		this.setResizable(false);
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 
@@ -228,29 +228,29 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		final VerticalLayout dialogLayout = new VerticalLayout();
 		dialogLayout.setDebugId("dialogLayout");
-		dialogLayout.setHeight("440px");
+		dialogLayout.setHeight("460px");
 		dialogLayout.setMargin(true);
 
 		final HorizontalLayout mandatoryLabelLayout = new HorizontalLayout();
 		mandatoryLabelLayout.setDebugId("mandatoryLabelLayout");
-		mandatoryLabelLayout.setWidth("250px");
-		mandatoryLabelLayout.setHeight("45px");
+		mandatoryLabelLayout.setWidth("200px");
+		mandatoryLabelLayout.setHeight("40px");
 		this.mandatoryLabel.setWidth("10px");
-		this.indicatesMandatoryLabel.setWidth("210px");
+		this.indicatesMandatoryLabel.setWidth("180px");
 		mandatoryLabelLayout.addComponent(this.mandatoryLabel);
 		mandatoryLabelLayout.addComponent(this.indicatesMandatoryLabel);
 		
 		// Area with level options
 		final HorizontalLayout optionsLabelLayout = new HorizontalLayout();
 		optionsLabelLayout.setDebugId("optionsLabelLayout");
-		optionsLabelLayout.setWidth("350px");
+		optionsLabelLayout.setWidth("260px");
 		this.codingLevelLabel.setWidth("90px");
 		this.codingLevelMandatoryLabel.setWidth("160px");
 		optionsLabelLayout.addComponent(this.codingLevelLabel);
 		optionsLabelLayout.addComponent(this.codingLevelMandatoryLabel);
 		final HorizontalLayout optionsLayout = new HorizontalLayout();
 		optionsLayout.setDebugId("optionsLayout");
-		optionsLayout.setWidth("450px");
+		optionsLayout.setWidth("480px");
 		optionsLayout.setHeight("45px");
 		this.codingLevelOptions.addStyleName("lst-horizontal-options");
 		optionsLayout.addComponent(optionsLabelLayout);
