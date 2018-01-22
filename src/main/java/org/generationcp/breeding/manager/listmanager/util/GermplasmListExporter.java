@@ -525,10 +525,10 @@ public class GermplasmListExporter {
 				&& currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
 				for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
 					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
-					ListDataColumnValues listDataColumnValues =
+					final ListDataColumnValues listDataColumnValues =
 						(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
 
-							public boolean evaluate(Object object) {
+							public boolean evaluate(final Object object) {
 								return ((ListDataColumnValues) object).getListDataId().equals(itemId);
 							}
 						});
