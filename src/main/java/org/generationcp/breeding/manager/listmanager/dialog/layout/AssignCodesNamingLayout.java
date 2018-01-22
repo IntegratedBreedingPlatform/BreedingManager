@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.dialog.layout;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -236,7 +237,14 @@ public class AssignCodesNamingLayout {
 		setting.setSuffix(this.suffixTextField.getValue().toString());
 		setting.setNumOfDigits((Integer)this.numOfAllowedDigitsSelect.getValue());
 		final String startNumberString = this.startNumberTextField.getValue().toString();
-		setting.setStartNumber(startNumberString.isEmpty() ?  0 : Integer.valueOf(startNumberString));
+		if (!startNumberString.isEmpty()){
+			if (NumberUtils.isDigits(startNumberString)) {
+				setting.setStartNumber(Integer.valueOf(startNumberString));
+			} else {
+				MessageNotifier.showError(this.codesLayout.getWindow(),
+						this.messageSource.getMessage(Message.ERROR), this.messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
+			}
+		}
 		setting.setAddSpaceBetweenPrefixAndCode(YES.equals(this.addSpaceAfterPrefixOptionGroup.getValue()));
 		setting.setAddSpaceBetweenSuffixAndCode(YES.equals(this.addSpaceBeforeSuffixOptionGroup.getValue()));
 		return setting;

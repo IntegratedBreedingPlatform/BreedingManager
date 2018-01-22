@@ -196,13 +196,32 @@ public class AssignCodesNamingLayoutTest {
 	public void testGenerateGermplasmNameSetting() {
 		this.setupTestValuesForNameFields();
 		final GermplasmNameSetting setting = this.createGermplasmNameSetting();
-		Assert.assertEquals(setting, this.namingLayout.generateGermplasmNameSetting());
-
+		GermplasmNameSetting generatedSetting = this.namingLayout.generateGermplasmNameSetting();
+		Assert.assertEquals(setting, generatedSetting);
+		
+		final Integer startNumber = 101;
 		this.namingLayout.getAddSpaceAfterPrefixOptionGroup().setValue(AssignCodesNamingLayout.NO);
 		this.namingLayout.getAddSpaceBeforeSuffixOptionGroup().setValue(AssignCodesNamingLayout.NO);
+		this.namingLayout.getStartNumberTextField().setValue(startNumber);
 		setting.setAddSpaceBetweenPrefixAndCode(false);
 		setting.setAddSpaceBetweenSuffixAndCode(false);
-		Assert.assertEquals(setting, this.namingLayout.generateGermplasmNameSetting());
+		setting.setStartNumber(startNumber);
+		generatedSetting = this.namingLayout.generateGermplasmNameSetting();
+		Assert.assertEquals(setting, generatedSetting);
+	}
+	
+	@Test
+	public void testGenerateGermplasmNameSettingForNonDigitStartNumber() {
+		this.setupTestValuesForNameFields();
+		this.namingLayout.getStartNumberTextField().setValue("a");
+		try {
+			final GermplasmNameSetting setting = this.createGermplasmNameSetting();
+			final GermplasmNameSetting generatedSetting = this.namingLayout.generateGermplasmNameSetting();
+			Assert.assertEquals(setting, generatedSetting);
+			Mockito.verify(this.parentLayout).getWindow();
+		}catch (final NumberFormatException e) {
+			Assert.fail("Not expecting NumberFormatException but was thrown.");
+		}
 	}
 
 	@Test
