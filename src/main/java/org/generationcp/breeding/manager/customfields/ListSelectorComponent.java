@@ -322,7 +322,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		}
 	}
 
-	protected boolean isEmptyFolder(final GermplasmList list) throws MiddlewareQueryException {
+	protected boolean isEmptyFolder(final GermplasmList list) {
 		final boolean isFolder = list.getType().equalsIgnoreCase(AppConstants.DB.FOLDER);
 		return isFolder && !this.hasChildList(list.getId());
 	}

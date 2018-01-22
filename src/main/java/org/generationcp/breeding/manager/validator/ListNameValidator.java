@@ -12,8 +12,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -23,8 +21,6 @@ import com.vaadin.data.Validator;
 public class ListNameValidator implements Validator {
 
 	private static final long serialVersionUID = 1L;
-
-	private static final Logger LOG = LoggerFactory.getLogger(ListNameValidator.class);
 
 	private static final String DEFAULT_ERROR = "Please specify the name and/or location of the list";
 	private static final String SAME_PARENT_FOLDER_LIST_NAME_ERROR = "List Name and its Parent Folder must not have the same name";
@@ -46,17 +42,7 @@ public class ListNameValidator implements Validator {
 	private ContextUtil contextUtil;
 
 	public ListNameValidator() {
-	}
-
-	public ListNameValidator(final String parentFolder) {
-		this.parentFolder = parentFolder;
-		this.errorDetails = ListNameValidator.DEFAULT_ERROR;
-	}
-
-	public ListNameValidator(final String parentFolder, final String currentListName) {
-		this.parentFolder = parentFolder;
-		this.errorDetails = ListNameValidator.DEFAULT_ERROR;
-		this.currentListName = currentListName;
+		// does nothing
 	}
 
 	@Override
@@ -125,16 +111,8 @@ public class ListNameValidator implements Validator {
 		return this.contextUtil.getCurrentProgramUUID();
 	}
 
-	public String getCurrentListName() {
-		return this.currentListName;
-	}
-
 	public void setCurrentListName(final String currentListName) {
 		this.currentListName = currentListName;
-	}
-
-	public String getParentFolder() {
-		return this.parentFolder;
 	}
 
 	public void setParentFolder(final String parentFolder) {

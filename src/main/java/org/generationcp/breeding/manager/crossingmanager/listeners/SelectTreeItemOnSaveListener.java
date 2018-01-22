@@ -49,7 +49,7 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 
 	@Override
 	public void studyClicked(final GermplasmList list) {
-		if (this.saveListAsDialog != null && !list.getType().equals("FOLDER")) {
+		if (this.saveListAsDialog != null && !"FOLDER".equals(list.getType())) {
 			this.saveListAsDialog.getDetailsComponent().populateGermplasmListDetails(list);
 
 			if (this.saveListAsDialog.getSource() instanceof ListBuilderComponent) {
@@ -64,7 +64,7 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	public void folderClicked(final GermplasmList list) {
 		if (this.saveListAsDialog != null) {
 			// Check also if folder is clicked (or list is null == central/local folders)
-			if (list != null && list.getType().equals("FOLDER") || list == null) {
+			if (list != null && "FOLDER".equals(list.getType()) || list == null) {
 				if (!(this.saveListAsDialog.getDetailsComponent().getCurrentGermplasmList() != null
 						&& this.saveListAsDialog.getDetailsComponent().getCurrentGermplasmList().getId() != null)) {
 					this.saveListAsDialog.getDetailsComponent().populateGermplasmListDetails(list);
