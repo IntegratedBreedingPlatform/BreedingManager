@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
@@ -122,7 +123,7 @@ public class ListBuilderComponentTest {
 	private InventoryDataManager inventoryDataManager;
 
 	@Mock
-	private Button button;
+	private SortableButton button;
 
 	@Mock
 	private GermplasmList currentlySavedGermplasmList;
