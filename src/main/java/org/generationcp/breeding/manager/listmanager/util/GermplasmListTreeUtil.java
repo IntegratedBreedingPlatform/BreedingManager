@@ -39,7 +39,7 @@ import com.vaadin.ui.Window;
 @Configurable
 public class GermplasmListTreeUtil implements Serializable {
 
-	private static final String FOLDER_TYPE = "FOLDER";
+	protected static final String FOLDER_TYPE = "FOLDER";
 
 	private static final long serialVersionUID = 1L;
 
@@ -108,7 +108,7 @@ public class GermplasmListTreeUtil implements Serializable {
 			sourceGermplasmList.setParent(null);
 		}
 
-		if (targetItemId.equals(ListSelectorComponent.CROP_LISTS)) {
+		if (ListSelectorComponent.CROP_LISTS.equals(targetItemId)) {
 			sourceGermplasmList.setProgramUUID(null);
 		} else {
 			sourceGermplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
@@ -391,6 +391,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	public void addFolderToTree(final Object parentItemId, String folderName, Integer newFolderId, GermplasmList newFolder,
 			GermplasmList parentList) {
 		if (newFolderId != null) {
+			// TODO move querying of list types to ListSelectorComponent (one-off) instead of querying here per folder action
 			final List<UserDefinedField> listTypes =
 					this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(),
 							RowColumnType.LIST_TYPE.getFtype());
