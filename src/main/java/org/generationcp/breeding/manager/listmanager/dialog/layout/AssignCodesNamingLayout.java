@@ -256,7 +256,7 @@ public class AssignCodesNamingLayout {
 		this.codesLayout.setComponentAlignment(codeControlsLayoutDefault, Alignment.MIDDLE_LEFT);
 	}
 
-	public void validate() throws Validator.InvalidValueException {
+	public void validate() {
 		this.prefixTextField.validate();
 		this.suffixTextField.validate();
 		this.startNumberTextField.validate();
