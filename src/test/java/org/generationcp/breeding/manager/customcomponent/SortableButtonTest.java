@@ -16,7 +16,7 @@ public class SortableButtonTest {
 		assertThat(createButton("caption1").compareTo(createButton("caption2")), equalTo(-1));
 	}
 
-	private static SortableButton createButton(String caption) {
+	private static SortableButton createButton(final String caption) {
 		return new SortableButton(caption, Mockito.mock(Button.ClickListener.class));
 	}
 }
