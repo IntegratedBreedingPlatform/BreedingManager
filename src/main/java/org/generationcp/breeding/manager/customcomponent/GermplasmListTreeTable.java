@@ -1,7 +1,4 @@
-
 package org.generationcp.breeding.manager.customcomponent;
-
-import java.util.Collection;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
@@ -26,28 +23,28 @@ public class GermplasmListTreeTable extends TreeTable implements GermplasmListSo
 	}
 
 	@Override
-	public boolean expandItem(Object itemId) {
+	public boolean expandItem(final Object itemId) {
 		super.setCollapsed(itemId, false);
 		return true;
 	}
 
 	@Override
-	public void setItemStyleGenerator(Tree.ItemStyleGenerator itemStyleGenerator) {
+	public void setItemStyleGenerator(final Tree.ItemStyleGenerator itemStyleGenerator) {
 		// not needed to implement any code, just added to override tree specific function
 	}
 
 	@Override
-	public void setDragMode(Tree.TreeDragMode treeDragMode, Table.TableDragMode treeTableDragMode) {
+	public void setDragMode(final Tree.TreeDragMode treeDragMode, final Table.TableDragMode treeTableDragMode) {
 		super.setDragMode(treeTableDragMode);
 	}
 
 	@Override
-	public boolean isExpanded(Object itemId) {
+	public boolean isExpanded(final Object itemId) {
 		return !super.isCollapsed(itemId);
 	}
 
 	@Override
-	public boolean collapseItem(Object itemId) {
+	public boolean collapseItem(final Object itemId) {
 		super.setCollapsed(itemId, true);
 		return true;
 	}
@@ -58,7 +55,7 @@ public class GermplasmListTreeTable extends TreeTable implements GermplasmListSo
 	}
 
 	@Override
-	public String getItemCaption(Object itemId) {
+	public String getItemCaption(final Object itemId) {
 		if (this.getItem(itemId) != null && this.getItem(itemId).getItemProperty(GermplasmListTreeTable.NAME_COL) != null
 				&& this.getItem(itemId).getItemProperty(GermplasmListTreeTable.NAME_COL).getValue() != null) {
 			return (String) this.getItem(itemId).getItemProperty(GermplasmListTreeTable.NAME_COL).getValue();
@@ -67,7 +64,7 @@ public class GermplasmListTreeTable extends TreeTable implements GermplasmListSo
 	}
 
 	@Override
-	public void setItemCaption(Object itemId, String caption) {
+	public void setItemCaption(final Object itemId, final String caption) {
 		this.getItem(itemId).getItemProperty(GermplasmListTreeTable.NAME_COL).setValue(" " + caption);
 	}
 

@@ -1,9 +1,6 @@
-
 package org.generationcp.breeding.manager.validator;
 
-import java.util.List;
-import java.util.regex.Pattern;
-
+import com.vaadin.data.Validator;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
@@ -15,7 +12,8 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Validator;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Configurable
 public class ListNameValidator implements Validator {

@@ -1,10 +1,15 @@
-
 package org.generationcp.breeding.manager.customcomponent;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
@@ -29,16 +34,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Configurable
 public class SaveListAsDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
@@ -65,7 +63,6 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -247,7 +244,8 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 			// If not, use old method, get germplasm list the old way
 		} else {
-			this.germplasmList = this.listDetailsComponent.createGermplasmListFromListDetails(this.isCropList(germplasmListTree.getSelectedListId()));
+			this.germplasmList =
+					this.listDetailsComponent.createGermplasmListFromListDetails(this.isCropList(germplasmListTree.getSelectedListId()));
 			this.germplasmList.setId(currentId);
 			this.germplasmList.setStatus(SaveListAsDialog.LIST_NAMES_STATUS);
 		}
@@ -257,10 +255,10 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		return this.germplasmList;
 	}
 
-	boolean isCropList(Object selectedListId) {
+	boolean isCropList(final Object selectedListId) {
 
-		return ListSelectorComponent.CROP_LISTS.equals(selectedListId)
-				|| ListSelectorComponent.CROP_LISTS.equals(this.germplasmListTree.getParentOfListItem(selectedListId));
+		return ListSelectorComponent.CROP_LISTS.equals(selectedListId) || ListSelectorComponent.CROP_LISTS
+				.equals(this.germplasmListTree.getParentOfListItem(selectedListId));
 
 	}
 
@@ -327,8 +325,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 				this.setGermplasmListDetails(gl);
 
 				ConfirmDialog.show(this.getWindow().getParent().getWindow(),
-						this.messageSource.getMessage(Message.DO_YOU_WANT_TO_OVERWRITE_THIS_LIST) + "?",
-						this.messageSource.getMessage(
+						this.messageSource.getMessage(Message.DO_YOU_WANT_TO_OVERWRITE_THIS_LIST) + "?", this.messageSource.getMessage(
 								Message.LIST_DATA_WILL_BE_DELETED_AND_WILL_BE_REPLACED_WITH_THE_DATA_FROM_THE_LIST_THAT_YOU_JUST_CREATED),
 						this.messageSource.getMessage(Message.OK), this.messageSource.getMessage(Message.CANCEL),
 						new ConfirmDialog.Listener() {

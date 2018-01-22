@@ -1,7 +1,10 @@
 package org.generationcp.breeding.manager.listmanager.listeners.test;
 
-import java.util.List;
-
+import com.beust.jcommander.internal.Lists;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
@@ -29,12 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
-
-import com.beust.jcommander.internal.Lists;
+import java.util.List;
 
 public class SaveListButtonClickListenerTest {
 
@@ -195,13 +193,13 @@ public class SaveListButtonClickListenerTest {
 
 	@Test
 	public void testDoSaveActionWhenUnsavedReservationThrowErrorMessageOfUnsavedReservation() {
-		ListManagerMain listManagerMain = Mockito.mock(ListManagerMain.class);
-		ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
-		BuildNewListDropHandler buildNewListDropHandler = Mockito.mock(BuildNewListDropHandler.class);
+		final ListManagerMain listManagerMain = Mockito.mock(ListManagerMain.class);
+		final ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
+		final BuildNewListDropHandler buildNewListDropHandler = Mockito.mock(BuildNewListDropHandler.class);
 		Mockito.when(listManagerMain.getListSelectionComponent()).thenReturn(listSelectionComponent);
 
 		Mockito.when(this.source.getSource()).thenReturn(listManagerMain);
-		GermplasmList currentlySavedGermplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListData(1, 1);
+		final GermplasmList currentlySavedGermplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListData(1, 1);
 		Mockito.when(this.source.getCurrentlySavedGermplasmList()).thenReturn(currentlySavedGermplasmList);
 		Mockito.when(this.source.getCurrentlySetGermplasmListInfo()).thenReturn(this.germplasmList);
 		Mockito.when(this.source.getBuildNewListDropHandler()).thenReturn(buildNewListDropHandler);
@@ -215,13 +213,13 @@ public class SaveListButtonClickListenerTest {
 
 	@Test
 	public void testDoSaveActionWithListSavedSuccessfully() {
-		ListManagerMain listManagerMain = Mockito.mock(ListManagerMain.class);
-		ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
-		BuildNewListDropHandler buildNewListDropHandler = Mockito.mock(BuildNewListDropHandler.class);
+		final ListManagerMain listManagerMain = Mockito.mock(ListManagerMain.class);
+		final ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
+		final BuildNewListDropHandler buildNewListDropHandler = Mockito.mock(BuildNewListDropHandler.class);
 		Mockito.when(listManagerMain.getListSelectionComponent()).thenReturn(listSelectionComponent);
 
 		Mockito.when(this.source.getSource()).thenReturn(listManagerMain);
-		GermplasmList currentlySavedGermplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListData(1, 1);
+		final GermplasmList currentlySavedGermplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListData(1, 1);
 		currentlySavedGermplasmList.setProgramUUID(null);
 		currentlySavedGermplasmList.setStatus(101);
 		Mockito.when(this.source.getCurrentlySavedGermplasmList()).thenReturn(currentlySavedGermplasmList);
@@ -229,17 +227,17 @@ public class SaveListButtonClickListenerTest {
 		Mockito.when(this.source.getBuildNewListDropHandler()).thenReturn(buildNewListDropHandler);
 		Mockito.when(this.source.saveListAction()).thenReturn(true);
 
-		AddColumnContextMenu addColumnContextMenu = Mockito.mock(AddColumnContextMenu.class);
+		final AddColumnContextMenu addColumnContextMenu = Mockito.mock(AddColumnContextMenu.class);
 
 		Mockito.when(this.source.getAddColumnContextMenu()).thenReturn(addColumnContextMenu);
 
-		GermplasmListData germplasmListData = ListInventoryDataInitializer.createGermplasmListData(1);
+		final GermplasmListData germplasmListData = ListInventoryDataInitializer.createGermplasmListData(1);
 		Mockito.when(this.source.getListEntriesFromTable()).thenReturn(Lists.newArrayList(germplasmListData));
 
 		Mockito.when(this.dataManager.addGermplasmList(this.germplasmList)).thenReturn(1);
 		Mockito.when(this.dataManager.getGermplasmListById(Mockito.isA(Integer.class))).thenReturn(currentlySavedGermplasmList);
 
-		List<Integer> listDataIds = Lists.newArrayList();
+		final List<Integer> listDataIds = Lists.newArrayList();
 		listDataIds.add(germplasmListData.getId());
 
 		Mockito.when(this.dataManager.addGermplasmListData(Mockito.isA(List.class))).thenReturn(listDataIds);
@@ -247,8 +245,8 @@ public class SaveListButtonClickListenerTest {
 		Mockito.when(this.inventoryDataManager.getLotCountsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
 				.thenReturn(Lists.newArrayList(germplasmListData));
 
-		Property property = Mockito.mock(Property.class);
-		Item item = Mockito.mock(Item.class);
+		final Property property = Mockito.mock(Property.class);
+		final Item item = Mockito.mock(Item.class);
 		Mockito.when(item.getItemProperty(Mockito.any())).thenReturn(property);
 
 		Mockito.when(this.listDataTable.addItem(Mockito.any())).thenReturn(item);

@@ -1,6 +1,7 @@
-
 package org.generationcp.breeding.manager.crossingmanager.listeners;
 
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Component;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customfields.ListNameField;
@@ -11,9 +12,6 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Component;
 
 @Configurable
 public class SelectTreeItemOnSaveListener extends AbsoluteLayout

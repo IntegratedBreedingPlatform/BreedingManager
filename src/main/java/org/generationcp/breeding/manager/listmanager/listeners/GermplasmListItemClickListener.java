@@ -1,25 +1,23 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- *
+ * <p/>
  * Generation Challenge Programme (GCP)
- *
- *
+ * <p/>
+ * <p/>
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- *
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.MouseEvents.ClickEvent;
+import com.vaadin.ui.Table;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.MouseEvents.ClickEvent;
-import com.vaadin.ui.Table;
 
 public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickListener {
 
@@ -28,26 +26,26 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
 
 	private final Object source;
 
-	public GermplasmListItemClickListener(Object source) {
+	public GermplasmListItemClickListener(final Object source) {
 		this.source = source;
 	}
 
 	@Override
-	public void itemClick(ItemClickEvent event) {
+	public void itemClick(final ItemClickEvent event) {
 
 		if (this.source instanceof AddEntryDialog) {
 			if (event.getButton() == ClickEvent.BUTTON_LEFT && event.isDoubleClick()) {
 				try {
-					((AddEntryDialog) this.source).resultTableItemDoubleClickAction((Table) event.getSource(), event.getItemId(),
-							event.getItem());
-				} catch (InternationalizableException e) {
+					((AddEntryDialog) this.source)
+							.resultTableItemDoubleClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
+				} catch (final InternationalizableException e) {
 					GermplasmListItemClickListener.LOG.error(e.getMessage(), e);
 					MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
 				}
 			} else if (event.getButton() == ClickEvent.BUTTON_LEFT) {
 				try {
 					((AddEntryDialog) this.source).resultTableItemClickAction();
-				} catch (InternationalizableException e) {
+				} catch (final InternationalizableException e) {
 					GermplasmListItemClickListener.LOG.error(e.getMessage(), e);
 					MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
 				}

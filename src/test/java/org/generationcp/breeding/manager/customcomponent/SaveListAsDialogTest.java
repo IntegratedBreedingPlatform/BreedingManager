@@ -1,14 +1,8 @@
-
 package org.generationcp.breeding.manager.customcomponent;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import junit.framework.Assert;
-
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.ListDateField;
@@ -22,7 +16,6 @@ import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -32,6 +25,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.Calendar;
+import java.util.Date;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SaveListAsDialogTest {
@@ -74,7 +70,6 @@ public class SaveListAsDialogTest {
 
 	@Mock
 	private ListNotesField listNotesField;
-
 
 	@Before
 	public void setUp() {
@@ -126,10 +121,9 @@ public class SaveListAsDialogTest {
 	@Test
 	public void testGetCurrentParsedListDateForInvalidDateFormat() {
 		Calendar currentDate = DateUtil.getCalendarInstance();
-		String currentDateString =
-				String.valueOf(currentDate.get(Calendar.YEAR))
-						+ this.appendZeroForSingleDigitMonthOrDay(currentDate.get(Calendar.MONTH) + 1)
-						+ this.appendZeroForSingleDigitMonthOrDay(currentDate.get(Calendar.DAY_OF_MONTH));
+		String currentDateString = String.valueOf(currentDate.get(Calendar.YEAR)) + this
+				.appendZeroForSingleDigitMonthOrDay(currentDate.get(Calendar.MONTH) + 1) + this
+				.appendZeroForSingleDigitMonthOrDay(currentDate.get(Calendar.DAY_OF_MONTH));
 		Long expectedDate = Long.parseLong(currentDateString);
 
 		// invalid date
@@ -230,8 +224,9 @@ public class SaveListAsDialogTest {
 		Mockito.when(proxy.isSelectedListNotSameWithTheOriginalList()).thenReturn(false);
 
 		boolean result = proxy.isSelectedListAnExistingListButNotItself();
-		Assert.assertFalse("Given it is not an existing list " + "and the selected list to overwrite is null, "
-				+ "the list to save is a new record", result);
+		Assert.assertFalse(
+				"Given it is not an existing list " + "and the selected list to overwrite is null, " + "the list to save is a new record",
+				result);
 	}
 
 	@Test
@@ -287,7 +282,6 @@ public class SaveListAsDialogTest {
 		Assert.assertEquals("Error", notification.getCaption());
 		Assert.assertEquals("</br>Unable to edit list", notification.getDescription());
 
-
 	}
 
 	// If target list to be overwritten is not itself and is an existing list
@@ -310,7 +304,8 @@ public class SaveListAsDialogTest {
 		Mockito.when(listNotesField.getValue()).thenReturn(existingGermplasmList.getNotes());
 
 		Mockito.when(messageSource.getMessage(Message.DO_YOU_WANT_TO_OVERWRITE_THIS_LIST)).thenReturn("Do you want to overwrite this list");
-		Mockito.when(messageSource.getMessage(Message.LIST_DATA_WILL_BE_DELETED_AND_WILL_BE_REPLACED_WITH_THE_DATA_FROM_THE_LIST_THAT_YOU_JUST_CREATED))
+		Mockito.when(messageSource
+				.getMessage(Message.LIST_DATA_WILL_BE_DELETED_AND_WILL_BE_REPLACED_WITH_THE_DATA_FROM_THE_LIST_THAT_YOU_JUST_CREATED))
 				.thenReturn("List data willbe deleted");
 		Mockito.when(messageSource.getMessage(Message.OK)).thenReturn("Ok");
 		Mockito.when(messageSource.getMessage(Message.CANCEL)).thenReturn("Cancel");
@@ -472,7 +467,6 @@ public class SaveListAsDialogTest {
 		Assert.assertEquals(SaveListAsDialog.LIST_NAMES_STATUS, germplasmListToSave.getStatus());
 
 	}
-
 
 	@Test
 	public void testGetSelectedListOnTree() {

@@ -1,6 +1,12 @@
-
 package org.generationcp.breeding.manager.customcomponent.handler;
 
+import com.vaadin.event.Transferable;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptAll;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
+import com.vaadin.ui.AbstractSelect;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
@@ -14,14 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import com.vaadin.event.Transferable;
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.event.dd.DropHandler;
-import com.vaadin.event.dd.acceptcriteria.AcceptAll;
-import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
-import com.vaadin.ui.AbstractSelect;
 
 import javax.annotation.Resource;
 
@@ -38,41 +36,41 @@ public class GermplasmListSourceDropHandler implements DropHandler {
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 
-
 	private final GermplasmListSource targetListSource;
 	private final ListSelectorComponent source;
 	private final GermplasmListTreeUtil utilSource;
 
-	public GermplasmListSourceDropHandler(GermplasmListSource targetListSource, ListSelectorComponent source,
-			GermplasmListTreeUtil utilSource) {
+	public GermplasmListSourceDropHandler(final GermplasmListSource targetListSource, final ListSelectorComponent source,
+			final GermplasmListTreeUtil utilSource) {
 		this.targetListSource = targetListSource;
 		this.source = source;
 		this.utilSource = utilSource;
 	}
 
 	@Override
-	public void drop(DragAndDropEvent dropEvent) {
-		Transferable t = dropEvent.getTransferable();
+	public void drop(final DragAndDropEvent dropEvent) {
+		final Transferable t = dropEvent.getTransferable();
 		if (t.getSourceComponent() != this.targetListSource) {
 			return;
 		}
 
-		AbstractSelect.AbstractSelectTargetDetails target = (AbstractSelect.AbstractSelectTargetDetails) dropEvent.getTargetDetails();
+		final AbstractSelect.AbstractSelectTargetDetails target = (AbstractSelect.AbstractSelectTargetDetails) dropEvent.getTargetDetails();
 
-		Object sourceItemId = t.getData("itemId");
+		final Object sourceItemId = t.getData("itemId");
 		Object targetItemId = target.getItemIdOver();
 
-		VerticalDropLocation location = target.getDropLocation();
+		final VerticalDropLocation location = target.getDropLocation();
 
 		if (location != VerticalDropLocation.MIDDLE || sourceItemId.equals(targetItemId)) {
 			return;
 		}
 
-
 		if (ListSelectorComponent.CROP_LISTS.equals(targetItemId)) {
-			GermplasmList sourceItem = this.germplasmListManager.getGermplasmListById((Integer) sourceItemId);
+			final GermplasmList sourceItem = this.germplasmListManager.getGermplasmListById((Integer) sourceItemId);
 			if (sourceItem.isFolder()) {
-				MessageNotifier.showError(dropEvent.getTransferable().getSourceComponent().getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.CANNOT_MOVE_FOLDER_TO_CROP_LISTS_FOLDER));
+				MessageNotifier
+						.showError(dropEvent.getTransferable().getSourceComponent().getWindow(), messageSource.getMessage(Message.ERROR),
+								messageSource.getMessage(Message.CANNOT_MOVE_FOLDER_TO_CROP_LISTS_FOLDER));
 				return;
 			}
 		}
@@ -80,9 +78,9 @@ public class GermplasmListSourceDropHandler implements DropHandler {
 		GermplasmList targetList = null;
 		try {
 			targetList = this.germplasmListManager.getGermplasmListById((Integer) targetItemId);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			GermplasmListSourceDropHandler.LOG.error(e.getMessage(), e);
-		} catch (ClassCastException e) {
+		} catch (final ClassCastException e) {
 			GermplasmListSourceDropHandler.LOG.error(e.getMessage(), e);
 		}
 
