@@ -224,7 +224,9 @@ public class AssignCodesNamingLayout {
 					}
 				});
 			}
-
+		} else {
+			this.applyCodesButton.setEnabled(false);
+			this.nextValueLabel.setValue("");
 		}
 	}
 

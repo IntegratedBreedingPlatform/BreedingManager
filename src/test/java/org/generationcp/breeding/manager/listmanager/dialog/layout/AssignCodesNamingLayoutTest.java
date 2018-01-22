@@ -156,7 +156,17 @@ public class AssignCodesNamingLayoutTest {
 	public void testUpdateNextNameValueWhenPrefixIsEmpty() throws InvalidGermplasmNameSettingException {
 		this.namingLayout.updateNextNameValue();
 		Mockito.verify(this.germplasmNamingService, Mockito.never()).getNextNameInSequence(Matchers.any(GermplasmNameSetting.class));
-		Mockito.verify(this.applyCodesButton, Mockito.never()).setEnabled(true);
+		Assert.assertEquals("", this.namingLayout.getNextValueLabel().getValue());
+		
+		// Specify Prefix to enable button
+		this.setupTestValuesForNameFields();
+		this.namingLayout.updateNextNameValue();
+		Mockito.verify(this.applyCodesButton).setEnabled(true);
+	
+		// Empty Prefix again to check if it was set back to disabled
+		this.namingLayout.getPrefixTextField().setValue("");
+		this.namingLayout.updateNextNameValue();
+		Mockito.verify(this.applyCodesButton, Mockito.times(2)).setEnabled(false);
 		Assert.assertEquals("", this.namingLayout.getNextValueLabel().getValue());
 	}
 
