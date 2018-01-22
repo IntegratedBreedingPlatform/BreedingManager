@@ -532,7 +532,7 @@ public class GermplasmListExporter {
 								return ((ListDataColumnValues) object).getListDataId().equals(itemId);
 							}
 						});
-					final String value = listDataColumnValues.getValue();
+					final String value = (listDataColumnValues != null ? listDataColumnValues.getValue() : "");
 					row.put(i, new ExportColumnValue(i, value));
 					i++;
 				}
