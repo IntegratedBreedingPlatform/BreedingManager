@@ -1,12 +1,11 @@
-
 package org.generationcp.breeding.manager.listmanager.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.vaadin.Application;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -26,12 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ListCommonActionsUtil {
 
@@ -136,19 +134,21 @@ public class ListCommonActionsUtil {
 			final SimpleResourceBundleMessageSource messageSource, final Boolean showMessages) {
 
 		if (forceHasChanges) {
-			return ListCommonActionsUtil.replaceListEntries(listToSave, listEntries, germplasmListManager, source, messageSource,
-					showMessages);
+			return ListCommonActionsUtil
+					.replaceListEntries(listToSave, listEntries, germplasmListManager, source, messageSource, showMessages);
 		}
 
 		final List<GermplasmListData> newEntries = new ArrayList<GermplasmListData>();
 		final List<GermplasmListData> entriesToUpdate = new ArrayList<GermplasmListData>();
 		final List<GermplasmListData> entriesToDelete = new ArrayList<GermplasmListData>();
 
-		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(listToSave, listEntries, forceHasChanges, newEntries, entriesToUpdate,
-				entriesToDelete, germplasmListManager, source, messageSource);
+		ListCommonActionsUtil
+				.getNewEntriesToSaveUpdateDelete(listToSave, listEntries, forceHasChanges, newEntries, entriesToUpdate, entriesToDelete,
+						germplasmListManager, source, messageSource);
 
-		return ListCommonActionsUtil.saveListEntries(listToSave, newEntries, entriesToUpdate, entriesToDelete, germplasmListManager, source,
-				messageSource, showMessages);
+		return ListCommonActionsUtil
+				.saveListEntries(listToSave, newEntries, entriesToUpdate, entriesToDelete, germplasmListManager, source, messageSource,
+						showMessages);
 	}
 
 	protected static void getNewEntriesToSaveUpdateDelete(final GermplasmList listToSave, final List<GermplasmListData> listEntries,
@@ -156,8 +156,8 @@ public class ListCommonActionsUtil {
 			final List<GermplasmListData> entriesToDelete, final GermplasmListManager dataManager, final Component source,
 			final SimpleResourceBundleMessageSource messageSource) {
 
-		final Map<Integer, GermplasmListData> savedListEntriesMap = ListCommonActionsUtil.getSavedListEntriesMap(listToSave, listEntries,
-				forceHasChanges, entriesToDelete, dataManager, source, messageSource);
+		final Map<Integer, GermplasmListData> savedListEntriesMap = ListCommonActionsUtil
+				.getSavedListEntriesMap(listToSave, listEntries, forceHasChanges, entriesToDelete, dataManager, source, messageSource);
 
 		for (final GermplasmListData entry : listEntries) {
 			if (entry.getId() != null && entry.getId() > 0 && !savedListEntriesMap.isEmpty()
@@ -375,7 +375,7 @@ public class ListCommonActionsUtil {
 		boolean hasAnyReservation = false;
 
 		if (!CollectionUtils.isEmpty(germplasmListDatas)) {
-			for (GermplasmListData germplasmListData : germplasmListDatas) {
+			for (final GermplasmListData germplasmListData : germplasmListDatas) {
 				if (germplasmListData.getInventoryInfo() != null && germplasmListData.getInventoryInfo().getLotRows() != null) {
 					for (final LotDetails lotDetails : germplasmListData.getInventoryInfo().getLotRows()) {
 						if (ListDataInventory.RESERVED.equalsIgnoreCase(lotDetails.getWithdrawalStatus())) {
@@ -390,32 +390,33 @@ public class ListCommonActionsUtil {
 		return hasAnyReservation;
 	}
 
-	public static void handleCreateLabelsAction(final Integer listId, InventoryDataManager inventoryDataManager,
-			SimpleResourceBundleMessageSource messageSource, ContextUtil contextUtil, Application application, Window window) {
-			final List<GermplasmListData> germplasmListDatas = inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
+	public static void handleCreateLabelsAction(final Integer listId, final InventoryDataManager inventoryDataManager,
+			final SimpleResourceBundleMessageSource messageSource, final ContextUtil contextUtil, final Application application,
+			final Window window) {
+		final List<GermplasmListData> germplasmListDatas = inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
 
-			if (!ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListDatas)) {
-				MessageNotifier.showError(window, messageSource.getMessage(Message.PRINT_LABELS),
-						messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION));
-				return;
-			}
+		if (!ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListDatas)) {
+			MessageNotifier.showError(window, messageSource.getMessage(Message.PRINT_LABELS),
+					messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION));
+			return;
+		}
 
-			// Navigate to labels printing
-			// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
-			// of navigating in and out of the Vaadin application
-			final String urlRedirectionScript =
-					"window.location = '" + application.getURL().getProtocol() + "://" + application.getURL().getHost() + ":"
-							+ application.getURL().getPort() + "/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId
-							+ "?restartApplication&loggedInUserId=" + contextUtil.getContextInfoFromSession().getLoggedInUserId()
-							+ "&selectedProjectId=" + contextUtil.getContextInfoFromSession().getSelectedProjectId() + "&authToken="
-							+ contextUtil.getContextInfoFromSession().getAuthToken() + "';";
+		// Navigate to labels printing
+		// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
+		// of navigating in and out of the Vaadin application
+		final String urlRedirectionScript =
+				"window.location = '" + application.getURL().getProtocol() + "://" + application.getURL().getHost() + ":" + application
+						.getURL().getPort() + "/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId
+						+ "?restartApplication&loggedInUserId=" + contextUtil.getContextInfoFromSession().getLoggedInUserId()
+						+ "&selectedProjectId=" + contextUtil.getContextInfoFromSession().getSelectedProjectId() + "&authToken="
+						+ contextUtil.getContextInfoFromSession().getAuthToken() + "';";
 
-			application.getMainWindow().executeJavaScript(urlRedirectionScript);
+		application.getMainWindow().executeJavaScript(urlRedirectionScript);
 
 	}
 
-	public static Map<Integer, ListEntryLotDetails> createListEntryLotDetailsMap(List<GermplasmListData> inventoryDetails) {
-		Map<Integer, ListEntryLotDetails> lotDetailsMap = new HashMap<>();
+	public static Map<Integer, ListEntryLotDetails> createListEntryLotDetailsMap(final List<GermplasmListData> inventoryDetails) {
+		final Map<Integer, ListEntryLotDetails> lotDetailsMap = new HashMap<>();
 
 		for (final GermplasmListData inventoryDetail : inventoryDetails) {
 
@@ -429,13 +430,13 @@ public class ListCommonActionsUtil {
 			}
 		}
 
-		return  lotDetailsMap;
+		return lotDetailsMap;
 	}
 
-	public static Map<Integer, LotDetails> createLotDetailsMap(List<GermplasmListData> inventoryDetails) {
-		Map<Integer, LotDetails> lotDetailsMap = new HashMap<>();
+	public static Map<Integer, LotDetails> createLotDetailsMap(final List<GermplasmListData> inventoryDetails) {
+		final Map<Integer, LotDetails> lotDetailsMap = new HashMap<>();
 
-		for (GermplasmListData inventoryDetail : inventoryDetails) {
+		for (final GermplasmListData inventoryDetail : inventoryDetails) {
 			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
 			final List<LotDetails> lotDetails = (List<LotDetails>) listDataInventory.getLotRows();
 
@@ -446,10 +447,11 @@ public class ListCommonActionsUtil {
 			}
 		}
 
-		return  lotDetailsMap;
+		return lotDetailsMap;
 	}
 
-	public static Button getLotCountButton(Integer lotCount, Integer gid, String germplasmName, Component source, Integer lotId) {
+	public static Button getLotCountButton(final Integer lotCount, final Integer gid, final String germplasmName, final Component source,
+			final Integer lotId) {
 		String lots = "-";
 		if (lotCount != 0) {
 			lots = lotCount.toString();

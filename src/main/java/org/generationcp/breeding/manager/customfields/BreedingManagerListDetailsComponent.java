@@ -1,9 +1,11 @@
-
 package org.generationcp.breeding.manager.customfields;
 
-import java.text.ParseException;
-import java.util.Date;
-
+import com.vaadin.data.Property.ConversionException;
+import com.vaadin.data.Property.ReadOnlyException;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -23,16 +25,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property.ConversionException;
-import com.vaadin.data.Property.ReadOnlyException;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import java.text.ParseException;
+import java.util.Date;
 
 @Configurable
-public class BreedingManagerListDetailsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout {
+public class BreedingManagerListDetailsComponent extends VerticalLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponent.class);
@@ -301,8 +299,8 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 	}
 
 	public boolean isChanged() {
-		if (this.listNameField.isChanged() || this.listDescriptionField.isChanged() || this.listTypeField.isChanged()
-				|| this.listDateField.isChanged() || this.listNotesField.isChanged()) {
+		if (this.listNameField.isChanged() || this.listDescriptionField.isChanged() || this.listTypeField.isChanged() || this.listDateField
+				.isChanged() || this.listNotesField.isChanged()) {
 			return true;
 		}
 		return false;
@@ -384,6 +382,10 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setContextUtil(final ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
 	}
 
 }
