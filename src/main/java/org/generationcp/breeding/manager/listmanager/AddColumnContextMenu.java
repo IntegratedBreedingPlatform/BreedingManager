@@ -224,8 +224,6 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME,
 			this.menuFillWithImmediateSourcePreferredName);
 
-		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME,addColumnItem);
-
 		// Disable main "Breeding Method Information" menu item if columns were added for all sub-menu items
 		if (AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_NAME.getName(), table) && AddColumnContextMenu
 			.propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), table) && AddColumnContextMenu
