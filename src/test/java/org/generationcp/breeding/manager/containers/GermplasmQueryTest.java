@@ -65,6 +65,8 @@ public class GermplasmQueryTest {
 	public static final Double AVAILABLE_BALANCE = 5.0d;
 	public static final String ORI_COUN = "ORI_COUN";
 	public static final String NOTE = "NOTE";
+	public static final String TEST_IMMEDIATE_SOURCE = "TEST IMMEDIATE SOURCE";
+	public static final String TEST_GROUP_SOURCE = "TEST GROUP SOURCE";
 
 	private final String[] itemPropertyIds = new String[] {
 			"GROUP ID"
@@ -87,7 +89,11 @@ public class GermplasmQueryTest {
 			,"CROSS-FEMALE PREFERRED NAME"
 			,"METHOD NAME"
 			,"STOCKID"
-			,"NAMES"} ;
+			,"NAMES"
+			,"GROUP SOURCE GID"
+			,"GROUP SOURCE"
+			,"IMMEDIATE SOURCE GID"
+			,"IMMEDIATE SOURCE"};
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
 	@Mock
@@ -109,6 +115,9 @@ public class GermplasmQueryTest {
 	public void setUp() throws Exception {
 		// create a test list of germplasms with inventory information
 		final Map<Integer, String> pedigreeString = new HashMap<>();
+		final Map<Integer, String> groupSourcepreferredNamesMap = new HashMap<>();
+		final Map<Integer, String> immediatepreferredNamesMap = new HashMap<>();
+
 		for (int i = 0; i < ALL_GERMPLASM; i++) {
 			GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(1, 10);
 
@@ -133,6 +142,8 @@ public class GermplasmQueryTest {
 			germplasm.setFemaleParentPreferredName("Female Preferred Name");
 			germplasm.setMaleParentPreferredID("102");
 			germplasm.setMaleParentPreferredName("Male Preferred Name");
+			immediatepreferredNamesMap.put(gid,"AA");
+			groupSourcepreferredNamesMap.put(gid,"-");
 
 			if (i < NUMBER_OF_ITEMS_ON_PAGE){
 				this.currentGermplasm.add(germplasm);
@@ -160,14 +171,21 @@ public class GermplasmQueryTest {
 
 		Mockito.when(this.germplasmDataManager.getMethodByID(Matchers.anyInt()))
 				.thenReturn(new MethodTestDataInitializer().createMethod(1, "testMethodType"));
+
+		Mockito.when(this.germplasmDataManager.getImmediateSourcePreferredNamesByGids(Matchers.anyList())).thenReturn(immediatepreferredNamesMap);
+		Mockito.when(this.germplasmDataManager.getGroupSourcePreferredNamesByGids(Matchers.anyList())).thenReturn(groupSourcepreferredNamesMap);
+
+
 	}
 
 	@Test
 	public void testGetGermplasmItem() throws Exception {
 		final Germplasm germplasm = this.allGermplasm.get(0);
 		final Item item = this.query.getGermplasmItem(germplasm, 1,
-				Collections.<Integer, String>singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING),
-				Collections.<Integer, String>singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_GERMPLASM_NAME));
+			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING),
+			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_GERMPLASM_NAME),
+			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_IMMEDIATE_SOURCE),
+			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_GROUP_SOURCE));
 
 		final List<String> itemPropertyIDList = Arrays.asList(this.itemPropertyIds);
 
@@ -219,6 +237,9 @@ public class GermplasmQueryTest {
 		Mockito.verify(this.pedigreeService, Mockito.times(1)).getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(),
 				Matchers.any(CrossExpansionProperties.class));
 		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getImmediateSourcePreferredNamesByGids(Matchers.anyListOf(Integer.class));
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGroupSourcePreferredNamesByGids(Matchers.anyListOf(Integer.class));
+
 
 	}
 

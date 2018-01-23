@@ -83,7 +83,7 @@ public class FillWith implements InternationalizableComponent {
 		this.menuFillWithCrossMalePreferredName = this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_CROSS_MALE_NAME, this.menuFillWithCrossMaleInformation);
 
 		this.menuFillWithCrossExpansion = this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_CROSS_EXPANSION);
-		this.menuFillWithSequenceNumber = this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_SEQUENCE_NUMBMER);
+		this.menuFillWithSequenceNumber = this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_SEQUENCE_NUMBER);
 
 		this.fillWithMenu.addListener(new FillWithMenuItemClickListener(this, this.addColumnSource, this.fillWithMenu, this.valuesGenerator));
 

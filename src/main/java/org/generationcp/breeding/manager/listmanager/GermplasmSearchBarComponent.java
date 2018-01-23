@@ -118,7 +118,6 @@ public class GermplasmSearchBarComponent extends CssLayout
 
 		this.searchButton = new Button(this.messageSource.getMessage(Message.SEARCH));
 		this.searchButton.setDebugId("searchButton");
-		this.searchButton.setDebugId("searchButton");
 		this.searchButton.setHeight("24px");
 		this.searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		this.searchButton.setData(GermplasmSearchBarComponent.SEARCH_BUTTON);

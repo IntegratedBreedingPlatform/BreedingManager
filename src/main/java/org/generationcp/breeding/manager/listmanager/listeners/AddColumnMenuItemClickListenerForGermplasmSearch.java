@@ -32,45 +32,74 @@ public class AddColumnMenuItemClickListenerForGermplasmSearch implements Context
 	public void contextItemClick(final ClickEvent event) {
 		final ContextMenuItem clickedItem = event.getClickedItem();
 		final String clickedOptionName = clickedItem.getName();
-		if (this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_ID.getMessageKey())
-				.equals(clickedOptionName)) {
+		if (this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_ID.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addPreferredIdColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_NAME.getMessageKey())
-				.equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_NAME.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addPreferredNameColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GERMPLASM_DATE.getMessageKey())
-				.equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GERMPLASM_DATE.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addGermplasmDateColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_LOCATION.getMessageKey())
-				.equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_LOCATION.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addLocationColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.getMessageKey())
-				.equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addMethodNameColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV.getMessageKey())
-				.equals(clickedOptionName)) {
+			.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addMethodAbbrevColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER.getMessageKey())
-				.equals(clickedOptionName)) {
+			.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addMethodNumberColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.getMessageKey())
-				.equals(clickedOptionName)) {
+			.equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addMethodGroupColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_GID.getMessageKey())
-				.equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_GID.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addCrossFemaleGidColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.getMessageKey())
-				.equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addCrossFemalePrefNameColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey())
-				.equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addCrossMaleGIDColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey())
-				.equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.addCrossMalePrefNameColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey())
-				.equals(clickedOptionName)) {
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListenerForGermplasmSearch.this.displayFillWithAttributeWindow();
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_GID.getMessageKey()).equals(clickedOptionName)) {
+			AddColumnMenuItemClickListenerForGermplasmSearch.this.addGroupSourceGidColumn();
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME.getMessageKey())
+			.equals(clickedOptionName)) {
+			AddColumnMenuItemClickListenerForGermplasmSearch.this.addGroupPreferredNameColumn();
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID.getMessageKey()).equals(clickedOptionName)) {
+			AddColumnMenuItemClickListenerForGermplasmSearch.this.addImmediateSourceGidColumn();
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME.getMessageKey())
+			.equals(clickedOptionName)) {
+			AddColumnMenuItemClickListenerForGermplasmSearch.this.addImmediateSourcePreferredNameColumn();
+		}
+
+	}
+
+	private void addImmediateSourcePreferredNameColumn() {
+		if (!this.addColumnSource.columnExists(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME);
+
+		}
+	}
+
+	private void addImmediateSourceGidColumn() {
+		if (!this.addColumnSource.columnExists(ColumnLabels.IMMEDIATE_SOURCE_GID.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.IMMEDIATE_SOURCE_GID);
+
+		}
+	}
+
+	private void addGroupPreferredNameColumn() {
+		if (!this.addColumnSource.columnExists(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME);
+
+		}
+	}
+
+	private void addGroupSourceGidColumn() {
+		if (!this.addColumnSource.columnExists(ColumnLabels.GROUP_SOURCE_GID.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.GROUP_SOURCE_GID);
+
 		}
 	}
 
