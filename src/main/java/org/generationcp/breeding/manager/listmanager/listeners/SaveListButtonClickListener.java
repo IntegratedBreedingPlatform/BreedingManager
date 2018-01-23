@@ -11,6 +11,7 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AddColumnContextMenuOption;
+import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
@@ -286,13 +287,13 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				final Item item = this.listDataTable.addItem(entry.getId());
 
 				final Button gidButton =
-						new Button(String.format("%s", entry.getGid()), new GidLinkClickListener(entry.getGid().toString(), true));
+						new SortableButton(String.format("%s", entry.getGid()), new GidLinkClickListener(entry.getGid().toString(), true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 				final CheckBox tagCheckBox = initializeTagCheckBox(entry);
 
 				final Button designationButton =
-						new Button(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
+						new SortableButton(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
 				designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 				designationButton.setDescription("Click to view Germplasm information");
 
@@ -334,7 +335,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					available.append(ListDataInventory.MIXED);
 				}
 
-				final Button availableButton = new Button(available.toString(),
+				final Button availableButton = new SortableButton(available.toString(),
 						new InventoryLinkButtonClickListener(this.source, currentlySavedList.getId(), entry.getId(), entry.getGid()));
 				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 				availableButton.setDescription(ListBuilderComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);

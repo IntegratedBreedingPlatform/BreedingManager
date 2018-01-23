@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.SelectParentsListDataComponent;
+import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
@@ -306,7 +307,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 							});
 
 							Button desigButton =
-									new Button(String.format("%s", designation), new GidLinkButtonClickListener(inventoryDetail.getGid()
+									new SortableButton(String.format("%s", designation), new GidLinkButtonClickListener(inventoryDetail.getGid()
 											.toString(), true));
 							desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 
@@ -369,15 +370,14 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 		});
 
-		Button sourceDesignationButton = new Button();
-		sourceDesignationButton.setDebugId("sourceDesignationButton");
-		Button targetDesignationButton = new Button();
+		Button targetDesignationButton = new SortableButton();
 		targetDesignationButton.setDebugId("targetDesignationButton");
 
 		Item itemFromSourceTable = sourceTable.getItem(lotDetail);
 		String seedSource = "";
 		if (itemFromSourceTable != null) {
-			sourceDesignationButton = (Button) itemFromSourceTable.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
+			Button sourceDesignationButton = (SortableButton) itemFromSourceTable.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
+			sourceDesignationButton.setDebugId("sourceDesignationButton");
 			if (sourceDesignationButton != null) {
 				targetDesignationButton.setValue(sourceDesignationButton.getValue());
 				targetDesignationButton.setCaption(sourceDesignationButton.getCaption());
@@ -410,7 +410,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
 		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(lotDetail.getStockIds());
 
-		final Button lotButton = new Button(lotDetail.getLotId().toString(),
+		final Button lotButton = new SortableButton(lotDetail.getLotId().toString(),
 				new LotDetailsButtonClickListener(lotDetail.getEntityIdOfLot(), targetDesignationButton.toString(), this.getTargetTable(), lotDetail.getLotId()));
 		lotButton.setStyleName(BaseTheme.BUTTON_LINK);
 		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotButton);
