@@ -590,21 +590,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
 		// Available Balance
-		final StringBuilder available = new StringBuilder();
-
-		if (entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
-			available.append("-");
-		} else if (entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1) {
-			available.append(entry.getInventoryInfo().getTotalAvailableBalance());
-			available.append(" ");
-
-			if (!StringUtils.isEmpty(entry.getInventoryInfo().getScaleForGermplsm())) {
-				available.append(entry.getInventoryInfo().getScaleForGermplsm());
-			}
-
-		} else {
-			available.append(GermplasmInventory.MIXED);
-		}
+		final String available = entry.getInventoryInfo().getAvailable();
 
 		final Button availableButton =
 				new SortableButton(available.toString(), new InventoryLinkButtonClickListener(this.parentListDetailsComponent,
