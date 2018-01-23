@@ -49,12 +49,9 @@ public class ListDataPropertiesRenderer {
 			final String column = columnEntry.getKey();
 			this.targetTable.addContainerProperty(column, String.class, "");
 			String columnName = column;
-			try {
+			if (ColumnLabels.get(column).getTermId() != null) {
 				columnName = ColumnLabels.get(column).getTermNameFromOntology(this.ontologyDataManager);
-			} catch (final NullPointerException e) {
-				// CATCHING THE EXCEPTION BECAUSE NOW WE SAVE THE ATTRIBUTES OF THE LIST.
 			}
-
 			this.targetTable.setColumnHeader(column, columnName);
 			this.targetTable.setColumnWidth(column, 250);
 			this.setColumnValues(column, columnEntry.getValue());
