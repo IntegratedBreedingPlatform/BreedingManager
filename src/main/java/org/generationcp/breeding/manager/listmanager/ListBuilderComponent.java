@@ -24,6 +24,7 @@ import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
+import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
@@ -948,12 +949,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.setData(ListBuilderComponent.GERMPLASMS_TABLE_DATA);
 		table.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
 		table.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-		table.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		table.addContainerProperty(ColumnLabels.DESIGNATION.getName(), SortableButton.class, null);
 		table.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
-		table.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
-		table.addContainerProperty(ColumnLabels.TOTAL.getName(), Button.class, null);
+		table.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), SortableButton.class, null);
+		table.addContainerProperty(ColumnLabels.TOTAL.getName(), SortableButton.class, null);
 		table.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
-		table.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		table.addContainerProperty(ColumnLabels.GID.getName(), SortableButton.class, null);
 		table.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		table.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
@@ -1873,13 +1874,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			available.append(GermplasmInventory.MIXED);
 		}
 
-		final Button availableButton = new Button(available.toString(), new InventoryLinkButtonClickListener(
+		final Button availableButton = new SortableButton(available.toString(), new InventoryLinkButtonClickListener(
 				this.source, this.currentlySavedGermplasmList.getId(), listData.getId(), listData.getGid()));
 		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 		availableButton.setDescription(ListBuilderComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		item.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
 
-		final Button gidButton = (Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue();
+		final Button gidButton = (SortableButton) item.getItemProperty(ColumnLabels.GID.getName()).getValue();
 		String gidString = "";
 
 		if (gidButton != null) {
@@ -2037,7 +2038,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		final List<Integer> itemIds = this.getItemIds(this.listDataTable);
 		for (final Integer itemId : itemIds) {
 			final Item item = this.listDataTable.getItem(itemId);
-			final Button gidButton = (Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue();
+			final Button gidButton = (SortableButton) item.getItemProperty(ColumnLabels.GID.getName()).getValue();
 
 			String currentGid = "";
 			if (gidButton != null) {
