@@ -1,20 +1,21 @@
 
 package org.generationcp.breeding.manager.listimport;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.service.api.PedigreeService;
@@ -28,9 +29,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SelectGermplasmWindowTest {
@@ -53,6 +55,9 @@ public class SelectGermplasmWindowTest {
 	private GermplasmDataManager germplasmManager;
 
 	@Mock
+	private InventoryDataManager inventoryDataManager;
+
+	@Mock
 	private PedigreeService pedigreeService;
 
 	private final String germplasmName = "Germplasm Name";
@@ -69,6 +74,7 @@ public class SelectGermplasmWindowTest {
 		this.selectGermplasmWindow.setMessageSource(this.messageSource);
 		this.selectGermplasmWindow.setGermplasmDataManager(this.germplasmManager);
 		this.selectGermplasmWindow.setPedigreeService(this.pedigreeService);
+		this.selectGermplasmWindow.setInventoryDataManager(this.inventoryDataManager);
 	}
 
 	@Test
@@ -141,6 +147,8 @@ public class SelectGermplasmWindowTest {
 		final int nameMatchCount = 3;
 		Mockito.doReturn(new Long(nameMatchCount)).when(this.germplasmManager).countGermplasmByName(Matchers.anyString(),
 				Matchers.any(Operation.class));
+		Mockito.when(this.inventoryDataManager.getAvailableBalanceForGermplasms(Matchers.anyList()))
+			.thenReturn(Collections.<Germplasm>emptyList());
 		final List<Germplasm> germplasm = new ArrayList<Germplasm>();
 		germplasm.add(GermplasmTestDataInitializer.createGermplasm(1));
 		germplasm.add(GermplasmTestDataInitializer.createGermplasm(2));
