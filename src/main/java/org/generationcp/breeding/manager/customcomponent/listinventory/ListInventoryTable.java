@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.ControllableRefreshTable;
+import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
@@ -100,7 +101,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 
 		this.listInventoryTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-		this.listInventoryTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		this.listInventoryTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), SortableButton.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.LOT_LOCATION.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.TOTAL.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.RESERVATION.getName(), String.class, null);
@@ -108,7 +109,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.listInventoryTable.addContainerProperty(ColumnLabels.COMMENT.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
-		this.listInventoryTable.addContainerProperty(ColumnLabels.LOT_ID.getName(), Button.class, null);
+		this.listInventoryTable.addContainerProperty(ColumnLabels.LOT_ID.getName(), SortableButton.class, null);
 
 		this.listInventoryTable.setColumnHeader(ColumnLabels.TAG.getName(), this.messageSource.getMessage(Message.CHECK_ICON));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
@@ -181,7 +182,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
   					});
   
   					final Button desigButton =
-  							new Button(String.format("%s", designation), new GidLinkButtonClickListener(
+  							new SortableButton(String.format("%s", designation), new GidLinkButtonClickListener(
   									inventoryDetail.getGid().toString(), true));
   					desigButton.setStyleName(BaseTheme.BUTTON_LINK);
   
@@ -232,7 +233,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
   					final Label stockIdsLbl = new Label(stockIds);
   					stockIdsLbl.setDescription(stockIds);
   					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
-					final Button lotButton = new Button(lotDetail.getLotId().toString(),
+					final Button lotButton = new SortableButton(lotDetail.getLotId().toString(),
 							new LotDetailsButtonClickListener(lotDetail.getEntityIdOfLot(), designation, this.listInventoryTable,
 									lotDetail.getLotId()));
 					lotButton.setStyleName(BaseTheme.BUTTON_LINK);

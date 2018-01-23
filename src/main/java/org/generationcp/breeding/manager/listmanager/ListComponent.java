@@ -27,6 +27,7 @@ import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.RemoveSelectedGermplasmAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
+import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryAction;
@@ -434,12 +435,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		this.listDataTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), SortableButton.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.TOTAL.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), SortableButton.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.TOTAL.getName(), SortableButton.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), SortableButton.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
@@ -539,12 +540,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public void addListEntryToTable(final GermplasmListData entry) {
 		final String gid = String.format("%s", entry.getGid().toString());
-		final Button gidButton = new Button(gid, new GidLinkButtonClickListener(this.source, gid, true, true));
+		final Button gidButton = new SortableButton(gid, new GidLinkButtonClickListener(this.source, gid, true, true));
 		gidButton.setDebugId("gidButton");
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		gidButton.setDescription("Click to view Germplasm information");
 
-		final Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(this.source, gid, true, true));
+		final Button desigButton = new SortableButton(entry.getDesignation(), new GidLinkButtonClickListener(this.source, gid, true, true));
 		desigButton.setDebugId("desigButton");
 		desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 		desigButton.setDescription("Click to view Germplasm information");
@@ -592,7 +593,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		final String available = entry.getInventoryInfo().getAvailable();
 
 		final Button availableButton =
-				new Button(available.toString(), new InventoryLinkButtonClickListener(this.parentListDetailsComponent,
+				new SortableButton(available.toString(), new InventoryLinkButtonClickListener(this.parentListDetailsComponent,
 						this.germplasmList.getId(), entry.getId(), entry.getGid()));
 		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 		availableButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
