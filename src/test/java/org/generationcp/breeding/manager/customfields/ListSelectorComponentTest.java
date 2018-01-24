@@ -334,7 +334,7 @@ public class ListSelectorComponentTest {
 		// Root Folder in Browse Lists
 		listManagerTreeComponent.updateButtons(ListSelectorComponent.CROP_LISTS);
 
-		Assert.assertTrue("Add Item button must be enabled but didn't.", listManagerTreeComponent.getAddFolderBtn().isEnabled());
+		Assert.assertFalse("Add Item button must be disabled but didn't.", listManagerTreeComponent.getAddFolderBtn().isEnabled());
 		Assert.assertFalse("Rename Item button must be disabled but didn't.", listManagerTreeComponent.getRenameFolderBtn().isEnabled());
 		Assert.assertFalse("Delete Item button must be disabled but didn't.", listManagerTreeComponent.getDeleteFolderBtn().isEnabled());
 	}
