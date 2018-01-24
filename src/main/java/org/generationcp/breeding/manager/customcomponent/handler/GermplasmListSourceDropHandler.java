@@ -8,6 +8,7 @@ import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbstractSelect;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
@@ -76,16 +77,11 @@ public class GermplasmListSourceDropHandler implements DropHandler {
 		}
 
 		GermplasmList targetList = null;
-		try {
-			targetList = this.germplasmListManager.getGermplasmListById((Integer) targetItemId);
-		} catch (final MiddlewareQueryException e) {
-			GermplasmListSourceDropHandler.LOG.error(e.getMessage(), e);
-		} catch (final ClassCastException e) {
-			GermplasmListSourceDropHandler.LOG.error(e.getMessage(), e);
-		}
+		targetList = this.germplasmListManager.getGermplasmListById((Integer) targetItemId);
+
 
 		// Dropped on a folder / root "Program lists" folder
-		if (targetItemId instanceof String || targetList == null || "FOLDER".equalsIgnoreCase(targetList.getType())) {
+		if (targetItemId instanceof String || targetList == null || AppConstants.DB.FOLDER.equalsIgnoreCase(targetList.getType())) {
 			this.utilSource.setParent(sourceItemId, targetItemId);
 			// Dropped on a list
 		} else if (targetList != null) {
@@ -103,5 +99,13 @@ public class GermplasmListSourceDropHandler implements DropHandler {
 	@Override
 	public AcceptCriterion getAcceptCriterion() {
 		return AcceptAll.get();
+	}
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
 	}
 }

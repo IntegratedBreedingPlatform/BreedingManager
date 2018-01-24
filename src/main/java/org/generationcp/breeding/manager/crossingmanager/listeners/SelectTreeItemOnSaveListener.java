@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.crossingmanager.listeners;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customfields.ListNameField;
@@ -47,12 +48,12 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 
 	@Override
 	public void studyClicked(final GermplasmList list) {
-		if (this.saveListAsDialog != null && !"FOLDER".equals(list.getType())) {
+		if (this.saveListAsDialog != null && !AppConstants.DB.FOLDER.equals(list.getType())) {
 			this.saveListAsDialog.getDetailsComponent().populateGermplasmListDetails(list);
 
 			if (this.saveListAsDialog.getSource() instanceof ListBuilderComponent) {
-				final ListBuilderComponent LBC = (ListBuilderComponent) this.saveListAsDialog.getSource();
-				LBC.getSaveListButtonListener().setForceHasChanges(true);
+				final ListBuilderComponent listBuilderComponent = (ListBuilderComponent) this.saveListAsDialog.getSource();
+				listBuilderComponent.getSaveListButtonListener().setForceHasChanges(true);
 			}
 
 		}
@@ -62,7 +63,7 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	public void folderClicked(final GermplasmList list) {
 		if (this.saveListAsDialog != null) {
 			// Check also if folder is clicked (or list is null == central/local folders)
-			if (list != null && "FOLDER".equals(list.getType()) || list == null) {
+			if (list != null && AppConstants.DB.FOLDER.equals(list.getType()) || list == null) {
 				if (!(this.saveListAsDialog.getDetailsComponent().getCurrentGermplasmList() != null
 						&& this.saveListAsDialog.getDetailsComponent().getCurrentGermplasmList().getId() != null)) {
 					this.saveListAsDialog.getDetailsComponent().populateGermplasmListDetails(list);

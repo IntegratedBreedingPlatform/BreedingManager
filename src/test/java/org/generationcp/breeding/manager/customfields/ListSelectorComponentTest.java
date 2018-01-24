@@ -595,6 +595,19 @@ public class ListSelectorComponentTest {
 
 	}
 
+	@Test
+	public void testGetParentOfListItem() {
+
+		final Integer selectedItemId = 1;
+		final Integer parentItemId = 2;
+
+		Mockito.when(germplasmListSource.getParent(selectedItemId)).thenReturn(parentItemId);
+
+		Assert.assertEquals(parentItemId, listSelectorComponent.getParentOfListItem(selectedItemId));
+
+
+	}
+
 	private GermplasmList createGermplasmList(final Integer id, final String name, final String description) {
 		final GermplasmList germplasmList = new GermplasmList();
 		germplasmList.setId(id);

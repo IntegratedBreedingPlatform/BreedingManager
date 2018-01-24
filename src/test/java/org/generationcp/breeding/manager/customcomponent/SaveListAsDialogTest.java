@@ -490,4 +490,29 @@ public class SaveListAsDialogTest {
 
 	}
 
+	@Test
+	public void testIsCropList() {
+
+		// Selected item is Crop Lists folder
+		Assert.assertTrue(dialog.isCropList(ListSelectorComponent.CROP_LISTS));
+
+		// Selected item is Program Lists folder
+		Assert.assertFalse(dialog.isCropList(ListSelectorComponent.PROGRAM_LISTS));
+
+		final Integer selectedItemId = 1;
+
+		// Parent of the selected list is Crop Lists folder
+		Mockito.when(germplasmListTree.getParentOfListItem(selectedItemId)).thenReturn(ListSelectorComponent.CROP_LISTS);
+		Assert.assertTrue(dialog.isCropList(selectedItemId));
+
+		// Parent of the selected list is Program Lists folder
+		Mockito.when(germplasmListTree.getParentOfListItem(selectedItemId)).thenReturn(ListSelectorComponent.PROGRAM_LISTS);
+		Assert.assertFalse(dialog.isCropList(selectedItemId));
+
+		// Parent of the selected list is a folder
+		Mockito.when(germplasmListTree.getParentOfListItem(selectedItemId)).thenReturn(123);
+		Assert.assertFalse(dialog.isCropList(selectedItemId));
+
+	}
+
 }

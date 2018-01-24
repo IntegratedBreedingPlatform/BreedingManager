@@ -79,54 +79,47 @@ public class ListCommonActionsUtil {
 
 	public static GermplasmList overwriteList(final GermplasmList listToSave, final GermplasmListManager dataManager,
 			final Component source, final SimpleResourceBundleMessageSource messageSource, final Boolean showMessages) {
+
 		GermplasmList savedList = null;
-		try {
-			Integer listId = null;
-			final GermplasmList listFromDB = dataManager.getGermplasmListById(listToSave.getId());
-			if (listFromDB != null) {
-				listFromDB.setName(listToSave.getName());
-				listFromDB.setDescription(listToSave.getDescription());
-				listFromDB.setDate(listToSave.getDate());
-				listFromDB.setType(listToSave.getType());
-				listFromDB.setNotes(listToSave.getNotes());
-				listFromDB.setParent(listToSave.getParent());
-				listFromDB.setProgramUUID(listToSave.getProgramUUID());
 
-				listId = dataManager.updateGermplasmList(listFromDB);
-			}
+		Integer listId = null;
+		final GermplasmList listFromDB = dataManager.getGermplasmListById(listToSave.getId());
+		if (listFromDB != null) {
+			listFromDB.setName(listToSave.getName());
+			listFromDB.setDescription(listToSave.getDescription());
+			listFromDB.setDate(listToSave.getDate());
+			listFromDB.setType(listToSave.getType());
+			listFromDB.setNotes(listToSave.getNotes());
+			listFromDB.setParent(listToSave.getParent());
+			listFromDB.setProgramUUID(listToSave.getProgramUUID());
 
-			if (listId == null) {
-				if (showMessages) {
-					MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
-							messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
-				}
-				return null;
-			} else {
-				savedList = listFromDB;
+			listId = dataManager.updateGermplasmList(listFromDB);
+		}
 
-				if (source instanceof ListBuilderComponent) {
-					final ListBuilderComponent component = (ListBuilderComponent) source;
-					component.setCurrentlySavedGermplasmList(listFromDB);
-					component.setHasUnsavedChanges(false);
-					component.getSource().getListSelectionComponent().showNodeOnTree(listId);
-				} else if (source instanceof ListManagerMain) {
-					final ListManagerMain component = (ListManagerMain) source;
-					component.getListSelectionComponent().updateUIForRenamedList(listToSave, listToSave.getName());
-
-					component.getListSelectionComponent().showNodeOnTree(listFromDB.getId());
-					MessageNotifier.showMessage(source.getWindow(), messageSource.getMessage(Message.SUCCESS),
-							"Changes to list header were saved.", 3000);
-				}
-
-			}
-		} catch (final MiddlewareQueryException ex) {
-			ListCommonActionsUtil.LOG.error("Error in updating germplasm list: " + listToSave.getId(), ex);
+		if (listId == null) {
 			if (showMessages) {
 				MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
 						messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 			}
 			return null;
+		} else {
+			savedList = listFromDB;
+
+			if (source instanceof ListBuilderComponent) {
+				final ListBuilderComponent component = (ListBuilderComponent) source;
+				component.setCurrentlySavedGermplasmList(listFromDB);
+				component.setHasUnsavedChanges(false);
+				component.getSource().getListSelectionComponent().showNodeOnTree(listId);
+			} else if (source instanceof ListManagerMain) {
+				final ListManagerMain component = (ListManagerMain) source;
+				component.getListSelectionComponent().updateUIForRenamedList(listToSave, listToSave.getName());
+				component.getListSelectionComponent().showNodeOnTree(listFromDB.getId());
+				MessageNotifier.showMessage(source.getWindow(), messageSource.getMessage(Message.SUCCESS),
+						"Changes to list header were saved.", 3000);
+			}
+
 		}
+
 		return savedList;
 	}
 
