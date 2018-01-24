@@ -16,7 +16,6 @@ import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
-import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.springframework.beans.factory.annotation.Autowired;

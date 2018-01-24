@@ -92,7 +92,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		this.headerListLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 		this.headerListLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
-		this.indicatesMandatoryLabel = new Label(this.messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
+		this.indicatesMandatoryLabel = new Label("* " + this.messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
 		this.indicatesMandatoryLabel.setDebugId("indicatesMandatoryLabel");
 		this.indicatesMandatoryLabel.addStyleName("italic");
 		this.listNameField = new ListNameField(this.messageSource.getMessage(Message.LIST_NAME), true);

@@ -288,6 +288,7 @@
 	</bean>
 
     <bean id="userTreeStateService" class="org.generationcp.commons.service.impl.UserTreeStateServiceImpl"/>
+    
 
     <!-- Data Source and Transaction Configuration -->
 
