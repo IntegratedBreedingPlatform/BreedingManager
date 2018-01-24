@@ -76,14 +76,14 @@ public class AssignCodesNamingLayout {
 		this.prefixTextField.setDebugId("prefixTextField");
 		this.prefixTextField.setImmediate(true);
 		this.prefixTextField.addValidator(new StringLengthValidator(
-				this.messageSource.getMessage(Message.ERROR_TOO_LONG, this.messageSource.getMessage(Message.CODE_PREFIX), 50), 0, 50,
+				this.messageSource.getMessage(Message.ERROR_TOO_LONG, this.messageSource.getMessage(Message.CODE_PREFIX), 49), 0, 49,
 				false));
 		
 		this.suffixTextField = new TextField();
 		this.suffixTextField.setDebugId("suffixTextField");
 		this.suffixTextField.setImmediate(true);
 		this.suffixTextField.addValidator(new StringLengthValidator(
-				this.messageSource.getMessage(Message.ERROR_TOO_LONG, this.messageSource.getMessage(Message.CODE_SUFFIX), 50), 0, 50,
+				this.messageSource.getMessage(Message.ERROR_TOO_LONG, this.messageSource.getMessage(Message.CODE_SUFFIX), 49), 0, 49,
 				true));
 		
 		this.numOfAllowedDigitsSelect = new Select();
