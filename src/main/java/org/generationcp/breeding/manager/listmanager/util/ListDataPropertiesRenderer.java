@@ -48,7 +48,8 @@ public class ListDataPropertiesRenderer {
 		for (final Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
 			final String column = columnEntry.getKey();
 			this.targetTable.addContainerProperty(column, String.class, "");
-			this.targetTable.setColumnHeader(column, ColumnLabels.get(column).getTermNameFromOntology(this.ontologyDataManager));
+			final String columnName = ColumnLabels.get(column).getTermNameFromOntology(this.ontologyDataManager);
+			this.targetTable.setColumnHeader(column, columnName);
 			this.targetTable.setColumnWidth(column, 250);
 			this.setColumnValues(column, columnEntry.getValue());
 		}

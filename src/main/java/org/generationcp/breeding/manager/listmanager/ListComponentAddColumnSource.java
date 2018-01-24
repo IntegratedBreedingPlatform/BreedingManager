@@ -110,9 +110,7 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 
 	@Override
 	public List<FillWithOption> getColumnsToExclude() {
-		return Arrays.asList(FillWithOption.FILL_WITH_ATTRIBUTE,
-			FillWithOption.FILL_WITH_GROUP_SOURCE_INFO,
-			FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_INFO);
+		return Arrays.asList();
 	}
 
 	@Override

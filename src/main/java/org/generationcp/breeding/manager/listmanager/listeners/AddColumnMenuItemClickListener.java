@@ -63,6 +63,44 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 			AddColumnMenuItemClickListener.this.addCrossMalePrefNameColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey()).equals(clickedOptionName)) {
 			AddColumnMenuItemClickListener.this.displayFillWithAttributeWindow();
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_GID.getMessageKey()).equals(clickedOptionName)) {
+			AddColumnMenuItemClickListener.this.addGroupSourceGidColumn();
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME.getMessageKey())
+			.equals(clickedOptionName)) {
+			AddColumnMenuItemClickListener.this.addGroupPreferredNameColumn();
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID.getMessageKey()).equals(clickedOptionName)) {
+			AddColumnMenuItemClickListener.this.addImmediateSourceGidColumn();
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME.getMessageKey())
+			.equals(clickedOptionName)) {
+			AddColumnMenuItemClickListener.this.addImmediateSourcePreferredNameColumn();
+		}
+	}
+
+	private void addImmediateSourcePreferredNameColumn() {
+		if (!this.addColumnSource.columnExists(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME);
+			this.valuesGenerator.setImmediateSourcePreferredNameColumnValues(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName());
+		}
+	}
+
+	private void addImmediateSourceGidColumn() {
+		if (!this.addColumnSource.columnExists(ColumnLabels.IMMEDIATE_SOURCE_GID.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.IMMEDIATE_SOURCE_GID);
+			this.valuesGenerator.setImmediateSourceGidColumnValues(ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
+		}
+	}
+
+	private void addGroupPreferredNameColumn() {
+		if (!this.addColumnSource.columnExists(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME);
+			this.valuesGenerator.setGroupSourcePreferredNameColumnValues(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName());
+		}
+	}
+
+	private void addGroupSourceGidColumn() {
+		if (!this.addColumnSource.columnExists(ColumnLabels.GROUP_SOURCE_GID.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.GROUP_SOURCE_GID);
+			this.valuesGenerator.setGroupSourceGidColumnValues(ColumnLabels.GROUP_SOURCE_GID.getName());
 		}
 	}
 
