@@ -96,9 +96,7 @@ public class AssignCodesDialogTest {
 	}
 
 	private void verifyAssignCodesActions() {
-		Mockito.verify(this.germplasmNamingService).applyGroupName(1, this.setting, this.nameType, 0, 0);
-		Mockito.verify(this.germplasmNamingService).applyGroupName(2, this.setting, this.nameType, 0, 0);
-		Mockito.verify(this.germplasmNamingService).applyGroupName(3, this.setting, this.nameType, 0, 0);
+		Mockito.verify(this.germplasmNamingService).applyGroupNames(this.createGidsToProcess(), this.setting, this.nameType, 0, 0);
 
 		Mockito.verify(this.parent).addWindow(Mockito.any(AssignCodesResultsDialog.class));
 		Mockito.verify(this.parent).removeWindow(this.assignCodesDialog);
