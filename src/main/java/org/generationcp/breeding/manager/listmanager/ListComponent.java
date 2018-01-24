@@ -1403,10 +1403,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		final Set<Integer> gidsToProcess = this.extractGidListFromListDataTable(this.listDataTable);
 
 		if (!gidsToProcess.isEmpty()) {
-
-			final boolean isCustomLayout = CrossingUtil.isCimmytMaize(this.crossExpansionProperties.getProfile(),
-					this.contextUtil.getProjectInContext().getCropType().getCropName());
-			this.getWindow().addWindow(new AssignCodesDialog(gidsToProcess, isCustomLayout));
+			this.getWindow().addWindow(new AssignCodesDialog(gidsToProcess));
 
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ASSIGN_CODES),
