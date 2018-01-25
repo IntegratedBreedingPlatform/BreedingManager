@@ -74,14 +74,12 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-
+		// Do nothing
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
-
+		// Do nothing
 	}
 
 }
