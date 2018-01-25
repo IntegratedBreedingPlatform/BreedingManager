@@ -51,7 +51,6 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	private ContextMenuItem menuFillWithImmediateSourcePreferredName;
 
 	private final ContextMenuItem listEditingOptions;
-
 	private final AddColumnSource addColumnSource;
 
 
@@ -218,20 +217,18 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME, this.menuFillWithCrossFemalePrefName);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.CROSS_MALE_GID, this.menuFillWithCrossMaleGID);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.CROSS_MALE_PREFERRED_NAME, this.menuFillWithCrossMalePrefName);
-
-
-		if(this.menuFillWithGroupSourceInfo != null && this.menuFillWithImmediateSourceInfo != null) {
-			this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.GROUP_SOURCE_GID, this.menuFillWithGroupSourceGID);
-			this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.GROUP_SOURCE_PREFERRED_NAME, this.menuFillWithGroupSourcePreferredName);
-			this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.IMMEDIATE_SOURCE_GID, this.menuFillWithImmediateSourceGID);
-			this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME, this.menuFillWithImmediateSourcePreferredName);
-		}
+		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.GROUP_SOURCE_GID, this.menuFillWithGroupSourceGID);
+		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.GROUP_SOURCE_PREFERRED_NAME,
+			this.menuFillWithGroupSourcePreferredName);
+		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.IMMEDIATE_SOURCE_GID, this.menuFillWithImmediateSourceGID);
+		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME,
+			this.menuFillWithImmediateSourcePreferredName);
 
 		// Disable main "Breeding Method Information" menu item if columns were added for all sub-menu items
 		if (AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_NAME.getName(), table) && AddColumnContextMenu
-				.propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), table) && AddColumnContextMenu
-				.propertyExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), table) && AddColumnContextMenu
-				.propertyExists(ColumnLabels.BREEDING_METHOD_GROUP.getName(), table)) {
+			.propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), table) && AddColumnContextMenu
+			.propertyExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), table) && AddColumnContextMenu
+			.propertyExists(ColumnLabels.BREEDING_METHOD_GROUP.getName(), table)) {
 			this.menuFillWithMethodInfo.setEnabled(false);
 		} else {
 			this.menuFillWithMethodInfo.setEnabled(true);
@@ -239,7 +236,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 		// Disable main "Cross Female Information" menu item if columns were added for all sub-menu items
 		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_FEMALE_GID.getName(), table) && AddColumnContextMenu
-				.propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), table)) {
+			.propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), table)) {
 			this.menuFillWithCrossFemaleInfo.setEnabled(false);
 		} else {
 			this.menuFillWithCrossFemaleInfo.setEnabled(true);
@@ -247,28 +244,26 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 		// Disable main "Cross Male Information" menu item if columns were added for all sub-menu items
 		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_MALE_GID.getName(), table) && AddColumnContextMenu
-				.propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), table)) {
+			.propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), table)) {
 			this.menuFillWithCrossMaleInfo.setEnabled(false);
 		} else {
 			this.menuFillWithCrossMaleInfo.setEnabled(true);
 		}
 
-		if(this.menuFillWithGroupSourceInfo != null && this.menuFillWithImmediateSourceInfo != null) {
-			// Disable main "Group Source Information" menu item if columns were added for all sub-menu items
-			if (AddColumnContextMenu.propertyExists(ColumnLabels.GROUP_SOURCE_GID.getName(), table) && AddColumnContextMenu
-				.propertyExists(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), table)) {
-				this.menuFillWithGroupSourceInfo.setEnabled(false);
-			} else {
-				this.menuFillWithGroupSourceInfo.setEnabled(true);
-			}
+		// Disable main "Group Source Information" menu item if columns were added for all sub-menu items
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.GROUP_SOURCE_GID.getName(), table) && AddColumnContextMenu
+			.propertyExists(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), table)) {
+			this.menuFillWithGroupSourceInfo.setEnabled(false);
+		} else {
+			this.menuFillWithGroupSourceInfo.setEnabled(true);
+		}
 
-			// Disable main "Immediate Source Information" menu item if columns were added for all sub-menu items
-			if (AddColumnContextMenu.propertyExists(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), table) && AddColumnContextMenu
-				.propertyExists(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), table)) {
-				this.menuFillWithImmediateSourceInfo.setEnabled(false);
-			} else {
-				this.menuFillWithImmediateSourceInfo.setEnabled(true);
-			}
+		// Disable main "Immediate Source Information" menu item if columns were added for all sub-menu items
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), table) && AddColumnContextMenu
+			.propertyExists(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), table)) {
+			this.menuFillWithImmediateSourceInfo.setEnabled(false);
+		} else {
+			this.menuFillWithImmediateSourceInfo.setEnabled(true);
 		}
 
 		this.sourceContextMenu.requestRepaint();
@@ -328,7 +323,6 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 			}
 			listDataCollection.add(new ListDataInfo(Integer.valueOf(itemId.toString()), columns));
 		}
-
 		return listDataCollection;
 	}
 
@@ -468,5 +462,9 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 	public void setMenuFillWithImmediateSourcePreferredName(final ContextMenuItem menuFillWithImmediateSourcePreferredName) {
 		this.menuFillWithImmediateSourcePreferredName = menuFillWithImmediateSourcePreferredName;
+	}
+
+	public AddColumnSource getAddColumnSource() {
+		return addColumnSource;
 	}
 }

@@ -83,14 +83,14 @@ public class AssignCodesNamingLayoutTest {
 		final Collection<Validator> prefixValidators = prefixTextField.getValidators();
 		Assert.assertNotNull(prefixValidators);
 		final StringLengthValidator prefixValidator = (StringLengthValidator) prefixValidators.iterator().next();
-		Assert.assertEquals(50, prefixValidator.getMaxLength());
+		Assert.assertEquals(49, prefixValidator.getMaxLength());
 
 		final TextField suffixTextField = this.namingLayout.getSuffixTextField();
 		Assert.assertTrue(suffixTextField.isImmediate());
 		final Collection<Validator> suffixValidators = suffixTextField.getValidators();
 		Assert.assertNotNull(suffixValidators);
 		final StringLengthValidator suffixValidator = (StringLengthValidator) suffixValidators.iterator().next();
-		Assert.assertEquals(50, suffixValidator.getMaxLength());
+		Assert.assertEquals(49, suffixValidator.getMaxLength());
 
 		final TextField startTextField = this.namingLayout.getStartNumberTextField();
 		Assert.assertTrue(startTextField.isImmediate());

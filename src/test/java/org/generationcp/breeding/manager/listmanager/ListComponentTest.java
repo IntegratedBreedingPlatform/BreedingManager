@@ -1,17 +1,12 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import com.google.common.collect.Lists;
+import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
+import junit.framework.Assert;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
@@ -27,9 +22,9 @@ import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
@@ -39,6 +34,7 @@ import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -47,6 +43,7 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.generationcp.middleware.pojos.workbench.CropType;
@@ -64,14 +61,17 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
-
-import com.google.common.collect.Lists;
-import junit.framework.Assert;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListComponentTest {
@@ -169,13 +169,22 @@ public class ListComponentTest {
 	private GermplasmList germplasmList;
 	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
 
+	@Mock
+	private GermplasmDataManager germplasmDataManager;
+
 	@Before
 	public void setUp() throws Exception {
 
 		this.setUpWorkbenchDataManager();
 		this.setUpOntologyManager();
 		this.setUpListComponent();
+		this.setUpGermplasmDataManager();
 		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
+	}
+
+	private void setUpGermplasmDataManager() {
+		List<UserDefinedField> lattributeList = new ArrayList<>();
+		Mockito.when(this.germplasmDataManager.getAttributeTypesByGIDList(Mockito.anyList())).thenReturn(lattributeList);
 	}
 
 	@Test

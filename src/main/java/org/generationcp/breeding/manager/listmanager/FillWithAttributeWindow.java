@@ -87,8 +87,10 @@ public class FillWithAttributeWindow extends BaseSubWindow
 		this.attributeTypeList = this.germplasmDataManager.getAttributeTypesByGIDList(gids);
 
 		for (final UserDefinedField attributeType : this.attributeTypeList) {
-			this.attributeBox.addItem(attributeType.getFldno());
-			this.attributeBox.setItemCaption(attributeType.getFldno(), attributeType.getFcode());
+			if(!this.addColumnSource.columnExists(attributeType.getFcode())){
+				this.attributeBox.addItem(attributeType.getFldno());
+				this.attributeBox.setItemCaption(attributeType.getFldno(), attributeType.getFcode());
+			}
 		}
 	}
 
