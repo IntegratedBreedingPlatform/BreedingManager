@@ -64,9 +64,15 @@ public class ListNameValidatorTest {
 	}
 
 	@Test
-	public void testValidateListNameForRootFolderLists() {
+	public void testValidateListNameForRootFolderProgramLists() {
 		Assert.assertFalse("Expecting that the validator will return false when the list name is the root folder name.",
-				this.listNameValidator.validateListName(ListSelectorComponent.LISTS));
+				this.listNameValidator.validateListName(ListSelectorComponent.PROGRAM_LISTS));
+	}
+
+	@Test
+	public void testValidateListNameForRootFolderCropLists() {
+		Assert.assertFalse("Expecting that the validator will return false when the list name is the root folder name.",
+				this.listNameValidator.validateListName(ListSelectorComponent.CROP_LISTS));
 	}
 
 	private void doReturnMatchingListFromMiddleware(final String listName) {

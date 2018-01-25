@@ -27,7 +27,7 @@ public class GermplasmListTreeExpandListenerTest {
 
 	@Test
 	public void testAddRenameItemOptionIsHiddenAfterClickingExpandArrow() {
-		Mockito.when(GermplasmListTreeExpandListenerTest.event.getItemId()).thenReturn(ListSelectorComponent.LISTS);
+		Mockito.when(GermplasmListTreeExpandListenerTest.event.getItemId()).thenReturn(ListSelectorComponent.PROGRAM_LISTS);
 		this.triggerExpand();
 		this.assertIfToggleFolderSectionForItemSelectedIsCalled();
 	}

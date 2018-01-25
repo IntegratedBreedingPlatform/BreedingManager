@@ -1,33 +1,4 @@
-
 package org.generationcp.breeding.manager.customcomponent;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.generationcp.breeding.manager.application.BreedingManagerLayout;
-import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
-import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
-import org.generationcp.breeding.manager.customfields.ListDateField;
-import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
-import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
-import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
-import org.generationcp.commons.util.DateUtil;
-import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.commons.vaadin.ui.BaseSubWindow;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Alignment;
@@ -39,11 +10,38 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
+import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
+import org.generationcp.breeding.manager.customfields.ListDateField;
+import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
+import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
+import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
+import org.generationcp.commons.util.DateUtil;
+import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Configurable
 public class SaveListAsDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
-	private static final String FOLDER_TYPE = "FOLDER";
+	public static final String FOLDER_TYPE = "FOLDER";
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(SaveListAsDialog.class);
 
@@ -73,6 +71,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	private GermplasmList germplasmList;
 
 	public static final Integer LIST_NAMES_STATUS = 1;
+	public static final Integer LIST_LOCKED_STATUS = 101;
 
 	public SaveListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList) {
 		this(source, germplasmList, null);
@@ -138,9 +137,9 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	@Override
 	public void initializeValues() {
 		if (this.germplasmList != null) {
-			this.listDetailsComponent.setGermplasmListDetails(this.germplasmList);
+			this.listDetailsComponent.populateGermplasmListDetails(this.germplasmList);
 		} else {
-			this.listDetailsComponent.setGermplasmListDetails(null);
+			this.listDetailsComponent.populateGermplasmListDetails(null);
 		}
 
 		this.germplasmListTree.reinitializeTree(true);
@@ -211,6 +210,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	}
 
 	public GermplasmList getSelectedListOnTree() {
+
 		Integer folderId = null;
 		if (this.germplasmListTree.getSelectedListId() instanceof Integer) {
 			folderId = (Integer) this.germplasmListTree.getSelectedListId();
@@ -218,11 +218,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 		GermplasmList folder = null;
 		if (folderId != null) {
-			try {
-				folder = this.germplasmListManager.getGermplasmListById(folderId);
-			} catch (final MiddlewareQueryException e) {
-				SaveListAsDialog.LOG.error("Error with retrieving list with id: " + folderId, e);
-			}
+			folder = this.germplasmListManager.getGermplasmListById(folderId);
 		}
 
 		return folder;
@@ -244,21 +240,26 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 			this.source.setCurrentlySavedGermplasmList(this.germplasmList);
 
 			// If selected item is a folder, get parent of that folder
-			try {
-				selectedList = this.germplasmListManager.getGermplasmListById(selectedList.getParentId());
-			} catch (final MiddlewareQueryException e) {
-				SaveListAsDialog.LOG.error("Error with getting parent list: " + selectedList.getParentId(), e);
-			}
+			selectedList = this.germplasmListManager.getGermplasmListById(selectedList.getParentId());
 
 			// If not, use old method, get germplasm list the old way
 		} else {
-			this.germplasmList = this.listDetailsComponent.getGermplasmList();
+			this.germplasmList =
+					this.listDetailsComponent.createGermplasmListFromListDetails(this.isCropList(germplasmListTree.getSelectedListId()));
 			this.germplasmList.setId(currentId);
 			this.germplasmList.setStatus(SaveListAsDialog.LIST_NAMES_STATUS);
 		}
 
 		this.germplasmList.setParent(selectedList);
+
 		return this.germplasmList;
+	}
+
+	boolean isCropList(final Object selectedListId) {
+
+		return ListSelectorComponent.CROP_LISTS.equals(selectedListId) || ListSelectorComponent.CROP_LISTS
+				.equals(this.germplasmListTree.getParentOfListItem(selectedListId));
+
 	}
 
 	protected boolean validateAllFields() {
@@ -307,7 +308,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		this.originalGermplasmList = originalGermplasmList;
 	}
 
-	private void doSaveAction(final ClickEvent event) {
+	void doSaveAction(final ClickEvent event) {
 		// Call method so that the variables will be updated, values will be used for the logic below
 		this.germplasmList = this.getGermplasmListToSave();
 
@@ -324,8 +325,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 				this.setGermplasmListDetails(gl);
 
 				ConfirmDialog.show(this.getWindow().getParent().getWindow(),
-						this.messageSource.getMessage(Message.DO_YOU_WANT_TO_OVERWRITE_THIS_LIST) + "?",
-						this.messageSource.getMessage(
+						this.messageSource.getMessage(Message.DO_YOU_WANT_TO_OVERWRITE_THIS_LIST) + "?", this.messageSource.getMessage(
 								Message.LIST_DATA_WILL_BE_DELETED_AND_WILL_BE_REPLACED_WITH_THE_DATA_FROM_THE_LIST_THAT_YOU_JUST_CREATED),
 						this.messageSource.getMessage(Message.OK), this.messageSource.getMessage(Message.CANCEL),
 						new ConfirmDialog.Listener() {
@@ -343,12 +343,18 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 							}
 						});
 
-				// If target list to be overwritten is itself
+				// If target list to be overwritten is itself or a folder
 			} else {
 				if (this.validateAllFields()) {
 
 					final GermplasmList gl = this.getGermplasmListToSave();
 					this.setGermplasmListDetails(gl);
+
+					// if the germplasm list has null programUUID it means that it is saved in
+					// the 'Crop lists' folder.
+					if (gl.getProgramUUID() == null) {
+						gl.setStatus(LIST_LOCKED_STATUS);
+					}
 
 					this.source.saveList(gl);
 					this.saveListChangesAction();
@@ -425,5 +431,13 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	public void setGermplasmListTree(final LocalListFoldersTreeComponent germplasmListTree) {
 		this.germplasmListTree = germplasmListTree;
+	}
+
+	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 }
