@@ -941,21 +941,8 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 		final List<GermplasmList> programLevelGermplasmLists = this.germplasmListManager.getAllTopLevelLists(this.getCurrentProgramUUID());
 
-		// Add "Program lists" root folder
-		germplasmListSource
-				.addItem(this.generateCellInfo(ListSelectorComponent.PROGRAM_LISTS, "", "", "", ""), ListSelectorComponent.PROGRAM_LISTS);
-
-		this.setNodeItemIcon(ListSelectorComponent.PROGRAM_LISTS, true);
-		germplasmListSource.setItemCaption(ListSelectorComponent.PROGRAM_LISTS, ListSelectorComponent.PROGRAM_LISTS);
-
-		final Map<Integer, GermplasmListMetadata> allListMetaData =
-				germplasmListManager.getGermplasmListMetadata(programLevelGermplasmLists);
-
-		for (final GermplasmList parentList : programLevelGermplasmLists) {
-			if (this.doAddItem(parentList)) {
-				addGermplasmList(ListSelectorComponent.PROGRAM_LISTS, parentList, allListMetaData, germplasmListSource, listTypes);
-			}
-		}
+		// Add "Program lists" root folder and its children
+		addGermplasmLists(ListSelectorComponent.PROGRAM_LISTS, programLevelGermplasmLists, listTypes, germplasmListSource);
 
 	}
 
@@ -963,22 +950,32 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 		final List<GermplasmList> cropLevelGermplasmLists = this.germplasmListManager.getAllTopLevelLists(null);
 
-		// Add "Crop lists" root folder
-		germplasmListSource
-				.addItem(this.generateCellInfo(ListSelectorComponent.CROP_LISTS, "", "", "", ""), ListSelectorComponent.CROP_LISTS);
-		germplasmListSource.setItemCaption(ListSelectorComponent.CROP_LISTS, ListSelectorComponent.CROP_LISTS);
+		// Add "Crop lists" root folder and its children
+		addGermplasmLists(ListSelectorComponent.CROP_LISTS, cropLevelGermplasmLists, listTypes, germplasmListSource);
 
-		this.setNodeItemIcon(ListSelectorComponent.CROP_LISTS, true);
+
+	}
+
+	void addGermplasmLists(final String parentId, List<GermplasmList> germplasmLists, final List<UserDefinedField> listTypes,
+			final GermplasmListSource germplasmListSource) {
+
+		germplasmListSource
+				.addItem(this.generateCellInfo(parentId, "", "", "", ""), parentId);
+		germplasmListSource.setItemCaption(parentId, parentId);
+
+		this.setNodeItemIcon(parentId, true);
 
 		final Map<Integer, GermplasmListMetadata> germplasmListMetadata =
-				germplasmListManager.getGermplasmListMetadata(cropLevelGermplasmLists);
+				germplasmListManager.getGermplasmListMetadata(germplasmLists);
 
-		for (final GermplasmList cropLevelGermplasmList : cropLevelGermplasmLists) {
+		for (final GermplasmList cropLevelGermplasmList : germplasmLists) {
 			if (this.doAddItem(cropLevelGermplasmList)) {
-				addGermplasmList(ListSelectorComponent.CROP_LISTS, cropLevelGermplasmList, germplasmListMetadata, germplasmListSource,
+				addGermplasmList(parentId, cropLevelGermplasmList, germplasmListMetadata, germplasmListSource,
 						listTypes);
 			}
 		}
+
+
 
 	}
 
