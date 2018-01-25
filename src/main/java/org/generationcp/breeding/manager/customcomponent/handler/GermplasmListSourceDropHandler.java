@@ -77,8 +77,11 @@ public class GermplasmListSourceDropHandler implements DropHandler {
 		}
 
 		GermplasmList targetList = null;
-		targetList = this.germplasmListManager.getGermplasmListById((Integer) targetItemId);
-
+		try {
+			targetList = this.germplasmListManager.getGermplasmListById((Integer) targetItemId);
+		} catch (ClassCastException e) {
+			GermplasmListSourceDropHandler.LOG.error(e.getMessage(), e);
+		}
 
 		// Dropped on a folder / root "Program lists" folder
 		if (targetItemId instanceof String || targetList == null || AppConstants.DB.FOLDER.equalsIgnoreCase(targetList.getType())) {
