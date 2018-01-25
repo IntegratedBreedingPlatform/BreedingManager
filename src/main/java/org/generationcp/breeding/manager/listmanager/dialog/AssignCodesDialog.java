@@ -185,24 +185,19 @@ public class AssignCodesDialog extends BaseSubWindow
 		 */
 		synchronized (AssignCodesDialog.class) {
 			final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-			final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new LinkedHashMap<>();
 			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 				@Override
 				protected void doInTransactionWithoutResult(final TransactionStatus status) {
 					final UserDefinedField nameType = (UserDefinedField) AssignCodesDialog.this.codingLevelOptions.getValue();
-
-					// TODO performance tuning when processing large number of list entries..
-					for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
-						// TODO pass user and location. Hardcoded to 0 = unknown for now.
-						final GermplasmGroupNamingResult result =
-								AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, AssignCodesDialog.this.assignCodesNamingLayout.generateGermplasmNameSetting(), nameType, 0, 0);
-						assignCodesResultsMap.put(gid, result);
-					}
+					
+					// TODO pass user and location. Hardcoded to 0 = unknown for now.
+					final Map<Integer, GermplasmGroupNamingResult> resultsMap = AssignCodesDialog.this.germplasmNamingService.applyGroupNames(AssignCodesDialog.this.gidsToProcess,
+							AssignCodesDialog.this.assignCodesNamingLayout.generateGermplasmNameSetting(), nameType, 0, 0);
+					AssignCodesDialog.this.getParent().addWindow(new AssignCodesResultsDialog(resultsMap));
+					AssignCodesDialog.this.closeWindow();
 				}
 			});
-			this.getParent().addWindow(new AssignCodesResultsDialog(assignCodesResultsMap));
-			this.closeWindow();
 		}
 	}
 	
