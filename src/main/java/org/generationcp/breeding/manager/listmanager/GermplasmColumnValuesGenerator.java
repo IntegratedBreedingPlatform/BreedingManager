@@ -394,8 +394,7 @@ public class GermplasmColumnValuesGenerator {
 			for (final Object itemId : itemIds) {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 				final Germplasm germplasm = germplasmMap.get(gid);
-				final String groupSourceGid =
-					germplasm.getGnpgs() == -1 && null != germplasm.getGpid1() ? germplasm.getGpid1().toString() : "-";
+				final String groupSourceGid = germplasm.getGnpgs() == -1 && null != germplasm.getGpid1() && 0 != germplasm.getGpid1()? germplasm.getGpid1().toString() : "-";
 				this.fillColumnSource.setColumnValueForItem(itemId, columnName, groupSourceGid);
 			}
 			this.fillColumnSource.propagateUIChanges();
@@ -419,7 +418,7 @@ public class GermplasmColumnValuesGenerator {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 				final Germplasm germplasm = germplasmMap.get(gid);
 				final String immediateSourceGid =
-					germplasm.getGnpgs() == -1 && null != germplasm.getGpid2() ? germplasm.getGpid2().toString() : "-";
+					germplasm.getGnpgs() == -1 && null != germplasm.getGpid2() && 0 != germplasm.getGpid2() ? germplasm.getGpid2().toString() : "-";
 				this.fillColumnSource.setColumnValueForItem(itemId, columnName, immediateSourceGid);
 			}
 			this.fillColumnSource.propagateUIChanges();
