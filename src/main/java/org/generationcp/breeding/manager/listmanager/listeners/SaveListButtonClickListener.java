@@ -1,10 +1,13 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AddColumnContextMenuOption;
@@ -35,14 +38,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configurable
 public class SaveListButtonClickListener implements Button.ClickListener, InitializingBean {
@@ -113,30 +111,21 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				}
 
 				if (currentlySavedList == null || listToSave.getId() == null) {
-					listToSave.setStatus(1);
 
-					try {
-						listToSave.setUserId(SaveListButtonClickListener.this.contextUtil.getCurrentUserLocalId());
-						listToSave.setProgramUUID(SaveListButtonClickListener.this.contextUtil.getCurrentProgramUUID());
+					listToSave.setUserId(SaveListButtonClickListener.this.contextUtil.getCurrentUserLocalId());
 
-						final Integer listId = SaveListButtonClickListener.this.germplasmListManager.addGermplasmList(listToSave);
+					final Integer listId = SaveListButtonClickListener.this.germplasmListManager.addGermplasmList(listToSave);
 
-						if (listId != null) {
-							final GermplasmList listSaved =
-									SaveListButtonClickListener.this.germplasmListManager.getGermplasmListById(listId);
-							currentlySavedList = listSaved;
-							SaveListButtonClickListener.this.source.setCurrentlySavedGermplasmList(listSaved);
+					if (listId != null) {
+						final GermplasmList listSaved = SaveListButtonClickListener.this.germplasmListManager.getGermplasmListById(listId);
+						currentlySavedList = listSaved;
+						SaveListButtonClickListener.this.source.setCurrentlySavedGermplasmList(listSaved);
 
-							SaveListButtonClickListener.this.source.setHasUnsavedChanges(false);
+						SaveListButtonClickListener.this.source.setHasUnsavedChanges(false);
 
-							SaveListButtonClickListener.this.source.getSource().getListSelectionComponent().showNodeOnTree(listId);
+						SaveListButtonClickListener.this.source.getSource().getListSelectionComponent().showNodeOnTree(listId);
 
-						} else {
-							SaveListButtonClickListener.this.showErrorOnSavingGermplasmList(showMessages);
-							return;
-						}
-					} catch (final MiddlewareQueryException ex) {
-						SaveListButtonClickListener.LOG.error("Error in saving germplasm list: " + listToSave, ex);
+					} else {
 						SaveListButtonClickListener.this.showErrorOnSavingGermplasmList(showMessages);
 						return;
 					}
@@ -182,16 +171,11 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					}
 				}
 
-				try {
-					SaveListButtonClickListener.this.contextUtil.logProgramActivity("List Manager Save List",
-							"Successfully saved list and list entries for: " + currentlySavedList.getId() + " - " + currentlySavedList
-									.getName());
+				SaveListButtonClickListener.this.contextUtil.logProgramActivity("List Manager Save List",
+						"Successfully saved list and list entries for: " + currentlySavedList.getId() + " - " + currentlySavedList
+								.getName());
 
-					SaveListButtonClickListener.this.source.getBuildNewListDropHandler().setChanged(false);
-
-				} catch (final MiddlewareQueryException ex) {
-					SaveListButtonClickListener.LOG.error("Error with saving Workbench activity.", ex);
-				}
+				SaveListButtonClickListener.this.source.getBuildNewListDropHandler().setChanged(false);
 
 				boolean success = true;
 				if (callSaveReservation) {
@@ -201,7 +185,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				if (success) {
 					SaveListButtonClickListener.this.source.resetUnsavedChangesFlag();
 					SaveListButtonClickListener.this.source.getSource().closeList(currentlySavedList);
-				  	SaveListButtonClickListener.this.source.resetListInventoryTableValues();
+					SaveListButtonClickListener.this.source.resetListInventoryTableValues();
 					if (showMessages) {
 						MessageNotifier.showMessage(SaveListButtonClickListener.this.source.getWindow(),
 								SaveListButtonClickListener.this.messageSource.getMessage(Message.SUCCESS),
@@ -214,9 +198,6 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 							SaveListButtonClickListener.this.messageSource
 									.getMessage(Message.UNSAVED_RESERVATION_WARNING_WHILE_SAVING_LIST));
 				}
-
-
-
 
 			}
 		});
@@ -319,7 +300,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				// Inventory Related Columns
 
 				// Lots
-				Button lotButton = ListCommonActionsUtil
+				final Button lotButton = ListCommonActionsUtil
 						.getLotCountButton(entry.getInventoryInfo().getLotCount(), entry.getGid(), entry.getDesignation(), this.source,
 								null);
 
@@ -338,7 +319,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
 				// LOTS
-				StringBuilder available = new StringBuilder();
+				final StringBuilder available = new StringBuilder();
 
 				if (entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
 					available.append("-");

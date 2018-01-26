@@ -98,8 +98,9 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
 
-			this.targetTable.refresh();
-
+			if(!this.targetTable.getItemIds().isEmpty()) {
+				this.targetTable.refresh();
+			}
 		}
 
 	}

@@ -1,9 +1,6 @@
-
 package org.generationcp.breeding.manager.validator;
 
-import java.util.List;
-import java.util.regex.Pattern;
-
+import com.vaadin.data.Validator;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
@@ -12,19 +9,16 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Validator;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Configurable
 public class ListNameValidator implements Validator {
 
 	private static final long serialVersionUID = 1L;
-
-	private static final Logger LOG = LoggerFactory.getLogger(ListNameValidator.class);
 
 	private static final String DEFAULT_ERROR = "Please specify the name and/or location of the list";
 	private static final String SAME_PARENT_FOLDER_LIST_NAME_ERROR = "List Name and its Parent Folder must not have the same name";
@@ -46,17 +40,7 @@ public class ListNameValidator implements Validator {
 	private ContextUtil contextUtil;
 
 	public ListNameValidator() {
-	}
-
-	public ListNameValidator(final String parentFolder) {
-		this.parentFolder = parentFolder;
-		this.errorDetails = ListNameValidator.DEFAULT_ERROR;
-	}
-
-	public ListNameValidator(final String parentFolder, final String currentListName) {
-		this.parentFolder = parentFolder;
-		this.errorDetails = ListNameValidator.DEFAULT_ERROR;
-		this.currentListName = currentListName;
+		// does nothing
 	}
 
 	@Override
@@ -95,8 +79,11 @@ public class ListNameValidator implements Validator {
 			this.errorDetails = this.messageSource.getMessage(Message.INVALID_ITEM_NAME);
 			isValid = false;
 
-		} else if (ListSelectorComponent.LISTS.equalsIgnoreCase(newName)) {
-			this.errorDetails = "Cannot use \"" + ListSelectorComponent.LISTS + "\" as item name.";
+		} else if (ListSelectorComponent.PROGRAM_LISTS.equalsIgnoreCase(newName)) {
+			this.errorDetails = "Cannot use \"" + ListSelectorComponent.PROGRAM_LISTS + "\" as item name.";
+			isValid = false;
+		} else if (ListSelectorComponent.CROP_LISTS.equalsIgnoreCase(newName)) {
+			this.errorDetails = "Cannot use \"" + ListSelectorComponent.CROP_LISTS + "\" as item name.";
 			isValid = false;
 		} else if (ListNameValidator.invalidListNamePattern.matcher(newName).find()) {
 			this.errorDetails = this.messageSource.getMessage(Message.INVALID_LIST_NAME);
@@ -122,16 +109,8 @@ public class ListNameValidator implements Validator {
 		return this.contextUtil.getCurrentProgramUUID();
 	}
 
-	public String getCurrentListName() {
-		return this.currentListName;
-	}
-
 	public void setCurrentListName(final String currentListName) {
 		this.currentListName = currentListName;
-	}
-
-	public String getParentFolder() {
-		return this.parentFolder;
 	}
 
 	public void setParentFolder(final String parentFolder) {
