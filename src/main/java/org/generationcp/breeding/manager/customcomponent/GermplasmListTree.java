@@ -1,7 +1,4 @@
-
 package org.generationcp.breeding.manager.customcomponent;
-
-import java.util.Collection;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -18,14 +15,14 @@ public class GermplasmListTree extends Tree implements GermplasmListSource {
 	}
 
 	@Override
-	public void setDragMode(TreeDragMode treeDragMode, Table.TableDragMode treeTableDragMode) {
+	public void setDragMode(final TreeDragMode treeDragMode, final Table.TableDragMode treeTableDragMode) {
 		super.setDragMode(treeDragMode);
 	}
 
 	@Override
-	public Object addItem(Object[] cells, Object itemId) {
-		final Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager."
-				+ "customcomponent.GermplasmListTree.addItem(Object[], Object)");
+	public Object addItem(final Object[] cells, final Object itemId) {
+		final Monitor monitor =
+				MonitorFactory.start("org.generationcp.breeding.manager." + "customcomponent.GermplasmListTree.addItem(Object[], Object)");
 		try {
 			return super.addItem(itemId);
 		} finally {
@@ -34,7 +31,7 @@ public class GermplasmListTree extends Tree implements GermplasmListSource {
 	}
 
 	@Override
-	public void setColumnExpandRatio(Object propertyId, float expandRatio) {
+	public void setColumnExpandRatio(final Object propertyId, final float expandRatio) {
 		// not needed to implement any code, just added the function so we would have override for the treetable specific function
 	}
 
@@ -44,7 +41,7 @@ public class GermplasmListTree extends Tree implements GermplasmListSource {
 	}
 
 	@Override
-	public void setColumnWidth(Object propertyId, int width) {
+	public void setColumnWidth(final Object propertyId, final int width) {
 		// not needed to implement any code, just added the function so we would have override for the treetable specific function
 	}
 
@@ -52,12 +49,5 @@ public class GermplasmListTree extends Tree implements GermplasmListSource {
 	public void clearSelection() {
 		super.select(null);
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.vaadin.ui.AbstractSelect#getItemIds()
-	 */
-	@Override
-	public Collection<?> getItemIds() {
-		return super.getItemIds();
-	}
+
 }

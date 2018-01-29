@@ -1,30 +1,28 @@
-
 package org.generationcp.breeding.manager.customfields;
 
+import com.vaadin.terminal.ThemeResource;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListTreeTable;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import com.vaadin.terminal.ThemeResource;
 
 @Configurable
 public abstract class ListTreeTableComponent extends ListSelectorComponent {
 
 	private static final long serialVersionUID = -4025353842975688857L;
 
-	private final ThemeResource folderResource = new ThemeResource("images/folder-icon.png");
-	private final ThemeResource leafResource = new ThemeResource("images/document-icon.png");
+	private ThemeResource folderResource = new ThemeResource("images/folder-icon.png");
+	private ThemeResource leafResource = new ThemeResource("images/document-icon.png");
 
 	public ListTreeTableComponent() {
 		this.selectListsFolderByDefault = false;
 	}
 
-	public ListTreeTableComponent(ListTreeActionsListener treeActionsListener) {
+	public ListTreeTableComponent(final ListTreeActionsListener treeActionsListener) {
 		this.treeActionsListener = treeActionsListener;
 		this.selectListsFolderByDefault = false;
 	}
 
-	public ListTreeTableComponent(ListTreeActionsListener treeActionsListener, Integer selectedListId) {
+	public ListTreeTableComponent(final ListTreeActionsListener treeActionsListener, final Integer selectedListId) {
 		this.treeActionsListener = treeActionsListener;
 		this.listId = selectedListId;
 		this.selectListsFolderByDefault = true;
@@ -67,8 +65,9 @@ public abstract class ListTreeTableComponent extends ListSelectorComponent {
 	}
 
 	@Override
-	public Object[] generateCellInfo(String name, String owner, String description, String listType, String numberOfEntries) {
-		Object[] cells = new Object[5];
+	public Object[] generateCellInfo(final String name, final String owner, final String description, final String listType,
+			final String numberOfEntries) {
+		final Object[] cells = new Object[5];
 		cells[0] = " " + name;
 		cells[1] = owner != null ? owner : "";
 		cells[2] = description != null ? description : "";
@@ -78,7 +77,7 @@ public abstract class ListTreeTableComponent extends ListSelectorComponent {
 	}
 
 	@Override
-	public void setNodeItemIcon(Object itemId, boolean isFolder) {
+	public void setNodeItemIcon(final Object itemId, final boolean isFolder) {
 		if (isFolder) {
 			this.getGermplasmListSource().setItemIcon(itemId, this.folderResource);
 		} else {
@@ -86,4 +85,13 @@ public abstract class ListTreeTableComponent extends ListSelectorComponent {
 		}
 	}
 
+	// for unit testing use only
+	public void setFolderResource(final ThemeResource folderResource) {
+		this.folderResource = folderResource;
+	}
+
+	// for unit testing use only
+	public void setLeafResource(final ThemeResource leafResource) {
+		this.leafResource = leafResource;
+	}
 }

@@ -86,6 +86,8 @@ public interface GermplasmListSource {
 	void setColumnWidth(Object propertyId, int width);
 
 	void clearSelection();
+
+	Object getParent(Object itemId);
 	
 	/**
 	 * Added so that we get the items in a tree 

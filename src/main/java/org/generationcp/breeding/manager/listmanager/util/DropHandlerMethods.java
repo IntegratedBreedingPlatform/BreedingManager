@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.containers.GermplasmQuery;
+import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
@@ -194,14 +195,14 @@ public class DropHandlerMethods {
 				newItemIds.add(newItemId);
 				final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
 
-				final Button gidButton = new Button(String.format("%s", gid),
+				final Button gidButton = new SortableButton(String.format("%s", gid),
 						new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 				final String crossExpansion = crossExpansions.get(gid);
 				final String preferredName = preferredNames.get(gid);
 				final Button designationButton =
-						new Button(preferredName, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
+						new SortableButton(preferredName, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 				designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 				designationButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
@@ -237,7 +238,7 @@ public class DropHandlerMethods {
 					availInv = availInvGid.toString();
 				}
 
-				final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+				final Button inventoryButton = new SortableButton(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
 				inventoryButton.setDebugId("inventoryButton");
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -274,7 +275,7 @@ public class DropHandlerMethods {
 				}
 
 				final Button availableButton =
-						new Button(available.toString(), new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+						new SortableButton(available.toString(), new InventoryLinkButtonClickListener(this.listManagerMain, gid));
 				availableButton.setDebugId("availableButton");
 				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 				availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -401,7 +402,7 @@ public class DropHandlerMethods {
 
 				final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
 
-				final Button gidButton = new Button(String.format("%s", gid),
+				final Button gidButton = new SortableButton(String.format("%s", gid),
 						new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
@@ -424,7 +425,7 @@ public class DropHandlerMethods {
 
 				});
 
-				final Button designationButton = new Button(germplasmListData.getDesignation(),
+				final Button designationButton = new SortableButton(germplasmListData.getDesignation(),
 						new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 				designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 				designationButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
@@ -450,23 +451,9 @@ public class DropHandlerMethods {
 								germplasmListData.getGid(), germplasmListData.getDesignation(), this.listManagerMain, null);
 				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
-				final StringBuilder available = new StringBuilder();
+				final String available = germplasmListData.getInventoryInfo().getAvailable();
 
-				if (germplasmListData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
-					available.append("-");
-				} else if (germplasmListData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1) {
-					available.append(germplasmListData.getInventoryInfo().getTotalAvailableBalance());
-					available.append(" ");
-
-					if (!StringUtils.isEmpty(germplasmListData.getInventoryInfo().getScaleForGermplsm())) {
-						available.append(germplasmListData.getInventoryInfo().getScaleForGermplsm());
-					}
-
-				} else {
-					available.append(GermplasmInventory.MIXED);
-				}
-
-				final Button availableButton = new Button(available.toString(),
+				final Button availableButton = new SortableButton(available.toString(),
 						new InventoryLinkButtonClickListener(this.listManagerMain, germplasmListData.getGid()));
 				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 				availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -566,7 +553,7 @@ public class DropHandlerMethods {
 
 			final Integer gid = this.getGidFromButtonCaption(sourceTable, itemId);
 			final Button gidButton =
-					new Button(String.format("%s", gid), new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
+					new SortableButton(String.format("%s", gid), new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 			gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 			gidButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
@@ -593,7 +580,7 @@ public class DropHandlerMethods {
 			final String designation =
 					preferredNames.get(gid) != null ? preferredNames.get(gid) : this.getDesignationFromButtonCaption(sourceTable, itemId);
 			final Button designationButton =
-					new Button(designation, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
+					new SortableButton(designation, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 			designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 			designationButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
@@ -601,7 +588,7 @@ public class DropHandlerMethods {
 
 			// #1 Available Inventory
 			final String availInv = this.getAvailInvFromButtonCaption(sourceTable, itemId);
-			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+			final Button inventoryButton = new SortableButton(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
 			inventoryButton.setDebugId("inventoryButton");
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -775,7 +762,7 @@ public class DropHandlerMethods {
 			availableButtonCaption = ((Button) item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue()).getCaption();
 		}
 
-		final Button availableButton = new Button(availableButtonCaption, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+		final Button availableButton = new SortableButton(availableButtonCaption, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
 		availableButton.setDebugId("availableButton");
 		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 		availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);

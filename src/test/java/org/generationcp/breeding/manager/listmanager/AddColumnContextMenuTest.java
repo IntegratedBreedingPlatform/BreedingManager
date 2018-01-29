@@ -38,7 +38,11 @@ public class AddColumnContextMenuTest {
 			ColumnLabels.BREEDING_METHOD_NAME.getName(), ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(),
 			ColumnLabels.BREEDING_METHOD_NUMBER.getName(), ColumnLabels.BREEDING_METHOD_GROUP.getName(),
 			ColumnLabels.CROSS_FEMALE_GID.getName(), ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
-			ColumnLabels.CROSS_MALE_GID.getName(), ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
+			ColumnLabels.CROSS_MALE_GID.getName(), ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(),
+
+		ColumnLabels.GROUP_SOURCE_GID.getName(), ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(),
+		ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()
+		);
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -86,6 +90,19 @@ public class AddColumnContextMenuTest {
 	@Mock
 	private ContextMenuItem menuFillWithCrossMalePrefName;
 
+	@Mock
+	private ContextMenuItem menuFillWithGroupSourceInfo;
+	@Mock
+	private ContextMenuItem menuFillWithGroupSourceGID;
+	@Mock
+	private ContextMenuItem menuFillWithGroupSourcePreferredName;
+	@Mock
+	private ContextMenuItem menuFillWithImmediateSourceGID;
+	@Mock
+	private ContextMenuItem menuFillWithImmediateSourceInfo;
+	@Mock
+	private ContextMenuItem menuFillWithImmediateSourcePreferredName;
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
@@ -123,6 +140,21 @@ public class AddColumnContextMenuTest {
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey());
 		Mockito.doReturn(AddColumnContextMenuTest.FILL_WITH_ATTRIBUTE).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey());
+
+
+		Mockito.doReturn(FillWithOption.FILL_WITH_GROUP_SOURCE_INFO.name()).when(this.messageSource)
+			.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_INFO.getMessageKey());
+		Mockito.doReturn(ColumnLabels.GROUP_SOURCE_GID.getName()).when(this.messageSource)
+			.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_GID.getMessageKey());
+		Mockito.doReturn(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName()).when(this.messageSource)
+			.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME.getMessageKey());
+
+		Mockito.doReturn(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_INFO.name()).when(this.messageSource)
+			.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_INFO.getMessageKey());
+		Mockito.doReturn(ColumnLabels.IMMEDIATE_SOURCE_GID.getName()).when(this.messageSource)
+			.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID.getMessageKey());
+		Mockito.doReturn(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()).when(this.messageSource)
+			.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME.getMessageKey());
 	}
 
 	@Test
@@ -406,6 +438,13 @@ public class AddColumnContextMenuTest {
 		Mockito.verify(this.menuFillWithCrossMaleInfo).setEnabled(isEnabled);
 		Mockito.verify(this.menuFillWithCrossMaleGID).setEnabled(isEnabled);
 		Mockito.verify(this.menuFillWithCrossMalePrefName).setEnabled(isEnabled);
+
+		Mockito.verify(this.menuFillWithGroupSourceInfo).setEnabled(isEnabled);
+		Mockito.verify(this.menuFillWithGroupSourceGID).setEnabled(isEnabled);
+		Mockito.verify(this.menuFillWithGroupSourcePreferredName).setEnabled(isEnabled);
+		Mockito.verify(this.menuFillWithImmediateSourceInfo).setEnabled(isEnabled);
+		Mockito.verify(this.menuFillWithImmediateSourceGID).setEnabled(isEnabled);
+		Mockito.verify(this.menuFillWithImmediateSourcePreferredName).setEnabled(isEnabled);
 	}
 
 	protected void setupMenuItemMocks() {
@@ -424,6 +463,14 @@ public class AddColumnContextMenuTest {
 		this.addColumnMenu.setMenuFillWithCrossMaleInfo(this.menuFillWithCrossMaleInfo);
 		this.addColumnMenu.setMenuFillWithCrossMaleGID(this.menuFillWithCrossMaleGID);
 		this.addColumnMenu.setMenuFillWithCrossMalePrefName(this.menuFillWithCrossMalePrefName);
+
+		this.addColumnMenu.setMenuFillWithGroupSourceInfo(this.menuFillWithGroupSourceInfo);
+		this.addColumnMenu.setMenuFillWithGroupSourceGID(this.menuFillWithGroupSourceGID);
+		this.addColumnMenu.setMenuFillWithGroupSourcePreferredName(this.menuFillWithGroupSourcePreferredName);
+		this.addColumnMenu.setMenuFillWithImmediateSourceInfo(this.menuFillWithImmediateSourceInfo);
+		this.addColumnMenu.setMenuFillWithImmediateSourceGID(this.menuFillWithImmediateSourceGID);
+		this.addColumnMenu.setMenuFillWithImmediateSourcePreferredName(this.menuFillWithImmediateSourcePreferredName);
+
 	}
 
 }

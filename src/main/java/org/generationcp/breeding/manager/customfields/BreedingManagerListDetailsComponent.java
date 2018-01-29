@@ -1,9 +1,11 @@
-
 package org.generationcp.breeding.manager.customfields;
 
-import java.text.ParseException;
-import java.util.Date;
-
+import com.vaadin.data.Property.ConversionException;
+import com.vaadin.data.Property.ReadOnlyException;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -23,16 +25,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property.ConversionException;
-import com.vaadin.data.Property.ReadOnlyException;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import java.text.ParseException;
+import java.util.Date;
 
 @Configurable
-public class BreedingManagerListDetailsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout {
+public class BreedingManagerListDetailsComponent extends VerticalLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponent.class);
@@ -94,7 +92,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		this.headerListLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 		this.headerListLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
-		this.indicatesMandatoryLabel = new Label(this.messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
+		this.indicatesMandatoryLabel = new Label("* " + this.messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
 		this.indicatesMandatoryLabel.setDebugId("indicatesMandatoryLabel");
 		this.indicatesMandatoryLabel.addStyleName("italic");
 		this.listNameField = new ListNameField(this.messageSource.getMessage(Message.LIST_NAME), true);
@@ -113,7 +111,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 
 	@Override
 	public void initializeValues() {
-		this.setGermplasmListDetails(this.germplasmList);
+		this.populateGermplasmListDetails(this.germplasmList);
 	}
 
 	@Override
@@ -172,7 +170,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		}
 	}
 
-	public GermplasmList getGermplasmList() {
+	public GermplasmList createGermplasmListFromListDetails(final boolean isCropList) {
 		final String listName = this.listNameField.getValue().toString();
 		final String listDescription = this.listDescriptionField.getValue().toString();
 		final Date date = this.listDateField.getValue();
@@ -180,6 +178,9 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		final GermplasmList list = new GermplasmList();
 
 		list.setName(listName);
+
+		// Set the defaul list status to 1
+		list.setStatus(1);
 
 		if (listDescription != null) {
 			list.setDescription(listDescription);
@@ -195,12 +196,16 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		list.setNotes(this.listNotesField.getValue().toString());
 		list.setUserId(0);
 
-		list.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
+		// If the germplasm list is saved in 'Crop lists' folder, we must set the programUUID to null
+		// so that the germplasm list will be accessible to all programs of the same crop.
+		if (!isCropList) {
+			list.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
+		}
 
 		return list;
 	}
 
-	public void setGermplasmListDetails(final GermplasmList germplasmList) {
+	public void populateGermplasmListDetails(final GermplasmList germplasmList) {
 		this.germplasmList = germplasmList;
 
 		if (germplasmList != null) {
@@ -294,8 +299,8 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 	}
 
 	public boolean isChanged() {
-		if (this.listNameField.isChanged() || this.listDescriptionField.isChanged() || this.listTypeField.isChanged()
-				|| this.listDateField.isChanged() || this.listNotesField.isChanged()) {
+		if (this.listNameField.isChanged() || this.listDescriptionField.isChanged() || this.listTypeField.isChanged() || this.listDateField
+				.isChanged() || this.listNotesField.isChanged()) {
 			return true;
 		}
 		return false;
@@ -377,6 +382,10 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setContextUtil(final ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
 	}
 
 }

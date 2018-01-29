@@ -86,7 +86,7 @@ public class FillWithTest {
 		Mockito.doReturn(FillWithTest.FILL_WITH_CROSS_EXPANSION).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_EXPANSION.getMessageKey());
 		Mockito.doReturn(FillWithTest.FILL_WITH_SEQUENCE).when(this.messageSource)
-				.getMessage(FillWithOption.FILL_WITH_SEQUENCE_NUMBMER.getMessageKey());
+				.getMessage(FillWithOption.FILL_WITH_SEQUENCE_NUMBER.getMessageKey());
 		
 		this.fillWith = new FillWith(this.addColumnSource, this.parentLayout, this.messageSource);
 	}
@@ -119,7 +119,7 @@ public class FillWithTest {
 		Mockito.verify(this.messageSource).getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey());
 		Mockito.verify(this.messageSource).getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey());
 		Mockito.verify(this.messageSource).getMessage(FillWithOption.FILL_WITH_CROSS_EXPANSION.getMessageKey());
-		Mockito.verify(this.messageSource).getMessage(FillWithOption.FILL_WITH_SEQUENCE_NUMBMER.getMessageKey());
+		Mockito.verify(this.messageSource).getMessage(FillWithOption.FILL_WITH_SEQUENCE_NUMBER.getMessageKey());
 	}
 	
 	@Test
