@@ -1,9 +1,13 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.util.SaveTreeStateListener;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -20,6 +24,15 @@ public class SelectParentsComponentTest {
 	
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Mock
+	private CrossingManagerListTreeComponent listTreeComponent;
+
+	@Mock
+	private Window window;
+
+	@Mock
+	private Component parent;
 	
 	private SelectParentsComponent selectParentsComponent;
 	
@@ -33,6 +46,11 @@ public class SelectParentsComponentTest {
 		Mockito.doReturn("").when(this.messageSource).getMessage(Matchers.any(Message.class));
 		
 		this.selectParentsComponent.instantiateComponents();
+
+		this.selectParentsComponent.setListTreeComponent(listTreeComponent);
+		this.selectParentsComponent.setParent(parent);
+
+		Mockito.when(parent.getWindow()).thenReturn(window);
 	}
 	
 	@Test
@@ -101,6 +119,23 @@ public class SelectParentsComponentTest {
 		// Check that tabsheet is visible again after another button click
 		this.selectParentsComponent.getToggleTabsheetButton().click();
 		Assert.assertTrue(this.selectParentsComponent.getListDetailsTabSheet().isVisible());
+	}
+
+	@Test
+	public void testOpenBrowseForListDialog() {
+
+		this.selectParentsComponent.openBrowseForListDialog();
+
+		Mockito.verify(listTreeComponent).showAddRenameFolderSection(false);
+		Mockito.verify(listTreeComponent).reinitializeTree(false);
+
+		final ArgumentCaptor<Window> captor = ArgumentCaptor.forClass(Window.class);
+		Mockito.verify(window).addWindow(captor.capture());
+
+		final Window window = captor.getValue();
+
+		Assert.assertNotNull(window.getListeners(SaveTreeStateListener.class));
+
 	}
 
 }

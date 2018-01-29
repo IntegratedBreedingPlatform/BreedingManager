@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.ListSelectionComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.InventoryDetailsTestDataInitializer;
@@ -20,6 +23,7 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -31,6 +35,7 @@ import com.vaadin.ui.Window;
 @RunWith(MockitoJUnitRunner.class)
 public class ListCommonActionsUtilTest {
 
+	public static final String SUCCESS = "Success";
 	private GermplasmList listToSave;
 	private List<GermplasmListData> listEntries;
 	private Boolean forceHasChanges;
@@ -39,9 +44,20 @@ public class ListCommonActionsUtilTest {
 	private List<GermplasmListData> entriesToDelete;
 
 	@Mock
+	private ListSelectionComponent listSelectionComponent;
+
+	@Mock
+	private ListBuilderComponent listBuilderComponent;
+
+	@Mock
+	private ListManagerMain listManagerMain;
+
+	@Mock
 	private GermplasmListManager dataManager;
+
 	@Mock
 	private Component source;
+
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -238,6 +254,94 @@ public class ListCommonActionsUtilTest {
 		Button lotButton = ListCommonActionsUtil.getLotCountButton(2,  2, "Germplasm", this.source, 2);
 		Assert.assertEquals("Expecting lot count value as 2", 2, Integer.parseInt
 				(lotButton.getCaption()));
+
+	}
+
+	@Test
+	public void testOverwriteListSourceIsListBuilderComponent() {
+
+		final Integer listId = 1;
+
+		final GermplasmList germplasmListToSave = createGermplasmList(listId);
+		final GermplasmList germplasmListFromDatabase = new GermplasmList();
+
+		Mockito.when(dataManager.getGermplasmListById(listId)).thenReturn(germplasmListFromDatabase);
+		Mockito.when(dataManager.updateGermplasmList(germplasmListFromDatabase)).thenReturn(listId);
+		Mockito.when(listBuilderComponent.getSource()).thenReturn(listManagerMain);
+		Mockito.when(listManagerMain.getListSelectionComponent()).thenReturn(listSelectionComponent);
+
+		ListCommonActionsUtil.overwriteList(germplasmListToSave, dataManager, listBuilderComponent, messageSource, true);
+
+		Assert.assertEquals(germplasmListToSave.getName(), germplasmListFromDatabase.getName());
+		Assert.assertEquals(germplasmListToSave.getDescription(), germplasmListFromDatabase.getDescription());
+		Assert.assertEquals(germplasmListToSave.getDate(), germplasmListFromDatabase.getDate());
+		Assert.assertEquals(germplasmListToSave.getType(), germplasmListFromDatabase.getType());
+		Assert.assertEquals(germplasmListToSave.getNotes(), germplasmListFromDatabase.getNotes());
+		Assert.assertEquals(germplasmListToSave.getProgramUUID(), germplasmListFromDatabase.getProgramUUID());
+
+		Mockito.verify(dataManager).updateGermplasmList(germplasmListFromDatabase);
+		Mockito.verify(listBuilderComponent).setCurrentlySavedGermplasmList(germplasmListFromDatabase);
+		Mockito.verify(listBuilderComponent).setHasUnsavedChanges(false);
+		Mockito.verify(listSelectionComponent).showNodeOnTree(listId);
+
+	}
+
+	@Test
+	public void testOverwriteListSourceIsListManagerMain() {
+
+		final Integer listId = 1;
+
+		final GermplasmList germplasmListToSave = createGermplasmList(listId);
+		final GermplasmList germplasmListFromDatabase = new GermplasmList();
+		germplasmListFromDatabase.setId(listId);
+
+		Mockito.when(this.dataManager.getGermplasmListById(listId)).thenReturn(germplasmListFromDatabase);
+		Mockito.when(this.dataManager.updateGermplasmList(germplasmListFromDatabase)).thenReturn(listId);
+		Mockito.when(this.listBuilderComponent.getSource()).thenReturn(listManagerMain);
+		Mockito.when(this.listManagerMain.getListSelectionComponent()).thenReturn(listSelectionComponent);
+		Mockito.when(this.listManagerMain.getWindow()).thenReturn(window);
+		Mockito.when(this.messageSource.getMessage(Message.SUCCESS)).thenReturn(SUCCESS);
+
+		ListCommonActionsUtil.overwriteList(germplasmListToSave, this.dataManager, this.listManagerMain, this.messageSource, true);
+
+		Assert.assertEquals(germplasmListToSave.getName(), germplasmListFromDatabase.getName());
+		Assert.assertEquals(germplasmListToSave.getDescription(), germplasmListFromDatabase.getDescription());
+		Assert.assertEquals(germplasmListToSave.getDate(), germplasmListFromDatabase.getDate());
+		Assert.assertEquals(germplasmListToSave.getType(), germplasmListFromDatabase.getType());
+		Assert.assertEquals(germplasmListToSave.getNotes(), germplasmListFromDatabase.getNotes());
+		Assert.assertEquals(germplasmListToSave.getProgramUUID(), germplasmListFromDatabase.getProgramUUID());
+
+		Mockito.verify(this.dataManager).updateGermplasmList(germplasmListFromDatabase);
+		Mockito.verify(this.listSelectionComponent).updateUIForRenamedList(germplasmListToSave, germplasmListToSave.getName());
+		Mockito.verify(this.listSelectionComponent).showNodeOnTree(listId);
+
+		ArgumentCaptor<Window.Notification> captor = ArgumentCaptor.forClass(Window.Notification.class);
+
+		Mockito.verify(window).showNotification(captor.capture());
+
+		final Window.Notification notification = captor.getValue();
+
+		Assert.assertEquals(SUCCESS, notification.getCaption());
+		Assert.assertEquals("</br>Changes to list header were saved.", notification.getDescription());
+
+	}
+
+
+
+	GermplasmList createGermplasmList(final Integer id) {
+
+		final GermplasmList germplasmList = new GermplasmList();
+		germplasmList.setId(id);
+		germplasmList.setName("Name");
+		germplasmList.setDescription("Description");
+		germplasmList.setDate(20180101l);
+		germplasmList.setType(GermplasmList.LIST_TYPE);
+		germplasmList.setName("Notes");
+		germplasmList.setParent(null);
+		germplasmList.setProgramUUID("6476340934-dhaksjhdf-327472936");
+		return germplasmList;
+
+
 
 	}
 }

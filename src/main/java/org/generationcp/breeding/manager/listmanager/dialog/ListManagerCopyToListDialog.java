@@ -21,8 +21,6 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -314,7 +312,7 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 						this.mainWindow.removeWindow(this.dialogWindow);
 
 						this.listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
-						this.listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.LISTS);
+						this.listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.PROGRAM_LISTS);
 						this.listManagerMain.getListSelectionComponent().getListDetailsLayout().removeTab(Integer.valueOf(listId));
 						this.listManagerMain.getListSelectionComponent().getListTreeComponent()
 								.treeItemClickAction(Integer.valueOf(listId));
@@ -335,7 +333,7 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 			final GermplasmList germList = this.germplasmListManager.getGermplasmListById(this.newListid);
 			this.addGermplasmListData(germList, 1);
 			this.listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
-			this.listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.LISTS);
+			this.listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.PROGRAM_LISTS);
 			this.listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(this.newListid);
 		} catch (final MiddlewareQueryException e) {
 			this.germplasmListManager.deleteGermplasmListByListId(this.newListid);
