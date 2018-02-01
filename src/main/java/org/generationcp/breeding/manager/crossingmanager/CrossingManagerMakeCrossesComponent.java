@@ -410,6 +410,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	LinkButton getNurseryCancelButton() {
 		return this.nurseryCancelButton;
 	}
+	
+	void setNurseryCancelButton(LinkButton nurseryCancelButton) {
+		this.nurseryCancelButton = nurseryCancelButton;
+	}
 
 	void setCrossingMethodComponent(final CrossingMethodComponent crossingMethodComponent) {
 		this.crossingMethodComponent = crossingMethodComponent;

@@ -166,6 +166,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	public void makeCrossButtonAction() {
 		CrossType type = (CrossType) this.crossingMethodComboBox.getValue();
+		
 		if (CrossType.PLEASE_CHOOSE.equals(type)) {
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
@@ -185,4 +186,17 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 					this.chkBoxExcludeSelfs.booleanValue());
 		}
 	}
+	
+	Button getGenerateCrossButton() {
+		return this.btnGenerateCross;
+	}
+	
+	ComboBox getCrossingMethodComboBox() {
+		return this.crossingMethodComboBox;
+	}
+	
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+	
 }
