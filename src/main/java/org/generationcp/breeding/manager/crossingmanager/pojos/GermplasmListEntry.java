@@ -119,9 +119,7 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 	}
 
 	public GermplasmListEntry copy() {
-		GermplasmListEntry theCopy =
-				new GermplasmListEntry(this.listDataId, this.gid, this.entryId, this.designation, this.seedSource, this.isFromFemaleTable);
-		return theCopy;
+		return new GermplasmListEntry(this.listDataId, this.gid, this.entryId, this.designation, this.seedSource, this.isFromFemaleTable);
 	}
 
 	@Override

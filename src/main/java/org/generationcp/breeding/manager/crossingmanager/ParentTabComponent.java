@@ -178,7 +178,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 						// After adding, check if the # of items added on the table, is equal to the number of list data of the dragged
 						// list, this will enable/disable the save option
-						final List<Object> itemsAfterAdding = new ArrayList<Object>();
+						final List<Object> itemsAfterAdding = new ArrayList<>();
 						itemsAfterAdding.addAll(targetTable.getItemIds());
 
 						if (addedCount == itemsAfterAdding.size()) {
@@ -462,7 +462,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	public void assignEntryNumber(final Table parentTable) {
 
 		int entryNumber = 1;
-		final List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
+		final List<GermplasmListEntry> itemIds = new ArrayList<>();
 		itemIds.addAll((Collection<GermplasmListEntry>) parentTable.getItemIds());
 
 		for (final GermplasmListEntry entry : itemIds) {
@@ -484,7 +484,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			this.listEntriesCount = this.germplasmListManager.countGermplasmListDataByListId(this.germplasmList.getId());
 
 			if (this.listEntriesCount > 0) {
-				this.listEntries = new ArrayList<GermplasmListData>();
+				this.listEntries = new ArrayList<>();
 				this.getAllListEntries();
 
 				this.updateListDataTable(this.germplasmList.getId(), this.listEntries);
@@ -504,7 +504,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				this.listEntries.addAll(entries);
 			} catch (final MiddlewareQueryException ex) {
 				ParentTabComponent.LOG.error("Error with retrieving list entries for list: " + this.germplasmList.getId(), ex);
-				this.listEntries = new ArrayList<GermplasmListData>();
+				this.listEntries = new ArrayList<>();
 			}
 		}
 	}

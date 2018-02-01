@@ -6,11 +6,12 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerSummaryComponent;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
-import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.help.document.HelpButton;
 import org.generationcp.commons.help.document.HelpModule;
+import org.generationcp.commons.settings.AdditionalDetailsSetting;
+import org.generationcp.commons.settings.CrossNameSetting;
+import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -38,7 +39,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 	private Label toolTitle;
 	private Label designCrossesHeaderLabel;
 
-	private CrossingSettingsDetailComponent detailComponent;
 	private CrossingManagerMakeCrossesComponent makeCrossesComponent;
 	private TabSheet tabSheet;
 
@@ -87,8 +87,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 		this.tabSheet.setWidth("100%");
 		this.tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
 
-		this.detailComponent = new CrossingSettingsDetailComponent();
-		this.detailComponent.setDebugId("detailComponent");
 		this.makeCrossesComponent = new CrossingManagerMakeCrossesComponent(this);
 		this.makeCrossesComponent.setDebugId("makeCrossesComponent");
 		if (this.germplasmList != null) {
@@ -128,16 +126,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 		this.addComponent(this.tabSheet);
 	}
 
-	public void viewGermplasmListCreated(final GermplasmList crossList, final GermplasmList femaleList, final GermplasmList maleList) {
-		final CrossingManagerSummaryComponent summaryComponent =
-				new CrossingManagerSummaryComponent(this, crossList, femaleList, maleList, this.compileCurrentSetting());
-
-		this.removeComponent(this.tabSheet);
-
-		this.addComponent(summaryComponent);
-		this.getWindow().setScrollTop(0);
-	}
-
 	public void reset() {
 
 		if (this.parent.getWindow() != null) {
@@ -155,11 +143,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 		this.parent.addComponent(crossingManagerMain);
 	}
 
-	// SETTER AND GETTERS
-	public CrossingSettingsDetailComponent getDetailComponent() {
-		return this.detailComponent;
-	}
-
 	@Override
 	public CrossesMade getCrossesMade() {
 		return this.crossesMade;
@@ -174,8 +157,12 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 		return this.makeCrossesComponent;
 	}
 
-	public CrossingManagerSetting compileCurrentSetting() {
-		final CrossingManagerSetting setting = this.detailComponent.getPartialCurrentSetting();
+	public CrossSetting compileCurrentSetting() {
+		final CrossSetting setting = new CrossSetting();
+		setting.setCrossNameSetting(new CrossNameSetting());
+		//Set the additional details values to 0 and empty string, proper values will be set in Fieldbook
+		final AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(0, "");
+		setting.setAdditionalDetailsSetting(additionalDetails);
 		setting.setBreedingMethodSetting(this.makeCrossesComponent.getCurrentBreedingMethodSetting());
 
 		return setting;

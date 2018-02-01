@@ -7,7 +7,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
-import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -114,10 +114,17 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	@Override
 	public void addListeners() {
-		this.btnGenerateCross.addListener(new CrossingManagerImportButtonClickListener(this));
+		this.btnGenerateCross.addListener(new ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+				CrossingMethodComponent.this.makeCrossButtonAction();
+			}
+
+		});
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
 		this.setSpacing(true);
@@ -141,7 +148,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 		this.crossingMethodPanel = new Panel();
 		this.crossingMethodPanel.setDebugId("crossingMethodPanel");
-		this.crossingMethodPanel.addStyleName(Runo.PANEL_LIGHT); //"section_panel_layout ");
+		this.crossingMethodPanel.addStyleName(Runo.PANEL_LIGHT);
 		this.crossingMethodPanel.setHeight("160px");
 
 		HorizontalLayout crossingMethodLayout = new HorizontalLayout();
@@ -159,6 +166,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	public void makeCrossButtonAction() {
 		CrossType type = (CrossType) this.crossingMethodComboBox.getValue();
+		
 		if (CrossType.PLEASE_CHOOSE.equals(type)) {
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
@@ -178,4 +186,17 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 					this.chkBoxExcludeSelfs.booleanValue());
 		}
 	}
+	
+	Button getGenerateCrossButton() {
+		return this.btnGenerateCross;
+	}
+	
+	ComboBox getCrossingMethodComboBox() {
+		return this.crossingMethodComboBox;
+	}
+	
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+	
 }

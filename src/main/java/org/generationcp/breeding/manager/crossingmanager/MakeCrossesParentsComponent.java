@@ -157,17 +157,17 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	@SuppressWarnings("unchecked")
 	public void dropToFemaleOrMaleTable(final Table sourceTable, final Table targetTable, final Integer transferrableItemId) {
-		final List<Integer> selectedListEntries = new ArrayList<Integer>();
+		final List<Integer> selectedListEntries = new ArrayList<>();
 		selectedListEntries.addAll((Collection<Integer>) sourceTable.getValue());
 
 		if (selectedListEntries.isEmpty() && transferrableItemId != null) {
 			selectedListEntries.add(transferrableItemId);
 		}
 
-		final List<Integer> entryIdsInSourceTable = new ArrayList<Integer>();
+		final List<Integer> entryIdsInSourceTable = new ArrayList<>();
 		entryIdsInSourceTable.addAll((Collection<Integer>) sourceTable.getItemIds());
 
-		final List<Integer> initialEntryIdsInDestinationTable = new ArrayList<Integer>();
+		final List<Integer> initialEntryIdsInDestinationTable = new ArrayList<>();
 		initialEntryIdsInDestinationTable.addAll((Collection<Integer>) targetTable.getItemIds());
 
 		for (final Integer itemId : entryIdsInSourceTable) {
@@ -226,7 +226,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(parentage);
 
 					Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) targetTable.getValue();
-					Set<GermplasmListEntry> entriesToSelect = new HashSet<GermplasmListEntry>();
+					Set<GermplasmListEntry> entriesToSelect = new HashSet<>();
 
 					if (selectedEntries != null) {
 						entriesToSelect.addAll(selectedEntries);
@@ -240,7 +240,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 			targetTable.requestRepaint();
 		}
 
-		final List<Integer> entryIdsInDestinationTable = new ArrayList<Integer>();
+		final List<Integer> entryIdsInDestinationTable = new ArrayList<>();
 		entryIdsInDestinationTable.addAll((Collection<Integer>) targetTable.getItemIds());
 
 		// drag all entries of a list to the parent list
@@ -267,7 +267,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	public void assignEntryNumber(final Table parentsTable) {
 
 		int entryNumber = 1;
-		final List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
+		final List<GermplasmListEntry> itemIds = new ArrayList<>();
 		itemIds.addAll((Collection<GermplasmListEntry>) parentsTable.getItemIds());
 
 		for (final GermplasmListEntry entry : itemIds) {
@@ -332,9 +332,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	 */
 	@SuppressWarnings("unchecked")
 	protected List<GermplasmListEntry> getCorrectSortedValue(final Table table) {
-		final List<GermplasmListEntry> allItemIds = new ArrayList<GermplasmListEntry>();
-		final List<GermplasmListEntry> selectedItemIds = new ArrayList<GermplasmListEntry>();
-		final List<GermplasmListEntry> sortedSelectedValues = new ArrayList<GermplasmListEntry>();
+		final List<GermplasmListEntry> allItemIds = new ArrayList<>();
+		final List<GermplasmListEntry> selectedItemIds = new ArrayList<>();
+		final List<GermplasmListEntry> sortedSelectedValues = new ArrayList<>();
 
 		allItemIds.addAll((Collection<GermplasmListEntry>) table.getItemIds());
 		selectedItemIds.addAll((Collection<GermplasmListEntry>) table.getValue());
@@ -405,7 +405,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 				// After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this
 				// will enable/disable the save option
-				final List<Object> itemsLeftAfterAdding = new ArrayList<Object>();
+				final List<Object> itemsLeftAfterAdding = new ArrayList<>();
 				itemsLeftAfterAdding.addAll(this.maleParentTab.getListDataTable().getItemIds());
 
 				if (addedCount == itemsLeftAfterAdding.size()) {
@@ -478,7 +478,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 				// After adding, check if the # of items added on the table, is equal to the number of list data of the dragged list, this
 				// will enable/disable the save option
-				final List<Object> itemsLeftAfterAdding = new ArrayList<Object>();
+				final List<Object> itemsLeftAfterAdding = new ArrayList<>();
 				itemsLeftAfterAdding.addAll(this.femaleParentTab.getListDataTable().getItemIds());
 
 				if (addedCount == itemsLeftAfterAdding.size()) {

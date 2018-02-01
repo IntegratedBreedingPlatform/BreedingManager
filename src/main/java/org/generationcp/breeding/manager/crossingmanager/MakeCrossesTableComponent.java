@@ -33,7 +33,6 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
-import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
@@ -90,7 +89,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
@@ -103,7 +101,6 @@ import com.vaadin.ui.themes.BaseTheme;
 public class MakeCrossesTableComponent extends VerticalLayout
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
-	private static final int PAGE_LENGTH = 5;
 	private static final int PARENTS_TABLE_ROW_COUNT = 5;
 	public static final String PARENTS_DELIMITER = ",";
 	private static final long serialVersionUID = 3702324761498666369L;
@@ -142,10 +139,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	private Label totalCrossesLabel;
 	private Label totalSelectedCrossesLabel;
-
-	private PopupView applyGroupingToNewCrossesOnlyHelpPopup;
-	private Label applyGroupingToNewCrossesOnlyHelpText;
-	private CheckBox applyGroupingToNewCrossesOnly;
 
 	private ContextMenu actionMenu;
 
@@ -201,8 +194,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	public void makeTopToBottomCrosses(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
 			final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
 		// make a copy first of the parents lists
-		final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
-		final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
+		final List<GermplasmListEntry> femaleParents = new ArrayList<>();
+		final List<GermplasmListEntry> maleParents = new ArrayList<>();
 		femaleParents.addAll(parents1);
 		maleParents.addAll(parents2);
 
@@ -321,8 +314,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
 
 		// make a copy first of the parents lists
-		final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
-		final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
+		final List<GermplasmListEntry> femaleParents = new ArrayList<>();
+		final List<GermplasmListEntry> maleParents = new ArrayList<>();
 		femaleParents.addAll(parents1);
 		maleParents.addAll(parents2);
 
@@ -412,16 +405,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
 				final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
 
-				if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
-					if (plotNumberData != null) {
-						femalePlotNo = plotNumberData.getValue();
-					}
+				if (gidData != null && gidData.getValue().equals(femaleParentGid.toString()) && plotNumberData != null) {
+					femalePlotNo = plotNumberData.getValue();
 				}
 
-				if (gidData != null && gidData.getValue().equals(maleParentGid.toString())) {
-					if (plotNumberData != null) {
-						malePlotNo = plotNumberData.getValue();
-					}
+				if (gidData != null && gidData.getValue().equals(maleParentGid.toString()) && plotNumberData != null) {
+					malePlotNo = plotNumberData.getValue();
 				}
 			}
 
@@ -456,15 +445,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			MessageNotifier.showWarning(this.getWindow(), "Warning!", this.messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED));
 		}
 
-		if (this.tableCrossesMade.getItemIds().isEmpty() && this.getParent() instanceof CrossingManagerMakeCrossesComponent) {
-			((CrossingManagerMakeCrossesComponent) this.getParent()).disableNextButton();
-		}
-
 		this.updateCrossesMadeUI();
 	}
 
 	private Map<Germplasm, Name> generateCrossesMadeMap() {
-		final Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
+		final Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<>();
 
 		// get ID of User Defined Field for Crossing Name
 		final Integer crossingNameTypeId =
@@ -532,20 +517,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.totalSelectedCrossesLabel.setDebugId("totalSelectedCrossesLabel");
 		this.totalSelectedCrossesLabel.setContentMode(Label.CONTENT_XHTML);
 		this.totalSelectedCrossesLabel.setWidth("95px");
-
-		// TODO Move Grouping logic to Nursery since breeding method is there now
-		this.applyGroupingToNewCrossesOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
-		this.applyGroupingToNewCrossesOnly.setDebugId("applyGroupingToNewCrossesOnly");
-
-		this.applyGroupingToNewCrossesOnlyHelpText = new Label(this.messageSource.getMessage(Message.GROUP_INHERITANCE_OPTION_MESSAGE));
-		this.applyGroupingToNewCrossesOnlyHelpText.setDebugId("applyGroupingToNewCrossesOnlyHelpText");
-		this.applyGroupingToNewCrossesOnlyHelpText.setWidth("300px");
-		this.applyGroupingToNewCrossesOnlyHelpText.addStyleName("gcp-content-help-text");
-
-		this.applyGroupingToNewCrossesOnlyHelpPopup = new PopupView("?", this.applyGroupingToNewCrossesOnlyHelpText);
-		this.applyGroupingToNewCrossesOnlyHelpPopup.setDebugId("applyGroupingToNewCrossesOnlyHelpPopup");
-		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
-		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName("cs-inline-icon");
 
 		this.actionButton = new ActionButton();
 		this.actionButton.setDebugId("actionButton");
@@ -710,20 +681,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.addComponent(makeCrossesPanel);
 	}
 
-	// TODO Move Grouping logic to Nursery since breeding method is there now
-	public void showOrHideGroupInheritanceOptions() {
-		// Only show group inheritance options if breeding method chosen is hybrid
-		final BreedingMethodSetting currentBreedingSetting = this.makeCrossesMain.getCurrentBreedingMethodSetting();
-		final Integer selectedBreedingMethodId = currentBreedingSetting.getMethodId();
-		if (this.crossExpansionProperties.getHybridBreedingMethods().contains(selectedBreedingMethodId)) {
-			this.applyGroupingToNewCrossesOnlyHelpPopup.setVisible(true);
-			this.applyGroupingToNewCrossesOnly.setVisible(true);
-		} else {
-			this.applyGroupingToNewCrossesOnlyHelpPopup.setVisible(false);
-			this.applyGroupingToNewCrossesOnly.setVisible(false);
-		}
-	}
-
 	/**
 	 * Save Temporary list
 	 */
@@ -756,7 +713,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		crossesMade.setSetting(this.makeCrossesMain.getCurrentCrossingSetting());
 		crossesMade.setGermplasmList(list);
 		crossesMade.setCrossesMap(this.generateCrossesMadeMap());
-		final ApplyCrossingSettingAction applySetting = new ApplyCrossingSettingAction(this.makeCrossesMain.getCurrentCrossingSetting());
+		final ApplyCrossingSettingAction applySetting = new ApplyCrossingSettingAction();
 		return applySetting.updateCrossesMadeContainer(container);
 	}
 
@@ -921,17 +878,5 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	public void setTableWithSelectAllLayout(final TableWithSelectAllLayout tableWithSelectAllLayout) {
 		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
-	}
-
-	private void updateNoOfSelectedEntries(final int count) {
-		this.totalSelectedCrossesLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
-			+ "</b></i>");
-	}
-
-	private void updateNoOfSelectedEntries() {
-		int count = 0;
-			final Collection<?> selectedItems = (Collection<?>) this.tableWithSelectAllLayout.getTable().getValue();
-			count = selectedItems.size();
-		this.updateNoOfSelectedEntries(count);
 	}
 }

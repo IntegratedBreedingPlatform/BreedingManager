@@ -77,10 +77,10 @@ public class CrossingManagerActionHandler implements Handler {
 	@SuppressWarnings("unchecked")
 	public void removeSelectedEntriesAction(final Table table) {
 
-		final List<Object> itemsBeforeDelete = new ArrayList<Object>();
+		final List<Object> itemsBeforeDelete = new ArrayList<>();
 		itemsBeforeDelete.addAll(table.getItemIds());
 
-		final List<Object> selectedItemIds = new ArrayList<Object>();
+		final List<Object> selectedItemIds = new ArrayList<>();
 		selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
 
 		if (table.getItemIds().size() == selectedItemIds.size()) {
@@ -94,7 +94,7 @@ public class CrossingManagerActionHandler implements Handler {
 		// reset selection
 		table.setValue(null);
 
-		final List<Object> itemsLeftAfterDelete = new ArrayList<Object>();
+		final List<Object> itemsLeftAfterDelete = new ArrayList<>();
 		itemsLeftAfterDelete.addAll(table.getItemIds());
 
 		if(this.source instanceof MakeCrossesParentsComponent) {

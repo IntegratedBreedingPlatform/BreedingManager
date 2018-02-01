@@ -11,11 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.commons.util.CollectionTransformationUtil;
 import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -27,9 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-
 @Configurable
 public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateListener {
 
@@ -40,17 +33,11 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 
-	private final CrossingManagerSetting setting;
 	private CrossesMadeContainer container;
-
-	public ApplyCrossingSettingAction(final CrossingManagerSetting setting) {
-		this.setting = setting;
-	}
 
 	@Override
 	public boolean updateCrossesMadeContainer(final CrossesMadeContainer container) {
 		this.container = container;
-		// Check if this method can be removed
 		return this.applyBreedingMethodSetting() && this.applyNameSetting() && this.applyAdditionalDetailsSetting();
 	}
 
@@ -60,52 +47,15 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	 * @return
 	 */
 	private boolean applyBreedingMethodSetting() {
-		final BreedingMethodSetting methodSetting = this.setting.getBreedingMethodSetting();
-
 		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null) {
 
 			// Use same breeding method for all crosses
 			final Set<Germplasm> germplasms = this.container.getCrossesMade().getCrossesMap().keySet();
-			if (!methodSetting.isBasedOnStatusOfParentalLines()) {
-				final Integer breedingMethodSelected = methodSetting.getMethodId();
-				for (final Germplasm germplasm : germplasms) {
-					germplasm.setMethodId(breedingMethodSelected);
-				}
-
-				// Use CrossingManagerUtil to set breeding method based on parents
-			} else {
-				final ImmutableMap<Integer, Germplasm> gidAncestry = this.getGermplasmAncestryAsMap(germplasms);
-				for (final Germplasm germplasm : germplasms) {
-					final Integer femaleGid = germplasm.getGpid1();
-					final Integer maleGid = germplasm.getGpid2();
-
-					try {
-						final Germplasm female = gidAncestry.get(femaleGid);
-						final Germplasm male = gidAncestry.get(maleGid);
-
-						Germplasm motherOfFemale = null;
-						Germplasm fatherOfFemale = null;
-						if (female != null) {
-							motherOfFemale = gidAncestry.get(female.getGpid1());
-							fatherOfFemale = gidAncestry.get(female.getGpid2());
-						}
-
-						Germplasm motherOfMale = null;
-						Germplasm fatherOfMale = null;
-						if (male != null) {
-							motherOfMale = gidAncestry.get(male.getGpid1());
-							fatherOfMale = gidAncestry.get(male.getGpid2());
-						}
-
-						germplasm.setMethodId(CrossingUtil.determineBreedingMethodBasedOnParentalLine(female, male, motherOfFemale,
-								fatherOfFemale, motherOfMale, fatherOfMale));
-					} catch (final MiddlewareQueryException e) {
-						ApplyCrossingSettingAction.LOG.error(e.getMessage(), e);
-						return false;
-					}
-
-				}
+			for (final Germplasm germplasm : germplasms) {
+				//Set the method id to Single Cross(101) for now, it will be overwritten in the nursery side
+				germplasm.setMethodId(101);
 			}
+
 			Integer crossingNameTypeId = null;
 			try {
 				crossingNameTypeId = BreedingManagerUtil.getIDForUserDefinedFieldCrossingName(this.germplasmListManager);
@@ -122,18 +72,6 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 		}
 
 		return false;
-	}
-
-	private ImmutableMap<Integer, Germplasm> getGermplasmAncestryAsMap(final Set<Germplasm> germplasms) {
-		final ImmutableSet<Integer> allFemaleParentGidsFromGermplasmList =
-				CollectionTransformationUtil.getAllFemaleParentGidsFromGermplasmList(germplasms);
-		final ImmutableSet<Integer> allMaleParentGidsFromGermplasmList =
-				CollectionTransformationUtil.getAllMaleParentGidsFromGermplasmList(germplasms);
-		final ImmutableSet<Integer> femaleAndMaleParentGids = new ImmutableSet.Builder<Integer>()
-				.addAll(allFemaleParentGidsFromGermplasmList).addAll(allMaleParentGidsFromGermplasmList).build();
-		final List<Germplasm> germplasmWithAllNamesAndAncestry =
-				this.germplasmDataManager.getGermplasmWithAllNamesAndAncestry(femaleAndMaleParentGids, 1);
-		return CollectionTransformationUtil.getGermplasmMap(germplasmWithAllNamesAndAncestry);
 	}
 
 	protected List<Pair<Germplasm, Name>> extractGermplasmPairList(final Map<Germplasm, Name> germplasmNameMap) {
@@ -155,7 +93,7 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 			int ctr = 1;
 
 			final Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
-			final List<GermplasmListEntry> oldCrossNames = new ArrayList<GermplasmListEntry>();
+			final List<GermplasmListEntry> oldCrossNames = new ArrayList<>();
 
 			// Store old cross name and generate new names based on prefix, suffix specifications
 			for (final Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()) {
@@ -189,19 +127,10 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	 * @return
 	 */
 	private boolean applyAdditionalDetailsSetting() {
-		final AdditionalDetailsSetting detailsSetting = this.setting.getAdditionalDetailsSetting();
 		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null) {
-
+			//the date and harvest location will be overwritten in the nursery side.
 			Integer dateIntValue = 0;
 			Integer harvestLocationId = 0;
-
-			if (detailsSetting.getHarvestLocationId() != null) {
-				harvestLocationId = detailsSetting.getHarvestLocationId();
-			}
-
-			if (detailsSetting.getHarvestDate() != null) {
-				dateIntValue = Integer.parseInt(detailsSetting.getHarvestDate());
-			}
 
 			final Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
 			for (final Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()) {
