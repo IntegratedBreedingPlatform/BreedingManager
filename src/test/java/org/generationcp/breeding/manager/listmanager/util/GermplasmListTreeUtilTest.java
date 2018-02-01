@@ -20,7 +20,6 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -127,17 +126,14 @@ public class GermplasmListTreeUtilTest {
 	}
 
 	private void setUpIBDBUserId(Integer userId) {
-		WorkbenchRuntimeData runtimeDate = new WorkbenchRuntimeData();
-		runtimeDate.setUserId(5);
 
 		this.workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
 
 		Project dummyProject = new Project();
 		dummyProject.setProjectId(5L);
 
-		Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(runtimeDate);
-		Mockito.when(this.workbenchDataManager.getLastOpenedProject(runtimeDate.getUserId())).thenReturn(dummyProject);
-		Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(runtimeDate.getUserId(), dummyProject.getProjectId())).thenReturn(userId);
+		Mockito.when(this.workbenchDataManager.getLastOpenedProject(userId)).thenReturn(dummyProject);
+		Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(userId, dummyProject.getProjectId())).thenReturn(userId);
 
 		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(userId);
 	}
