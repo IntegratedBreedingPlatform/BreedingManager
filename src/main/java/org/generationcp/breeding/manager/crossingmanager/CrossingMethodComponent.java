@@ -125,7 +125,6 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		});
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
 		this.setSpacing(true);
@@ -149,7 +148,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 		this.crossingMethodPanel = new Panel();
 		this.crossingMethodPanel.setDebugId("crossingMethodPanel");
-		this.crossingMethodPanel.addStyleName(Runo.PANEL_LIGHT); //"section_panel_layout ");
+		this.crossingMethodPanel.addStyleName(Runo.PANEL_LIGHT);
 		this.crossingMethodPanel.setHeight("160px");
 
 		HorizontalLayout crossingMethodLayout = new HorizontalLayout();

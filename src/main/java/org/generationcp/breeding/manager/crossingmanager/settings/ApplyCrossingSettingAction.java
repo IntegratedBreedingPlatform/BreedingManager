@@ -38,7 +38,6 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	@Override
 	public boolean updateCrossesMadeContainer(final CrossesMadeContainer container) {
 		this.container = container;
-		// Check if this method can be removed
 		return this.applyBreedingMethodSetting() && this.applyNameSetting() && this.applyAdditionalDetailsSetting();
 	}
 
@@ -53,6 +52,7 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 			// Use same breeding method for all crosses
 			final Set<Germplasm> germplasms = this.container.getCrossesMade().getCrossesMap().keySet();
 			for (final Germplasm germplasm : germplasms) {
+				//Set the method id to Single Cross(101) for now, it will be overwritten in the nursery side
 				germplasm.setMethodId(101);
 			}
 
@@ -128,7 +128,7 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	 */
 	private boolean applyAdditionalDetailsSetting() {
 		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null) {
-
+			//the date and harvest location will be overwritten in the nursery side.
 			Integer dateIntValue = 0;
 			Integer harvestLocationId = 0;
 
