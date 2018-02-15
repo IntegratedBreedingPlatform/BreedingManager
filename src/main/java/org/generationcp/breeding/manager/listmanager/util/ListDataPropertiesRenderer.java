@@ -48,7 +48,15 @@ public class ListDataPropertiesRenderer {
 		for (final Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
 			final String column = columnEntry.getKey();
 			this.targetTable.addContainerProperty(column, String.class, "");
-			final String columnName = ColumnLabels.get(column).getTermNameFromOntology(this.ontologyDataManager);
+			final String columnName;
+
+			// Valid for germplasm attributes that not exits in ColumnLabels.
+			if (ColumnLabels.get(column) != null) {
+				columnName = ColumnLabels.get(column).getTermNameFromOntology(this.ontologyDataManager);
+			}else{
+				columnName = column;
+			}
+
 			this.targetTable.setColumnHeader(column, columnName);
 			this.targetTable.setColumnWidth(column, 250);
 			this.setColumnValues(column, columnEntry.getValue());
