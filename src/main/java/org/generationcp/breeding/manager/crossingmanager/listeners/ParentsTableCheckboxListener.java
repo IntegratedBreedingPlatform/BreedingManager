@@ -32,7 +32,7 @@ public class ParentsTableCheckboxListener implements Button.ClickListener {
 	public void buttonClick(ClickEvent event) {
 		boolean checkBoxValue = event.getButton().booleanValue();
 		Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) this.parentsTable.getValue();
-		Set<GermplasmListEntry> entriesToSelect = new HashSet<GermplasmListEntry>();
+		Set<GermplasmListEntry> entriesToSelect = new HashSet<>();
 		if (selectedEntries != null) {
 			entriesToSelect.addAll(selectedEntries);
 			if (checkBoxValue) {

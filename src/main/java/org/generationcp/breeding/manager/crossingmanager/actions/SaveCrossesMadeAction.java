@@ -35,7 +35,6 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
-import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -54,11 +53,6 @@ import com.google.common.collect.Iterables;
  */
 @Configurable
 public class SaveCrossesMadeAction implements Serializable {
-
-	private static final int PREFERRED_NAME = 1;
-
-	private static final int PEDIGREE_NAME_TYPE = 18;
-
 	// Save temp list as deleted
 	// TODO Refactor liststatus to bit array so a list can have multiple status
 	public static final Integer GERMPLASM_LIST_STATUS = 9;
@@ -130,10 +124,6 @@ public class SaveCrossesMadeAction implements Serializable {
 
 				final List<Integer> germplasmIDs = SaveCrossesMadeAction.this.saveGermplasmsAndNames(crossesMade);
 
-				if (crossesMade.getSetting().getCrossNameSetting().isSaveParentageDesignationAsAString()) {
-					SaveCrossesMadeAction.this.savePedigreeDesignationName(crossesMade, germplasmIDs);
-				}
-
 				final GermplasmList list = SaveCrossesMadeAction.this.saveGermplasmListRecord(crossesMade);
 				SaveCrossesMadeAction.this.saveGermplasmListDataRecords(crossesMade, germplasmIDs, list);
 
@@ -151,10 +141,10 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	// Here is where crossed germplasm is saved.
 	List<Integer> saveGermplasmsAndNames(final CrossesMade crossesMade) {
-		List<Integer> germplasmIDs = new ArrayList<Integer>();
+		List<Integer> germplasmIDs = new ArrayList<>();
 
 		final Map<Germplasm, Name> currentCrossesMap = crossesMade.getCrossesMap();
-		Map<Germplasm, Name> crossesToInsert = new LinkedHashMap<Germplasm, Name>();
+		Map<Germplasm, Name> crossesToInsert = new LinkedHashMap<>();
 		if (this.germplasmList == null) {
 			crossesToInsert = currentCrossesMap;
 		}
@@ -172,7 +162,7 @@ public class SaveCrossesMadeAction implements Serializable {
 				this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
 
 		// Add only non deleted list data
-		this.existingListEntries = new ArrayList<GermplasmListData>();
+		this.existingListEntries = new ArrayList<>();
 
 		for (final GermplasmListData germplasmListData : allExistingEntries) {
 			if (germplasmListData.getStatus() != 9) {
@@ -180,7 +170,7 @@ public class SaveCrossesMadeAction implements Serializable {
 			}
 		}
 
-		final List<Integer> gids = new ArrayList<Integer>();
+		final List<Integer> gids = new ArrayList<>();
 		for (final GermplasmListData entry : this.existingListEntries) {
 			gids.add(entry.getGid());
 		}
@@ -230,7 +220,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	}
 
 	private void deleteRemovedListData(final CrossesMade crossesMade) {
-		final List<GermplasmListData> retainedCrosses = new ArrayList<GermplasmListData>();
+		final List<GermplasmListData> retainedCrosses = new ArrayList<>();
 		for (int i = 0; i < this.existingGermplasms.size(); i++) {
 			final Germplasm existingGermplasm = this.existingGermplasms.get(i);
 			for (final Germplasm currentGermplasm : crossesMade.getCrossesMap().keySet()) {
@@ -242,7 +232,7 @@ public class SaveCrossesMadeAction implements Serializable {
 			}
 		}
 
-		final List<GermplasmListData> listToDelete = new ArrayList<GermplasmListData>(this.existingListEntries);
+		final List<GermplasmListData> listToDelete = new ArrayList<>(this.existingListEntries);
 		listToDelete.removeAll(retainedCrosses);
 
 		if (!listToDelete.isEmpty()) {
@@ -250,9 +240,9 @@ public class SaveCrossesMadeAction implements Serializable {
 		}
 
 		// Update "exsitingListEntries", this is used to assign the entry id
-		this.existingListEntries = new ArrayList<GermplasmListData>();
+		this.existingListEntries = new ArrayList<>();
 
-		final List<GermplasmListData> allExistingEntries = new ArrayList<GermplasmListData>();
+		final List<GermplasmListData> allExistingEntries = new ArrayList<>();
 
 		if (this.germplasmList != null) {
 			allExistingEntries.addAll(this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId()));
@@ -282,7 +272,7 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	private void addNewGermplasmListData(final CrossesMade crossesMade, final List<Integer> germplasmIDs, final GermplasmList list) {
 		final Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
-		final List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
+		final List<GermplasmListData> listToSave = new ArrayList<>();
 
 		int ctr = 0;
 		int entryId = this.existingListEntries.size() + 1;
@@ -310,42 +300,6 @@ public class SaveCrossesMadeAction implements Serializable {
 		if (!listToSave.isEmpty()) {
 			this.germplasmListManager.addGermplasmListData(listToSave);
 		}
-	}
-
-	void savePedigreeDesignationName(final CrossesMade crossesMade, final List<Integer> germplasmIDs) {
-
-		final List<Name> parentageDesignationNames = new ArrayList<Name>();
-		final Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
-		int ctr = 0;
-		for (final Map.Entry<Germplasm, Name> entry : crossesMade.getCrossesMap().entrySet()) {
-			if (this.germplasmList == null || this.indicesOfAddedCrosses.contains(ctr)) {
-
-				final Integer gid = germplasmIdIterator.next();
-				final String designation = entry.getValue().getNval();
-				final String parentageDesignation = this.getParentageDesignation(crossesMade, ctr, designation);
-				final Integer locationId = crossesMade.getSetting().getAdditionalDetailsSetting().getHarvestLocationId();
-
-				final Name parentageDesignationName = new Name();
-				parentageDesignationName.setGermplasmId(gid);
-				parentageDesignationName.setTypeId(SaveCrossesMadeAction.PEDIGREE_NAME_TYPE);
-				parentageDesignationName.setUserId(this.contextUtil.getCurrentUserLocalId());
-				parentageDesignationName.setNval(parentageDesignation);
-				parentageDesignationName.setNstat(SaveCrossesMadeAction.PREFERRED_NAME);
-				parentageDesignationName.setLocationId(locationId);
-				parentageDesignationName.setNdate(Util.getCurrentDateAsIntegerValue());
-				parentageDesignationName.setReferenceId(0);
-
-				parentageDesignationNames.add(parentageDesignationName);
-			}
-			ctr++;
-		}
-
-		this.germplasmManager.addGermplasmName(parentageDesignationNames);
-	}
-
-	private String getParentageDesignation(final CrossesMade crossesMade, final int ctr, final String designation) {
-		final String[] groupNameSplit = this.getFemaleMaleCrossName(crossesMade, designation, ctr).split(",");
-		return groupNameSplit[0];
 	}
 
 	/*

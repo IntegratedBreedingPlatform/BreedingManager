@@ -11,16 +11,14 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
-import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsMethodComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
-import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.commons.settings.BreedingMethodSetting;
+import org.generationcp.commons.settings.CrossNameSetting;
+import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -37,7 +35,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.vaadin.data.Property;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -50,10 +47,9 @@ import com.vaadin.ui.VerticalLayout;
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
 	BreedingManagerLayout, StepChangeListener {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
+	private static final int DEFAULT_BREEDING_METHOD_ID = 101;
 
-	public static final String NEXT_BUTTON_ID = "next button";
-	public static final String BACK_BUTTON_ID = "back button";
+	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
 
 	private static final long serialVersionUID = 9097810121003895303L;
 	public static final int BASED_ON_PARENTAGE = 0;
@@ -66,16 +62,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	private final ManageCrossingSettingsMain source;
 
-	private Button backButton;
-	// TODO Is next button used somewhere?
-	private Button nextButton;
-
 	private SelectParentsComponent selectParentsComponent;
 	private MakeCrossesParentsComponent parentsComponent;
 	private CrossingMethodComponent crossingMethodComponent;
 	private MakeCrossesTableComponent crossesTableComponent;
-	private CrossingSettingsMethodComponent crossingSettingsMethodComponent;
-
+	
 	private LinkButton nurseryCancelButton;
 
 	@Autowired
@@ -134,8 +125,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	@Override
 	public void updateLabels() {
-		this.messageSource.setCaption(this.backButton, Message.BACK);
-		this.messageSource.setCaption(this.nextButton, Message.NEXT);
+		
 	}
 
 	/*
@@ -207,20 +197,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		}
 	}
 
-	// TODO Is next button used somewhere?
-	public void toggleNextButton() {
-		this.nextButton.setEnabled(this.isAllListsSaved());
-	}
-
 	public void toggleNurseryBackButton() {
 		this.nurseryBackButton.setEnabled(this.isCrossListMade());
 	}
 
 	public void sendToNurseryAction(final Integer id) {
-		final BreedingMethodSetting methodSetting = CrossingManagerMakeCrossesComponent.this.getCurrentBreedingMethodSetting();
-		final Integer methodId = methodSetting.isBasedOnStatusOfParentalLines()
-			? CrossingManagerMakeCrossesComponent.BASED_ON_PARENTAGE : methodSetting.getMethodId();
-
 		// get the cancel button returning to nursery link as a root url
 		final String urlToSpecificNurseryWithParams =
 			CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource().getURL() + "?"
@@ -230,21 +211,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
 	}
 
-	private boolean isAllListsSaved() {
-		return this.parentsComponent.getFemaleList() != null && this.parentsComponent.getMaleList() != null
-			&& this.crossesTableComponent.getCrossList() != null;
-	}
-
 	private boolean isCrossListMade() {
 		Table tableCrossesMade = this.crossesTableComponent.getTableCrossesMade();
 		return tableCrossesMade != null && tableCrossesMade.size() > 0;
-	}
-
-	public void nextButtonClickAction() {
-		if (this.crossesTableComponent.getCrossList() != null) {
-			this.source.viewGermplasmListCreated(this.crossesTableComponent.getCrossList(), this.parentsComponent.getFemaleList(),
-				this.parentsComponent.getMaleList());
-		}
 	}
 
 	public void backButtonClickAction() {
@@ -253,10 +222,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			return;
 		}
 
-	}
-
-	public void disableNextButton() {
-		this.nextButton.setEnabled(false);
 	}
 
 	@Override
@@ -269,21 +234,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.crossingMethodComponent.setDebugId("crossingMethodComponent");
 		this.crossesTableComponent = new MakeCrossesTableComponent(this);
 		this.crossesTableComponent.setDebugId("crossesTableComponent");
-		this.crossingSettingsMethodComponent = new CrossingSettingsMethodComponent();
-		this.crossingSettingsMethodComponent.setDebugId("crossingSettingsMethodComponent");
-
-		this.backButton = new Button();
-		this.backButton.setDebugId("backButton");
-		this.backButton.setData(CrossingManagerMakeCrossesComponent.BACK_BUTTON_ID);
-		this.backButton.setWidth("80px");
-
-		this.nextButton = new Button();
-		this.nextButton.setDebugId("nextButton");
-		this.nextButton.setData(CrossingManagerMakeCrossesComponent.NEXT_BUTTON_ID);
-		this.nextButton.setWidth("80px");
-		this.nextButton.setEnabled(false);
-		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-
 		fieldbookMiddlewareService.loadAllObservations(nurseryWorkbook);
 	}
 
@@ -294,17 +244,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	@Override
 	public void addListeners() {
-		final CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
-		this.backButton.addListener(listener);
-		this.nextButton.addListener(listener);
-
-		this.crossingSettingsMethodComponent.registerBreedingMethodChangeListener(new Property.ValueChangeListener() {
-
-			@Override
-			public void valueChange(final Property.ValueChangeEvent event) {
-				CrossingManagerMakeCrossesComponent.this.crossesTableComponent.showOrHideGroupInheritanceOptions();
-			}
-		});
+		// do nothing
 	}
 
 	@Override
@@ -319,18 +259,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		layoutButtonArea.setMargin(true, true, true, true);
 		layoutButtonArea.setSpacing(true);
 
-		// show the link to navigate back to the Crossing Manager only if we came from the Nursery Manager previously
-		if (this.isNavigatedFromNursery) {
-			this.nurseryCancelButton = this.constructNurseryCancelButton(BreedingManagerUtil.getApplicationRequest());
-			this.nurseryBackButton = this.constructNurseryBackButton();
-			this.nurseryBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-			this.nurseryBackButton.setEnabled(false);
-			layoutButtonArea.addComponent(this.nurseryCancelButton);
-			layoutButtonArea.addComponent(this.nurseryBackButton);
-		} else {
-			layoutButtonArea.addComponent(this.backButton);
-			layoutButtonArea.addComponent(this.nextButton);
-		}
+		this.nurseryCancelButton = this.constructNurseryCancelButton(BreedingManagerUtil.getApplicationRequest());
+		this.nurseryBackButton = this.constructNurseryBackButton();
+		this.nurseryBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.nurseryBackButton.setEnabled(false);
+		layoutButtonArea.addComponent(this.nurseryCancelButton);
+		layoutButtonArea.addComponent(this.nurseryBackButton);
+	
 
 		sheetDesignCrosses.addComponent(this.selectParentsComponent);
 		sheetDesignCrosses.addComponent(this.parentsComponent);
@@ -397,7 +332,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		if (this.doUpdateTable() && this.crossesTableComponent.getCrossList() == null) {
 			this.crossesTableComponent.updateSeparatorForCrossesMade();
 		}
-		this.crossesTableComponent.showOrHideGroupInheritanceOptions();
 	}
 
 	// SETTERS AND GETTERS
@@ -406,7 +340,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return crossNameSetting.getSeparator();
 	}
 
-	public CrossingManagerSetting getCurrentCrossingSetting() {
+	public CrossSetting getCurrentCrossingSetting() {
 		return this.source.compileCurrentSetting();
 	}
 
@@ -461,11 +395,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public BreedingMethodSetting getCurrentBreedingMethodSetting() {
-		final Integer methodId = this.crossingSettingsMethodComponent.getSelectedBreedingMethodId();
-		final boolean isBasedOnStatusOfParentalLines = this.crossingSettingsMethodComponent.isBasedOnStatusOfParentalLines();
-
-		final BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
-		return breedingMethodSetting;
+		//Return default breeding method id, the proper breeding method id will be set in Fieldbook 
+		return new BreedingMethodSetting(DEFAULT_BREEDING_METHOD_ID, true, false);
 	}
 
 	void setNavigatedFromNursery(final boolean isNavigatedFromNursery) {
@@ -479,21 +410,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	LinkButton getNurseryCancelButton() {
 		return this.nurseryCancelButton;
 	}
+	
+	void setNurseryCancelButton(LinkButton nurseryCancelButton) {
+		this.nurseryCancelButton = nurseryCancelButton;
+	}
 
 	void setCrossingMethodComponent(final CrossingMethodComponent crossingMethodComponent) {
 		this.crossingMethodComponent = crossingMethodComponent;
 	}
-
-	void setCrossingSettingsMethodComponent(final CrossingSettingsMethodComponent crossingSettingsMethodComponent) {
-		this.crossingSettingsMethodComponent = crossingSettingsMethodComponent;
-	}
-
-	void setBackButton(final Button backButton) {
-		this.backButton = backButton;
-	}
-
-	void setNextButton(final Button nextButton) {
-		this.nextButton = nextButton;
-	}
-
 }

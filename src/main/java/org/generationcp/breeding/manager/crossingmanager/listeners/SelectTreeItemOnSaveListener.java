@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 		implements InitializingBean, InternationalizableComponent, ListTreeActionsListener {
 
+	private static final String FOLDER = "FOLDER";
 	private static final long serialVersionUID = 1L;
 	private final SaveListAsDialog saveListAsDialog;
 	private final Component parentComponent;
@@ -75,6 +76,7 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	@Override
 	public void updateLabels() {
 		// Do nothing
+
 	}
 
 	@Override

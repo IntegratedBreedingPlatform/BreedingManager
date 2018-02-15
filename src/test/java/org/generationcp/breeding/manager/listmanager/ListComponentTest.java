@@ -48,7 +48,6 @@ import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +60,16 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
+
+import com.google.common.collect.Lists;
+import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
+
+import junit.framework.Assert;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -72,6 +81,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListComponentTest {
@@ -614,17 +624,13 @@ public class ListComponentTest {
 	}
 
 	private void setUpWorkbenchDataManager() {
-
-		final WorkbenchRuntimeData runtimeDate = new WorkbenchRuntimeData();
-		runtimeDate.setUserId(5);
-
 		final Project dummyProject = new Project();
 		dummyProject.setProjectId((long) 5);
 
+		final Integer userId = 5;
 		try {
-			Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(runtimeDate);
-			Mockito.when(this.workbenchDataManager.getLastOpenedProject(runtimeDate.getUserId())).thenReturn(dummyProject);
-			Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(runtimeDate.getUserId(), dummyProject.getProjectId()))
+			Mockito.when(this.workbenchDataManager.getLastOpenedProject(userId)).thenReturn(dummyProject);
+			Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(userId, dummyProject.getProjectId()))
 					.thenReturn(EXPECTED_USER_ID);
 
 		} catch (final MiddlewareQueryException e) {

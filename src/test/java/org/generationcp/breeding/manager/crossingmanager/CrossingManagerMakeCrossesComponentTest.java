@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsMethodComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -13,7 +12,6 @@ import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.service.api.FieldbookService;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -149,7 +147,6 @@ public class CrossingManagerMakeCrossesComponentTest {
 		this.makeCrosses.setSelectParentsComponent(Mockito.mock(SelectParentsComponent.class));
 		this.makeCrosses.setParentsComponent(Mockito.mock(MakeCrossesParentsComponent.class));
 		this.makeCrosses.setCrossingMethodComponent(Mockito.mock(CrossingMethodComponent.class));
-		this.makeCrosses.setCrossingSettingsMethodComponent(Mockito.mock(CrossingSettingsMethodComponent.class));
 		this.makeCrosses.setCrossesTableComponent(Mockito.mock(MakeCrossesTableComponent.class));
 
 		Mockito.doReturn(new LinkButton(new ExternalResource("url"), "Back")).when(this.makeCrosses)
@@ -167,30 +164,17 @@ public class CrossingManagerMakeCrossesComponentTest {
 		Assert.assertNotNull("Expecting nursery back button initialized when navigating to crossing manager from a Nursery.",
 				this.makeCrosses.getNurseryBackButton());
 	}
-
+	
 	@Test
-	public void testBackNavigationControlsWhenNotComingFromNursery() {
-
-		// Setup Mocks
-		this.makeCrosses.setSelectParentsComponent(Mockito.mock(SelectParentsComponent.class));
-		this.makeCrosses.setParentsComponent(Mockito.mock(MakeCrossesParentsComponent.class));
-		this.makeCrosses.setCrossingMethodComponent(Mockito.mock(CrossingMethodComponent.class));
-		this.makeCrosses.setCrossingSettingsMethodComponent(Mockito.mock(CrossingSettingsMethodComponent.class));
-		this.makeCrosses.setCrossesTableComponent(Mockito.mock(MakeCrossesTableComponent.class));
-		this.makeCrosses.setNextButton(Mockito.mock(Button.class));
-		this.makeCrosses.setBackButton(Mockito.mock(Button.class));
-
-		// Set "from nursery" flag to false
-		this.makeCrosses.setNavigatedFromNursery(false);
-
-		// Layout components
-		this.makeCrosses.layoutComponents();
-
-		// Expect cancel and back to nursery buttons to not be initialized (null)
-		Assert.assertNull("Expecting cancel button to not be initialized when not navigating to crossing manager from a Nursery.",
-				this.makeCrosses.getNurseryCancelButton());
-		Assert.assertNull("Expecting nursery back button to not be initialized when not navigating to crossing manager from a Nursery.",
-				this.makeCrosses.getNurseryBackButton());
+	public void testSendToNurseryAction() {
+		LinkButton nurseryCancelButton = Mockito.mock(LinkButton.class);
+		ExternalResource externalResource = Mockito.mock(ExternalResource.class);
+		Mockito.when(nurseryCancelButton.getResource()).thenReturn(externalResource);
+		Mockito.when(externalResource.getURL()).thenReturn("url");
+		this.makeCrosses.setNurseryCancelButton(nurseryCancelButton);
+		this.makeCrosses.sendToNurseryAction(1);
+		Mockito.verify(nurseryCancelButton).getResource();
+		Mockito.verify(externalResource).getURL();
+		Mockito.verify(this.window).open(Matchers.any(ExternalResource.class), Matchers.anyString());
 	}
-
 }
