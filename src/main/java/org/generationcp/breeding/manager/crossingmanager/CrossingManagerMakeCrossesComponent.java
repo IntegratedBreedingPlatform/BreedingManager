@@ -1,12 +1,14 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -19,6 +21,7 @@ import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.settings.BreedingMethodSetting;
 import org.generationcp.commons.settings.CrossNameSetting;
 import org.generationcp.commons.settings.CrossSetting;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -35,13 +38,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -77,6 +76,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private Workbook nurseryWorkbook = null;
 
 	private Button nurseryBackButton;
+
+	@Resource
+	private ContextUtil contextUtil;
+
 	private final Button.ClickListener nurseryBackButtonDefaultClickListener = new Button.ClickListener() {
 
 		/**
@@ -202,13 +205,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public void sendToNurseryAction(final Integer id) {
-		// get the cancel button returning to nursery link as a root url
-		final String urlToSpecificNurseryWithParams =
-			CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource().getURL() + "?"
-				+ BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id;
+		final String aditionalParameters =
+			"?restartApplication&loggedInUserId=" + contextUtil.getContextInfoFromSession().getLoggedInUserId() + "&selectedProjectId="
+				+ contextUtil.getContextInfoFromSession().getSelectedProjectId() + "&authToken=" + contextUtil.getContextInfoFromSession()
+				.getAuthToken();
 
-		final ExternalResource urlToNursery = new ExternalResource(urlToSpecificNurseryWithParams);
-		CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
+		final ExternalResource openStudyWithCrossesList = new ExternalResource(BreedingManagerApplication.URL_STUDY_TRIAL[0] + this.nurseryId + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id + "&"+ aditionalParameters + BreedingManagerApplication.URL_STUDY_TRIAL[1]);
+		CrossingManagerMakeCrossesComponent.this.getWindow().open(openStudyWithCrossesList, "_self");
 	}
 
 	private boolean isCrossListMade() {
@@ -259,7 +262,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		layoutButtonArea.setMargin(true, true, true, true);
 		layoutButtonArea.setSpacing(true);
 
-		this.nurseryCancelButton = this.constructNurseryCancelButton(BreedingManagerUtil.getApplicationRequest());
+		this.nurseryCancelButton = this.constructNurseryCancelButton();
 		this.nurseryBackButton = this.constructNurseryBackButton();
 		this.nurseryBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		this.nurseryBackButton.setEnabled(false);
@@ -286,16 +289,16 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return nurseryBackButton;
 	}
 
-	LinkButton constructNurseryCancelButton(final HttpServletRequest currentRequest) {
-		final ExternalResource urlToNursery;
-		if (StringUtils.isBlank(this.nurseryId) || !NumberUtils.isDigits(this.nurseryId)) {
-			urlToNursery = new ExternalResource(currentRequest.getScheme() + "://" + currentRequest.getServerName() + ":"
-				+ currentRequest.getServerPort() + BreedingManagerApplication.PATH_TO_NURSERY);
-		} else {
-			urlToNursery = new ExternalResource(currentRequest.getScheme() + "://" + currentRequest.getServerName() + ":"
-				+ currentRequest.getServerPort() + BreedingManagerApplication.PATH_TO_EDIT_NURSERY + this.nurseryId);
-		}
-		final LinkButton nurseryCancelButton = new LinkButton(urlToNursery, "");
+	LinkButton constructNurseryCancelButton() {
+		final String aditionalParameters =
+			"?restartApplication&loggedInUserId=" + contextUtil.getContextInfoFromSession().getLoggedInUserId() + "&selectedProjectId="
+				+ contextUtil.getContextInfoFromSession().getSelectedProjectId() + "&authToken=" + contextUtil.getContextInfoFromSession()
+				.getAuthToken();
+		final ExternalResource urlStudy = new ExternalResource(
+			BreedingManagerApplication.URL_STUDY_TRIAL[0] + this.nurseryId + aditionalParameters
+				+ BreedingManagerApplication.URL_STUDY_TRIAL[1]);
+
+		final LinkButton nurseryCancelButton = new LinkButton(urlStudy, "");
 		nurseryCancelButton.setDebugId("nurseryCancelButton");
 		this.messageSource.setCaption(nurseryCancelButton, Message.CANCEL);
 		return nurseryCancelButton;

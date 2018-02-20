@@ -39,6 +39,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	public static final String REQ_PARAM_CROSSES_LIST_ID = "crosseslistid";
 	public static final String PATH_TO_NURSERY = "/Fieldbook/NurseryManager/";
 	public static final String PATH_TO_EDIT_NURSERY = "/Fieldbook/NurseryManager/editNursery/";
+	public static final String[] URL_STUDY_TRIAL = {"/Fieldbook/TrialManager/openTrial/","#/trialSettings"};
 
 	private Window window;
 
