@@ -1,17 +1,10 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-import javax.annotation.Resource;
-
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import org.generationcp.breeding.manager.listmanager.api.FillColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -22,10 +15,15 @@ import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
+import javax.annotation.Nullable;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Configurable
 public class GermplasmColumnValuesGenerator {
@@ -128,27 +126,31 @@ public class GermplasmColumnValuesGenerator {
 			
 			for (final Object itemId : itemIds) {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
-				
-				if (methodsMap.get(gid) == null) {
-					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "");
-				} else {
-					String value = "";
-					
-					if (FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.equals(option)) {
-						value = ((Method) methodsMap.get(gid)).getMname();
-					} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV.equals(option)) {
-						value = ((Method) methodsMap.get(gid)).getMcode();
-					} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER.equals(option)) {
-						value = ((Method) methodsMap.get(gid)).getMid().toString();
-					} else if (FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.equals(option)) {
-						value = ((Method) methodsMap.get(gid)).getMgrp();
-					}
-					this.fillColumnSource.setColumnValueForItem(itemId, columnName, value);
-				}
+				final String value = this.getBreedingMethod(option,methodsMap,gid);
+				this.fillColumnSource.setColumnValueForItem(itemId, columnName, value);
+
 			}
 			this.fillColumnSource.propagateUIChanges();
 		}
 
+	}
+
+	private String getBreedingMethod(final FillWithOption option, final Map<Integer, Object> methodsMap, final Integer gid) {
+		if (methodsMap.get(gid) != null) {
+			switch (option) {
+				case FILL_WITH_BREEDING_METHOD_NAME:
+					return ((Method) methodsMap.get(gid)).getMname();
+				case FILL_WITH_BREEDING_METHOD_ABBREV:
+					return ((Method) methodsMap.get(gid)).getMcode();
+				case FILL_WITH_BREEDING_METHOD_NUMBER:
+					return ((Method) methodsMap.get(gid)).getMid().toString();
+				case FILL_WITH_BREEDING_METHOD_GROUP:
+					return ((Method) methodsMap.get(gid)).getMgrp();
+				default:
+					break;
+			}
+		}
+		return "";
 	}
 
 	public void setCrossMaleGIDColumnValues(final String columnName) {
@@ -370,7 +372,7 @@ public class GermplasmColumnValuesGenerator {
 		final Map<Integer, String> crossExpansions = new HashMap<>();
 
 		for (List<Integer> partitionedGidList : partition) {
-			final Set<Integer> partitionedGidSet = new HashSet<Integer>(partitionedGidList);
+			final Set<Integer> partitionedGidSet = new HashSet<>(partitionedGidList);
 			crossExpansions.putAll(this.pedigreeService.getCrossExpansions(partitionedGidSet, crossExpansionLevel.intValue(),
 					this.crossExpansionProperties));
 		}
@@ -394,8 +396,9 @@ public class GermplasmColumnValuesGenerator {
 			for (final Object itemId : itemIds) {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 				final Germplasm germplasm = germplasmMap.get(gid);
-				final String groupSourceGid =
-					germplasm.getGnpgs() == -1 && null != germplasm.getGpid1() ? germplasm.getGpid1().toString() : "-";
+				final String groupSourceGid = germplasm.getGnpgs() == -1 && germplasm.getGpid1() != null && germplasm.getGpid1() != 0 ?
+					germplasm.getGpid1().toString() :
+					"-";
 				this.fillColumnSource.setColumnValueForItem(itemId, columnName, groupSourceGid);
 			}
 			this.fillColumnSource.propagateUIChanges();
@@ -418,8 +421,9 @@ public class GermplasmColumnValuesGenerator {
 			for (final Object itemId : itemIds) {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 				final Germplasm germplasm = germplasmMap.get(gid);
-				final String immediateSourceGid =
-					germplasm.getGnpgs() == -1 && null != germplasm.getGpid2() ? germplasm.getGpid2().toString() : "-";
+				final String immediateSourceGid = germplasm.getGnpgs() == -1 && germplasm.getGpid2() != null && germplasm.getGpid2() != 0 ?
+					germplasm.getGpid2().toString() :
+					"-";
 				this.fillColumnSource.setColumnValueForItem(itemId, columnName, immediateSourceGid);
 			}
 			this.fillColumnSource.propagateUIChanges();

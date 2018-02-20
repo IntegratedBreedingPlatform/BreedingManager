@@ -65,8 +65,6 @@ public class GermplasmQueryTest {
 	public static final Double AVAILABLE_BALANCE = 5.0d;
 	public static final String ORI_COUN = "ORI_COUN";
 	public static final String NOTE = "NOTE";
-	public static final String TEST_IMMEDIATE_SOURCE = "TEST IMMEDIATE SOURCE";
-	public static final String TEST_GROUP_SOURCE = "TEST GROUP SOURCE";
 
 	private final String[] itemPropertyIds = new String[] {
 			"GROUP ID"
@@ -142,6 +140,10 @@ public class GermplasmQueryTest {
 			germplasm.setFemaleParentPreferredName("Female Preferred Name");
 			germplasm.setMaleParentPreferredID("102");
 			germplasm.setMaleParentPreferredName("Male Preferred Name");
+			germplasm.setGroupSourceGID("-");
+			germplasm.setGroupSourcePreferredName("-");
+			germplasm.setImmediateSourceGID("-");
+			germplasm.setImmediateSourcePreferredName("-");
 			immediatepreferredNamesMap.put(gid,"AA");
 			groupSourcepreferredNamesMap.put(gid,"-");
 
@@ -183,9 +185,7 @@ public class GermplasmQueryTest {
 		final Germplasm germplasm = this.allGermplasm.get(0);
 		final Item item = this.query.getGermplasmItem(germplasm, 1,
 			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING),
-			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_GERMPLASM_NAME),
-			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_IMMEDIATE_SOURCE),
-			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_GROUP_SOURCE));
+			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_GERMPLASM_NAME));
 
 		final List<String> itemPropertyIDList = Arrays.asList(this.itemPropertyIds);
 
@@ -237,9 +237,6 @@ public class GermplasmQueryTest {
 		Mockito.verify(this.pedigreeService, Mockito.times(1)).getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(),
 				Matchers.any(CrossExpansionProperties.class));
 		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
-		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getImmediateSourcePreferredNamesByGids(Matchers.anyListOf(Integer.class));
-		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGroupSourcePreferredNamesByGids(Matchers.anyListOf(Integer.class));
-
 
 	}
 
@@ -270,7 +267,7 @@ public class GermplasmQueryTest {
 		this.query.retrieveGIDsofMatchingGermplasm();
 
 		// compare the gid lists independent of order
-		Assert.assertEquals(new HashSet<>(this.gids), new HashSet<Integer>(this.query.getAllGids()));
+		Assert.assertEquals(new HashSet<>(this.gids), new HashSet<>(this.query.getAllGids()));
 	}
 
 	@Test
@@ -303,6 +300,12 @@ public class GermplasmQueryTest {
 		propertyIdsDefinition.add(ColumnLabels.CROSS_MALE_GID.getName());
 		propertyIdsDefinition.add(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
 
+		propertyIdsDefinition.add(ColumnLabels.GROUP_SOURCE_GID.getName());
+		propertyIdsDefinition.add(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName());
+		propertyIdsDefinition.add(ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
+		propertyIdsDefinition.add(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName());
+
+
 		// Add attribute type property Id
 		propertyIdsDefinition.add(ORI_COUN);
 		
@@ -332,6 +335,12 @@ public class GermplasmQueryTest {
 		Assert.assertTrue(result.contains(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()));
 		Assert.assertTrue(result.contains(ColumnLabels.CROSS_MALE_GID.getName()));
 		Assert.assertTrue(result.contains(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.GROUP_SOURCE_GID.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.IMMEDIATE_SOURCE_GID.getName()));
+		Assert.assertTrue(result.contains(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()));
+
+
 		Assert.assertTrue(result.contains(ORI_COUN));
 
 	}
