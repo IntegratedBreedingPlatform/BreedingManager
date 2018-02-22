@@ -93,7 +93,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 	public void testConstructNurseryCancelButton_Edit() {
 		this.makeCrosses.setNurseryId(CrossingManagerMakeCrossesComponentTest.NURSERY_ID);
 
-		final LinkButton buttonToEditNursery = this.makeCrosses.constructNurseryCancelButton(this.mockRequest);
+		final LinkButton buttonToEditNursery = this.makeCrosses.constructNurseryCancelButton();
 
 		Assert.assertEquals(
 				"http://" + CrossingManagerMakeCrossesComponentTest.LOCALHOST + ":" + CrossingManagerMakeCrossesComponentTest.PORT
@@ -105,7 +105,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 
 	@Test
 	public void testConstructNurseryCancelButton_Create() {
-		final LinkButton buttonToCreateNursery = this.makeCrosses.constructNurseryCancelButton(this.mockRequest);
+		final LinkButton buttonToCreateNursery = this.makeCrosses.constructNurseryCancelButton();
 
 		Assert.assertEquals("http://" + CrossingManagerMakeCrossesComponentTest.LOCALHOST + ":"
 				+ CrossingManagerMakeCrossesComponentTest.PORT + BreedingManagerApplication.PATH_TO_NURSERY,
@@ -150,7 +150,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 		this.makeCrosses.setCrossesTableComponent(Mockito.mock(MakeCrossesTableComponent.class));
 
 		Mockito.doReturn(new LinkButton(new ExternalResource("url"), "Back")).when(this.makeCrosses)
-				.constructNurseryCancelButton(Matchers.any(HttpServletRequest.class));
+				.constructNurseryCancelButton();
 
 		// Set "from nursery" flag to true
 		this.makeCrosses.setNavigatedFromNursery(true);
