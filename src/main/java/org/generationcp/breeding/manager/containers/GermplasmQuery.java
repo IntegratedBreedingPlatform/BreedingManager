@@ -142,12 +142,9 @@ public class GermplasmQuery implements Query {
 		final Map<Integer, String> pedigreeStringMap =
 				this.pedigreeService.getCrossExpansions(new HashSet<>(gids), null, this.crossExpansionProperties);
 		final Map<Integer, String> preferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
-		final Map<Integer, String> immediatePreferredNameByGidMap = this.germplasmDataManager.getImmediateSourcePreferredNamesByGids(gids);
-		final Map<Integer, String> groupSourcepreferredNameByGidMap = this.germplasmDataManager.getGroupSourcePreferredNamesByGids(gids);
 
 		for (int i = 0; i < germplasmResults.size(); i++) {
-			items.add(this.getGermplasmItem(germplasmResults.get(i), i + startIndex, pedigreeStringMap, preferredNamesMap,
-				immediatePreferredNameByGidMap, groupSourcepreferredNameByGidMap));
+			items.add(this.getGermplasmItem(germplasmResults.get(i), i + startIndex, pedigreeStringMap, preferredNamesMap));
 		}
 
 		return items;
@@ -170,7 +167,7 @@ public class GermplasmQuery implements Query {
 
 	@SuppressWarnings("rawtypes")
 	Item getGermplasmItem(final Germplasm germplasm, final int index, final Map<Integer, String> pedigreeStringMap,
-			final Map<Integer, String> preferredNamesMap, final Map<Integer, String> immediatePreferredNameByGidMap, final Map<Integer, String> groupSourcepreferredNameByGidMap) {
+			final Map<Integer, String> preferredNamesMap) {
 
 		final Integer gid = germplasm.getGid();
 		final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
@@ -201,12 +198,10 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getFemaleParentPreferredName()));
 		propertyMap.put(ColumnLabels.CROSS_MALE_GID.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredID()));
 		propertyMap.put(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredName()));
-		final String groupSourceGid = germplasm.getGnpgs() == -1 && null != germplasm.getGpid1() ? germplasm.getGpid1().toString() : "-";
-		propertyMap.put(ColumnLabels.GROUP_SOURCE_GID.getName(), new ObjectProperty<>(groupSourceGid));
-		propertyMap.put(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), new ObjectProperty<>(groupSourcepreferredNameByGidMap.get(gid)));
-		final String immediateSourceGid = germplasm.getGnpgs() == -1 && null != germplasm.getGpid2() ? germplasm.getGpid2().toString() : "-";
-		propertyMap.put(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), new ObjectProperty<>(immediateSourceGid));
-		propertyMap.put(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), new ObjectProperty<>(immediatePreferredNameByGidMap.get(gid)));
+		propertyMap.put(ColumnLabels.GROUP_SOURCE_GID.getName(), new ObjectProperty<>(germplasm.getGroupSourceGID()));
+		propertyMap.put(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getGroupSourcePreferredName()));
+		propertyMap.put(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), new ObjectProperty<>(germplasm.getImmediateSourceGID()));
+		propertyMap.put(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getImmediateSourcePreferredName()));
 
 		for (final Map.Entry<String, String> entry : germplasm.getAttributeTypesValueMap().entrySet()) {
 			final String attributeTypePropertyId = entry.getKey();
