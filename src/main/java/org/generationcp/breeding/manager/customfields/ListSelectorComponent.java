@@ -315,10 +315,16 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 				// If rename, set existing name
 			} else if (this.selectedListId != null) {
-				final String itemCaption = this.getSelectedItemCaption();
-				if (itemCaption != null) {
-					this.listNameValidator.setCurrentListName(itemCaption);
-					this.folderTextField.setValue(itemCaption);
+
+				if (germplasmListTreeUtil.isListOwnedByTheUser(this.germplasmListManager.getGermplasmListById((Integer) this.selectedListId))) {
+					final String itemCaption = this.getSelectedItemCaption();
+					if (itemCaption != null) {
+						this.listNameValidator.setCurrentListName(itemCaption);
+						this.folderTextField.setValue(itemCaption);
+					}
+				} else {
+					MessageNotifier.showError(this.getWindow(), "Invalid Input", this.messageSource.getMessage(Message.ERROR_UNABLE_TO_RENAME_LIST_NON_OWNER));
+					this.addRenameFolderLayout.setVisible(false);
 				}
 			}
 			this.folderTextField.focus();

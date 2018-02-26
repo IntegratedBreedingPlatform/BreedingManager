@@ -317,14 +317,10 @@ public class GermplasmListTreeUtil implements Serializable {
 		}
 	}
 
-	private boolean isListOwnedByTheUser(final GermplasmList gpList) {
-		try {
-			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
-			if (!gpList.getUserId().equals(ibdbUserId)) {
-				return false;
-			}
-		} catch (final MiddlewareQueryException e) {
-			GermplasmListTreeUtil.LOG.error("Error retrieving workbench user id.", e);
+	public boolean isListOwnedByTheUser(final GermplasmList gpList) {
+		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+		if (!gpList.getUserId().equals(ibdbUserId)) {
+			return false;
 		}
 		return true;
 	}
