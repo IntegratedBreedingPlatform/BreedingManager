@@ -4,7 +4,7 @@ package org.generationcp.breeding.manager.util;
 import java.io.File;
 
 import org.apache.commons.lang3.StringUtils;
-import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.VaadinFileDownloadResource;
 import org.generationcp.commons.util.FileUtils;
 
 import com.vaadin.ui.Component;
@@ -17,8 +17,8 @@ public class FileDownloaderUtility {
 			return false;
 		}
 
-		final FileDownloadResource fileDownloadResource =
-				new FileDownloadResource(new File(sourceFilename),visibleFilename, source.getApplication());
+		final VaadinFileDownloadResource fileDownloadResource =
+				new VaadinFileDownloadResource(new File(sourceFilename),visibleFilename, source.getApplication());
 
 		source.getWindow().open(fileDownloadResource);
 

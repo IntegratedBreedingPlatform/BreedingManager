@@ -13,7 +13,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.service.FileService;
-import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.VaadinFileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class GermplasmListTemplateDownloader {
 			final FileOutputStream fileOutputStream = new FileOutputStream(templateFile);
 			wb.write(fileOutputStream);
 			fileOutputStream.close();
-			FileDownloadResource fileDownloadResource = this.getTemplateAsDownloadResource(templateFile);
+			VaadinFileDownloadResource fileDownloadResource = this.getTemplateAsDownloadResource(templateFile);
 			if (!this.getCurrentApplication().getMainWindow().getChildWindows().isEmpty()) {
 				this.getCurrentApplication().getMainWindow().open(fileDownloadResource);
 			} else {
@@ -59,12 +59,12 @@ public class GermplasmListTemplateDownloader {
 		}
 	}
 
-	protected FileDownloadResource getTemplateAsDownloadResource(File templateFile) throws IOException {
-		FileDownloadResource fileDownloadResource = null;
+	protected VaadinFileDownloadResource getTemplateAsDownloadResource(File templateFile) throws IOException {
+		VaadinFileDownloadResource fileDownloadResource = null;
 		if (!templateFile.exists()) {
 			throw new IOException("Germplasm Template File does not exist.");
 		} else {
-			fileDownloadResource = new FileDownloadResource(templateFile,EXPANDED_TEMPLATE_FILE, this.getCurrentApplication());
+			fileDownloadResource = new VaadinFileDownloadResource(templateFile,EXPANDED_TEMPLATE_FILE, this.getCurrentApplication());
 		}
 
 		return fileDownloadResource;

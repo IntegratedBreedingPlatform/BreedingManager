@@ -11,12 +11,11 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.util.FileDownloaderUtility;
-import org.generationcp.commons.constant.ToolEnum;
 import org.generationcp.commons.constant.ToolSection;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.CustomReportType;
 import org.generationcp.commons.reports.service.JasperReportService;
-import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.VaadinFileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -24,6 +23,7 @@ import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.generationcp.middleware.reports.Reporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,7 +150,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	private void addCustomReports(final ComboBox formatOptions) {
 
 		final List<CustomReportType> customReports = this.jasperReportService
-				.getCustomReportTypes(ToolSection.BM_LIST_MGR_CUSTOM_REPORT.name(), ToolEnum.LIST_MANAGER.getToolName());
+				.getCustomReportTypes(ToolSection.BM_LIST_MGR_CUSTOM_REPORT.name(), ToolName.LIST_MANAGER.getName());
 		for (final CustomReportType customReport : customReports) {
 			formatOptions.addItem(customReport.getCode().concat(" - ").concat(customReport.getName()));
 		}
@@ -296,7 +296,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 			try {
 				this.germplasmListExporter.exportKBioScienceGenotypingOrderXLS(this.germplasmList.getId(), tempFileName, 96);
 
-				final FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName),
+				final VaadinFileDownloadResource fileDownloadResource = new VaadinFileDownloadResource(new File(tempFileName),
 						this.germplasmList.getName().replace(" ", "_") + "ForGenotyping.xls", this.source.getApplication());
 
 				this.source.getWindow().open(fileDownloadResource);
