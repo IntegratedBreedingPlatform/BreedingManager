@@ -12,7 +12,7 @@ import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.VaadinFileDownloadResource;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -49,7 +49,7 @@ public class GermplasmListTemplateDownloaderTest {
 	public void setUp() throws Exception {
 		doReturn(this.application).when(this.exportDialog).getCurrentApplication();
 		doReturn(this.request).when(this.exportDialog).getCurrentRequest();
-		doReturn(mock(FileDownloadResource.class)).when(this.exportDialog)
+		doReturn(mock(VaadinFileDownloadResource.class)).when(this.exportDialog)
 				.getTemplateAsDownloadResource(any(File.class));
 
 		when(this.application.getMainWindow()).thenReturn(this.window);
@@ -63,7 +63,7 @@ public class GermplasmListTemplateDownloaderTest {
 		when(component.getWindow()).thenReturn(this.window);
 		this.exportDialog.exportGermplasmTemplate(component);
 
-		verify(this.window).open(any(FileDownloadResource.class));
+		verify(this.window).open(any(VaadinFileDownloadResource.class));
 	}
 
 	@Test
