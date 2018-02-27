@@ -15,7 +15,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.util.FileDownloaderUtility;
 import org.generationcp.commons.service.FileService;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.FileUtils;
+import org.generationcp.commons.util.InstallationDirectoryUtil;
 import org.generationcp.commons.util.StringUtil;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -24,6 +26,7 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.generationcp.middleware.service.api.FieldbookService;
 import org.generationcp.middleware.util.PoiUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +40,7 @@ import com.vaadin.ui.Component;
 public class SeedInventoryListExporter {
 
 	public static final String SEED_EXPORT_FILE_NAME_FORMAT = "%s-Seed Prep.xls";
+	public static final String TEMPORARY_FILE_NAME = "temp.xls";
 
 	private String seedTemplateFile = "SeedPrepTemplate.xls";
 
@@ -68,6 +72,11 @@ public class SeedInventoryListExporter {
 	@Autowired
 	private org.generationcp.middleware.service.api.FieldbookService fieldbookMiddlewareService;
 
+	@Autowired
+	protected ContextUtil contextUtil;
+
+	private InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
+
 	protected Workbook excelWorkbook;
 
 	public SeedInventoryListExporter() {
@@ -81,11 +90,18 @@ public class SeedInventoryListExporter {
 
 	public void exportSeedPreparationList() throws SeedInventoryExportException {
 		try {
-			excelWorkbook = this.fileService.retrieveWorkbookTemplate(seedTemplateFile);
-			this.fillSeedPreparationExcel();
-			File excelOutputFile = this.createExcelOutputFile(germplasmList.getName(), excelWorkbook);
 
-			this.fileDownloaderUtility.initiateFileDownload(excelOutputFile.getAbsolutePath(), excelOutputFile.getName(), this.source);
+			excelWorkbook = this.fileService.retrieveWorkbookTemplate(seedTemplateFile);
+
+			this.fillSeedPreparationExcel();
+
+			String temporaryExcelFile = this.createExcelOutputFile(excelWorkbook);
+
+			String visibleFileName = String.format(SeedInventoryListExporter.SEED_EXPORT_FILE_NAME_FORMAT,
+					StringUtil.replaceInvalidChacaracterFileName(germplasmList.getName(), "_"));
+			visibleFileName = FileUtils.sanitizeFileName(visibleFileName);
+
+			this.fileDownloaderUtility.initiateFileDownload(temporaryExcelFile, visibleFileName, this.source);
 		} catch (MiddlewareException | IOException | InvalidFormatException e) {
 			throw new SeedInventoryExportException(e.getMessage(), e);
 		}
@@ -200,17 +216,17 @@ public class SeedInventoryListExporter {
 
 	}
 
-	private File createExcelOutputFile(final String listName, final Workbook excelWorkbook) throws IOException {
-		String outputFileName = String.format(SeedInventoryListExporter.SEED_EXPORT_FILE_NAME_FORMAT,
-				StringUtil.replaceInvalidChacaracterFileName(listName, "_"));
+	private String createExcelOutputFile(final Workbook excelWorkbook) throws IOException {
 
-		outputFileName = FileUtils.sanitizeFileName(outputFileName);
+		final String temporaryFilenamePath = installationDirectoryUtil
+				.getFileInTemporaryDirectoryForProjectAndTool(TEMPORARY_FILE_NAME, contextUtil.getProjectInContext(),
+						ToolName.BM_LIST_MANAGER_MAIN);
 
-		try (OutputStream out = new FileOutputStream(outputFileName)) {
+		try (OutputStream out = new FileOutputStream(temporaryFilenamePath)) {
 			excelWorkbook.write(out);
 		}
 
-		return new File(outputFileName);
+		return temporaryFilenamePath;
 	}
 
 	private Map<Integer, Transaction> createReservedTransactionMap(final List<GermplasmListData> inventoryDetails) {
@@ -270,6 +286,14 @@ public class SeedInventoryListExporter {
 
 	public Workbook getExcelWorkbook() {
 		return excelWorkbook;
+	}
+
+	public void setContextUtil(final ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	public void setInstallationDirectoryUtil(final InstallationDirectoryUtil installationDirectoryUtil) {
+		this.installationDirectoryUtil = installationDirectoryUtil;
 	}
 }
 
