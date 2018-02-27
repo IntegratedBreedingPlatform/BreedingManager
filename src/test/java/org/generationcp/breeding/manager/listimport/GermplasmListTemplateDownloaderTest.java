@@ -1,19 +1,24 @@
-
 package org.generationcp.breeding.manager.listimport;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.generationcp.breeding.manager.util.FileDownloaderUtility;
+import org.generationcp.commons.service.FileService;
+import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.InstallationDirectoryUtil;
 import org.generationcp.commons.util.VaadinFileDownloadResource;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,51 +35,64 @@ import com.vaadin.ui.Window;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListTemplateDownloaderTest {
 
-	@Mock
-	private WorkbenchDataManager workbenchDataManager;
+	public static final String TEMPORARY_FILE_PATH_XLS = "temporaryFilePath.xls";
 
 	@Mock
-	private Application application;
+	private CodesSheetGenerator codesSheetGenerator;
 
 	@Mock
-	private Window window;
+	private FileDownloaderUtility fileDownloaderUtility;
 
 	@Mock
-	private HttpServletRequest request;
+	private FileService fileService;
 
-	@InjectMocks
-	private GermplasmListTemplateDownloader exportDialog = spy(new GermplasmListTemplateDownloader());
+	@Mock
+	private ContextUtil contextUtil;
+
+	@Mock
+	private Component component;
+
+	@Mock
+	private InstallationDirectoryUtil installationDirectoryUtil;
+
+	@Mock
+	private GermplasmListTemplateDownloader.WorkbookFileWriter workbookFileWriter;
+
+	private HSSFWorkbook workbook = new HSSFWorkbook();
+
+	private GermplasmListTemplateDownloader germplasmListTemplateDownloader;
 
 	@Before
 	public void setUp() throws Exception {
-		doReturn(this.application).when(this.exportDialog).getCurrentApplication();
-		doReturn(this.request).when(this.exportDialog).getCurrentRequest();
-		doReturn(mock(VaadinFileDownloadResource.class)).when(this.exportDialog)
-				.getTemplateAsDownloadResource(any(File.class));
 
-		when(this.application.getMainWindow()).thenReturn(this.window);
+		this.germplasmListTemplateDownloader = new GermplasmListTemplateDownloader();
+		this.germplasmListTemplateDownloader.setCodesSheetGenerator(this.codesSheetGenerator);
+		this.germplasmListTemplateDownloader.setFileDownloaderUtility(this.fileDownloaderUtility);
+		this.germplasmListTemplateDownloader.setFileService(this.fileService);
+		this.germplasmListTemplateDownloader.setContextUtil(this.contextUtil);
+		this.germplasmListTemplateDownloader.setInstallationDirectoryUtil(this.installationDirectoryUtil);
+		this.germplasmListTemplateDownloader.setWorkbookFileWriter(this.workbookFileWriter);
+
+		final Project project = new Project();
+		when(contextUtil.getProjectInContext()).thenReturn(project);
+		when(this.installationDirectoryUtil
+				.getFileInTemporaryDirectoryForProjectAndTool(GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE, project,
+						ToolName.BM_LIST_MANAGER_MAIN)).thenReturn(TEMPORARY_FILE_PATH_XLS);
+		when(this.fileService.retrieveWorkbookTemplate("templates/" + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE))
+				.thenReturn(this.workbook);
+
 	}
 
 	@Test
-	@Ignore(
-			value = "This test runs fine in IDE but fails on mvn commandline due to classpath issues in loading the xls file from commons. Team Manila to fix and enable soon.")
 	public void testExportGermplasmTemplate() throws Exception {
-		Component component = mock(Component.class);
-		when(component.getWindow()).thenReturn(this.window);
-		this.exportDialog.exportGermplasmTemplate(component);
 
-		verify(this.window).open(any(VaadinFileDownloadResource.class));
-	}
+		this.germplasmListTemplateDownloader.exportGermplasmTemplate(this.component);
 
-	@Test
-	@Ignore(
-			value = "This test runs fine in IDE but fails on mvn commandline due to classpath issues in loading the xls file from commons. Team Manila to fix and enable soon.")
-	public void testGermplasmTemplateExists() throws Exception {
-		ClassPathResource cpr = new ClassPathResource("templates/" + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE);
-		File templateFile = cpr.getFile();
-		assert templateFile != null;
-
-		assert templateFile.exists();
+		verify(workbookFileWriter, times(1)).write(this.workbook, TEMPORARY_FILE_PATH_XLS);
+		verify(codesSheetGenerator, times(1)).generateCodesSheet(this.workbook);
+		verify(fileDownloaderUtility, times(1))
+				.initiateFileDownload(TEMPORARY_FILE_PATH_XLS, GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE, this.component);
 
 	}
+
 }
