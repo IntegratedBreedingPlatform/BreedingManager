@@ -1,11 +1,12 @@
 package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.vaadin.data.Property;
+import com.vaadin.ui.GridLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
@@ -44,6 +45,14 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	private static final String CODE_NAME_WITH_SPACE_REGEX = "^CODE \\d$";
 	private static final String CODE_NAME_REGEX = "^CODE\\d$";
+	public static final String DEFAULT_DIALOG_WIDTH = "650px";
+	public static final String DEFAULT_DIALOG_HEIGHT = "350px";
+	public static final String DEFAULT_DIALOG_HEIGHT_FOR_MANUAL_NAMING = "600px";
+
+
+	public static enum NAMING_OPTION {
+		AUTOMATIC, MANUAL;
+	}
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -57,14 +66,15 @@ public class AssignCodesDialog extends BaseSubWindow
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 
+	private VerticalLayout manualCodeNamingLayout;
 	private AssignCodesNamingLayout assignCodesNamingLayout;
 
 	private MandatoryMarkLabel mandatoryLabel;
-	private MandatoryMarkLabel codingLevelMandatoryLabel;
+
 	private Label indicatesMandatoryLabel;
-	private Label codingLevelLabel;
-	private VerticalLayout codesLayout;
+
 	private OptionGroup codingLevelOptions;
+	private OptionGroup namingOptions;
 	private Button cancelButton;
 	private Button continueButton;
 	private Set<Integer> gidsToProcess = new HashSet<>();
@@ -88,33 +98,28 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.indicatesMandatoryLabel = new Label(this.messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
 		this.indicatesMandatoryLabel.setDebugId("indicatesMandatoryLabel");
 		this.indicatesMandatoryLabel.addStyleName("italic");
-		
+
 		this.codingLevelOptions = new OptionGroup();
 		this.codingLevelOptions.setDebugId("codingLevelOptions");
-		
-		this.codingLevelLabel = new Label(this.messageSource.getMessage(Message.CODING_LEVEL));
-		this.codingLevelLabel.setDebugId("codingLevelLabel");
-		this.codingLevelLabel.addStyleName("bold");
-		this.codingLevelMandatoryLabel = new MandatoryMarkLabel();
-		this.codingLevelMandatoryLabel.setDebugId("codingLevelMandatoryLabel");
-		
+		this.codingLevelOptions.addStyleName("lst-horizontal-options");
+		this.namingOptions = new OptionGroup();
+		this.namingOptions.setDebugId("namingOptions");
+		this.namingOptions.addStyleName("lst-horizontal-options");
+
 		this.instantiateButtons();
-		
-		this.codesLayout = new VerticalLayout();
-		this.codesLayout.setDebugId("codesLayout");
 
 		// set immediate to true for those fields we will listen to for the changes on the screen
 		this.codingLevelOptions.setImmediate(true);
+		this.namingOptions.setImmediate(true);
 
-		this.assignCodesNamingLayout = new AssignCodesNamingLayout(this.codesLayout, this.continueButton);
-		this.assignCodesNamingLayout.instantiateComponents();
+		this.manualCodeNamingLayout = this.createManualCodeNamingLayout();
 
 	}
 
 	void instantiateButtons() {
 		this.cancelButton = new Button();
 		this.cancelButton.setDebugId("cancelButton");
-		
+
 		this.continueButton = new Button();
 		this.continueButton.setDebugId("continueButton");
 		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
@@ -123,9 +128,15 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Override
 	public void initializeValues() {
+
 		this.populateCodingNameTypes();
+		this.namingOptions.addItem(NAMING_OPTION.AUTOMATIC);
+		this.namingOptions.addItem(NAMING_OPTION.MANUAL);
+		this.namingOptions.setValue(NAMING_OPTION.AUTOMATIC);
+
+
 	}
-	
+
 	void populateCodingNameTypes() {
 		final List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
 		UserDefinedField firstId = null;
@@ -147,10 +158,24 @@ public class AssignCodesDialog extends BaseSubWindow
 	public void addListeners() {
 		this.assignCodesNamingLayout.addListeners();
 
+		this.namingOptions.addListener(new Property.ValueChangeListener() {
+
+			@Override
+			public void valueChange(final Property.ValueChangeEvent valueChangeEvent) {
+				if (valueChangeEvent.getProperty().getValue() == NAMING_OPTION.MANUAL) {
+					AssignCodesDialog.this.manualCodeNamingLayout.setVisible(true);
+					AssignCodesDialog.this.continueButton.setEnabled(false);
+				} else {
+					AssignCodesDialog.this.manualCodeNamingLayout.setVisible(false);
+					AssignCodesDialog.this.continueButton.setEnabled(true);
+				}
+			}
+		});
+
 		this.cancelButton.addListener(new Button.ClickListener() {
 
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -190,7 +215,7 @@ public class AssignCodesDialog extends BaseSubWindow
 				@Override
 				protected void doInTransactionWithoutResult(final TransactionStatus status) {
 					final UserDefinedField nameType = (UserDefinedField) AssignCodesDialog.this.codingLevelOptions.getValue();
-					
+
 					// TODO pass user and location. Hardcoded to 0 = unknown for now.
 					final Map<Integer, GermplasmGroupNamingResult> resultsMap = AssignCodesDialog.this.germplasmNamingService.applyGroupNames(AssignCodesDialog.this.gidsToProcess,
 							AssignCodesDialog.this.assignCodesNamingLayout.generateGermplasmNameSetting(), nameType, 0, 0);
@@ -200,7 +225,7 @@ public class AssignCodesDialog extends BaseSubWindow
 			});
 		}
 	}
-	
+
 	boolean isCodingNameType(final String nameType){
 		return nameType.toUpperCase().matches(CODE_NAME_REGEX) || nameType.toUpperCase().matches(CODE_NAME_WITH_SPACE_REGEX);
 	}
@@ -213,9 +238,10 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Override
 	public void layoutComponents() {
+		this.setImmediate(true);
 		this.setModal(true);
-		this.setWidth("650px");
-		this.setHeight("530px");
+		this.setWidth(DEFAULT_DIALOG_WIDTH);
+		this.setHeight(DEFAULT_DIALOG_HEIGHT);
 		this.setResizable(false);
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 
@@ -223,7 +249,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		final VerticalLayout dialogLayout = new VerticalLayout();
 		dialogLayout.setDebugId("dialogLayout");
-		dialogLayout.setHeight("460px");
+		dialogLayout.setHeight("550px");
 		dialogLayout.setMargin(true);
 
 		final HorizontalLayout mandatoryLabelLayout = new HorizontalLayout();
@@ -234,28 +260,9 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.indicatesMandatoryLabel.setWidth("180px");
 		mandatoryLabelLayout.addComponent(this.mandatoryLabel);
 		mandatoryLabelLayout.addComponent(this.indicatesMandatoryLabel);
-		
-		// Area with level options
-		final HorizontalLayout optionsLabelLayout = new HorizontalLayout();
-		optionsLabelLayout.setDebugId("optionsLabelLayout");
-		optionsLabelLayout.setWidth("260px");
-		this.codingLevelLabel.setWidth("90px");
-		this.codingLevelMandatoryLabel.setWidth("160px");
-		optionsLabelLayout.addComponent(this.codingLevelLabel);
-		optionsLabelLayout.addComponent(this.codingLevelMandatoryLabel);
-		final HorizontalLayout optionsLayout = new HorizontalLayout();
-		optionsLayout.setDebugId("optionsLayout");
-		optionsLayout.setWidth("480px");
-		optionsLayout.setHeight("45px");
-		this.codingLevelOptions.addStyleName("lst-horizontal-options");
-		optionsLayout.addComponent(optionsLabelLayout);
-		optionsLayout.addComponent(this.codingLevelOptions);
-		optionsLayout.setComponentAlignment(this.codingLevelOptions, Alignment.TOP_RIGHT);
 
-		this.codesLayout.setWidth("100%");
-		this.codesLayout.setHeight("270px");
-		this.assignCodesNamingLayout.layoutComponents();
-		
+		final GridLayout namingAndCodeLevelsGridLayout = this.createNamingAndCodeLevelGridLayout(this.codingLevelOptions, this.namingOptions);
+
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
@@ -268,10 +275,84 @@ public class AssignCodesDialog extends BaseSubWindow
 		buttonLayout.setComponentAlignment(this.continueButton, Alignment.BOTTOM_LEFT);
 
 		dialogLayout.addComponent(mandatoryLabelLayout);
-		dialogLayout.addComponent(optionsLayout);
-		dialogLayout.addComponent(this.codesLayout);
+		dialogLayout.addComponent(namingAndCodeLevelsGridLayout);
+		dialogLayout.addComponent(this.manualCodeNamingLayout);
 		dialogLayout.addComponent(buttonLayout);
+
+		dialogLayout.setComponentAlignment(mandatoryLabelLayout, Alignment.TOP_LEFT);
+		dialogLayout.setComponentAlignment(namingAndCodeLevelsGridLayout, Alignment.TOP_LEFT);
+
 		this.setContent(dialogLayout);
+	}
+
+	protected GridLayout createNamingAndCodeLevelGridLayout(final OptionGroup codingLevelOptions, final OptionGroup namingOptions) {
+
+		final GridLayout namingAndCodeLevelOptionLayout = new GridLayout(2, 2);
+
+		namingAndCodeLevelOptionLayout.addComponent(this.createCodingLevelOptionsLabelLayout(),0,0 );
+		namingAndCodeLevelOptionLayout.addComponent(codingLevelOptions,1,0 );
+		namingAndCodeLevelOptionLayout.addComponent(this.createNamingOptionsLabelLayout(),0,1 );
+		namingAndCodeLevelOptionLayout.addComponent(namingOptions,1,1 );
+
+		namingAndCodeLevelOptionLayout.setColumnExpandRatio(0, 0.3f);
+		namingAndCodeLevelOptionLayout.setColumnExpandRatio(1, 0.7f);
+		namingAndCodeLevelOptionLayout.setWidth("100%");
+
+		return namingAndCodeLevelOptionLayout;
+	}
+
+	protected HorizontalLayout createCodingLevelOptionsLabelLayout() {
+
+		final Label codingLevelLabel = new Label(this.messageSource.getMessage(Message.CODING_LEVEL));
+		codingLevelLabel.setDebugId("codingLevelLabel");
+		codingLevelLabel.addStyleName("bold");
+		codingLevelLabel.setWidth("90px");
+		codingLevelLabel.setHeight("45px");
+		final MandatoryMarkLabel codingLevelMandatoryLabel = new MandatoryMarkLabel();
+		codingLevelMandatoryLabel.setDebugId("codingLevelMandatoryLabel");
+
+		final HorizontalLayout optionsLabelLayout = new HorizontalLayout();
+		optionsLabelLayout.setDebugId("optionsLabelLayout");
+		optionsLabelLayout.addComponent(codingLevelLabel);
+		optionsLabelLayout.addComponent(codingLevelMandatoryLabel);
+
+		return optionsLabelLayout;
+	}
+
+	protected HorizontalLayout createNamingOptionsLabelLayout() {
+
+		final Label namingLabel = new Label(this.messageSource.getMessage(Message.NAMING));
+		namingLabel.setDebugId("namingLabel");
+		namingLabel.addStyleName("bold");
+		namingLabel.setWidth("70px");
+		namingLabel.setHeight("45px");
+		final MandatoryMarkLabel namingMandatoryLabel = new MandatoryMarkLabel();
+		namingMandatoryLabel.setDebugId("namingMandatoryLabel");
+
+		final HorizontalLayout namingOptionsLabelLayout = new HorizontalLayout();
+		namingOptionsLabelLayout.setDebugId("namingOptionsLabelLayout");
+		namingOptionsLabelLayout.addComponent(namingLabel);
+		namingOptionsLabelLayout.addComponent(namingMandatoryLabel);
+
+		return namingOptionsLabelLayout;
+
+	}
+
+	protected VerticalLayout createManualCodeNamingLayout() {
+
+		final VerticalLayout manualCodeNamingLayout = new VerticalLayout();
+		manualCodeNamingLayout.setDebugId("codesLayout");
+		manualCodeNamingLayout.setWidth("100%");
+		manualCodeNamingLayout.setHeight("270px");
+		manualCodeNamingLayout.setImmediate(true);
+		manualCodeNamingLayout.setVisible(false);
+
+		this.assignCodesNamingLayout = new AssignCodesNamingLayout(manualCodeNamingLayout, this.continueButton);
+		this.assignCodesNamingLayout.instantiateComponents();
+		this.assignCodesNamingLayout.layoutComponents();
+
+		return manualCodeNamingLayout;
+
 	}
 
 	@Override
@@ -284,6 +365,8 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.messageSource.setCaption(this, Message.ASSIGN_CODES_HEADER);
 		this.messageSource.setCaption(this.continueButton, Message.APPLY_CODES);
 		this.messageSource.setCaption(this.cancelButton, Message.CANCEL);
+		this.namingOptions.setItemCaption(NAMING_OPTION.AUTOMATIC, this.messageSource.getMessage(Message.CODE_NAMING_OPTION_AUTOMATIC));
+		this.namingOptions.setItemCaption(NAMING_OPTION.MANUAL, this.messageSource.getMessage(Message.CODE_NAMING_OPTION_MANUAL));
 	}
 
 	void setGidsToProcess(final Set<Integer> gidsToProcess) {
