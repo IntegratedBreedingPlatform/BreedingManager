@@ -66,16 +66,16 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private CrossingMethodComponent crossingMethodComponent;
 	private MakeCrossesTableComponent crossesTableComponent;
 	
-	private LinkButton nurseryCancelButton;
+	private LinkButton studyCancelButton;
 
 	@Autowired
 	private FieldbookService fieldbookMiddlewareService;
 
-	private boolean isNavigatedFromNursery;
-	private String nurseryId;
-	private Workbook nurseryWorkbook = null;
+	private boolean isNavigatedFromStudy;
+	private String studyId;
+	private Workbook workbook = null;
 
-	private Button nurseryBackButton;
+	private Button studyBackButton;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -100,22 +100,21 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.initializeNurseryContext(BreedingManagerUtil.getApplicationRequest());
+		this.initializeStudyContext(BreedingManagerUtil.getApplicationRequest());
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
 		this.layoutComponents();
 	}
 
-	void initializeNurseryContext(final HttpServletRequest currentRequest) {
-		this.isNavigatedFromNursery = currentRequest.getPathInfo().contains(BreedingManagerApplication.NAVIGATION_FROM_NURSERY_PREFIX);
-		if (this.isNavigatedFromNursery) {
-			final String[] parameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID);
-			final String nurseryId = parameterValues != null && parameterValues.length > 0 ? parameterValues[0] : "";
-			this.nurseryId = nurseryId;
+	void initializeStudyContext(final HttpServletRequest currentRequest) {
+		this.isNavigatedFromStudy = currentRequest.getPathInfo().contains(BreedingManagerApplication.NAVIGATION_FROM_STUDY_PREFIX);
+		if (this.isNavigatedFromStudy) {
+			final String[] parameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_ID);
+			this.studyId = parameterValues != null && parameterValues.length > 0 ? parameterValues[0] : "";
 			// Initialize the workbook.. this will be required later for seed source generation.
-			if (!StringUtils.isBlank(this.nurseryId)) {
-				this.nurseryWorkbook = this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(this.nurseryId));
+			if (!StringUtils.isBlank(this.studyId)) {
+				this.workbook = this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(this.studyId));//FIX THIS CUENYAD
 			}
 		}
 	}
@@ -201,7 +200,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public void toggleNurseryBackButton() {
-		this.nurseryBackButton.setEnabled(this.isCrossListMade());
+		this.studyBackButton.setEnabled(this.isCrossListMade());
 	}
 
 	public void sendToNurseryAction(final Integer id) {
@@ -210,7 +209,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 				+ contextUtil.getContextInfoFromSession().getSelectedProjectId() + "&authToken=" + contextUtil.getContextInfoFromSession()
 				.getAuthToken();
 
-		final ExternalResource openStudyWithCrossesList = new ExternalResource(BreedingManagerApplication.URL_STUDY_TRIAL[0] + this.nurseryId + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id + "&"+ aditionalParameters + BreedingManagerApplication.URL_STUDY_TRIAL[1]);
+		final ExternalResource openStudyWithCrossesList = new ExternalResource(BreedingManagerApplication.URL_STUDY[0] + this.studyId + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id + "&"+ aditionalParameters + BreedingManagerApplication.URL_STUDY[1]);
 		CrossingManagerMakeCrossesComponent.this.getWindow().open(openStudyWithCrossesList, "_self");
 	}
 
@@ -237,7 +236,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.crossingMethodComponent.setDebugId("crossingMethodComponent");
 		this.crossesTableComponent = new MakeCrossesTableComponent(this);
 		this.crossesTableComponent.setDebugId("crossesTableComponent");
-		fieldbookMiddlewareService.loadAllObservations(nurseryWorkbook);
+		fieldbookMiddlewareService.loadAllObservations(workbook);
 	}
 
 	@Override
@@ -262,12 +261,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		layoutButtonArea.setMargin(true, true, true, true);
 		layoutButtonArea.setSpacing(true);
 
-		this.nurseryCancelButton = this.constructNurseryCancelButton();
-		this.nurseryBackButton = this.constructNurseryBackButton();
-		this.nurseryBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		this.nurseryBackButton.setEnabled(false);
-		layoutButtonArea.addComponent(this.nurseryCancelButton);
-		layoutButtonArea.addComponent(this.nurseryBackButton);
+		this.studyCancelButton = this.constructStudyCancelButton();
+		this.studyBackButton = this.constructStudyBackButton();
+		this.studyBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.studyBackButton.setEnabled(false);
+		layoutButtonArea.addComponent(this.studyCancelButton);
+		layoutButtonArea.addComponent(this.studyBackButton);
 	
 
 		sheetDesignCrosses.addComponent(this.selectParentsComponent);
@@ -281,44 +280,44 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.setStyleName("crosses-select-parents-tab");
 	}
 
-	protected Button constructNurseryBackButton() {
+	protected Button constructStudyBackButton() {
 		final Button nurseryBackButton = new Button();
-		nurseryBackButton.setDebugId("nurseryBackButton");
-		nurseryBackButton.setCaption(this.messageSource.getMessage(Message.BACK_TO_NURSERY));
+		nurseryBackButton.setDebugId("studyBackButton");
+		nurseryBackButton.setCaption(this.messageSource.getMessage(Message.BACK_TO_STUDY));
 		nurseryBackButton.addListener(this.nurseryBackButtonDefaultClickListener);
 		return nurseryBackButton;
 	}
 
-	LinkButton constructNurseryCancelButton() {
+	LinkButton constructStudyCancelButton() {
 		final String aditionalParameters =
 			"?restartApplication&loggedInUserId=" + contextUtil.getContextInfoFromSession().getLoggedInUserId() + "&selectedProjectId="
 				+ contextUtil.getContextInfoFromSession().getSelectedProjectId() + "&authToken=" + contextUtil.getContextInfoFromSession()
 				.getAuthToken();
 		final ExternalResource urlStudy = new ExternalResource(
-			BreedingManagerApplication.URL_STUDY_TRIAL[0] + this.nurseryId + aditionalParameters
-				+ BreedingManagerApplication.URL_STUDY_TRIAL[1]);
+			BreedingManagerApplication.URL_STUDY[0] + this.studyId + aditionalParameters
+				+ BreedingManagerApplication.URL_STUDY[1]);
 
 		final LinkButton nurseryCancelButton = new LinkButton(urlStudy, "");
-		nurseryCancelButton.setDebugId("nurseryCancelButton");
+		nurseryCancelButton.setDebugId("studyCancelButton");
 		this.messageSource.setCaption(nurseryCancelButton, Message.CANCEL);
 		return nurseryCancelButton;
 	}
 
-	boolean isNavigatedFromNursery() {
-		return this.isNavigatedFromNursery;
+	boolean isNavigatedFromStudy() {
+		return this.isNavigatedFromStudy;
 	}
 
-	public String getNurseryId() {
-		return this.nurseryId;
+	public String getStudyId() {
+		return this.studyId;
 	}
 
 	// For test only
-	void setNurseryId(final String nurseryId) {
-		this.nurseryId = nurseryId;
+	void setStudyId(final String studyId) {
+		this.studyId = studyId;
 	}
 
-	public Workbook getNurseryWorkbook() {
-		return this.nurseryWorkbook;
+	public Workbook getWorkbook() {
+		return this.workbook;
 	}
 
 	public void updateCrossesSeedSource(final String femaleListName, final String maleListName) {
@@ -402,23 +401,31 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return new BreedingMethodSetting(DEFAULT_BREEDING_METHOD_ID, true, false);
 	}
 
-	void setNavigatedFromNursery(final boolean isNavigatedFromNursery) {
-		this.isNavigatedFromNursery = isNavigatedFromNursery;
+	void setNavigatedFromStudy(final boolean isNavigatedFromNursery) {
+		this.isNavigatedFromStudy = isNavigatedFromNursery;
 	}
 
-	Button getNurseryBackButton() {
-		return this.nurseryBackButton;
+	Button getStudyBackButton() {
+		return this.studyBackButton;
 	}
 
-	LinkButton getNurseryCancelButton() {
-		return this.nurseryCancelButton;
+	LinkButton getStudyCancelButton() {
+		return this.studyCancelButton;
 	}
 	
-	void setNurseryCancelButton(LinkButton nurseryCancelButton) {
-		this.nurseryCancelButton = nurseryCancelButton;
+	void setStudyCancelButton(LinkButton studyCancelButton) {
+		this.studyCancelButton = studyCancelButton;
 	}
 
 	void setCrossingMethodComponent(final CrossingMethodComponent crossingMethodComponent) {
 		this.crossingMethodComponent = crossingMethodComponent;
+	}
+
+	public ContextUtil getContextUtil() {
+		return contextUtil;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
 	}
 }
