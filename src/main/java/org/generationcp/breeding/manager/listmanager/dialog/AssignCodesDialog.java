@@ -123,7 +123,6 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.continueButton = new Button();
 		this.continueButton.setDebugId("continueButton");
 		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		this.continueButton.setEnabled(false);
 	}
 
 	@Override
@@ -154,6 +153,18 @@ public class AssignCodesDialog extends BaseSubWindow
 		}
 	}
 
+	protected void toggleNamingLayout(final NAMING_OPTION namingOption) {
+		if (namingOption == NAMING_OPTION.MANUAL) {
+			AssignCodesDialog.this.manualCodeNamingLayout.setVisible(true);
+			AssignCodesDialog.this.continueButton.setEnabled(false);
+			AssignCodesDialog.this.setHeight(AssignCodesDialog.DEFAULT_DIALOG_HEIGHT_FOR_MANUAL_NAMING);
+		} else {
+			AssignCodesDialog.this.manualCodeNamingLayout.setVisible(false);
+			AssignCodesDialog.this.continueButton.setEnabled(true);
+			AssignCodesDialog.this.setHeight(AssignCodesDialog.DEFAULT_DIALOG_HEIGHT);
+		}
+	}
+
 	@Override
 	public void addListeners() {
 		this.assignCodesNamingLayout.addListeners();
@@ -162,13 +173,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 			@Override
 			public void valueChange(final Property.ValueChangeEvent valueChangeEvent) {
-				if (valueChangeEvent.getProperty().getValue() == NAMING_OPTION.MANUAL) {
-					AssignCodesDialog.this.manualCodeNamingLayout.setVisible(true);
-					AssignCodesDialog.this.continueButton.setEnabled(false);
-				} else {
-					AssignCodesDialog.this.manualCodeNamingLayout.setVisible(false);
-					AssignCodesDialog.this.continueButton.setEnabled(true);
-				}
+				AssignCodesDialog.this.toggleNamingLayout((NAMING_OPTION) valueChangeEvent.getProperty().getValue());
 			}
 		});
 
@@ -249,7 +254,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		final VerticalLayout dialogLayout = new VerticalLayout();
 		dialogLayout.setDebugId("dialogLayout");
-		dialogLayout.setHeight("550px");
+		dialogLayout.setHeight("100%");
 		dialogLayout.setMargin(true);
 
 		final HorizontalLayout mandatoryLabelLayout = new HorizontalLayout();
@@ -377,7 +382,6 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.assignCodesNamingLayout = assignCodesNamingLayout;
 	}
 
-	
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
@@ -397,7 +401,6 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.germplasmNamingService = germplasmNamingService;
 	}
 
-	
 	
 	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
