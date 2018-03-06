@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.customcomponent;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -62,8 +61,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	private static final long serialVersionUID = -4214986909789479904L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExportListAsDialog.class);
-	protected static final String TEMP_FILENAME = "temp.csv";
-	protected static final String TEMP_FILENAME_FOR_GENOTYPING = "tempListForGenotyping.xls";
+	protected static final String TEMP_FILENAME = "temp";
+	protected static final String TEMP_FILENAME_FOR_GENOTYPING = "tempListForGenotyping";
 	public static final int DEFAULT_PLATE_SIZE = 96;
 
 	private VerticalLayout mainLayout;
@@ -244,11 +243,11 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	protected void exportListAsCSV(final Table table) {
 		try {
 
-			final String temporaryFilePath = installationDirectoryUtil
-					.getFileInTemporaryDirectoryForProjectAndTool(ExportListAsDialog.TEMP_FILENAME, contextUtil.getProjectInContext(),
+			final String visibleFileName = this.germplasmList.getName() + ExportListAsDialog.CSV_EXT;
+			final String temporaryFilePath = this.installationDirectoryUtil
+					.getTempFileInOutputDirectoryForProjectAndTool(this.germplasmList.getName(),  ExportListAsDialog.CSV_EXT, contextUtil.getProjectInContext(),
 							ToolName.BM_LIST_MANAGER_MAIN);
 			this.germplasmListExporter.exportGermplasmListCSV(temporaryFilePath, table, this.germplasmList.getId());
-			final String visibleFileName = this.germplasmList.getName() + ExportListAsDialog.CSV_EXT;
 
 			this.fileDownloaderUtility.initiateFileDownload(temporaryFilePath, visibleFileName, this.source);
 
@@ -263,7 +262,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	protected void exportCustomReport(final String reportCode) {
 		try {
 			final String temporaryFilePath = installationDirectoryUtil
-					.getFileInTemporaryDirectoryForProjectAndTool(ExportListAsDialog.TEMP_FILENAME, contextUtil.getProjectInContext(),
+					.getTempFileInOutputDirectoryForProjectAndTool(ExportListAsDialog.TEMP_FILENAME, CSV_EXT, contextUtil.getProjectInContext(),
 							ToolName.BM_LIST_MANAGER_MAIN);
 			final Reporter customReport =
 					this.germplasmListExporter.exportGermplasmListCustomReport(this.germplasmList.getId(), temporaryFilePath, reportCode);
@@ -280,7 +279,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	protected void exportListAsXLS(final Table table) {
 		try {
 			final String temporaryFilePath = installationDirectoryUtil
-					.getFileInTemporaryDirectoryForProjectAndTool(ExportListAsDialog.TEMP_FILENAME, contextUtil.getProjectInContext(),
+					.getTempFileInOutputDirectoryForProjectAndTool(this.germplasmList.getName(), ExportListAsDialog.XLS_EXT, this.contextUtil.getProjectInContext(),
 							ToolName.BM_LIST_MANAGER_MAIN);
 			this.germplasmListExporter.exportGermplasmListXLS(this.germplasmList.getId(), temporaryFilePath, table);
 			final String visibleFileName = this.germplasmList.getName() + ExportListAsDialog.XLS_EXT;
@@ -299,9 +298,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 			try {
 
-				final String temporaryFilePath = installationDirectoryUtil
-						.getFileInTemporaryDirectoryForProjectAndTool(TEMP_FILENAME_FOR_GENOTYPING, contextUtil.getProjectInContext(),
-								ToolName.BM_LIST_MANAGER_MAIN);
+				final String temporaryFilePath = installationDirectoryUtil.getTempFileInOutputDirectoryForProjectAndTool(
+						TEMP_FILENAME_FOR_GENOTYPING, XLS_EXT, this.contextUtil.getProjectInContext(), ToolName.BM_LIST_MANAGER_MAIN);
 
 				this.germplasmListExporter
 						.exportKBioScienceGenotypingOrderXLS(this.germplasmList.getId(), temporaryFilePath, DEFAULT_PLATE_SIZE);

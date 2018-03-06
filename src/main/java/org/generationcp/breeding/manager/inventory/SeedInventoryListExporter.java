@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.inventory;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -33,14 +32,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.google.common.collect.Lists;
-
 import com.vaadin.ui.Component;
 
 @Configurable
 public class SeedInventoryListExporter {
 
 	public static final String SEED_EXPORT_FILE_NAME_FORMAT = "%s-Seed Prep.xls";
-	public static final String TEMPORARY_FILE_NAME = "temp.xls";
+	public static final String TEMPORARY_FILE_NAME = "temp";
+	public static final String XLS_EXTENSION = ".xls";
 
 	private String seedTemplateFile = "SeedPrepTemplate.xls";
 
@@ -219,7 +218,7 @@ public class SeedInventoryListExporter {
 	private String createExcelOutputFile(final Workbook excelWorkbook) throws IOException {
 
 		final String temporaryFilenamePath = installationDirectoryUtil
-				.getFileInTemporaryDirectoryForProjectAndTool(TEMPORARY_FILE_NAME, contextUtil.getProjectInContext(),
+				.getTempFileInOutputDirectoryForProjectAndTool(TEMPORARY_FILE_NAME, XLS_EXTENSION, contextUtil.getProjectInContext(),
 						ToolName.BM_LIST_MANAGER_MAIN);
 
 		try (OutputStream out = new FileOutputStream(temporaryFilenamePath)) {
