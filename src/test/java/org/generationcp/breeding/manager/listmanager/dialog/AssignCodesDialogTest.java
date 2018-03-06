@@ -8,11 +8,11 @@ import java.util.Set;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNamingLayout;
+import org.generationcp.commons.service.GermplasmCodeGenerationService;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
-import org.generationcp.middleware.service.api.GermplasmNamingService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -44,7 +44,7 @@ public class AssignCodesDialogTest {
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Mock
-	private GermplasmNamingService germplasmNamingService;
+	private GermplasmCodeGenerationService germplasmCodeGenerationService;
 
 	@Mock
 	private PlatformTransactionManager transactionManager;
@@ -77,7 +77,7 @@ public class AssignCodesDialogTest {
 		this.assignCodesDialog.setGidsToProcess(this.createGidsToProcess());
 		this.assignCodesDialog.setTransactionManager(this.transactionManager);
 		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
-		this.assignCodesDialog.setGermplasmNamingService(this.germplasmNamingService);
+		this.assignCodesDialog.setGermplasmCodeGenerationService(this.germplasmCodeGenerationService);
 		this.assignCodesDialog.setGermplasmListManager(this.germplasmListManager);
 
 		this.setting = this.createGermplasmNameSetting();
@@ -87,8 +87,8 @@ public class AssignCodesDialogTest {
 	}
 
 	@Test
-	public void testAssignCodes() {
-		this.assignCodesDialog.assignCodes();
+	public void testGenerateCodeNames() {
+		this.assignCodesDialog.generateCodeNames();
 
 		// Make sure that the codes are assigned to all GIDs
 		this.verifyAssignCodesActions();
@@ -96,7 +96,7 @@ public class AssignCodesDialogTest {
 	}
 
 	private void verifyAssignCodesActions() {
-		Mockito.verify(this.germplasmNamingService).applyGroupNames(this.createGidsToProcess(), this.setting, this.nameType, 0, 0);
+		Mockito.verify(this.germplasmCodeGenerationService).applyGroupNames(this.createGidsToProcess(), this.setting, this.nameType, 0, 0);
 
 		Mockito.verify(this.parent).addWindow(Mockito.any(AssignCodesResultsDialog.class));
 		Mockito.verify(this.parent).removeWindow(this.assignCodesDialog);
@@ -146,7 +146,7 @@ public class AssignCodesDialogTest {
 		final Button continueButton = this.assignCodesDialog.getContinueButton();
 		continueButton.setEnabled(true);
 		continueButton.click();
-		Mockito.verify(this.germplasmNamingService, Mockito.never()).applyGroupName(Mockito.anyInt(),
+		Mockito.verify(this.germplasmCodeGenerationService, Mockito.never()).applyGroupName(Mockito.anyInt(),
 				Mockito.any(GermplasmNameSetting.class), Mockito.any(UserDefinedField.class), Mockito.anyInt(), Mockito.anyInt());
 		Mockito.verify(this.parent, Mockito.never()).addWindow(Mockito.any(AssignCodesResultsDialog.class));
 		Mockito.verify(this.parent, Mockito.never()).removeWindow(this.assignCodesDialog);

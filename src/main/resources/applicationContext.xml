@@ -54,6 +54,11 @@
 		<property name="hybridBreedingMethods" value="#{'${hybrid.breeding.methods}'.split(',')}" />
 	</bean>
 
+	<bean id="keySequenceRegisterService" factory-bean="managerFactory"
+		  factory-method="getKeySequenceRegisterService" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
 	<bean id="genotypicDataManager" factory-bean="managerFactory"
 		factory-method="getGenotypicDataManager" scope="request">
 		<aop:scoped-proxy />
@@ -76,11 +81,6 @@
 	
 	<bean id="germplasmGroupingService" factory-bean="managerFactory"
 		factory-method="getGermplasmGroupingService" scope="request">
-		<aop:scoped-proxy />
-	</bean>
-	
-	<bean id="germplasmNamingService" factory-bean="managerFactory"
-		factory-method="getGermplasmNamingService" scope="request">
 		<aop:scoped-proxy />
 	</bean>
 	
@@ -217,6 +217,7 @@
 		<property name="ruleSequenceConfiguration">
 			<map>
 				<entry key="stockid" value="${stockid.rules}" />
+				<entry key="coding" value="Prefix,Count,Suffix" />
 			</map>
 		</property>
 	</bean>
@@ -228,7 +229,7 @@
 		above, this automatically populates the map in the RuleFactory -->
 	<context:component-scan base-package="org.generationcp.commons.ruleengine.stockid" />
 	<context:component-scan base-package="org.generationcp.commons.ruleengine.cross" />
-
+	<context:component-scan base-package="org.generationcp.commons.ruleengine.coding" />
 
 
 	<bean id="stockService" class="org.generationcp.commons.service.impl.StockServiceImpl">
@@ -354,7 +355,24 @@
 	<bean id="breedingManagerWindowGenerator" class="org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator" />
 
 	<context:component-scan base-package="org.generationcp.breeding.manager.validator"/>
-	
+
+	<!-- Required bean declarations for Germplasm Coding Service -->
+
+
+	<bean id="germplasmCodeGenerationService" class="org.generationcp.commons.service.impl.GermplasmCodeGenerationServiceImpl" />
+
+	<bean id="codingExpressionResolver" class="org.generationcp.commons.ruleengine.impl.CodingExpressionResolver" />
+
+	<bean id="codingExpressionFactory"
+		  class="org.generationcp.commons.ruleengine.coding.expression.CodingExpressionFactory"
+		  init-method="init" />
+
+	<bean class="org.generationcp.commons.ruleengine.coding.expression.CodingExpressionPostProcessor">
+		<property name="codingExpressionFactory" ref="codingExpressionFactory" />
+	</bean>
+
+	<context:component-scan base-package="org.generationcp.commons.ruleengine.coding.expression" />
+
 	<!-- Nested <beans> elements can only be at the end. -->
 	
 	<!-- Only activate liquibase auto update in non-production environments. 

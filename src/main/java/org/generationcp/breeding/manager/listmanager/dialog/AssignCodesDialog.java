@@ -11,15 +11,20 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNamingLayout;
+import org.generationcp.commons.service.GermplasmCodeGenerationService;
+import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
-import org.generationcp.middleware.service.api.GermplasmNamingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -43,12 +48,13 @@ import com.vaadin.ui.themes.Reindeer;
 public class AssignCodesDialog extends BaseSubWindow
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, Window.CloseListener {
 
+	private static final Logger LOG = LoggerFactory.getLogger(AssignCodesDialog.class);
+
 	private static final String CODE_NAME_WITH_SPACE_REGEX = "^CODE \\d$";
 	private static final String CODE_NAME_REGEX = "^CODE\\d$";
 	public static final String DEFAULT_DIALOG_WIDTH = "650px";
 	public static final String DEFAULT_DIALOG_HEIGHT = "350px";
 	public static final String DEFAULT_DIALOG_HEIGHT_FOR_MANUAL_NAMING = "600px";
-
 
 	public static enum NAMING_OPTION {
 		AUTOMATIC, MANUAL;
@@ -58,13 +64,16 @@ public class AssignCodesDialog extends BaseSubWindow
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Autowired
-	private GermplasmNamingService germplasmNamingService;
-
-	@Autowired
 	private PlatformTransactionManager transactionManager;
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+
+	@Autowired
+	private GermplasmCodeGenerationService germplasmCodeGenerationService;
+
+	@Autowired
+	private WorkbenchDataManager workbenchDataManager;
 
 	private VerticalLayout manualCodeNamingLayout;
 	private AssignCodesNamingLayout assignCodesNamingLayout;
@@ -190,45 +199,33 @@ public class AssignCodesDialog extends BaseSubWindow
 			}
 		});
 
-		this.continueButton.addListener(new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				try {
-					AssignCodesDialog.this.assignCodesNamingLayout.validate();
-				} catch (final Validator.InvalidValueException ex) {
-					MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
-							AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), ex.getMessage());
-					return;
-				}
-				AssignCodesDialog.this.assignCodes();
-			}
-		});
+		this.continueButton.addListener(new ContinueButtonClickListener());
 	}
 
-	void assignCodes() {
-		/**
-		 * This block of code is thread synchronized at the entire class level which means that the lock applies to all instances of
-		 * AssignCodesDialog class that are invoking this operation. This is pessimistic locking based on the assumption that assigning code
-		 * is not a massively parallel operation. It happens few times a year. It is OK for other users doing the same operation to wait
-		 * while one user completes this operation.
-		 */
-		synchronized (AssignCodesDialog.class) {
-			final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+	protected void generateCodeNames() {
 
-				@Override
-				protected void doInTransactionWithoutResult(final TransactionStatus status) {
-					final UserDefinedField nameType = (UserDefinedField) AssignCodesDialog.this.codingLevelOptions.getValue();
+		final UserDefinedField nameType = (UserDefinedField) AssignCodesDialog.this.codingLevelOptions.getValue();
 
-					// TODO pass user and location. Hardcoded to 0 = unknown for now.
-					final Map<Integer, GermplasmGroupNamingResult> resultsMap = AssignCodesDialog.this.germplasmNamingService.applyGroupNames(AssignCodesDialog.this.gidsToProcess,
-							AssignCodesDialog.this.assignCodesNamingLayout.generateGermplasmNameSetting(), nameType, 0, 0);
-					AssignCodesDialog.this.getParent().addWindow(new AssignCodesResultsDialog(resultsMap));
-					AssignCodesDialog.this.closeWindow();
-				}
-			});
+		Map<Integer, GermplasmGroupNamingResult> resultsMap = null;
+
+		// TODO pass user and location. Hardcoded to 0 = unknown for now.
+		if (AssignCodesDialog.this.namingOptions.getValue() == NAMING_OPTION.MANUAL) {
+			resultsMap = AssignCodesDialog.this.germplasmCodeGenerationService.applyGroupNames(AssignCodesDialog.this.gidsToProcess,
+					AssignCodesDialog.this.assignCodesNamingLayout.generateGermplasmNameSetting(), nameType, 0, 0);
+		} else {
+			try {
+				final NamingConfiguration namingConfiguration = workbenchDataManager.getNamingConfigurationByName(nameType.getFname());
+				resultsMap = germplasmCodeGenerationService.applyGroupNames(AssignCodesDialog.this.gidsToProcess, namingConfiguration, nameType);
+			} catch (RuleException e) {
+				LOG.error(e.getMessage(), e);
+				MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
+						AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), e.getMessage());
+			}
 		}
+
+		AssignCodesDialog.this.getParent().addWindow(new AssignCodesResultsDialog(resultsMap));
+		AssignCodesDialog.this.closeWindow();
+
 	}
 
 	boolean isCodingNameType(final String nameType){
@@ -345,18 +342,18 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	protected VerticalLayout createManualCodeNamingLayout() {
 
-		final VerticalLayout manualCodeNamingLayout = new VerticalLayout();
-		manualCodeNamingLayout.setDebugId("codesLayout");
-		manualCodeNamingLayout.setWidth("100%");
-		manualCodeNamingLayout.setHeight("270px");
-		manualCodeNamingLayout.setImmediate(true);
-		manualCodeNamingLayout.setVisible(false);
+		final VerticalLayout layout = new VerticalLayout();
+		layout.setDebugId("codesLayout");
+		layout.setWidth("100%");
+		layout.setHeight("270px");
+		layout.setImmediate(true);
+		layout.setVisible(false);
 
-		this.assignCodesNamingLayout = new AssignCodesNamingLayout(manualCodeNamingLayout, this.continueButton);
+		this.assignCodesNamingLayout = new AssignCodesNamingLayout(layout, this.continueButton);
 		this.assignCodesNamingLayout.instantiateComponents();
 		this.assignCodesNamingLayout.layoutComponents();
 
-		return manualCodeNamingLayout;
+		return layout;
 
 	}
 
@@ -395,12 +392,6 @@ public class AssignCodesDialog extends BaseSubWindow
 	public void setCodingLevelOptions(OptionGroup codingLevelOptions) {
 		this.codingLevelOptions = codingLevelOptions;
 	}
-
-	
-	public void setGermplasmNamingService(GermplasmNamingService germplasmNamingService) {
-		this.germplasmNamingService = germplasmNamingService;
-	}
-
 	
 	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
@@ -415,4 +406,43 @@ public class AssignCodesDialog extends BaseSubWindow
 		return cancelButton;
 	}
 
+	protected class ContinueButtonClickListener implements Button.ClickListener {
+
+		@Override
+		public void buttonClick(final ClickEvent event) {
+
+			try {
+				AssignCodesDialog.this.assignCodesNamingLayout.validate();
+			} catch (final Validator.InvalidValueException ex) {
+				LOG.error(ex.getMessage(), ex);
+				MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
+						AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), ex.getMessage());
+				return;
+			}
+
+			/**
+			 * This block of code is thread synchronized at the entire class level which means that the lock applies to all instances of
+			 * AssignCodesDialog class that are invoking this operation. This is pessimistic locking based on the assumption that assigning code
+			 * is not a massively parallel operation. It happens few times a year. It is OK for other users doing the same operation to wait
+			 * while one user completes this operation.
+			 */
+			synchronized (AssignCodesDialog.class) {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(AssignCodesDialog.this.transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+					@Override
+					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+
+						AssignCodesDialog.this.generateCodeNames();
+
+					}
+				});
+			}
+
+		}
+	}
+
+	public void setGermplasmCodeGenerationService(final GermplasmCodeGenerationService germplasmCodeGenerationService) {
+		this.germplasmCodeGenerationService = germplasmCodeGenerationService;
+	}
 }

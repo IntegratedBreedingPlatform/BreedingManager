@@ -4,10 +4,10 @@ package org.generationcp.breeding.manager.listmanager.dialog.layout;
 import java.util.Collection;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.commons.service.GermplasmCodeGenerationService;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.InvalidGermplasmNameSettingException;
 import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
-import org.generationcp.middleware.service.api.GermplasmNamingService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -51,7 +51,7 @@ public class AssignCodesNamingLayoutTest {
 	private PlatformTransactionManager transactionManager;
 
 	@Mock
-	private GermplasmNamingService germplasmNamingService;
+	private GermplasmCodeGenerationService germplasmCodeGenerationService;
 
 	@Mock
 	private Window parent;
@@ -65,11 +65,10 @@ public class AssignCodesNamingLayoutTest {
 		this.namingLayout = new AssignCodesNamingLayout(this.parentLayout, this.applyCodesButton);
 		this.namingLayout.setTransactionManager(this.transactionManager);
 		this.namingLayout.setMessageSource(this.messageSource);
-		this.namingLayout.setGermplasmNamingService(this.germplasmNamingService);
 
 		Mockito.doReturn(AssignCodesNamingLayoutTest.INVALID_STARTING_NUMBER).when(this.messageSource)
 				.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER);
-		Mockito.doReturn(AssignCodesNamingLayoutTest.NEXT_NAME).when(this.germplasmNamingService)
+		Mockito.doReturn(AssignCodesNamingLayoutTest.NEXT_NAME).when(this.germplasmCodeGenerationService)
 				.getNextNameInSequence(Matchers.any(GermplasmNameSetting.class));
 		Mockito.doReturn(this.parent).when(this.parentLayout).getWindow();
 
@@ -155,7 +154,7 @@ public class AssignCodesNamingLayoutTest {
 	@Test
 	public void testUpdateNextNameValueWhenPrefixIsEmpty() throws InvalidGermplasmNameSettingException {
 		this.namingLayout.updateNextNameValue();
-		Mockito.verify(this.germplasmNamingService, Mockito.never()).getNextNameInSequence(Matchers.any(GermplasmNameSetting.class));
+		Mockito.verify(this.germplasmCodeGenerationService, Mockito.never()).getNextNameInSequence(Matchers.any(GermplasmNameSetting.class));
 		Assert.assertEquals("", this.namingLayout.getNextValueLabel().getValue());
 		
 		// Specify Prefix to enable button
@@ -173,7 +172,7 @@ public class AssignCodesNamingLayoutTest {
 	@Test
 	public void testUpdateNextNameValueWithInvalidGermplasmNameSettingException() throws InvalidGermplasmNameSettingException {
 		Mockito.doThrow(new InvalidGermplasmNameSettingException(AssignCodesNamingLayoutTest.INVALID_STARTING_NUMBER))
-				.when(this.germplasmNamingService).getNextNameInSequence(Matchers.any(GermplasmNameSetting.class));
+				.when(this.germplasmCodeGenerationService).getNextNameInSequence(Matchers.any(GermplasmNameSetting.class));
 		this.setupTestValuesForNameFields();
 		this.namingLayout.updateNextNameValue();
 
@@ -187,7 +186,7 @@ public class AssignCodesNamingLayoutTest {
 		this.setupTestValuesForNameFields();
 		this.namingLayout.updateNextNameValue();
 
-		Mockito.verify(this.germplasmNamingService).getNextNameInSequence(this.createGermplasmNameSetting());
+		Mockito.verify(this.germplasmCodeGenerationService).getNextNameInSequence(this.createGermplasmNameSetting());
 		Mockito.verify(this.applyCodesButton).setEnabled(true);
 		Assert.assertEquals(AssignCodesNamingLayoutTest.NEXT_NAME, this.namingLayout.getNextValueLabel().getValue());
 	}
