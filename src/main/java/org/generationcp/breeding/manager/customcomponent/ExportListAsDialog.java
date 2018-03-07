@@ -396,13 +396,14 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	static class FinishButtonListener implements Button.ClickListener {
 
+		private static final long serialVersionUID = 1L;
+
 		ExportListAsDialog exportListAsDialog;
 
 		FinishButtonListener(final ExportListAsDialog exportListAsDialog) {
 			this.exportListAsDialog = exportListAsDialog;
 		}
 
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void buttonClick(final ClickEvent event) {
