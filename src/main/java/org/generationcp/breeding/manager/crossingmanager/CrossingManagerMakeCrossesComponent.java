@@ -27,6 +27,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.etl.Workbook;
+import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.service.api.FieldbookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private FieldbookService fieldbookMiddlewareService;
 
 	private boolean isNavigatedFromStudy;
+
 	private String studyId;
+
+	private String studyType;
+
 	private Workbook workbook = null;
 
 	private Button studyBackButton;
@@ -113,8 +118,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			final String[] parameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_ID);
 			this.studyId = parameterValues != null && parameterValues.length > 0 ? parameterValues[0] : "";
 			// Initialize the workbook.. this will be required later for seed source generation.
+
+			final String[] studyTypeParameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_TYPE);
+			this.studyType = studyTypeParameterValues != null && studyTypeParameterValues.length > 0 ? studyTypeParameterValues[0] : "";
+
 			if (!StringUtils.isBlank(this.studyId)) {
-				this.workbook = this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(this.studyId));//FIX THIS CUENYAD
+				this.workbook = this.fieldbookMiddlewareService
+					.getStudyDataSet(Integer.valueOf(this.studyId), StudyType.getStudyTypeByName(this.studyType));
 			}
 		}
 	}
@@ -401,8 +411,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return new BreedingMethodSetting(DEFAULT_BREEDING_METHOD_ID, true, false);
 	}
 
-	void setNavigatedFromStudy(final boolean isNavigatedFromNursery) {
-		this.isNavigatedFromStudy = isNavigatedFromNursery;
+	void setNavigatedFromStudy(final boolean isNavigatedFromStudy) {
+		this.isNavigatedFromStudy = isNavigatedFromStudy;
 	}
 
 	Button getStudyBackButton() {
