@@ -84,6 +84,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	private OptionGroup codingLevelOptions;
 	private OptionGroup namingOptions;
+
 	private Button cancelButton;
 	private Button continueButton;
 	private Set<Integer> gidsToProcess = new HashSet<>();
@@ -397,14 +398,27 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.germplasmListManager = germplasmListManager;
 	}
 
-	public Button getContinueButton() {
-		return continueButton;
+	public void setNamingOptions(final OptionGroup namingOptions) {
+		this.namingOptions = namingOptions;
 	}
 
-	
-	public Button getCancelButton() {
+	protected Button getContinueButton() {
+		return this.continueButton;
+	}
+
+
+	protected Button getCancelButton() {
 		return cancelButton;
 	}
+
+	protected OptionGroup getNamingOptions() {
+		return namingOptions;
+	}
+
+	protected OptionGroup getCodingLevelOptions() {
+		return codingLevelOptions;
+	}
+
 
 	protected class ContinueButtonClickListener implements Button.ClickListener {
 

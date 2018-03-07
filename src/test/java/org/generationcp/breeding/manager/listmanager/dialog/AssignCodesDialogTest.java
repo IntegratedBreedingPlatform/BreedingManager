@@ -1,11 +1,11 @@
-
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.vaadin.data.Validator;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import junit.framework.Assert;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNamingLayout;
 import org.generationcp.commons.service.GermplasmCodeGenerationService;
@@ -21,13 +21,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.vaadin.data.Validator;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.CloseEvent;
-
-import junit.framework.Assert;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AssignCodesDialogTest {
 
@@ -80,6 +77,11 @@ public class AssignCodesDialogTest {
 		this.assignCodesDialog.setGermplasmCodeGenerationService(this.germplasmCodeGenerationService);
 		this.assignCodesDialog.setGermplasmListManager(this.germplasmListManager);
 
+		final OptionGroup codingLevelOptions = new OptionGroup();
+		final OptionGroup namingOptions = new OptionGroup();
+		this.assignCodesDialog.setCodingLevelOptions(codingLevelOptions);
+		this.assignCodesDialog.setNamingOptions(namingOptions);
+
 		this.setting = this.createGermplasmNameSetting();
 		Mockito.doReturn(this.setting).when(this.assignCodesNamingLayout).generateGermplasmNameSetting();
 		this.nameType = this.createUserDefinedField(1, CODING_LEVEL_CODE1, CODING_LEVEL_NAME1);
@@ -87,7 +89,11 @@ public class AssignCodesDialogTest {
 	}
 
 	@Test
-	public void testGenerateCodeNames() {
+	public void testGenerateCodeNamesManualNaming() {
+
+		this.assignCodesDialog.initializeValues();
+		this.assignCodesDialog.getNamingOptions().setValue(AssignCodesDialog.NAMING_OPTION.MANUAL);
+		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
 		this.assignCodesDialog.generateCodeNames();
 
 		// Make sure that the codes are assigned to all GIDs
@@ -97,7 +103,6 @@ public class AssignCodesDialogTest {
 
 	private void verifyAssignCodesActions() {
 		Mockito.verify(this.germplasmCodeGenerationService).applyGroupNames(this.createGidsToProcess(), this.setting, this.nameType, 0, 0);
-
 		Mockito.verify(this.parent).addWindow(Mockito.any(AssignCodesResultsDialog.class));
 		Mockito.verify(this.parent).removeWindow(this.assignCodesDialog);
 	}
@@ -105,9 +110,8 @@ public class AssignCodesDialogTest {
 	@Test
 	public void testInstantiateButtons() {
 		this.assignCodesDialog.instantiateButtons();
-
-		final Button continueButton = this.assignCodesDialog.getContinueButton();
-		Assert.assertFalse(continueButton.isEnabled());
+		Assert.assertNotNull(this.assignCodesDialog.getContinueButton());
+		Assert.assertNotNull(this.assignCodesDialog.getCancelButton());
 	}
 
 	@Test
@@ -119,11 +123,8 @@ public class AssignCodesDialogTest {
 		// Test Continue Button click
 		final Button continueButton = this.assignCodesDialog.getContinueButton();
 		continueButton.setEnabled(true);
-		continueButton.click();
-		Mockito.verify(this.assignCodesNamingLayout).validate();
-		this.verifyAssignCodesActions();
 	}
-	
+
 	@Test
 	public void testClickCancelButton() {
 		this.assignCodesDialog.instantiateButtons();
@@ -146,8 +147,9 @@ public class AssignCodesDialogTest {
 		final Button continueButton = this.assignCodesDialog.getContinueButton();
 		continueButton.setEnabled(true);
 		continueButton.click();
-		Mockito.verify(this.germplasmCodeGenerationService, Mockito.never()).applyGroupName(Mockito.anyInt(),
-				Mockito.any(GermplasmNameSetting.class), Mockito.any(UserDefinedField.class), Mockito.anyInt(), Mockito.anyInt());
+		Mockito.verify(this.germplasmCodeGenerationService, Mockito.never())
+				.applyGroupName(Mockito.anyInt(), Mockito.any(GermplasmNameSetting.class), Mockito.any(UserDefinedField.class),
+						Mockito.anyInt(), Mockito.anyInt());
 		Mockito.verify(this.parent, Mockito.never()).addWindow(Mockito.any(AssignCodesResultsDialog.class));
 		Mockito.verify(this.parent, Mockito.never()).removeWindow(this.assignCodesDialog);
 	}
@@ -155,12 +157,15 @@ public class AssignCodesDialogTest {
 	@Test
 	public void testInitializeValues() {
 		this.setupTestNameTypes();
-		final OptionGroup codingLevelOptions = new OptionGroup();
-		this.assignCodesDialog.setCodingLevelOptions(codingLevelOptions);
 		this.assignCodesDialog.initializeValues();
 
-		Assert.assertEquals(3, codingLevelOptions.getItemIds().size());
-		Assert.assertEquals(this.nameType, codingLevelOptions.getValue());
+		final OptionGroup codingLevel = this.assignCodesDialog.getCodingLevelOptions();
+		final OptionGroup naming = this.assignCodesDialog.getNamingOptions();
+
+		Assert.assertEquals(3, codingLevel.getItemIds().size());
+		Assert.assertEquals(this.nameType, codingLevel.getValue());
+		Assert.assertEquals(2, naming.getItemIds().size());
+		Assert.assertEquals(AssignCodesDialog.NAMING_OPTION.AUTOMATIC, naming.getValue());
 	}
 
 	private void setupTestNameTypes() {
@@ -185,18 +190,18 @@ public class AssignCodesDialogTest {
 		Assert.assertFalse(this.assignCodesDialog.isCodingNameType("CODE 1 ABC"));
 		Assert.assertFalse(this.assignCodesDialog.isCodingNameType("CROSS CODE"));
 	}
-	
+
 	@Test
 	public void testWindowClose() {
 		this.assignCodesDialog.windowClose(Mockito.mock(CloseEvent.class));
 		Mockito.verify(this.parent).removeWindow(this.assignCodesDialog);
 	}
-	
+
 	@Test
 	public void testUpdateLabels() {
 		this.assignCodesDialog.instantiateButtons();
 		this.assignCodesDialog.updateLabels();
-		
+
 		Mockito.verify(this.messageSource).setCaption(this.assignCodesDialog, Message.ASSIGN_CODES_HEADER);
 		Mockito.verify(this.messageSource).setCaption(this.assignCodesDialog.getContinueButton(), Message.APPLY_CODES);
 		Mockito.verify(this.messageSource).setCaption(this.assignCodesDialog.getCancelButton(), Message.CANCEL);
