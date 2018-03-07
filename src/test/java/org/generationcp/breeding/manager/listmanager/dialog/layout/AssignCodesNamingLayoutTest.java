@@ -65,6 +65,7 @@ public class AssignCodesNamingLayoutTest {
 		this.namingLayout = new AssignCodesNamingLayout(this.parentLayout, this.applyCodesButton);
 		this.namingLayout.setTransactionManager(this.transactionManager);
 		this.namingLayout.setMessageSource(this.messageSource);
+		this.namingLayout.setGermplasmCodeGenerationService(this.germplasmCodeGenerationService);
 
 		Mockito.doReturn(AssignCodesNamingLayoutTest.INVALID_STARTING_NUMBER).when(this.messageSource)
 				.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER);

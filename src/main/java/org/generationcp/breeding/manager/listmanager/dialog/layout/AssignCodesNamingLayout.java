@@ -271,6 +271,10 @@ public class AssignCodesNamingLayout {
 		this.messageSource = messageSource;
 	}
 
+	protected void setGermplasmCodeGenerationService(final GermplasmCodeGenerationService germplasmCodeGenerationService) {
+		this.germplasmCodeGenerationService = germplasmCodeGenerationService;
+	}
+
 	public TextField getPrefixTextField() {
 		return prefixTextField;
 	}
