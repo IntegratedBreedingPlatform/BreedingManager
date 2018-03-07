@@ -1,5 +1,8 @@
 package org.generationcp.breeding.manager.customcomponent;
 
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,16 +50,14 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-
 public class ExportListAsDialogTest {
 
 	private static final int NO_OF_LIST_ENTRIES = 10;
 	private static final Integer USER_ID = 1;
 	private static final Integer TEST_GERMPLASM_LIST_ID = 2;
-	public static final String TEMPORARY_FILE_PATH = "/temporary/file/path/temporaryFile.csv";
-	public static final String TEMPORARY_FILE_PATH_FOR_GENOTYPING = "/temporary/file/path/temporaryFileForGenotyping.xls";
+	private static final String TEMPORARY_FILE_PATH_CSV = "/temporary/file/path/temporaryFile.csv";
+	private static final String TEMPORARY_FILE_PATH_XLS = "/temporary/file/path/temporaryFile.csv";
+	
 	public static final String ERROR_EXPORTING_LIST = "Error Exporting list";
 
 	private static Table listDataTable;
@@ -138,12 +139,12 @@ public class ExportListAsDialogTest {
 
 		Mockito.when(contextUtil.getProjectInContext()).thenReturn(new Project());
 
-		Mockito.when(this.installationDirectoryUtil
-				.getFileInTemporaryDirectoryForProjectAndTool(ExportListAsDialog.TEMP_FILENAME, contextUtil.getProjectInContext(),
-						ToolName.BM_LIST_MANAGER_MAIN)).thenReturn(TEMPORARY_FILE_PATH);
-		Mockito.when(this.installationDirectoryUtil
-				.getFileInTemporaryDirectoryForProjectAndTool(ExportListAsDialog.TEMP_FILENAME_FOR_GENOTYPING,
-						contextUtil.getProjectInContext(), ToolName.BM_LIST_MANAGER_MAIN)).thenReturn(TEMPORARY_FILE_PATH_FOR_GENOTYPING);
+		Mockito.when(this.installationDirectoryUtil.getTempFileInOutputDirectoryForProjectAndTool(Mockito.anyString(),
+				Mockito.eq(ExportListAsDialog.CSV_EXT), Mockito.any(Project.class),
+				Mockito.any(ToolName.class))).thenReturn(TEMPORARY_FILE_PATH_CSV);
+		Mockito.when(this.installationDirectoryUtil.getTempFileInOutputDirectoryForProjectAndTool(Mockito.anyString(),
+				Mockito.eq(ExportListAsDialog.XLS_EXT), Mockito.any(Project.class),
+				Mockito.any(ToolName.class))).thenReturn(TEMPORARY_FILE_PATH_XLS);
 
 		this.dialog.instantiateComponents();
 		this.dialog.initializeValues();
@@ -184,21 +185,21 @@ public class ExportListAsDialogTest {
 	public void testExportListAsXLS() throws GermplasmListExporterException {
 		this.dialog.exportListAsXLS(ExportListAsDialogTest.listDataTable);
 		verify(this.listExporter, Mockito.times(1))
-				.exportGermplasmListXLS(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH,
+				.exportGermplasmListXLS(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH_XLS,
 						ExportListAsDialogTest.listDataTable);
 		verify(this.fileDownloaderUtility, Mockito.times(1))
-				.initiateFileDownload(TEMPORARY_FILE_PATH, this.germplasmList.getName() + ExportListAsDialog.XLS_EXT, this.source);
+				.initiateFileDownload(TEMPORARY_FILE_PATH_XLS, ExportListAsDialogTest.germplasmList.getName() + ExportListAsDialog.XLS_EXT, this.source);
 	}
 
 	@Test
 	public void testExportListAsXLSWithException() throws GermplasmListExporterException {
 		Mockito.doThrow(new GermplasmListExporterException()).when(this.listExporter)
-				.exportGermplasmListXLS(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH,
+				.exportGermplasmListXLS(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH_XLS,
 						ExportListAsDialogTest.emptyTable);
 		this.dialog.exportListAsXLS(ExportListAsDialogTest.emptyTable);
 
 		verify(this.fileDownloaderUtility, Mockito.times(0))
-				.initiateFileDownload(TEMPORARY_FILE_PATH, this.germplasmList.getName() + ExportListAsDialog.XLS_EXT, this.source);
+				.initiateFileDownload(TEMPORARY_FILE_PATH_XLS, ExportListAsDialogTest.germplasmList.getName() + ExportListAsDialog.XLS_EXT, this.source);
 
 		final ArgumentCaptor<Window.Notification> captor = ArgumentCaptor.forClass(Window.Notification.class);
 		verify(this.window).showNotification(captor.capture());
@@ -211,10 +212,10 @@ public class ExportListAsDialogTest {
 
 		this.dialog.exportListAsCSV(ExportListAsDialogTest.listDataTable);
 		verify(this.listExporter, Mockito.times(1))
-				.exportGermplasmListCSV(TEMPORARY_FILE_PATH, ExportListAsDialogTest.listDataTable,
+				.exportGermplasmListCSV(TEMPORARY_FILE_PATH_CSV, ExportListAsDialogTest.listDataTable,
 						ExportListAsDialogTest.germplasmList.getId());
 		verify(this.fileDownloaderUtility, Mockito.times(1))
-				.initiateFileDownload(TEMPORARY_FILE_PATH, this.germplasmList.getName() + ExportListAsDialog.CSV_EXT, this.source);
+				.initiateFileDownload(TEMPORARY_FILE_PATH_CSV, ExportListAsDialogTest.germplasmList.getName() + ExportListAsDialog.CSV_EXT, this.source);
 	}
 
 	@Test
@@ -227,25 +228,25 @@ public class ExportListAsDialogTest {
 
 		final Reporter reporter = Mockito.mock(Reporter.class);
 		Mockito.doReturn(reporter).when(this.listExporter)
-				.exportGermplasmListCustomReport(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH,
+				.exportGermplasmListCustomReport(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH_XLS,
 						customReport.getCode());
 
 		this.dialog.exportListAction(new Table());
 
 		// verify that custom report generation is triggered when executing the current export action
 		verify(this.listExporter)
-				.exportGermplasmListCustomReport(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH,
+				.exportGermplasmListCustomReport(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH_XLS,
 						customReport.getCode());
 	}
 
 	@Test
 	public void testExportListAsCSVWithException() throws GermplasmListExporterException {
 		Mockito.doThrow(new GermplasmListExporterException()).when(this.listExporter)
-				.exportGermplasmListCSV(TEMPORARY_FILE_PATH, ExportListAsDialogTest.emptyTable,
+				.exportGermplasmListCSV(TEMPORARY_FILE_PATH_CSV, ExportListAsDialogTest.emptyTable,
 						ExportListAsDialogTest.germplasmList.getId());
 		this.dialog.exportListAsCSV(ExportListAsDialogTest.emptyTable);
 		verify(this.fileDownloaderUtility, Mockito.times(0))
-				.initiateFileDownload(TEMPORARY_FILE_PATH, this.germplasmList.getName() + ExportListAsDialog.CSV_EXT, this.source);
+				.initiateFileDownload(TEMPORARY_FILE_PATH_CSV, ExportListAsDialogTest.germplasmList.getName() + ExportListAsDialog.CSV_EXT, this.source);
 
 		final ArgumentCaptor<Window.Notification> captor = ArgumentCaptor.forClass(Window.Notification.class);
 		verify(this.window).showNotification(captor.capture());
@@ -257,25 +258,35 @@ public class ExportListAsDialogTest {
 	public void testExportListForGenotypingOrderAction() throws GermplasmListExporterException {
 		this.dialog.exportListForGenotypingOrderAction();
 		verify(this.listExporter, Mockito.times(1))
-				.exportKBioScienceGenotypingOrderXLS(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH_FOR_GENOTYPING,
+				.exportKBioScienceGenotypingOrderXLS(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH_CSV,
 						ExportListAsDialog.DEFAULT_PLATE_SIZE);
-		verify(this.fileDownloaderUtility, Mockito.times(1)).initiateFileDownload(TEMPORARY_FILE_PATH_FOR_GENOTYPING,
-				this.germplasmList.getName().replace(" ", "_") + "ForGenotyping.xls", this.source);
+		verify(this.fileDownloaderUtility, Mockito.times(1)).initiateFileDownload(TEMPORARY_FILE_PATH_CSV,
+				ExportListAsDialogTest.germplasmList.getName().replace(" ", "_") + "ForGenotyping.xls", this.source);
 	}
 
 	@Test
 	public void testExportListForGenotypingOrderActionWithException() throws GermplasmListExporterException {
 		Mockito.doThrow(new GermplasmListExporterException()).when(this.listExporter)
-				.exportKBioScienceGenotypingOrderXLS(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH_FOR_GENOTYPING,
+				.exportKBioScienceGenotypingOrderXLS(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH_CSV,
 						ExportListAsDialog.DEFAULT_PLATE_SIZE);
 		this.dialog.exportListForGenotypingOrderAction();
-		verify(this.fileDownloaderUtility, Mockito.times(0)).initiateFileDownload(TEMPORARY_FILE_PATH_FOR_GENOTYPING,
-				this.germplasmList.getName().replace(" ", "_") + "ForGenotyping.xls", this.source);
+		verify(this.fileDownloaderUtility, Mockito.times(0)).initiateFileDownload(TEMPORARY_FILE_PATH_CSV,
+				ExportListAsDialogTest.germplasmList.getName().replace(" ", "_") + "ForGenotyping.xls", this.source);
 
 		final ArgumentCaptor<Window.Notification> captor = ArgumentCaptor.forClass(Window.Notification.class);
 		verify(this.window).showNotification(captor.capture());
 		final Window.Notification notification = captor.getValue();
 		assertEquals(ERROR_EXPORTING_LIST, notification.getCaption());
+	}
+	
+	@Test
+	public void testExportListForGenotypingOrderActionForUnlockedList() throws GermplasmListExporterException {
+		// Set status of list = unlocked
+		ExportListAsDialogTest.germplasmList.setStatus(1);
+		this.dialog.exportListForGenotypingOrderAction();
+		Mockito.verifyZeroInteractions(this.listExporter);
+		Mockito.verifyZeroInteractions(this.fileDownloaderUtility);
+		Mockito.verifyZeroInteractions(this.installationDirectoryUtil);
 	}
 
 	private static GermplasmList getGermplasmList() {

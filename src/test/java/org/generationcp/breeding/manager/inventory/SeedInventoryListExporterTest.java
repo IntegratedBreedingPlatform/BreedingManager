@@ -80,9 +80,8 @@ public class SeedInventoryListExporterTest {
 
 		final Project project = new Project();
 		when(this.contextUtil.getProjectInContext()).thenReturn(project);
-		when(this.installationDirectoryUtil
-				.getFileInTemporaryDirectoryForProjectAndTool(SeedInventoryListExporter.TEMPORARY_FILE_NAME, project,
-						ToolName.BM_LIST_MANAGER_MAIN)).thenReturn(TEMPORAY_FILE_XLS);
+		when(this.installationDirectoryUtil.getTempFileInOutputDirectoryForProjectAndTool(SeedInventoryListExporter.TEMPORARY_FILE_NAME,
+				SeedInventoryListExporter.XLS_EXTENSION, project, ToolName.BM_LIST_MANAGER_MAIN)).thenReturn(TEMPORAY_FILE_XLS);
 
 	}
 
