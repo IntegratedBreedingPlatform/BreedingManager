@@ -1,18 +1,23 @@
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNamingLayout;
-import org.generationcp.commons.service.GermplasmCodeGenerationService;
 import org.generationcp.commons.ruleengine.RuleException;
+import org.generationcp.commons.service.GermplasmCodeGenerationService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -33,16 +38,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.vaadin.data.Validator;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Configurable
 public class AssignCodesDialog extends BaseSubWindow
@@ -56,9 +55,11 @@ public class AssignCodesDialog extends BaseSubWindow
 	public static final String DEFAULT_DIALOG_HEIGHT = "350px";
 	public static final String DEFAULT_DIALOG_HEIGHT_FOR_MANUAL_NAMING = "600px";
 
+
 	public static enum NAMING_OPTION {
 		AUTOMATIC, MANUAL;
 	}
+
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -147,7 +148,6 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.namingOptions.addItem(NAMING_OPTION.MANUAL);
 		this.namingOptions.setValue(NAMING_OPTION.AUTOMATIC);
 
-
 	}
 
 	void populateCodingNameTypes() {
@@ -220,7 +220,8 @@ public class AssignCodesDialog extends BaseSubWindow
 		} else {
 			try {
 				final NamingConfiguration namingConfiguration = workbenchDataManager.getNamingConfigurationByName(nameType.getFname());
-				resultsMap = germplasmCodeGenerationService.applyGroupNames(AssignCodesDialog.this.gidsToProcess, namingConfiguration, nameType);
+				resultsMap =
+						germplasmCodeGenerationService.applyGroupNames(AssignCodesDialog.this.gidsToProcess, namingConfiguration, nameType);
 			} catch (RuleException e) {
 				LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(AssignCodesDialog.this.getParent(),
@@ -233,7 +234,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	}
 
-	boolean isCodingNameType(final String nameType){
+	boolean isCodingNameType(final String nameType) {
 		return nameType.toUpperCase().matches(CODE_NAME_REGEX) || nameType.toUpperCase().matches(CODE_NAME_WITH_SPACE_REGEX);
 	}
 
@@ -268,7 +269,8 @@ public class AssignCodesDialog extends BaseSubWindow
 		mandatoryLabelLayout.addComponent(this.mandatoryLabel);
 		mandatoryLabelLayout.addComponent(this.indicatesMandatoryLabel);
 
-		final GridLayout namingAndCodeLevelsGridLayout = this.createNamingAndCodeLevelGridLayout(this.codingLevelOptions, this.namingOptions);
+		final GridLayout namingAndCodeLevelsGridLayout =
+				this.createNamingAndCodeLevelGridLayout(this.codingLevelOptions, this.namingOptions);
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setDebugId("buttonLayout");
@@ -296,10 +298,10 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		final GridLayout namingAndCodeLevelOptionLayout = new GridLayout(2, 2);
 
-		namingAndCodeLevelOptionLayout.addComponent(this.createCodingLevelOptionsLabelLayout(),0,0 );
-		namingAndCodeLevelOptionLayout.addComponent(codingLevelOptions,1,0 );
-		namingAndCodeLevelOptionLayout.addComponent(this.createNamingOptionsLabelLayout(),0,1 );
-		namingAndCodeLevelOptionLayout.addComponent(namingOptions,1,1 );
+		namingAndCodeLevelOptionLayout.addComponent(this.createCodingLevelOptionsLabelLayout(), 0, 0);
+		namingAndCodeLevelOptionLayout.addComponent(codingLevelOptions, 1, 0);
+		namingAndCodeLevelOptionLayout.addComponent(this.createNamingOptionsLabelLayout(), 0, 1);
+		namingAndCodeLevelOptionLayout.addComponent(namingOptions, 1, 1);
 
 		namingAndCodeLevelOptionLayout.setColumnExpandRatio(0, 0.3f);
 		namingAndCodeLevelOptionLayout.setColumnExpandRatio(1, 0.7f);
@@ -384,16 +386,14 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.messageSource = messageSource;
 	}
 
-	
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
-	
 	public void setCodingLevelOptions(OptionGroup codingLevelOptions) {
 		this.codingLevelOptions = codingLevelOptions;
 	}
-	
+
 	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
@@ -414,7 +414,6 @@ public class AssignCodesDialog extends BaseSubWindow
 		return this.continueButton;
 	}
 
-
 	protected Button getCancelButton() {
 		return cancelButton;
 	}
@@ -426,7 +425,6 @@ public class AssignCodesDialog extends BaseSubWindow
 	protected OptionGroup getCodingLevelOptions() {
 		return codingLevelOptions;
 	}
-
 
 	protected class ContinueButtonClickListener implements Button.ClickListener {
 

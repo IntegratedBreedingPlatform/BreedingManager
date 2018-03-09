@@ -1,8 +1,16 @@
-
 package org.generationcp.breeding.manager.listmanager.dialog.layout;
 
-import java.util.Collection;
-
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Validator;
+import com.vaadin.data.validator.IntegerValidator;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Select;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import junit.framework.Assert;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.service.GermplasmCodeGenerationService;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -17,18 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator;
-import com.vaadin.data.validator.IntegerValidator;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.Select;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-
-import junit.framework.Assert;
+import java.util.Collection;
 
 public class AssignCodesNamingLayoutTest {
 
@@ -155,14 +152,15 @@ public class AssignCodesNamingLayoutTest {
 	@Test
 	public void testUpdateNextNameValueWhenPrefixIsEmpty() throws InvalidGermplasmNameSettingException {
 		this.namingLayout.updateNextNameValue();
-		Mockito.verify(this.germplasmCodeGenerationService, Mockito.never()).getNextNameInSequence(Matchers.any(GermplasmNameSetting.class));
+		Mockito.verify(this.germplasmCodeGenerationService, Mockito.never())
+				.getNextNameInSequence(Matchers.any(GermplasmNameSetting.class));
 		Assert.assertEquals("", this.namingLayout.getNextValueLabel().getValue());
-		
+
 		// Specify Prefix to enable button
 		this.setupTestValuesForNameFields();
 		this.namingLayout.updateNextNameValue();
 		Mockito.verify(this.applyCodesButton).setEnabled(true);
-	
+
 		// Empty Prefix again to check if it was set back to disabled
 		this.namingLayout.getPrefixTextField().setValue("");
 		this.namingLayout.updateNextNameValue();
@@ -198,7 +196,7 @@ public class AssignCodesNamingLayoutTest {
 		final GermplasmNameSetting setting = this.createGermplasmNameSetting();
 		GermplasmNameSetting generatedSetting = this.namingLayout.generateGermplasmNameSetting();
 		Assert.assertEquals(setting, generatedSetting);
-		
+
 		final Integer startNumber = 101;
 		this.namingLayout.getAddSpaceAfterPrefixOptionGroup().setValue(AssignCodesNamingLayout.NO);
 		this.namingLayout.getAddSpaceBeforeSuffixOptionGroup().setValue(AssignCodesNamingLayout.NO);
@@ -209,7 +207,7 @@ public class AssignCodesNamingLayoutTest {
 		generatedSetting = this.namingLayout.generateGermplasmNameSetting();
 		Assert.assertEquals(setting, generatedSetting);
 	}
-	
+
 	@Test
 	public void testGenerateGermplasmNameSettingForNonDigitStartNumber() {
 		this.setupTestValuesForNameFields();
@@ -219,7 +217,7 @@ public class AssignCodesNamingLayoutTest {
 			final GermplasmNameSetting generatedSetting = this.namingLayout.generateGermplasmNameSetting();
 			Assert.assertEquals(setting, generatedSetting);
 			Mockito.verify(this.parentLayout).getWindow();
-		}catch (final NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			Assert.fail("Not expecting NumberFormatException but was thrown.");
 		}
 	}
