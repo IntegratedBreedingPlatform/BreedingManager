@@ -124,6 +124,10 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		this.manualCodeNamingLayout = this.createManualCodeNamingLayout();
 
+		this.assignCodesNamingLayout = new AssignCodesNamingLayout(manualCodeNamingLayout, this.continueButton);
+		this.assignCodesNamingLayout.instantiateComponents();
+		this.assignCodesNamingLayout.layoutComponents();
+
 	}
 
 	void instantiateButtons() {
@@ -219,7 +223,7 @@ public class AssignCodesDialog extends BaseSubWindow
 				resultsMap = germplasmCodeGenerationService.applyGroupNames(AssignCodesDialog.this.gidsToProcess, namingConfiguration, nameType);
 			} catch (RuleException e) {
 				LOG.error(e.getMessage(), e);
-				MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
+				MessageNotifier.showError(AssignCodesDialog.this.getParent(),
 						AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), e.getMessage());
 			}
 		}
@@ -350,10 +354,6 @@ public class AssignCodesDialog extends BaseSubWindow
 		layout.setImmediate(true);
 		layout.setVisible(false);
 
-		this.assignCodesNamingLayout = new AssignCodesNamingLayout(layout, this.continueButton);
-		this.assignCodesNamingLayout.instantiateComponents();
-		this.assignCodesNamingLayout.layoutComponents();
-
 		return layout;
 
 	}
@@ -396,6 +396,14 @@ public class AssignCodesDialog extends BaseSubWindow
 	
 	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setManualCodeNamingLayout(final VerticalLayout manualCodeNamingLayout) {
+		this.manualCodeNamingLayout = manualCodeNamingLayout;
+	}
+
+	public void setWorkbenchDataManager(final WorkbenchDataManager workbenchDataManager) {
+		this.workbenchDataManager = workbenchDataManager;
 	}
 
 	public void setNamingOptions(final OptionGroup namingOptions) {
