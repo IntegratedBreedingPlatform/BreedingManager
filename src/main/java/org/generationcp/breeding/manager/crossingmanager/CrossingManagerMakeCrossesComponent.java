@@ -27,7 +27,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.etl.Workbook;
-import org.generationcp.middleware.domain.oms.StudyType;
+import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.service.api.FieldbookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,8 +76,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	private String studyId;
 
-	private String studyType;
-
 	private Workbook workbook = null;
 
 	private Button studyBackButton;
@@ -94,7 +92,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 		@Override
 		public void buttonClick(final Button.ClickEvent event) {
-			Integer listId = CrossingManagerMakeCrossesComponent.this.crossesTableComponent.saveTemporaryList();
+			final Integer listId = CrossingManagerMakeCrossesComponent.this.crossesTableComponent.saveTemporaryList();
 			CrossingManagerMakeCrossesComponent.this.sendToNurseryAction(listId);
 		}
 	};
@@ -120,11 +118,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			// Initialize the workbook.. this will be required later for seed source generation.
 
 			final String[] studyTypeParameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_TYPE);
-			this.studyType = studyTypeParameterValues != null && studyTypeParameterValues.length > 0 ? studyTypeParameterValues[0] : "";
+			final String studyType =
+				studyTypeParameterValues != null && studyTypeParameterValues.length > 0 ? studyTypeParameterValues[0] : "";
 
 			if (!StringUtils.isBlank(this.studyId)) {
 				this.workbook = this.fieldbookMiddlewareService
-					.getStudyDataSet(Integer.valueOf(this.studyId), StudyType.getStudyTypeByName(this.studyType));
+					.getStudyDataSet(Integer.valueOf(this.studyId), new StudyTypeDto(studyType));
 			}
 		}
 	}
@@ -182,7 +181,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 					}
 				});
 
-			} catch (final Throwable e) {
+			} catch (final Exception e) {
 				CrossingManagerMakeCrossesComponent.LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(
 					CrossingManagerMakeCrossesComponent.this.getWindow(),
@@ -224,7 +223,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	private boolean isCrossListMade() {
-		Table tableCrossesMade = this.crossesTableComponent.getTableCrossesMade();
+		final Table tableCrossesMade = this.crossesTableComponent.getTableCrossesMade();
 		return tableCrossesMade != null && tableCrossesMade.size() > 0;
 	}
 
@@ -423,7 +422,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return this.studyCancelButton;
 	}
 	
-	void setStudyCancelButton(LinkButton studyCancelButton) {
+	void setStudyCancelButton(final LinkButton studyCancelButton) {
 		this.studyCancelButton = studyCancelButton;
 	}
 
@@ -435,7 +434,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return contextUtil;
 	}
 
-	public void setContextUtil(ContextUtil contextUtil) {
+	public void setContextUtil(final ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
 	}
 }
