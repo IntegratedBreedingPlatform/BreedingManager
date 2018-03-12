@@ -77,6 +77,10 @@ public class SeedInventoryListExporter {
 	private InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
 
 	protected Workbook excelWorkbook;
+	
+	public SeedInventoryListExporter() {
+		// Empty constructor expected for autowiring this component
+	}
 
 	public SeedInventoryListExporter(final Component source, final GermplasmList germplasmList) {
 		this.source = source;
