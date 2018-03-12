@@ -14,7 +14,6 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -61,7 +60,6 @@ import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -71,7 +69,6 @@ import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
-import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
@@ -89,6 +86,7 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,6 +256,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
+
+	@Autowired
+	private GermplasmGroupingService germplasmGroupingService;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -1054,6 +1055,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.deleteEntriesButtonClickAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED))) {
 						ListComponent.this.markLinesAsFixedAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.UNFIX_LINES))) {
+						ListComponent.this.confirmUnfixLinesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ASSIGN_CODES))) {
 						ListComponent.this.assignCodesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EDIT_LIST))) {
@@ -1396,6 +1399,80 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
 					this.messageSource.getMessage(Message.ERROR_MARK_LINES_AS_FIXED_NOTHING_SELECTED));
 		}
+	}
+
+	public void confirmUnfixLinesAction() {
+
+		final Set<Integer> gidsToProcess = this.extractGidListFromListDataTable(this.listDataTable);
+
+		if (!gidsToProcess.isEmpty()) {
+
+			ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.UNFIX_LINES),
+					this.messageSource.getMessage(Message.CONFIRM_UNFIX_LINES), this.messageSource.getMessage(Message.YES),
+					this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void onClose(final ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								ListComponent.this.unfixLines(gidsToProcess);
+								ListComponent.this.updateGermplasmListTable(gidsToProcess);
+							}
+						}
+
+					});
+
+		} else {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.UNFIX_LINES),
+					this.messageSource.getMessage(Message.ERROR_UNFIX_LINES_NOTHING_SELECTED));
+		}
+
+	}
+
+	protected void unfixLines(final Set<Integer> gidsToProcess) {
+
+		final int numberOfGermplasmWithoutGroup = countGermplasmWithoutGroup(gidsToProcess);
+
+		if (numberOfGermplasmWithoutGroup > 0) {
+			MessageNotifier.showWarning(this.getWindow(), "",
+					this.messageSource.getMessage(Message.WARNING_UNFIX_LINES, gidsToProcess.size()));
+		}
+
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+			@Override
+			protected void doInTransactionWithoutResult(final TransactionStatus status) {
+
+				for (final Integer gid : gidsToProcess) {
+					final Germplasm germplasm = ListComponent.this.germplasmDataManager.getGermplasmByGID(gid);
+					ListComponent.this.germplasmGroupingService.unfixLine(germplasm);
+				}
+
+			}
+		});
+
+		final int numberOfUnfixedGermplasm = gidsToProcess.size() - numberOfGermplasmWithoutGroup;
+		MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.UNFIX_LINES),
+				this.messageSource.getMessage(Message.SUCCESS_UNFIX_LINES, numberOfUnfixedGermplasm));
+
+	}
+
+	protected int countGermplasmWithoutGroup(Set<Integer> gidsToProcess) {
+
+		int germplasmWithoutGroup = 0;
+
+		final List<Germplasm> listOfGermplasm = ListComponent.this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsToProcess));
+
+		for (Germplasm germplasm : listOfGermplasm) {
+			if (germplasm.getMgid() == null || germplasm.getMgid() == 0) {
+				germplasmWithoutGroup++;
+			}
+		}
+
+		return germplasmWithoutGroup;
+
 	}
 
 	public void assignCodesAction() {
@@ -2553,7 +2630,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			final Germplasm germplasm = germplasmMap.get(gid);
 			if (gidsProcessed.contains(gid)) {
 				final Item selectedRowItem = this.listDataTable.getItem(listEntry.getId());
-				selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(germplasm.getMgid());
+				selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(germplasm.getMgid() == 0 ? "-" : germplasm.getMgid());
 			}
 		}
 	}
