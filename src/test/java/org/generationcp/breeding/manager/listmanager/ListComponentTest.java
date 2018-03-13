@@ -63,16 +63,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
-
-import com.google.common.collect.Lists;
-import com.vaadin.data.Item;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
-
-import junit.framework.Assert;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,9 +77,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListComponentTest {
@@ -204,7 +192,7 @@ public class ListComponentTest {
 	}
 
 	private void setUpGermplasmDataManager() {
-		List<UserDefinedField> lattributeList = new ArrayList<>();
+		final List<UserDefinedField> lattributeList = new ArrayList<>();
 		when(this.germplasmDataManager.getAttributeTypesByGIDList(Mockito.anyList())).thenReturn(lattributeList);
 	}
 
@@ -334,13 +322,15 @@ public class ListComponentTest {
 	}
 
 	@Test
-	public void testUserSelectedLotEntriesToCancelReservations(){
-		List<ListEntryLotDetails> userSelectedLotEntriesToCancel = ListInventoryDataInitializer.createLotDetails(1);
+	public void testUserSelectedLotEntriesToCancelReservations() {
+		final List<ListEntryLotDetails> userSelectedLotEntriesToCancel = ListInventoryDataInitializer.createLotDetails(1);
 		this.listComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(2));
 		Mockito.doReturn(userSelectedLotEntriesToCancel).when(this.listManagerInventoryTable).getSelectedLots();
 		this.listComponent.userSelectedLotEntriesToCancelReservations();
-		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listComponent.getValidReservationsToSave().size());
-		Assert.assertEquals("Expecting Cancel reservation should have size 3 ", 3,this.listComponent.getValidReservationsToCancel().size());
+		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,
+				this.listComponent.getValidReservationsToSave().size());
+		Assert.assertEquals("Expecting Cancel reservation should have size 3 ", 3,
+				this.listComponent.getValidReservationsToCancel().size());
 	}
 
 	@Test
@@ -408,7 +398,7 @@ public class ListComponentTest {
 	public void testSaveReservationChangesAction() {
 
 		this.initializeTableWithTestData();
-		List<ListEntryLotDetails> lotDetailsGid = ListInventoryDataInitializer.createLotDetails(1);
+		final List<ListEntryLotDetails> lotDetailsGid = ListInventoryDataInitializer.createLotDetails(1);
 		this.listComponent.setHasUnsavedChanges(true);
 		this.listComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(2));
 		this.listComponent.setPersistedReservationToCancel(lotDetailsGid);
@@ -425,7 +415,7 @@ public class ListComponentTest {
 		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
 		when(this.contextUtil.getCurrentUserLocalId()).thenReturn(1);
 
-		List<GermplasmListData> germplasmListData = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
+		final List<GermplasmListData> germplasmListData = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 
 		when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
 				.thenReturn(germplasmListData);
@@ -558,9 +548,9 @@ public class ListComponentTest {
 
 		Assert.assertEquals(TEST_GERMPLASM_NO_OF_ENTRIES.intValue(), result.size());
 
-		Collection<Integer> selectedRows = (Collection<Integer>) table.getValue();
-		Iterator<Integer> selectedRowsIterator = selectedRows.iterator();
-		for (Integer gid : result) {
+		final Collection<Integer> selectedRows = (Collection<Integer>) table.getValue();
+		final Iterator<Integer> selectedRowsIterator = selectedRows.iterator();
+		for (final Integer gid : result) {
 			final Item selectedRowItem = table.getItem(selectedRowsIterator.next());
 			final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
 			Assert.assertEquals("The order of extracted GIDs should be same order as the entries in the table.",
@@ -641,8 +631,7 @@ public class ListComponentTest {
 		final Integer userId = 5;
 		try {
 			when(this.workbenchDataManager.getLastOpenedProject(userId)).thenReturn(dummyProject);
-			when(this.workbenchDataManager.getLocalIbdbUserId(userId, dummyProject.getProjectId()))
-					.thenReturn(EXPECTED_USER_ID);
+			when(this.workbenchDataManager.getLocalIbdbUserId(userId, dummyProject.getProjectId())).thenReturn(EXPECTED_USER_ID);
 
 		} catch (final MiddlewareQueryException e) {
 			Assert.fail("Failed to create an ibdbuser instance.");
@@ -727,26 +716,26 @@ public class ListComponentTest {
 		final ContextMenu.ClickEvent clickEventMock = mock(ContextMenu.ClickEvent.class);
 		final ReserveInventoryAction reserveInventoryAction = mock(ReserveInventoryAction.class);
 
-		ContextMenu.ContextMenuItem contextMenuItem = mock(ContextMenu.ContextMenuItem.class);
+		final ContextMenu.ContextMenuItem contextMenuItem = mock(ContextMenu.ContextMenuItem.class);
 		when(contextMenuItem.getName()).thenReturn("Save Changes");
 
 		when(clickEventMock.getClickedItem()).thenReturn(contextMenuItem);
 
 		when(messageSource.getMessage(Message.SAVE_RESERVATIONS)).thenReturn("Save Changes");
 
-		int threads = 2;
+		final int threads = 2;
 
 		this.listComponent.setHasUnsavedChanges(true);
 
 		this.listComponent.setReserveInventoryAction(reserveInventoryAction);
 
-		ExecutorService threadPool = Executors.newFixedThreadPool(threads);
+		final ExecutorService threadPool = Executors.newFixedThreadPool(threads);
 
 		final Map<ListEntryLotDetails, Double> unsavedReservations = new HashMap<>();
 		unsavedReservations.put(new ListEntryLotDetails(), new Double(10));
 		when(reserveInventoryAction.saveReserveTransactions(Mockito.anyMap(), Mockito.anyInt())).thenReturn(false);
 
-		Future<Void> threadOne = threadPool.submit(new Callable<Void>() {
+		final Future<Void> threadOne = threadPool.submit(new Callable<Void>() {
 
 			@Override
 			public Void call() {
@@ -755,7 +744,7 @@ public class ListComponentTest {
 			}
 		});
 
-		Future<Void> threadTwo = threadPool.submit(new Callable<Void>() {
+		final Future<Void> threadTwo = threadPool.submit(new Callable<Void>() {
 
 			@Override
 			public Void call() {
@@ -780,7 +769,7 @@ public class ListComponentTest {
 
 	@Test
 	public void testCloseLotsWithUnCommittedReservation() throws Exception {
-		List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1,1);
+		final List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1, 1);
 		Mockito.doReturn(userSelectedLotEntriesToClose).when(this.listManagerInventoryTable).getSelectedLots();
 
 		this.listComponent.closeLotsActions();
@@ -789,7 +778,7 @@ public class ListComponentTest {
 
 	@Test
 	public void testCloseLotsWithValidLotsHavingNoBalanceToClose() throws Exception {
-		List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1,1);
+		final List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1, 1);
 		userSelectedLotEntriesToClose.get(0).setReservedTotal(0D);
 		userSelectedLotEntriesToClose.get(0).setActualLotBalance(0D);
 
@@ -799,7 +788,7 @@ public class ListComponentTest {
 		when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
 				.thenReturn(inventoryDetails);
 
-		Lot activeLot = new Lot();
+		final Lot activeLot = new Lot();
 		activeLot.setStatus(LotStatus.ACTIVE.getIntValue());
 
 		when(this.inventoryDataManager.getLotsByIdList(Mockito.isA(List.class))).thenReturn(Lists.newArrayList(activeLot));
@@ -821,7 +810,7 @@ public class ListComponentTest {
 
 	@Test
 	public void testCloseLotsWithValidLotsHavingActualBalanceToClose() throws Exception {
-		List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1,1);
+		final List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1, 1);
 		userSelectedLotEntriesToClose.get(0).setReservedTotal(0D);
 		userSelectedLotEntriesToClose.get(0).setActualLotBalance(5D);
 
@@ -831,7 +820,7 @@ public class ListComponentTest {
 		when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
 				.thenReturn(inventoryDetails);
 
-		Lot activeLot = new Lot();
+		final Lot activeLot = new Lot();
 		activeLot.setStatus(LotStatus.ACTIVE.getIntValue());
 
 		when(this.inventoryDataManager.getLotsByIdList(Mockito.isA(List.class))).thenReturn(Lists.newArrayList(activeLot));
@@ -855,7 +844,7 @@ public class ListComponentTest {
 
 		this.listComponent.setInventoryViewMenu(this.inventoryViewMenu);
 		this.listComponent.setListInventoryTable(this.listManagerInventoryTable);
-		List<ListEntryLotDetails> userSelectedLotEntriesToCancel = ListInventoryDataInitializer.createLotDetails(1);
+		final List<ListEntryLotDetails> userSelectedLotEntriesToCancel = ListInventoryDataInitializer.createLotDetails(1);
 		userSelectedLotEntriesToCancel.get(0).setScaleId(null);
 		Mockito.doReturn(userSelectedLotEntriesToCancel).when(this.listManagerInventoryTable).getSelectedLots();
 		Mockito.doReturn(true).when(this.listComponent.getInventoryViewMenu()).isVisible();
@@ -872,7 +861,6 @@ public class ListComponentTest {
 		return project;
 
 	}
-
 
 	@Test
 	public void testRemoveSelectedGermplasmButtonClickAction() {
@@ -985,7 +973,7 @@ public class ListComponentTest {
 	@Test
 	public void testCountGermplasmWithoutGroup() {
 
-		final Set<Integer> gidsToProcess = new HashSet<>(Arrays.asList(1,2,3));
+		final Set<Integer> gidsToProcess = new HashSet<>(Arrays.asList(1, 2, 3));
 		final List<Germplasm> listOfGermplasm = new ArrayList<>();
 		listOfGermplasm.add(this.createGermplasm(1, 0));
 		listOfGermplasm.add(this.createGermplasm(2, 0));
@@ -993,7 +981,7 @@ public class ListComponentTest {
 
 		when(this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsToProcess))).thenReturn(listOfGermplasm);
 
-		Assert.assertEquals("There are only 2 ungrouped germplasm in the list",2,
+		Assert.assertEquals("There are only 2 ungrouped germplasm in the list", 2,
 				this.listComponent.countGermplasmWithoutGroup(gidsToProcess));
 
 	}
@@ -1001,12 +989,12 @@ public class ListComponentTest {
 	@Test
 	public void testConfirmUnfixLinesListener() {
 
-		final Set<Integer> gidsToProcess = new HashSet<>(Arrays.asList(1,2,3));
+		final Set<Integer> gidsToProcess = new HashSet<>(Arrays.asList(1, 2, 3));
 		final ListComponent listComponent = mock(ListComponent.class);
 
-		ListComponent.ConfirmUnfixLinesListener listener = this.listComponent.new ConfirmUnfixLinesListener(gidsToProcess, listComponent);
+		final ListComponent.ConfirmUnfixLinesListener listener = this.listComponent.new ConfirmUnfixLinesListener(gidsToProcess, listComponent);
 
-		final ConfirmDialog confirmDialog = ConfirmDialog.show(this.window,"","","","", listener);
+		final ConfirmDialog confirmDialog = ConfirmDialog.show(this.window, "", "", "", "", listener);
 		confirmDialog.getOkButton().click();
 
 		verify(listComponent).unfixLines(gidsToProcess);
@@ -1069,7 +1057,6 @@ public class ListComponentTest {
 		final Item selectedRowItem = table.getItem(gid1);
 		Assert.assertEquals("-", selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
 
-
 	}
 
 	@Test
@@ -1099,14 +1086,13 @@ public class ListComponentTest {
 		final Item selectedRowItem = table.getItem(gid1);
 		Assert.assertEquals(String.valueOf(mgid), selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
 
-
 	}
 
 	private Germplasm createGermplasm(final int gid, final int mgid) {
 		final Germplasm germplasm = new Germplasm();
 		germplasm.setMgid(mgid);
 		germplasm.setGid(gid);
-		return  germplasm;
+		return germplasm;
 	}
 
 }
