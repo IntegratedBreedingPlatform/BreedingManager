@@ -1417,7 +1417,7 @@ public class ListComponent extends VerticalLayout
 					this.messageSource.getMessage(Message.NO), new ConfirmUnfixLinesListener(gidsToProcess, this));
 
 		} else {
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.UNFIX_LINES),
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_UNFIX_LINES),
 					this.messageSource.getMessage(Message.ERROR_UNFIX_LINES_NOTHING_SELECTED));
 		}
 
