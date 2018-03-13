@@ -1409,19 +1409,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.UNFIX_LINES),
 					this.messageSource.getMessage(Message.CONFIRM_UNFIX_LINES), this.messageSource.getMessage(Message.YES),
-					this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
-
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void onClose(final ConfirmDialog dialog) {
-							if (dialog.isConfirmed()) {
-								ListComponent.this.unfixLines(gidsToProcess);
-								ListComponent.this.updateGermplasmListTable(gidsToProcess);
-							}
-						}
-
-					});
+					this.messageSource.getMessage(Message.NO), new ConfirmUnfixLinesListener(gidsToProcess, this));
 
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.UNFIX_LINES),
@@ -1436,7 +1424,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		if (numberOfGermplasmWithoutGroup > 0) {
 			MessageNotifier.showWarning(this.getWindow(), "",
-					this.messageSource.getMessage(Message.WARNING_UNFIX_LINES, gidsToProcess.size()));
+					this.messageSource.getMessage(Message.WARNING_UNFIX_LINES));
 		}
 
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
@@ -2663,4 +2651,24 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.doneInitializing = doneInitializing;
 	}
 
+	protected class ConfirmUnfixLinesListener implements ConfirmDialog.Listener {
+
+		private static final long serialVersionUID = 1L;
+		private final Set<Integer> gidsToProcess;
+		private final ListComponent listComponent;
+
+		public ConfirmUnfixLinesListener(final Set<Integer> gidsToProcess, final ListComponent listComponent) {
+			this.gidsToProcess = gidsToProcess;
+			this.listComponent = listComponent;
+		}
+
+		@Override
+		public void onClose(final ConfirmDialog dialog) {
+			if (dialog.isConfirmed()) {
+				listComponent.unfixLines(gidsToProcess);
+				listComponent.updateGermplasmListTable(gidsToProcess);
+			}
+		}
+
+	}
 }
