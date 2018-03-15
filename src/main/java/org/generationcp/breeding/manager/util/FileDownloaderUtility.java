@@ -5,7 +5,6 @@ import java.io.File;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.util.VaadinFileDownloadResource;
-import org.generationcp.commons.util.FileUtils;
 
 import com.vaadin.ui.Component;
 
