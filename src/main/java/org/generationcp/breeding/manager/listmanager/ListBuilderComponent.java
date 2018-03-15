@@ -60,7 +60,7 @@ import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.VaadinFileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
@@ -1349,8 +1349,8 @@ public class ListBuilderComponent extends VerticalLayout
 
 					final String listName = this.currentlySavedGermplasmList.getName();
 
-					final FileDownloadResource fileDownloadResource =
-							new FileDownloadResource(new File(tempFileName), listName.replace(" ", "_") + "ForGenotyping.xls",
+					final VaadinFileDownloadResource fileDownloadResource =
+							new VaadinFileDownloadResource(new File(tempFileName), listName.replace(" ", "_") + "ForGenotyping.xls",
 									this.source.getApplication());
 
 					this.source.getWindow().open(fileDownloadResource);
