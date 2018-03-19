@@ -1437,10 +1437,7 @@ public class ListComponent extends VerticalLayout
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 
-				for (final Integer gid : gidsToProcess) {
-					final Germplasm germplasm = ListComponent.this.germplasmDataManager.getGermplasmByGID(gid);
-					ListComponent.this.germplasmGroupingService.unfixLine(germplasm);
-				}
+				ListComponent.this.germplasmGroupingService.unfixLines(gidsToProcess);
 
 			}
 		});
@@ -1453,18 +1450,10 @@ public class ListComponent extends VerticalLayout
 
 	protected int countGermplasmWithoutGroup(final Set<Integer> gidsToProcess) {
 
-		int germplasmWithoutGroup = 0;
+		final List<Germplasm> listOfGermplasmWithoutGroup =
+				ListComponent.this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess));
 
-		final List<Germplasm> listOfGermplasm =
-				ListComponent.this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsToProcess));
-
-		for (final Germplasm germplasm : listOfGermplasm) {
-			if (germplasm.getMgid() == null || germplasm.getMgid() == 0) {
-				germplasmWithoutGroup++;
-			}
-		}
-
-		return germplasmWithoutGroup;
+		return listOfGermplasmWithoutGroup.size();
 
 	}
 

@@ -879,27 +879,12 @@ public class ListComponentTest {
 		final int gid3 = 3;
 		final Set<Integer> gidsToProcess = new HashSet<>(Arrays.asList(gid1, gid2, gid3));
 		final List<Germplasm> listOfGermplasm = new ArrayList<>();
-
-		final Germplasm germplasm1 = this.createGermplasm(gid1, 101);
-		listOfGermplasm.add(germplasm1);
-		final Germplasm germplasm2 = this.createGermplasm(gid2, 102);
-		listOfGermplasm.add(germplasm2);
-		final Germplasm germplasm3 = this.createGermplasm(gid3, 103);
-		listOfGermplasm.add(germplasm3);
-
-		when(this.germplasmDataManager.getGermplasmByGID(gid1)).thenReturn(germplasm1);
-		when(this.germplasmDataManager.getGermplasmByGID(gid2)).thenReturn(germplasm2);
-		when(this.germplasmDataManager.getGermplasmByGID(gid3)).thenReturn(germplasm3);
-		when(this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsToProcess))).thenReturn(listOfGermplasm);
+		when(this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess))).thenReturn(listOfGermplasm);
 
 		this.listComponent.unfixLines(gidsToProcess);
 
 		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.WARNING_UNFIX_LINES);
-
-		for (final Germplasm germplasm : listOfGermplasm) {
-			Mockito.verify(this.germplasmGroupingService).unfixLine(germplasm);
-		}
-
+		Mockito.verify(this.germplasmGroupingService).unfixLines(gidsToProcess);
 		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS_UNFIX_LINES, gidsToProcess.size());
 
 	}
@@ -911,28 +896,21 @@ public class ListComponentTest {
 		final int gid2 = 2;
 		final int gid3 = 3;
 		final Set<Integer> gidsToProcess = new HashSet<>(Arrays.asList(gid1, gid2, gid3));
-		final List<Germplasm> listOfGermplasm = new ArrayList<>();
+		final List<Germplasm> listOfGermplasmWithoutGroup = new ArrayList<>();
 
 		final Germplasm germplasm1 = this.createGermplasm(gid1, 0);
-		listOfGermplasm.add(germplasm1);
 		final Germplasm germplasm2 = this.createGermplasm(gid2, 102);
-		listOfGermplasm.add(germplasm2);
 		final Germplasm germplasm3 = this.createGermplasm(gid3, 0);
-		listOfGermplasm.add(germplasm3);
 
-		when(this.germplasmDataManager.getGermplasmByGID(gid1)).thenReturn(germplasm1);
-		when(this.germplasmDataManager.getGermplasmByGID(gid2)).thenReturn(germplasm2);
-		when(this.germplasmDataManager.getGermplasmByGID(gid3)).thenReturn(germplasm3);
-		when(this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsToProcess))).thenReturn(listOfGermplasm);
+		listOfGermplasmWithoutGroup.add(germplasm1);
+		listOfGermplasmWithoutGroup.add(germplasm3);
+
+		when(this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess))).thenReturn(listOfGermplasmWithoutGroup);
 
 		this.listComponent.unfixLines(gidsToProcess);
 
 		Mockito.verify(this.messageSource).getMessage(Message.WARNING_UNFIX_LINES);
-
-		for (final Germplasm germplasm : listOfGermplasm) {
-			Mockito.verify(this.germplasmGroupingService).unfixLine(germplasm);
-		}
-
+		Mockito.verify(this.germplasmGroupingService).unfixLines(gidsToProcess);
 		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS_UNFIX_LINES, 1);
 
 	}
@@ -953,19 +931,12 @@ public class ListComponentTest {
 		final Germplasm germplasm3 = this.createGermplasm(gid3, 0);
 		listOfGermplasm.add(germplasm3);
 
-		when(this.germplasmDataManager.getGermplasmByGID(gid1)).thenReturn(germplasm1);
-		when(this.germplasmDataManager.getGermplasmByGID(gid2)).thenReturn(germplasm2);
-		when(this.germplasmDataManager.getGermplasmByGID(gid3)).thenReturn(germplasm3);
-		when(this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsToProcess))).thenReturn(listOfGermplasm);
+		when(this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess))).thenReturn(listOfGermplasm);
 
 		this.listComponent.unfixLines(gidsToProcess);
 
 		Mockito.verify(this.messageSource).getMessage(Message.WARNING_UNFIX_LINES);
-
-		for (final Germplasm germplasm : listOfGermplasm) {
-			Mockito.verify(this.germplasmGroupingService).unfixLine(germplasm);
-		}
-
+		Mockito.verify(this.germplasmGroupingService).unfixLines(gidsToProcess);
 		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS_UNFIX_LINES, 0);
 
 	}
@@ -977,9 +948,8 @@ public class ListComponentTest {
 		final List<Germplasm> listOfGermplasm = new ArrayList<>();
 		listOfGermplasm.add(this.createGermplasm(1, 0));
 		listOfGermplasm.add(this.createGermplasm(2, 0));
-		listOfGermplasm.add(this.createGermplasm(3, 100));
 
-		when(this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsToProcess))).thenReturn(listOfGermplasm);
+		when(this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess))).thenReturn(listOfGermplasm);
 
 		Assert.assertEquals("There are only 2 ungrouped germplasm in the list", 2,
 				this.listComponent.countGermplasmWithoutGroup(gidsToProcess));
