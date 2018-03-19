@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.inventory;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,7 +14,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.util.FileDownloaderUtility;
 import org.generationcp.commons.service.FileService;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.FileUtils;
+import org.generationcp.commons.util.InstallationDirectoryUtil;
 import org.generationcp.commons.util.StringUtil;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -24,19 +25,21 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.generationcp.middleware.service.api.FieldbookService;
 import org.generationcp.middleware.util.PoiUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.google.common.collect.Lists;
-
 import com.vaadin.ui.Component;
 
 @Configurable
 public class SeedInventoryListExporter {
 
 	public static final String SEED_EXPORT_FILE_NAME_FORMAT = "%s-Seed Prep.xls";
+	public static final String TEMPORARY_FILE_NAME = "temp";
+	public static final String XLS_EXTENSION = ".xls";
 
 	private String seedTemplateFile = "SeedPrepTemplate.xls";
 
@@ -44,17 +47,17 @@ public class SeedInventoryListExporter {
 
 	private GermplasmList germplasmList;
 
-	private final int ENTRY_INDEX = 0;
-	private final int DESIGNATION_INDEX = 1;
-	private final int GID_INDEX = 2;
-	private final int CROSS_INDEX = 3;
-	private final int SOURCE_INDEX = 4;
-	private final int LOT_ID_INDEX = 5;
-	private final int LOT_LOCATION_INDEX = 6;
-	private final int STOCK_ID_INDEX = 7;
-	private final int TRN_INDEX = 8;
-	private final int RESERVATION_INDEX = 9;
-	private final int NOTES_INDEX = 12;
+	private static final int ENTRY_INDEX = 0;
+	private static final int DESIGNATION_INDEX = 1;
+	private static final int GID_INDEX = 2;
+	private static final int CROSS_INDEX = 3;
+	private static final int SOURCE_INDEX = 4;
+	private static final int LOT_ID_INDEX = 5;
+	private static final int LOT_LOCATION_INDEX = 6;
+	private static final int STOCK_ID_INDEX = 7;
+	private static final int TRN_INDEX = 8;
+	private static final int RESERVATION_INDEX = 9;
+	private static final int NOTES_INDEX = 12;
 
 	@Autowired
 	private FileService fileService;
@@ -68,10 +71,15 @@ public class SeedInventoryListExporter {
 	@Autowired
 	private org.generationcp.middleware.service.api.FieldbookService fieldbookMiddlewareService;
 
+	@Autowired
+	protected ContextUtil contextUtil;
+
+	private InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
+
 	protected Workbook excelWorkbook;
-
+	
 	public SeedInventoryListExporter() {
-
+		// Empty constructor expected for autowiring this component
 	}
 
 	public SeedInventoryListExporter(final Component source, final GermplasmList germplasmList) {
@@ -81,11 +89,18 @@ public class SeedInventoryListExporter {
 
 	public void exportSeedPreparationList() throws SeedInventoryExportException {
 		try {
-			excelWorkbook = this.fileService.retrieveWorkbookTemplate(seedTemplateFile);
-			this.fillSeedPreparationExcel();
-			File excelOutputFile = this.createExcelOutputFile(germplasmList.getName(), excelWorkbook);
 
-			this.fileDownloaderUtility.initiateFileDownload(excelOutputFile.getAbsolutePath(), excelOutputFile.getName(), this.source);
+			excelWorkbook = this.fileService.retrieveWorkbookTemplate(seedTemplateFile);
+
+			this.fillSeedPreparationExcel();
+
+			String temporaryExcelFile = this.createExcelOutputFile(excelWorkbook);
+
+			String visibleFileName = String.format(SeedInventoryListExporter.SEED_EXPORT_FILE_NAME_FORMAT,
+					StringUtil.replaceInvalidChacaracterFileName(germplasmList.getName(), "_"));
+			visibleFileName = FileUtils.sanitizeFileName(visibleFileName);
+
+			this.fileDownloaderUtility.initiateFileDownload(temporaryExcelFile, visibleFileName, this.source);
 		} catch (MiddlewareException | IOException | InvalidFormatException e) {
 			throw new SeedInventoryExportException(e.getMessage(), e);
 		}
@@ -101,19 +116,24 @@ public class SeedInventoryListExporter {
 		Sheet descriptionSheet = excelWorkbook.getSheetAt(0);
 
 		String listName = this.germplasmList.getName();
-		descriptionSheet.getRow(0).getCell(1).setCellValue(listName); //B1 cell with the list name
+		//B1 cell with the list name
+		descriptionSheet.getRow(0).getCell(1).setCellValue(listName);
 
 		final String listDescription = this.germplasmList.getDescription();
-		descriptionSheet.getRow(1).getCell(1).setCellValue(listDescription); //B2 cell with the list description
+		//B2 cell with the list description
+		descriptionSheet.getRow(1).getCell(1).setCellValue(listDescription);
 
 		final String listType = this.germplasmList.getType();
-		descriptionSheet.getRow(2).getCell(1).setCellValue(listType); //B3 cell with the list type
+		//B3 cell with the list type
+		descriptionSheet.getRow(2).getCell(1).setCellValue(listType);
 
 		final Long listDate = this.germplasmList.getDate();
-		descriptionSheet.getRow(3).getCell(1).setCellValue(listDate); //B4 cell with the list date
+		//B4 cell with the list date
+		descriptionSheet.getRow(3).getCell(1).setCellValue(listDate);
 
 		final String currentExportingUserName = this.fieldbookMiddlewareService.getOwnerListName(germplasmList.getUserId());
-		descriptionSheet.getRow(6).getCell(6).setCellValue(currentExportingUserName); //G7 cell with the Username
+		//G7 cell with the Username
+		descriptionSheet.getRow(6).getCell(6).setCellValue(currentExportingUserName);
 	}
 
 	private void writeObservationSheet() {
@@ -175,42 +195,48 @@ public class SeedInventoryListExporter {
 		String scaleName = "";
 		String methodName = "";
 
-		if (reservedLotMethodSet.size() >= 1) {
+		if (!reservedLotMethodSet.isEmpty()) {
 			if (reservedLotMethodSet.size() == 1) {
 				methodName = reservedLotMethodSet.iterator().next();
 			} else {
 				methodName = ListDataInventory.MIXED;
 			}
 
-			descriptionSheet.getRow(20).getCell(4).setCellValue(methodName); //E21 cell with withdrawal amount method
-			descriptionSheet.getRow(21).getCell(4).setCellValue(methodName); //E22 cell with withdrawal amount method
-			descriptionSheet.getRow(22).getCell(4).setCellValue(methodName); //E23 cell with withdrawal amount method
+			//E21 cell with withdrawal amount method
+			descriptionSheet.getRow(20).getCell(4).setCellValue(methodName);
+			//E22 cell with withdrawal amount method
+			descriptionSheet.getRow(21).getCell(4).setCellValue(methodName);
+			//E23 cell with withdrawal amount method
+			descriptionSheet.getRow(22).getCell(4).setCellValue(methodName);
 		}
 
-		if (reservedLotScaleSet.size() >= 1) {
+		if (!reservedLotScaleSet.isEmpty()) {
 			if (reservedLotScaleSet.size() == 1) {
 				scaleName = reservedLotScaleSet.iterator().next();
 			} else {
 				scaleName = ListDataInventory.MIXED;
 			}
-			descriptionSheet.getRow(20).getCell(3).setCellValue(scaleName); //D21 cell with withdrawal amount scale
-			descriptionSheet.getRow(21).getCell(3).setCellValue(scaleName); //D22 cell with withdrawal amount scale
-			descriptionSheet.getRow(22).getCell(3).setCellValue(scaleName); //D23 cell with withdrawal amount scale
+			//D21 cell with withdrawal amount scale
+			descriptionSheet.getRow(20).getCell(3).setCellValue(scaleName);
+			//D22 cell with withdrawal amount scale
+			descriptionSheet.getRow(21).getCell(3).setCellValue(scaleName);
+			//D23 cell with withdrawal amount scale
+			descriptionSheet.getRow(22).getCell(3).setCellValue(scaleName);
 		}
 
 	}
 
-	private File createExcelOutputFile(final String listName, final Workbook excelWorkbook) throws IOException {
-		String outputFileName = String.format(SeedInventoryListExporter.SEED_EXPORT_FILE_NAME_FORMAT,
-				StringUtil.replaceInvalidChacaracterFileName(listName, "_"));
+	private String createExcelOutputFile(final Workbook excelWorkbook) throws IOException {
 
-		outputFileName = FileUtils.sanitizeFileName(outputFileName);
+		final String temporaryFilenamePath = installationDirectoryUtil
+				.getTempFileInOutputDirectoryForProjectAndTool(TEMPORARY_FILE_NAME, XLS_EXTENSION, contextUtil.getProjectInContext(),
+						ToolName.BM_LIST_MANAGER_MAIN);
 
-		try (OutputStream out = new FileOutputStream(outputFileName)) {
+		try (OutputStream out = new FileOutputStream(temporaryFilenamePath)) {
 			excelWorkbook.write(out);
 		}
 
-		return new File(outputFileName);
+		return temporaryFilenamePath;
 	}
 
 	private Map<Integer, Transaction> createReservedTransactionMap(final List<GermplasmListData> inventoryDetails) {
@@ -270,6 +296,14 @@ public class SeedInventoryListExporter {
 
 	public Workbook getExcelWorkbook() {
 		return excelWorkbook;
+	}
+
+	public void setContextUtil(final ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	public void setInstallationDirectoryUtil(final InstallationDirectoryUtil installationDirectoryUtil) {
+		this.installationDirectoryUtil = installationDirectoryUtil;
 	}
 }
 
