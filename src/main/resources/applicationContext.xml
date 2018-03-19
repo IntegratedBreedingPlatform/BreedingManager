@@ -363,7 +363,7 @@
 
 	<bean id="germplasmCodeGenerationService" class="org.generationcp.commons.service.impl.GermplasmCodeGenerationServiceImpl" />
 
-	<bean id="codingExpressionResolver" class="org.generationcp.commons.ruleengine.impl.CodingExpressionResolver" />
+	<bean id="codingExpressionResolver" class="org.generationcp.commons.ruleengine.coding.expression.CodingExpressionResolver" />
 
 	<bean id="codingExpressionFactory"
 		  class="org.generationcp.commons.ruleengine.coding.expression.CodingExpressionFactory"

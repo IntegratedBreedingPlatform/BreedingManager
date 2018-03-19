@@ -22,7 +22,8 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
-import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -51,7 +52,7 @@ public class AssignCodesDialogTest {
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Mock
-	private WorkbenchDataManager workbenchDataManager;
+	private FieldbookService fieldbookService;
 
 	@Mock
 	private GermplasmCodeGenerationService germplasmCodeGenerationService;
@@ -89,7 +90,7 @@ public class AssignCodesDialogTest {
 		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
 		this.assignCodesDialog.setGermplasmCodeGenerationService(this.germplasmCodeGenerationService);
 		this.assignCodesDialog.setGermplasmListManager(this.germplasmListManager);
-		this.assignCodesDialog.setWorkbenchDataManager(this.workbenchDataManager);
+		this.assignCodesDialog.setFieldbookService(this.fieldbookService);
 
 		final OptionGroup codingLevelOptions = new OptionGroup();
 		final OptionGroup namingOptions = new OptionGroup();
@@ -125,7 +126,7 @@ public class AssignCodesDialogTest {
 		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
 
 		final NamingConfiguration namingConfiguration = new NamingConfiguration();
-		Mockito.when(workbenchDataManager.getNamingConfigurationByName(nameType.getFname())).thenReturn(namingConfiguration);
+		Mockito.when(fieldbookService.getNamingConfigurationByName(nameType.getFname())).thenReturn(namingConfiguration);
 
 		this.assignCodesDialog.generateCodeNames();
 
@@ -144,7 +145,7 @@ public class AssignCodesDialogTest {
 		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
 
 		final NamingConfiguration namingConfiguration = new NamingConfiguration();
-		Mockito.when(workbenchDataManager.getNamingConfigurationByName(nameType.getFname())).thenReturn(namingConfiguration);
+		Mockito.when(fieldbookService.getNamingConfigurationByName(nameType.getFname())).thenReturn(namingConfiguration);
 		Mockito.when(this.germplasmCodeGenerationService.applyGroupNames(this.createGidsToProcess(), namingConfiguration, this.nameType))
 				.thenThrow(new RuleException(""));
 

@@ -26,7 +26,8 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
-import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	private GermplasmCodeGenerationService germplasmCodeGenerationService;
 
 	@Autowired
-	private WorkbenchDataManager workbenchDataManager;
+	private FieldbookService fieldbookService;
 
 	private VerticalLayout manualCodeNamingLayout;
 	private AssignCodesNamingLayout assignCodesNamingLayout;
@@ -219,7 +220,7 @@ public class AssignCodesDialog extends BaseSubWindow
 					AssignCodesDialog.this.assignCodesNamingLayout.generateGermplasmNameSetting(), nameType, 0, 0);
 		} else {
 			try {
-				final NamingConfiguration namingConfiguration = workbenchDataManager.getNamingConfigurationByName(nameType.getFname());
+				final NamingConfiguration namingConfiguration = fieldbookService.getNamingConfigurationByName(nameType.getFname());
 				resultsMap =
 						germplasmCodeGenerationService.applyGroupNames(AssignCodesDialog.this.gidsToProcess, namingConfiguration, nameType);
 			} catch (RuleException e) {
@@ -402,10 +403,6 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.manualCodeNamingLayout = manualCodeNamingLayout;
 	}
 
-	public void setWorkbenchDataManager(final WorkbenchDataManager workbenchDataManager) {
-		this.workbenchDataManager = workbenchDataManager;
-	}
-
 	public void setNamingOptions(final OptionGroup namingOptions) {
 		this.namingOptions = namingOptions;
 	}
@@ -424,6 +421,10 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	protected OptionGroup getCodingLevelOptions() {
 		return codingLevelOptions;
+	}
+
+	protected void setFieldbookService(final FieldbookService fieldbookService) {
+		this.fieldbookService = fieldbookService;
 	}
 
 	protected class ContinueButtonClickListener implements Button.ClickListener {
