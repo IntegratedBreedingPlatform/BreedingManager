@@ -1,18 +1,30 @@
-
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import junit.framework.Assert;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNamingLayout;
+import org.generationcp.commons.ruleengine.RuleException;
+import org.generationcp.commons.service.GermplasmCodeGenerationService;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
-import org.generationcp.middleware.service.api.GermplasmNamingService;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -21,13 +33,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.vaadin.data.Validator;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.CloseEvent;
-
-import junit.framework.Assert;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AssignCodesDialogTest {
 
@@ -44,7 +53,7 @@ public class AssignCodesDialogTest {
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Mock
-	private GermplasmNamingService germplasmNamingService;
+	private GermplasmCodeGenerationService germplasmCodeGenerationService;
 
 	@Mock
 	private PlatformTransactionManager transactionManager;
@@ -55,14 +64,17 @@ public class AssignCodesDialogTest {
 	@Mock
 	private Window parent;
 
-	@InjectMocks
-	private AssignCodesDialog assignCodesDialog;
-
 	@Mock
 	private OptionGroup codingLevelOptions;
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
+
+	@Mock
+	private GermplasmDataManager germplasmDataManager;
+
+	@InjectMocks
+	private AssignCodesDialog assignCodesDialog;
 
 	private UserDefinedField nameType;
 
@@ -77,8 +89,14 @@ public class AssignCodesDialogTest {
 		this.assignCodesDialog.setGidsToProcess(this.createGidsToProcess());
 		this.assignCodesDialog.setTransactionManager(this.transactionManager);
 		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
-		this.assignCodesDialog.setGermplasmNamingService(this.germplasmNamingService);
+		this.assignCodesDialog.setGermplasmCodeGenerationService(this.germplasmCodeGenerationService);
 		this.assignCodesDialog.setGermplasmListManager(this.germplasmListManager);
+		this.assignCodesDialog.setGermplasmDataManager(this.germplasmDataManager);
+
+		final OptionGroup codingLevelOptions = new OptionGroup();
+		final OptionGroup namingOptions = new OptionGroup();
+		this.assignCodesDialog.setCodingLevelOptions(codingLevelOptions);
+		this.assignCodesDialog.setNamingOptions(namingOptions);
 
 		this.setting = this.createGermplasmNameSetting();
 		Mockito.doReturn(this.setting).when(this.assignCodesNamingLayout).generateGermplasmNameSetting();
@@ -87,27 +105,65 @@ public class AssignCodesDialogTest {
 	}
 
 	@Test
-	public void testAssignCodes() {
-		this.assignCodesDialog.assignCodes();
+	public void testGenerateCodeNamesManualNaming() {
+
+		this.assignCodesDialog.initializeValues();
+		this.assignCodesDialog.getNamingOptions().setValue(AssignCodesDialog.NAMING_OPTION.MANUAL);
+		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
+		this.assignCodesDialog.generateCodeNames();
 
 		// Make sure that the codes are assigned to all GIDs
-		this.verifyAssignCodesActions();
+		Mockito.verify(this.germplasmCodeGenerationService).applyGroupNames(this.createGidsToProcess(), this.setting, this.nameType, 0, 0);
+		Mockito.verify(this.parent).addWindow(Mockito.any(AssignCodesResultsDialog.class));
+		Mockito.verify(this.parent).removeWindow(this.assignCodesDialog);
 
 	}
 
-	private void verifyAssignCodesActions() {
-		Mockito.verify(this.germplasmNamingService).applyGroupNames(this.createGidsToProcess(), this.setting, this.nameType, 0, 0);
+	@Test
+	public void testGenerateCodeNamesAutomaticNaming() throws RuleException {
 
+		this.assignCodesDialog.initializeValues();
+		this.assignCodesDialog.getNamingOptions().setValue(AssignCodesDialog.NAMING_OPTION.AUTOMATIC);
+		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
+
+		final NamingConfiguration namingConfiguration = new NamingConfiguration();
+		Mockito.when(this.germplasmDataManager.getNamingConfigurationByName(nameType.getFname())).thenReturn(namingConfiguration);
+
+		this.assignCodesDialog.generateCodeNames();
+
+		// Make sure that the codes are assigned to all GIDs
+		Mockito.verify(this.germplasmCodeGenerationService).applyGroupNames(this.createGidsToProcess(), namingConfiguration, this.nameType);
 		Mockito.verify(this.parent).addWindow(Mockito.any(AssignCodesResultsDialog.class));
 		Mockito.verify(this.parent).removeWindow(this.assignCodesDialog);
+
+	}
+
+	@Test
+	public void testGenerateCodeNamesAutomaticNamingWithRuleException() throws RuleException {
+
+		this.assignCodesDialog.initializeValues();
+		this.assignCodesDialog.getNamingOptions().setValue(AssignCodesDialog.NAMING_OPTION.AUTOMATIC);
+		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
+
+		final NamingConfiguration namingConfiguration = new NamingConfiguration();
+		Mockito.when(this.germplasmDataManager.getNamingConfigurationByName(nameType.getFname())).thenReturn(namingConfiguration);
+		Mockito.when(this.germplasmCodeGenerationService.applyGroupNames(this.createGidsToProcess(), namingConfiguration, this.nameType))
+				.thenThrow(new RuleException(""));
+
+		this.assignCodesDialog.generateCodeNames();
+
+		Mockito.verify(this.messageSource).getMessage(Message.ASSIGN_CODES);
+		Mockito.verify(this.parent).showNotification(Mockito.any(Window.Notification.class));
+		Mockito.verify(this.parent).addWindow(Mockito.any(AssignCodesResultsDialog.class));
+		Mockito.verify(this.parent).removeWindow(this.assignCodesDialog);
+
 	}
 
 	@Test
 	public void testInstantiateButtons() {
 		this.assignCodesDialog.instantiateButtons();
-
-		final Button continueButton = this.assignCodesDialog.getContinueButton();
-		Assert.assertFalse(continueButton.isEnabled());
+		Assert.assertNotNull(this.assignCodesDialog.getContinueButton());
+		Assert.assertNotNull(this.assignCodesDialog.getCancelButton());
 	}
 
 	@Test
@@ -119,11 +175,8 @@ public class AssignCodesDialogTest {
 		// Test Continue Button click
 		final Button continueButton = this.assignCodesDialog.getContinueButton();
 		continueButton.setEnabled(true);
-		continueButton.click();
-		Mockito.verify(this.assignCodesNamingLayout).validate();
-		this.verifyAssignCodesActions();
 	}
-	
+
 	@Test
 	public void testClickCancelButton() {
 		this.assignCodesDialog.instantiateButtons();
@@ -146,21 +199,67 @@ public class AssignCodesDialogTest {
 		final Button continueButton = this.assignCodesDialog.getContinueButton();
 		continueButton.setEnabled(true);
 		continueButton.click();
-		Mockito.verify(this.germplasmNamingService, Mockito.never()).applyGroupName(Mockito.anyInt(),
-				Mockito.any(GermplasmNameSetting.class), Mockito.any(UserDefinedField.class), Mockito.anyInt(), Mockito.anyInt());
+		Mockito.verify(this.germplasmCodeGenerationService, Mockito.never())
+				.applyGroupName(Mockito.anyInt(), Mockito.any(GermplasmNameSetting.class), Mockito.any(UserDefinedField.class),
+						Mockito.anyInt(), Mockito.anyInt());
 		Mockito.verify(this.parent, Mockito.never()).addWindow(Mockito.any(AssignCodesResultsDialog.class));
 		Mockito.verify(this.parent, Mockito.never()).removeWindow(this.assignCodesDialog);
 	}
 
 	@Test
+	public void testNamingOptionValueChangedToAutomatic() {
+
+		this.assignCodesDialog.instantiateButtons();
+		this.assignCodesDialog.addListeners();
+
+		final VerticalLayout manualCodeNamingLayout = new VerticalLayout();
+		this.assignCodesDialog.setManualCodeNamingLayout(manualCodeNamingLayout);
+		final Field.ValueChangeEvent event = Mockito.mock(Field.ValueChangeEvent.class);
+		final Property property = Mockito.mock(Property.class);
+		Mockito.when(property.getValue()).thenReturn(AssignCodesDialog.NAMING_OPTION.AUTOMATIC);
+		Mockito.when(event.getProperty()).thenReturn(property);
+
+		this.assignCodesDialog.getNamingOptions().valueChange(event);
+
+		Assert.assertFalse(manualCodeNamingLayout.isVisible());
+		Assert.assertTrue(assignCodesDialog.getContinueButton().isEnabled());
+		Assert.assertEquals(AssignCodesDialog.DEFAULT_DIALOG_HEIGHT, Math.round(assignCodesDialog.getHeight()) + "px");
+
+	}
+
+	@Test
+	public void testNamingOptionValueChangedToManual() {
+
+		this.assignCodesDialog.instantiateButtons();
+		this.assignCodesDialog.addListeners();
+
+		final VerticalLayout manualCodeNamingLayout = new VerticalLayout();
+		this.assignCodesDialog.setManualCodeNamingLayout(manualCodeNamingLayout);
+		final Field.ValueChangeEvent event = Mockito.mock(Field.ValueChangeEvent.class);
+		final Property property = Mockito.mock(Property.class);
+		Mockito.when(property.getValue()).thenReturn(AssignCodesDialog.NAMING_OPTION.MANUAL);
+		Mockito.when(event.getProperty()).thenReturn(property);
+
+		this.assignCodesDialog.getNamingOptions().valueChange(event);
+
+		Assert.assertTrue(manualCodeNamingLayout.isVisible());
+		Assert.assertFalse(assignCodesDialog.getContinueButton().isEnabled());
+		Assert.assertEquals(AssignCodesDialog.DEFAULT_DIALOG_HEIGHT_FOR_MANUAL_NAMING, Math.round(assignCodesDialog.getHeight()) + "px");
+
+	}
+
+	@Test
 	public void testInitializeValues() {
 		this.setupTestNameTypes();
-		final OptionGroup codingLevelOptions = new OptionGroup();
-		this.assignCodesDialog.setCodingLevelOptions(codingLevelOptions);
 		this.assignCodesDialog.initializeValues();
 
-		Assert.assertEquals(3, codingLevelOptions.getItemIds().size());
-		Assert.assertEquals(this.nameType, codingLevelOptions.getValue());
+		final OptionGroup codingLevel = this.assignCodesDialog.getCodingLevelOptions();
+		final OptionGroup naming = this.assignCodesDialog.getNamingOptions();
+
+		Assert.assertEquals(3, codingLevel.getItemIds().size());
+		Assert.assertEquals(this.nameType, codingLevel.getValue());
+		Assert.assertEquals(2, naming.getItemIds().size());
+		Assert.assertEquals(AssignCodesDialog.NAMING_OPTION.AUTOMATIC, naming.getValue());
 	}
 
 	private void setupTestNameTypes() {
@@ -185,21 +284,76 @@ public class AssignCodesDialogTest {
 		Assert.assertFalse(this.assignCodesDialog.isCodingNameType("CODE 1 ABC"));
 		Assert.assertFalse(this.assignCodesDialog.isCodingNameType("CROSS CODE"));
 	}
-	
+
 	@Test
 	public void testWindowClose() {
 		this.assignCodesDialog.windowClose(Mockito.mock(CloseEvent.class));
 		Mockito.verify(this.parent).removeWindow(this.assignCodesDialog);
 	}
-	
+
 	@Test
 	public void testUpdateLabels() {
 		this.assignCodesDialog.instantiateButtons();
 		this.assignCodesDialog.updateLabels();
-		
+
 		Mockito.verify(this.messageSource).setCaption(this.assignCodesDialog, Message.ASSIGN_CODES_HEADER);
 		Mockito.verify(this.messageSource).setCaption(this.assignCodesDialog.getContinueButton(), Message.APPLY_CODES);
 		Mockito.verify(this.messageSource).setCaption(this.assignCodesDialog.getCancelButton(), Message.CANCEL);
+	}
+
+	@Test
+	public void testCreateNamingAndCodeLevelGridLayout() {
+
+		final GridLayout gridLayout = this.assignCodesDialog.createNamingAndCodeLevelGridLayout(new OptionGroup(), new OptionGroup());
+		Assert.assertNotNull(gridLayout.getComponent(0, 0));
+		Assert.assertNotNull(gridLayout.getComponent(1, 0));
+		Assert.assertNotNull(gridLayout.getComponent(0, 1));
+		Assert.assertNotNull(gridLayout.getComponent(1, 1));
+
+		Assert.assertEquals(0.3f, gridLayout.getColumnExpandRatio(0));
+		Assert.assertEquals(0.7f, gridLayout.getColumnExpandRatio(1));
+		Assert.assertEquals(100.0f, gridLayout.getWidth());
+	}
+
+	@Test
+	public void testCreateCodingLevelOptionsLabelLayout() {
+
+		final String codingLevel = "Coding Level";
+		Mockito.when(messageSource.getMessage(Message.CODING_LEVEL)).thenReturn(codingLevel);
+
+		final HorizontalLayout horizontalLayout = this.assignCodesDialog.createCodingLevelOptionsLabelLayout();
+
+		final Label codingLevelLabel = (Label) horizontalLayout.getComponent(0);
+		Assert.assertNotNull(codingLevelLabel);
+		Assert.assertEquals(codingLevel, codingLevelLabel.getValue());
+		Assert.assertTrue(horizontalLayout.getComponent(1) instanceof MandatoryMarkLabel);
+
+	}
+
+	@Test
+	public void testCreateNamingOptionsLabelLayout() {
+
+		final String naming = "Naming";
+		Mockito.when(messageSource.getMessage(Message.NAMING)).thenReturn(naming);
+
+		final HorizontalLayout horizontalLayout = this.assignCodesDialog.createNamingOptionsLabelLayout();
+
+		final Label namingLabel = (Label) horizontalLayout.getComponent(0);
+		Assert.assertNotNull(namingLabel);
+		Assert.assertEquals(naming, namingLabel.getValue());
+		Assert.assertTrue(horizontalLayout.getComponent(1) instanceof MandatoryMarkLabel);
+
+	}
+
+	@Test
+	public void testCreateManualCodeNamingLayout() {
+
+		final VerticalLayout verticalLayout = this.assignCodesDialog.createManualCodeNamingLayout();
+		Assert.assertTrue(verticalLayout.isImmediate());
+		Assert.assertFalse(verticalLayout.isVisible());
+		Assert.assertEquals(270.0f, verticalLayout.getHeight());
+		Assert.assertEquals(100.0f, verticalLayout.getWidth());
+
 	}
 
 	private Set<Integer> createGidsToProcess() {
