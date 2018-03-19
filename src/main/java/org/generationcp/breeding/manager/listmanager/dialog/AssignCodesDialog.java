@@ -178,6 +178,7 @@ public class AssignCodesDialog extends BaseSubWindow
 			AssignCodesDialog.this.continueButton.setEnabled(true);
 			AssignCodesDialog.this.setHeight(AssignCodesDialog.DEFAULT_DIALOG_HEIGHT);
 		}
+		AssignCodesDialog.this.center();
 	}
 
 	@Override
