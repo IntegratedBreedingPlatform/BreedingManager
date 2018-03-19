@@ -18,6 +18,7 @@ import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNa
 import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.commons.service.GermplasmCodeGenerationService;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -52,9 +53,6 @@ public class AssignCodesDialogTest {
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Mock
-	private FieldbookService fieldbookService;
-
-	@Mock
 	private GermplasmCodeGenerationService germplasmCodeGenerationService;
 
 	@Mock
@@ -71,6 +69,9 @@ public class AssignCodesDialogTest {
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
+
+	@Mock
+	private GermplasmDataManager germplasmDataManager;
 
 	@InjectMocks
 	private AssignCodesDialog assignCodesDialog;
@@ -90,7 +91,7 @@ public class AssignCodesDialogTest {
 		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
 		this.assignCodesDialog.setGermplasmCodeGenerationService(this.germplasmCodeGenerationService);
 		this.assignCodesDialog.setGermplasmListManager(this.germplasmListManager);
-		this.assignCodesDialog.setFieldbookService(this.fieldbookService);
+		this.assignCodesDialog.setGermplasmDataManager(this.germplasmDataManager);
 
 		final OptionGroup codingLevelOptions = new OptionGroup();
 		final OptionGroup namingOptions = new OptionGroup();
@@ -126,7 +127,7 @@ public class AssignCodesDialogTest {
 		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
 
 		final NamingConfiguration namingConfiguration = new NamingConfiguration();
-		Mockito.when(fieldbookService.getNamingConfigurationByName(nameType.getFname())).thenReturn(namingConfiguration);
+		Mockito.when(this.germplasmDataManager.getNamingConfigurationByName(nameType.getFname())).thenReturn(namingConfiguration);
 
 		this.assignCodesDialog.generateCodeNames();
 
@@ -145,7 +146,7 @@ public class AssignCodesDialogTest {
 		this.assignCodesDialog.setCodingLevelOptions(this.codingLevelOptions);
 
 		final NamingConfiguration namingConfiguration = new NamingConfiguration();
-		Mockito.when(fieldbookService.getNamingConfigurationByName(nameType.getFname())).thenReturn(namingConfiguration);
+		Mockito.when(this.germplasmDataManager.getNamingConfigurationByName(nameType.getFname())).thenReturn(namingConfiguration);
 		Mockito.when(this.germplasmCodeGenerationService.applyGroupNames(this.createGidsToProcess(), namingConfiguration, this.nameType))
 				.thenThrow(new RuleException(""));
 

@@ -23,6 +23,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -56,7 +57,6 @@ public class AssignCodesDialog extends BaseSubWindow
 	public static final String DEFAULT_DIALOG_HEIGHT = "350px";
 	public static final String DEFAULT_DIALOG_HEIGHT_FOR_MANUAL_NAMING = "600px";
 
-
 	public static enum NAMING_OPTION {
 		AUTOMATIC, MANUAL;
 	}
@@ -70,6 +70,9 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
 	@Autowired
 	private GermplasmCodeGenerationService germplasmCodeGenerationService;
@@ -221,7 +224,7 @@ public class AssignCodesDialog extends BaseSubWindow
 					AssignCodesDialog.this.assignCodesNamingLayout.generateGermplasmNameSetting(), nameType, 0, 0);
 		} else {
 			try {
-				final NamingConfiguration namingConfiguration = fieldbookService.getNamingConfigurationByName(nameType.getFname());
+				final NamingConfiguration namingConfiguration = this.germplasmDataManager.getNamingConfigurationByName(nameType.getFname());
 				resultsMap =
 						germplasmCodeGenerationService.applyGroupNames(AssignCodesDialog.this.gidsToProcess, namingConfiguration, nameType);
 			} catch (RuleException e) {
@@ -466,5 +469,9 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	public void setGermplasmCodeGenerationService(final GermplasmCodeGenerationService germplasmCodeGenerationService) {
 		this.germplasmCodeGenerationService = germplasmCodeGenerationService;
+	}
+
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
 	}
 }
