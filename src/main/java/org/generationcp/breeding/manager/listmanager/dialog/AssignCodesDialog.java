@@ -1,24 +1,37 @@
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.MandatoryMarkLabel;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesNamingLayout;
+import org.generationcp.commons.ruleengine.RuleException;
+import org.generationcp.commons.service.GermplasmCodeGenerationService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
-import org.generationcp.middleware.service.api.GermplasmNamingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -27,29 +40,30 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.vaadin.data.Validator;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Configurable
 public class AssignCodesDialog extends BaseSubWindow
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, Window.CloseListener {
 
+	private static final Logger LOG = LoggerFactory.getLogger(AssignCodesDialog.class);
+
 	private static final String CODE_NAME_WITH_SPACE_REGEX = "^CODE \\d$";
 	private static final String CODE_NAME_REGEX = "^CODE\\d$";
+	public static final String DEFAULT_DIALOG_WIDTH = "650px";
+	public static final String DEFAULT_DIALOG_HEIGHT = "350px";
+	public static final String DEFAULT_DIALOG_HEIGHT_FOR_MANUAL_NAMING = "600px";
+
+	public static enum NAMING_OPTION {
+		AUTOMATIC, MANUAL;
+	}
+
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-
-	@Autowired
-	private GermplasmNamingService germplasmNamingService;
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
@@ -57,14 +71,25 @@ public class AssignCodesDialog extends BaseSubWindow
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
+
+	@Autowired
+	private GermplasmCodeGenerationService germplasmCodeGenerationService;
+
+	@Autowired
+	private FieldbookService fieldbookService;
+
+	private VerticalLayout manualCodeNamingLayout;
 	private AssignCodesNamingLayout assignCodesNamingLayout;
 
 	private MandatoryMarkLabel mandatoryLabel;
-	private MandatoryMarkLabel codingLevelMandatoryLabel;
+
 	private Label indicatesMandatoryLabel;
-	private Label codingLevelLabel;
-	private VerticalLayout codesLayout;
+
 	private OptionGroup codingLevelOptions;
+	private OptionGroup namingOptions;
+
 	private Button cancelButton;
 	private Button continueButton;
 	private Set<Integer> gidsToProcess = new HashSet<>();
@@ -88,44 +113,47 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.indicatesMandatoryLabel = new Label(this.messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
 		this.indicatesMandatoryLabel.setDebugId("indicatesMandatoryLabel");
 		this.indicatesMandatoryLabel.addStyleName("italic");
-		
+
 		this.codingLevelOptions = new OptionGroup();
 		this.codingLevelOptions.setDebugId("codingLevelOptions");
-		
-		this.codingLevelLabel = new Label(this.messageSource.getMessage(Message.CODING_LEVEL));
-		this.codingLevelLabel.setDebugId("codingLevelLabel");
-		this.codingLevelLabel.addStyleName("bold");
-		this.codingLevelMandatoryLabel = new MandatoryMarkLabel();
-		this.codingLevelMandatoryLabel.setDebugId("codingLevelMandatoryLabel");
-		
+		this.codingLevelOptions.addStyleName("lst-horizontal-options");
+		this.namingOptions = new OptionGroup();
+		this.namingOptions.setDebugId("namingOptions");
+		this.namingOptions.addStyleName("lst-horizontal-options");
+
 		this.instantiateButtons();
-		
-		this.codesLayout = new VerticalLayout();
-		this.codesLayout.setDebugId("codesLayout");
 
 		// set immediate to true for those fields we will listen to for the changes on the screen
 		this.codingLevelOptions.setImmediate(true);
+		this.namingOptions.setImmediate(true);
 
-		this.assignCodesNamingLayout = new AssignCodesNamingLayout(this.codesLayout, this.continueButton);
+		this.manualCodeNamingLayout = this.createManualCodeNamingLayout();
+
+		this.assignCodesNamingLayout = new AssignCodesNamingLayout(manualCodeNamingLayout, this.continueButton);
 		this.assignCodesNamingLayout.instantiateComponents();
+		this.assignCodesNamingLayout.layoutComponents();
 
 	}
 
 	void instantiateButtons() {
 		this.cancelButton = new Button();
 		this.cancelButton.setDebugId("cancelButton");
-		
+
 		this.continueButton = new Button();
 		this.continueButton.setDebugId("continueButton");
 		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		this.continueButton.setEnabled(false);
 	}
 
 	@Override
 	public void initializeValues() {
+
 		this.populateCodingNameTypes();
+		this.namingOptions.addItem(NAMING_OPTION.AUTOMATIC);
+		this.namingOptions.addItem(NAMING_OPTION.MANUAL);
+		this.namingOptions.setValue(NAMING_OPTION.AUTOMATIC);
+
 	}
-	
+
 	void populateCodingNameTypes() {
 		final List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
 		UserDefinedField firstId = null;
@@ -143,14 +171,35 @@ public class AssignCodesDialog extends BaseSubWindow
 		}
 	}
 
+	protected void toggleNamingLayout(final NAMING_OPTION namingOption) {
+		if (namingOption == NAMING_OPTION.MANUAL) {
+			AssignCodesDialog.this.manualCodeNamingLayout.setVisible(true);
+			AssignCodesDialog.this.continueButton.setEnabled(false);
+			AssignCodesDialog.this.setHeight(AssignCodesDialog.DEFAULT_DIALOG_HEIGHT_FOR_MANUAL_NAMING);
+		} else {
+			AssignCodesDialog.this.manualCodeNamingLayout.setVisible(false);
+			AssignCodesDialog.this.continueButton.setEnabled(true);
+			AssignCodesDialog.this.setHeight(AssignCodesDialog.DEFAULT_DIALOG_HEIGHT);
+		}
+		AssignCodesDialog.this.center();
+	}
+
 	@Override
 	public void addListeners() {
 		this.assignCodesNamingLayout.addListeners();
 
+		this.namingOptions.addListener(new Property.ValueChangeListener() {
+
+			@Override
+			public void valueChange(final Property.ValueChangeEvent valueChangeEvent) {
+				AssignCodesDialog.this.toggleNamingLayout((NAMING_OPTION) valueChangeEvent.getProperty().getValue());
+			}
+		});
+
 		this.cancelButton.addListener(new Button.ClickListener() {
 
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -160,48 +209,37 @@ public class AssignCodesDialog extends BaseSubWindow
 			}
 		});
 
-		this.continueButton.addListener(new Button.ClickListener() {
+		this.continueButton.addListener(new ContinueButtonClickListener());
+	}
 
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				try {
-					AssignCodesDialog.this.assignCodesNamingLayout.validate();
-				} catch (final Validator.InvalidValueException ex) {
-					MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
-							AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), ex.getMessage());
-					return;
-				}
-				AssignCodesDialog.this.assignCodes();
+	protected void generateCodeNames() {
+
+		final UserDefinedField nameType = (UserDefinedField) AssignCodesDialog.this.codingLevelOptions.getValue();
+
+		Map<Integer, GermplasmGroupNamingResult> resultsMap = null;
+
+		// TODO pass user and location. Hardcoded to 0 = unknown for now.
+		if (AssignCodesDialog.this.namingOptions.getValue() == NAMING_OPTION.MANUAL) {
+			resultsMap = AssignCodesDialog.this.germplasmCodeGenerationService.applyGroupNames(AssignCodesDialog.this.gidsToProcess,
+					AssignCodesDialog.this.assignCodesNamingLayout.generateGermplasmNameSetting(), nameType, 0, 0);
+		} else {
+			try {
+				final NamingConfiguration namingConfiguration = this.germplasmDataManager.getNamingConfigurationByName(nameType.getFname());
+				resultsMap =
+						germplasmCodeGenerationService.applyGroupNames(AssignCodesDialog.this.gidsToProcess, namingConfiguration, nameType);
+			} catch (RuleException e) {
+				LOG.error(e.getMessage(), e);
+				MessageNotifier.showError(AssignCodesDialog.this.getParent(),
+						AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), e.getMessage());
 			}
-		});
-	}
-
-	void assignCodes() {
-		/**
-		 * This block of code is thread synchronized at the entire class level which means that the lock applies to all instances of
-		 * AssignCodesDialog class that are invoking this operation. This is pessimistic locking based on the assumption that assigning code
-		 * is not a massively parallel operation. It happens few times a year. It is OK for other users doing the same operation to wait
-		 * while one user completes this operation.
-		 */
-		synchronized (AssignCodesDialog.class) {
-			final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-
-				@Override
-				protected void doInTransactionWithoutResult(final TransactionStatus status) {
-					final UserDefinedField nameType = (UserDefinedField) AssignCodesDialog.this.codingLevelOptions.getValue();
-					
-					// TODO pass user and location. Hardcoded to 0 = unknown for now.
-					final Map<Integer, GermplasmGroupNamingResult> resultsMap = AssignCodesDialog.this.germplasmNamingService.applyGroupNames(AssignCodesDialog.this.gidsToProcess,
-							AssignCodesDialog.this.assignCodesNamingLayout.generateGermplasmNameSetting(), nameType, 0, 0);
-					AssignCodesDialog.this.getParent().addWindow(new AssignCodesResultsDialog(resultsMap));
-					AssignCodesDialog.this.closeWindow();
-				}
-			});
 		}
+
+		AssignCodesDialog.this.getParent().addWindow(new AssignCodesResultsDialog(resultsMap));
+		AssignCodesDialog.this.closeWindow();
+
 	}
-	
-	boolean isCodingNameType(final String nameType){
+
+	boolean isCodingNameType(final String nameType) {
 		return nameType.toUpperCase().matches(CODE_NAME_REGEX) || nameType.toUpperCase().matches(CODE_NAME_WITH_SPACE_REGEX);
 	}
 
@@ -213,9 +251,10 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Override
 	public void layoutComponents() {
+		this.setImmediate(true);
 		this.setModal(true);
-		this.setWidth("650px");
-		this.setHeight("530px");
+		this.setWidth(DEFAULT_DIALOG_WIDTH);
+		this.setHeight(DEFAULT_DIALOG_HEIGHT);
 		this.setResizable(false);
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 
@@ -223,7 +262,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		final VerticalLayout dialogLayout = new VerticalLayout();
 		dialogLayout.setDebugId("dialogLayout");
-		dialogLayout.setHeight("460px");
+		dialogLayout.setHeight("100%");
 		dialogLayout.setMargin(true);
 
 		final HorizontalLayout mandatoryLabelLayout = new HorizontalLayout();
@@ -234,28 +273,10 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.indicatesMandatoryLabel.setWidth("180px");
 		mandatoryLabelLayout.addComponent(this.mandatoryLabel);
 		mandatoryLabelLayout.addComponent(this.indicatesMandatoryLabel);
-		
-		// Area with level options
-		final HorizontalLayout optionsLabelLayout = new HorizontalLayout();
-		optionsLabelLayout.setDebugId("optionsLabelLayout");
-		optionsLabelLayout.setWidth("260px");
-		this.codingLevelLabel.setWidth("90px");
-		this.codingLevelMandatoryLabel.setWidth("160px");
-		optionsLabelLayout.addComponent(this.codingLevelLabel);
-		optionsLabelLayout.addComponent(this.codingLevelMandatoryLabel);
-		final HorizontalLayout optionsLayout = new HorizontalLayout();
-		optionsLayout.setDebugId("optionsLayout");
-		optionsLayout.setWidth("480px");
-		optionsLayout.setHeight("45px");
-		this.codingLevelOptions.addStyleName("lst-horizontal-options");
-		optionsLayout.addComponent(optionsLabelLayout);
-		optionsLayout.addComponent(this.codingLevelOptions);
-		optionsLayout.setComponentAlignment(this.codingLevelOptions, Alignment.TOP_RIGHT);
 
-		this.codesLayout.setWidth("100%");
-		this.codesLayout.setHeight("270px");
-		this.assignCodesNamingLayout.layoutComponents();
-		
+		final GridLayout namingAndCodeLevelsGridLayout =
+				this.createNamingAndCodeLevelGridLayout(this.codingLevelOptions, this.namingOptions);
+
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
@@ -268,10 +289,80 @@ public class AssignCodesDialog extends BaseSubWindow
 		buttonLayout.setComponentAlignment(this.continueButton, Alignment.BOTTOM_LEFT);
 
 		dialogLayout.addComponent(mandatoryLabelLayout);
-		dialogLayout.addComponent(optionsLayout);
-		dialogLayout.addComponent(this.codesLayout);
+		dialogLayout.addComponent(namingAndCodeLevelsGridLayout);
+		dialogLayout.addComponent(this.manualCodeNamingLayout);
 		dialogLayout.addComponent(buttonLayout);
+
+		dialogLayout.setComponentAlignment(mandatoryLabelLayout, Alignment.TOP_LEFT);
+		dialogLayout.setComponentAlignment(namingAndCodeLevelsGridLayout, Alignment.TOP_LEFT);
+
 		this.setContent(dialogLayout);
+	}
+
+	protected GridLayout createNamingAndCodeLevelGridLayout(final OptionGroup codingLevelOptions, final OptionGroup namingOptions) {
+
+		final GridLayout namingAndCodeLevelOptionLayout = new GridLayout(2, 2);
+
+		namingAndCodeLevelOptionLayout.addComponent(this.createCodingLevelOptionsLabelLayout(), 0, 0);
+		namingAndCodeLevelOptionLayout.addComponent(codingLevelOptions, 1, 0);
+		namingAndCodeLevelOptionLayout.addComponent(this.createNamingOptionsLabelLayout(), 0, 1);
+		namingAndCodeLevelOptionLayout.addComponent(namingOptions, 1, 1);
+
+		namingAndCodeLevelOptionLayout.setColumnExpandRatio(0, 0.3f);
+		namingAndCodeLevelOptionLayout.setColumnExpandRatio(1, 0.7f);
+		namingAndCodeLevelOptionLayout.setWidth("100%");
+
+		return namingAndCodeLevelOptionLayout;
+	}
+
+	protected HorizontalLayout createCodingLevelOptionsLabelLayout() {
+
+		final Label codingLevelLabel = new Label(this.messageSource.getMessage(Message.CODING_LEVEL));
+		codingLevelLabel.setDebugId("codingLevelLabel");
+		codingLevelLabel.addStyleName("bold");
+		codingLevelLabel.setWidth("90px");
+		codingLevelLabel.setHeight("45px");
+		final MandatoryMarkLabel codingLevelMandatoryLabel = new MandatoryMarkLabel();
+		codingLevelMandatoryLabel.setDebugId("codingLevelMandatoryLabel");
+
+		final HorizontalLayout optionsLabelLayout = new HorizontalLayout();
+		optionsLabelLayout.setDebugId("optionsLabelLayout");
+		optionsLabelLayout.addComponent(codingLevelLabel);
+		optionsLabelLayout.addComponent(codingLevelMandatoryLabel);
+
+		return optionsLabelLayout;
+	}
+
+	protected HorizontalLayout createNamingOptionsLabelLayout() {
+
+		final Label namingLabel = new Label(this.messageSource.getMessage(Message.NAMING));
+		namingLabel.setDebugId("namingLabel");
+		namingLabel.addStyleName("bold");
+		namingLabel.setWidth("70px");
+		namingLabel.setHeight("45px");
+		final MandatoryMarkLabel namingMandatoryLabel = new MandatoryMarkLabel();
+		namingMandatoryLabel.setDebugId("namingMandatoryLabel");
+
+		final HorizontalLayout namingOptionsLabelLayout = new HorizontalLayout();
+		namingOptionsLabelLayout.setDebugId("namingOptionsLabelLayout");
+		namingOptionsLabelLayout.addComponent(namingLabel);
+		namingOptionsLabelLayout.addComponent(namingMandatoryLabel);
+
+		return namingOptionsLabelLayout;
+
+	}
+
+	protected VerticalLayout createManualCodeNamingLayout() {
+
+		final VerticalLayout layout = new VerticalLayout();
+		layout.setDebugId("codesLayout");
+		layout.setWidth("100%");
+		layout.setHeight("270px");
+		layout.setImmediate(true);
+		layout.setVisible(false);
+
+		return layout;
+
 	}
 
 	@Override
@@ -284,6 +375,8 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.messageSource.setCaption(this, Message.ASSIGN_CODES_HEADER);
 		this.messageSource.setCaption(this.continueButton, Message.APPLY_CODES);
 		this.messageSource.setCaption(this.cancelButton, Message.CANCEL);
+		this.namingOptions.setItemCaption(NAMING_OPTION.AUTOMATIC, this.messageSource.getMessage(Message.CODE_NAMING_OPTION_AUTOMATIC));
+		this.namingOptions.setItemCaption(NAMING_OPTION.MANUAL, this.messageSource.getMessage(Message.CODE_NAMING_OPTION_MANUAL));
 	}
 
 	void setGidsToProcess(final Set<Integer> gidsToProcess) {
@@ -294,39 +387,91 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.assignCodesNamingLayout = assignCodesNamingLayout;
 	}
 
-	
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
-	
 	public void setCodingLevelOptions(OptionGroup codingLevelOptions) {
 		this.codingLevelOptions = codingLevelOptions;
 	}
 
-	
-	public void setGermplasmNamingService(GermplasmNamingService germplasmNamingService) {
-		this.germplasmNamingService = germplasmNamingService;
-	}
-
-	
-	
 	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
 
-	public Button getContinueButton() {
-		return continueButton;
+	public void setManualCodeNamingLayout(final VerticalLayout manualCodeNamingLayout) {
+		this.manualCodeNamingLayout = manualCodeNamingLayout;
 	}
 
-	
-	public Button getCancelButton() {
+	public void setNamingOptions(final OptionGroup namingOptions) {
+		this.namingOptions = namingOptions;
+	}
+
+	protected Button getContinueButton() {
+		return this.continueButton;
+	}
+
+	protected Button getCancelButton() {
 		return cancelButton;
 	}
 
+	protected OptionGroup getNamingOptions() {
+		return namingOptions;
+	}
+
+	protected OptionGroup getCodingLevelOptions() {
+		return codingLevelOptions;
+	}
+
+	protected void setFieldbookService(final FieldbookService fieldbookService) {
+		this.fieldbookService = fieldbookService;
+	}
+
+	protected class ContinueButtonClickListener implements Button.ClickListener {
+
+		@Override
+		public void buttonClick(final ClickEvent event) {
+
+			try {
+				AssignCodesDialog.this.assignCodesNamingLayout.validate();
+			} catch (final Validator.InvalidValueException ex) {
+				LOG.error(ex.getMessage(), ex);
+				MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
+						AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), ex.getMessage());
+				return;
+			}
+
+			/**
+			 * This block of code is thread synchronized at the entire class level which means that the lock applies to all instances of
+			 * AssignCodesDialog class that are invoking this operation. This is pessimistic locking based on the assumption that assigning code
+			 * is not a massively parallel operation. It happens few times a year. It is OK for other users doing the same operation to wait
+			 * while one user completes this operation.
+			 */
+			synchronized (AssignCodesDialog.class) {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(AssignCodesDialog.this.transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+					@Override
+					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+
+						AssignCodesDialog.this.generateCodeNames();
+
+					}
+				});
+			}
+
+		}
+	}
+
+	public void setGermplasmCodeGenerationService(final GermplasmCodeGenerationService germplasmCodeGenerationService) {
+		this.germplasmCodeGenerationService = germplasmCodeGenerationService;
+	}
+
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
 }
