@@ -33,6 +33,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	private ContextMenuItem listEditingOptions;
 	private ContextMenuItem codingAndFixingOptions;
 	private ContextMenuItem removeSelectedGermplasm;
+	private ContextMenuItem unfixLines;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -194,6 +195,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	protected void layoutAdminLink() {
 		this.removeSelectedGermplasm = listEditingOptions.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM));
+		this.unfixLines = codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.UNFIX_LINES));
 	}
 
 	protected void setListEditingOptions(final ContextMenuItem listEditingOptions) {
