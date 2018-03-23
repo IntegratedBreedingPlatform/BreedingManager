@@ -139,7 +139,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 		Mockito.when(this.mockRequest.getPathInfo()).thenReturn("/BreedingManager/createcrosses");
 
 		final Workbook testWorkbook = new Workbook();
-		Mockito.when(this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(CrossingManagerMakeCrossesComponentTest.STUDY_ID)))
+		Mockito.when(this.fieldbookMiddlewareService.getStudyDataSet(Integer.valueOf(CrossingManagerMakeCrossesComponentTest.STUDY_ID)))
 			.thenReturn(testWorkbook);
 
 		this.makeCrosses.initializeStudyContext(this.mockRequest);
@@ -147,7 +147,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 		Assert.assertNotNull("Expect StudyWorkbook to be initialized.", this.makeCrosses.getWorkbook());
 		Assert.assertTrue("Expected isNavigatedFromStudy flag to be set to true.", this.makeCrosses.isNavigatedFromStudy());
 		Mockito.verify(this.fieldbookMiddlewareService)
-			.getNurseryDataSet(Matchers.eq(Integer.valueOf(CrossingManagerMakeCrossesComponentTest.STUDY_ID)));
+			.getStudyDataSet(Matchers.eq(Integer.valueOf(CrossingManagerMakeCrossesComponentTest.STUDY_ID)));
 	}
 
 	@Test
