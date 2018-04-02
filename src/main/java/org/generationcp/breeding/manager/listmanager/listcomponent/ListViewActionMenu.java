@@ -55,9 +55,8 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuCopyToList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuExportList = this.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
 		this.codingAndFixingOptions = this.addItem(this.messageSource.getMessage(Message.CODING_AND_FIXING_OPTIONS));
-		this.menuAssignCodes = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
 		this.menuMarkLinesAsFixed = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
-
+		this.menuAssignCodes = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
 		try {
 			this.layoutAdminLink();
 		} catch (final AccessDeniedException e) {
