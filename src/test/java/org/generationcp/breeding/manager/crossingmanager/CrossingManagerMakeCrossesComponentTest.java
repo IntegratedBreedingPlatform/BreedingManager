@@ -12,6 +12,7 @@ import org.generationcp.commons.context.ContextInfo;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.etl.Workbook;
+import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.service.api.FieldbookService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,6 +36,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 	public static final Integer USER_ID = 1;
 	public static final Long PROJECT_ID = 2018L;
 	public static final String AUTHTOKEN = "ABCDE";
+	public static final String STUDYTYPE_NAME = "T";
 
 	@Mock
 	private ManageCrossingSettingsMain manageCrossingSettingsMain;
@@ -136,18 +138,17 @@ public class CrossingManagerMakeCrossesComponentTest {
 	public void testInitializeStudyContext() {
 		Mockito.doReturn(new String[] {CrossingManagerMakeCrossesComponentTest.STUDY_ID}).when(this.mockRequest)
 			.getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_ID);
+		Mockito.doReturn(new String[] {CrossingManagerMakeCrossesComponentTest.STUDYTYPE_NAME}).when(this.mockRequest)
+			.getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_TYPE);
 		Mockito.when(this.mockRequest.getPathInfo()).thenReturn("/BreedingManager/createcrosses");
-
 		final Workbook testWorkbook = new Workbook();
-		Mockito.when(this.fieldbookMiddlewareService.getStudyDataSet(Integer.valueOf(CrossingManagerMakeCrossesComponentTest.STUDY_ID)))
+		Mockito.when(this.fieldbookMiddlewareService.getStudyDataSet(Mockito.anyInt(), Mockito.any(StudyTypeDto.class)))
 			.thenReturn(testWorkbook);
 
 		this.makeCrosses.initializeStudyContext(this.mockRequest);
 		Assert.assertNotNull("Expect StudyId to be initialized.", this.makeCrosses.getStudyId());
 		Assert.assertNotNull("Expect StudyWorkbook to be initialized.", this.makeCrosses.getWorkbook());
 		Assert.assertTrue("Expected isNavigatedFromStudy flag to be set to true.", this.makeCrosses.isNavigatedFromStudy());
-		Mockito.verify(this.fieldbookMiddlewareService)
-			.getStudyDataSet(Matchers.eq(Integer.valueOf(CrossingManagerMakeCrossesComponentTest.STUDY_ID)));
 	}
 
 	@Test
