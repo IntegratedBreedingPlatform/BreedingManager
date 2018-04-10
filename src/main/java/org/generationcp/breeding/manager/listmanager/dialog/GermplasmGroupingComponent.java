@@ -154,13 +154,13 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 		final Window parentComponent = this.getParent();
 		if (parentComponent != null) {
 			if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.ALL_ENTRIES)) {
-				MessageNotifier.showMessage(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+				MessageNotifier.showMessage(parentComponent, this.messageSource.getMessage(Message.GROUP),
 						this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
 			} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.SOME_ENTRIES)) {
-				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.GROUP),
 						this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_SOME_ENTRIES));
 			} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.NO_ENTRIES)) {
-				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.GROUP),
 						this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_NO_ENTRIES));
 			}
 
@@ -244,7 +244,7 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	@Override
 	public void updateLabels() {
-		this.messageSource.setCaption(this, Message.MARK_LINES_AS_FIXED);
+		this.messageSource.setCaption(this, Message.GROUP);
 		this.messageSource.setCaption(this.preserveExistingGroupId, Message.PRESERVE_EXISTING_GROUP);
 		this.messageSource.setCaption(this.includeDescendants, Message.INCLUDE_DESCENDANTS);
 		this.messageSource.setCaption(this.continueButton, Message.CONTINUE);

@@ -1053,9 +1053,9 @@ public class ListComponent extends VerticalLayout
 						ListComponent.this.saveChangesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
 						ListComponent.this.deleteEntriesButtonClickAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED))) {
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.GROUP))) {
 						ListComponent.this.markLinesAsFixedAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.UNFIX_LINES))) {
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.UNGROUP))) {
 						ListComponent.this.confirmUnfixLinesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ASSIGN_CODES))) {
 						ListComponent.this.assignCodesAction();
@@ -1401,7 +1401,7 @@ public class ListComponent extends VerticalLayout
 		if (!gidsToProcess.isEmpty()) {
 			this.getWindow().addWindow(new GermplasmGroupingComponent(this, gidsToProcess));
 		} else {
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.GROUP),
 					this.messageSource.getMessage(Message.ERROR_MARK_LINES_AS_FIXED_NOTHING_SELECTED));
 		}
 	}
@@ -1412,7 +1412,7 @@ public class ListComponent extends VerticalLayout
 
 		if (!gidsToProcess.isEmpty()) {
 
-			ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.UNFIX_LINES),
+			ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.UNGROUP),
 					this.messageSource.getMessage(Message.CONFIRM_UNFIX_LINES), this.messageSource.getMessage(Message.YES),
 					this.messageSource.getMessage(Message.NO), new ConfirmUnfixLinesListener(gidsToProcess, this));
 
@@ -1443,7 +1443,7 @@ public class ListComponent extends VerticalLayout
 		});
 
 		final int numberOfUnfixedGermplasm = gidsToProcess.size() - numberOfGermplasmWithoutGroup;
-		MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.UNFIX_LINES),
+		MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.UNGROUP),
 				this.messageSource.getMessage(Message.SUCCESS_UNFIX_LINES, numberOfUnfixedGermplasm));
 
 	}
