@@ -42,7 +42,7 @@ public class ListViewActionMenuTest {
 		Assert.assertTrue(this.menu.getMenuEditList().isVisible());
 		Assert.assertTrue(this.menu.getMenuDeleteEntries().isVisible());
 		Assert.assertTrue(this.menu.getMenuDeleteList().isVisible());
-		Assert.assertTrue(this.menu.getMenuMarkLinesAsFixed().isVisible());
+		Assert.assertTrue(this.menu.getMenuGroupLines().isVisible());
 		Assert.assertTrue(this.menu.getMenuSaveChanges().isVisible());
 		Assert.assertTrue(this.menu.getMenuAddEntry().isVisible());
 		Assert.assertTrue(this.menu.getMenuAssignCodes().isVisible());
@@ -58,7 +58,7 @@ public class ListViewActionMenuTest {
 		Assert.assertTrue(this.menu.getMenuDeleteEntries().isVisible());
 		// User can't delete a list which he doesn't owned so the option for delete list will be hidden
 		Assert.assertFalse(this.menu.getMenuDeleteList().isVisible());
-		Assert.assertTrue(this.menu.getMenuMarkLinesAsFixed().isVisible());
+		Assert.assertTrue(this.menu.getMenuGroupLines().isVisible());
 		Assert.assertTrue(this.menu.getMenuSaveChanges().isVisible());
 		Assert.assertTrue(this.menu.getMenuAddEntry().isVisible());
 		Assert.assertTrue(this.menu.getMenuAssignCodes().isVisible());
@@ -73,7 +73,7 @@ public class ListViewActionMenuTest {
 		Assert.assertFalse(this.menu.getMenuEditList().isVisible());
 		Assert.assertFalse(this.menu.getMenuDeleteEntries().isVisible());
 		Assert.assertFalse(this.menu.getMenuDeleteList().isVisible());
-		Assert.assertFalse(this.menu.getMenuMarkLinesAsFixed().isVisible());
+		Assert.assertFalse(this.menu.getMenuGroupLines().isVisible());
 		Assert.assertFalse(this.menu.getMenuSaveChanges().isVisible());
 		Assert.assertFalse(this.menu.getMenuAddEntry().isVisible());
 		Assert.assertFalse(this.menu.getMenuAssignCodes().isVisible());
