@@ -25,15 +25,15 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	private ContextMenuItem menuAssignCodes;
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
-	private ContextMenuItem menuMarkLinesAsFixed;
+	private ContextMenuItem menuGroupLines;
 	private ContextMenuItem menuEditList;
 	private ContextMenuItem menuDeleteList;
 	private ContextMenuItem menuInventoryView;
 	private ContextMenuItem menuSelectAll;
 	private ContextMenuItem listEditingOptions;
-	private ContextMenuItem codingAndFixingOptions;
+	private ContextMenuItem codingAndGroupingOptions;
 	private ContextMenuItem removeSelectedGermplasm;
-	private ContextMenuItem unfixLines;
+	private ContextMenuItem ungroupLines;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -54,10 +54,9 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuDeleteList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
 		this.menuCopyToList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuExportList = this.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
-		this.codingAndFixingOptions = this.addItem(this.messageSource.getMessage(Message.CODING_AND_FIXING_OPTIONS));
-		this.menuAssignCodes = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
-		this.menuMarkLinesAsFixed = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
-
+		this.codingAndGroupingOptions = this.addItem(this.messageSource.getMessage(Message.CODING_AND_GROUPING_OPTIONS));
+		this.menuGroupLines = this.codingAndGroupingOptions.addItem(this.messageSource.getMessage(Message.GROUP));
+		this.menuAssignCodes = this.codingAndGroupingOptions.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
 		try {
 			this.layoutAdminLink();
 		} catch (final AccessDeniedException e) {
@@ -95,8 +94,8 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		return this.menuDeleteEntries;
 	}
 
-	public ContextMenuItem getMenuMarkLinesAsFixed() {
-		return this.menuMarkLinesAsFixed;
+	public ContextMenuItem getMenuGroupLines() {
+		return this.menuGroupLines;
 	}
 
 	public ContextMenuItem getMenuEditList() {
@@ -131,11 +130,11 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuDeleteEntries.setVisible(true);
 		// show only Delete List when user is owner
 		this.menuDeleteList.setVisible(isLocalUserListOwner);
-		this.menuMarkLinesAsFixed.setVisible(true);
+		this.menuGroupLines.setVisible(true);
 		this.menuSaveChanges.setVisible(true);
 		this.menuAddEntry.setVisible(true);
 		this.menuAssignCodes.setVisible(true);
-		this.codingAndFixingOptions.setVisible(true);
+		this.codingAndGroupingOptions.setVisible(true);
 		//need to show when List is unlocked
 		try {
 			this.setRemoveSelectedGermplasmWhenListIsLocked(true);
@@ -155,11 +154,11 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuEditList.setVisible(false);
 		this.menuDeleteList.setVisible(false);
 		this.menuDeleteEntries.setVisible(false);
-		this.menuMarkLinesAsFixed.setVisible(false);
+		this.menuGroupLines.setVisible(false);
 		this.menuSaveChanges.setVisible(false);
 		this.menuAddEntry.setVisible(false);
 		this.menuAssignCodes.setVisible(false);
-		this.codingAndFixingOptions.setVisible(false);
+		this.codingAndGroupingOptions.setVisible(false);
 		try {
 			this.setRemoveSelectedGermplasmWhenListIsLocked(false);
 		} catch (final AccessDeniedException e) {
@@ -195,7 +194,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	protected void layoutAdminLink() {
 		this.removeSelectedGermplasm = listEditingOptions.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM));
-		this.unfixLines = codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.UNFIX_LINES));
+		this.ungroupLines = codingAndGroupingOptions.addItem(this.messageSource.getMessage(Message.UNGROUP));
 	}
 
 	protected void setListEditingOptions(final ContextMenuItem listEditingOptions) {

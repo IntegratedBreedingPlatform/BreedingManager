@@ -1,11 +1,14 @@
 
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.MgidApplicationStatus;
@@ -26,14 +29,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is a dialog displayed after clicking the "Marked Line as Fixed." This class is used for applying MGID to selected GID entries.
@@ -130,7 +129,7 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 		final boolean includeDescendantsChoice = this.includeDescendants.booleanValue();
 		final boolean preserveExistingGroupChoice = this.preserveExistingGroupId.booleanValue();
 
-		final Map<Integer, GermplasmGroup> allGroupingResults = new HashMap<>();
+		final Map<Integer, GermplasmGroup> allGroupingResults = new LinkedHashMap<>();
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -154,13 +153,13 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 		final Window parentComponent = this.getParent();
 		if (parentComponent != null) {
 			if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.ALL_ENTRIES)) {
-				MessageNotifier.showMessage(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+				MessageNotifier.showMessage(parentComponent, this.messageSource.getMessage(Message.GROUP),
 						this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
 			} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.SOME_ENTRIES)) {
-				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.GROUP),
 						this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_SOME_ENTRIES));
 			} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.NO_ENTRIES)) {
-				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.GROUP),
 						this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_NO_ENTRIES));
 			}
 
@@ -244,7 +243,7 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	@Override
 	public void updateLabels() {
-		this.messageSource.setCaption(this, Message.MARK_LINES_AS_FIXED);
+		this.messageSource.setCaption(this, Message.GROUP);
 		this.messageSource.setCaption(this.preserveExistingGroupId, Message.PRESERVE_EXISTING_GROUP);
 		this.messageSource.setCaption(this.includeDescendants, Message.INCLUDE_DESCENDANTS);
 		this.messageSource.setCaption(this.continueButton, Message.CONTINUE);
