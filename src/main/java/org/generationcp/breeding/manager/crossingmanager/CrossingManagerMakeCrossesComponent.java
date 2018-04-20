@@ -27,7 +27,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.etl.Workbook;
-import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.service.api.FieldbookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,13 +116,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			this.studyId = parameterValues != null && parameterValues.length > 0 ? parameterValues[0] : "";
 			// Initialize the workbook.. this will be required later for seed source generation.
 
-			final String[] studyTypeParameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_TYPE);
-			final String studyType =
-				studyTypeParameterValues != null && studyTypeParameterValues.length > 0 ? studyTypeParameterValues[0] : "";
-
 			if (!StringUtils.isBlank(this.studyId)) {
 				this.workbook = this.fieldbookMiddlewareService
-					.getStudyDataSet(Integer.valueOf(this.studyId), new StudyTypeDto(studyType));
+					.getStudyDataSet(Integer.valueOf(this.studyId));
 			}
 		}
 	}

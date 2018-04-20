@@ -12,7 +12,6 @@ import org.generationcp.commons.context.ContextInfo;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.etl.Workbook;
-import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.service.api.FieldbookService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -142,7 +141,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 			.getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_TYPE);
 		Mockito.when(this.mockRequest.getPathInfo()).thenReturn("/BreedingManager/createcrosses");
 		final Workbook testWorkbook = new Workbook();
-		Mockito.when(this.fieldbookMiddlewareService.getStudyDataSet(Mockito.anyInt(), Mockito.any(StudyTypeDto.class)))
+		Mockito.when(this.fieldbookMiddlewareService.getStudyDataSet(Mockito.anyInt()))
 			.thenReturn(testWorkbook);
 
 		this.makeCrosses.initializeStudyContext(this.mockRequest);
