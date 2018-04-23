@@ -580,7 +580,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				if (currentListId != null) {
 					this.folderTextField.setValue(this.getSelectedItemCaption());
 					this.folderTextField.focus();
-				} else if (ListSelectorComponent.PROGRAM_LISTS.equals(this.selectedListId)) {
+				} else if (ListSelectorComponent.PROGRAM_LISTS.equals(this.selectedListId) || ListSelectorComponent.CROP_LISTS.equals(this.selectedListId)) {
 					this.showAddRenameFolderSection(false);
 				}
 
@@ -1069,6 +1069,14 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	public Button getRenameFolderBtn() {
 		return this.renameFolderBtn;
+	}
+
+	protected HorizontalLayout getAddRenameFolderLayout() {
+		return addRenameFolderLayout;
+	}
+
+	protected void setAddRenameFolderLayout(final HorizontalLayout addRenameFolderLayout) {
+		this.addRenameFolderLayout = addRenameFolderLayout;
 	}
 
 	public void setUtil(final ContextUtil util) {
