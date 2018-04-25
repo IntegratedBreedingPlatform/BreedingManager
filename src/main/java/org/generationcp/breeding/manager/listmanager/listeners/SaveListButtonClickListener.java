@@ -10,7 +10,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AddColumnContextMenuOption;
 import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
@@ -409,8 +408,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	public void createContainerPropertyOfAddedColumnToTempTable(final Table newTable, final String addablePropertyId) {
 
-		if (AddColumnContextMenuOption.isPartOfAddColumnContextMenuOption(addablePropertyId)) {
-			newTable.addContainerProperty(addablePropertyId, AddColumnContextMenuOption.getClassProperty(addablePropertyId), "");
+		if (ColumnLabels.getAddableGermplasmColumns().contains(addablePropertyId)) {
+			newTable.addContainerProperty(addablePropertyId, String.class, "");
 		}
 	}
 

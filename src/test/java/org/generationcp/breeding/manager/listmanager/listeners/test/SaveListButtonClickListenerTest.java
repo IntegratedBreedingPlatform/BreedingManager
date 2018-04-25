@@ -15,6 +15,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonCli
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
@@ -147,48 +148,58 @@ public class SaveListButtonClickListenerTest {
 
 	@Test
 	public void testCreateContainerPropertyOfAddedColumnToTempTable() {
-		final Table newTable = new Table();
-		Integer noOfColumnsAdded = 0;
+		final Table newTable = Mockito.mock(Table.class);
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "PREFERRED ID");
-		Assert.assertTrue("PREFERRED ID is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.PREFERRED_ID.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.PREFERRED_ID.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "PREFERRED NAME");
-		Assert.assertTrue("PREFERRED NAME is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.PREFERRED_NAME.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.PREFERRED_NAME.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "GERMPLASM DATE");
-		Assert.assertTrue("GERMPLASM DATE is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GERMPLASM_DATE.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GERMPLASM_DATE.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "LOCATIONS");
-		Assert.assertTrue("LOCATIONS is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GERMPLASM_LOCATION.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD NAME");
-		Assert.assertTrue("METHOD NAME is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_NAME.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD ABBREV");
-		Assert.assertTrue("METHOD ABBREV is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD NUMBER");
-		Assert.assertTrue("METHOD NUMBER is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_NUMBER.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD GROUP");
-		Assert.assertTrue("METHOD GROUP is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_GROUP.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_GROUP.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-FEMALE GID");
-		Assert.assertTrue("CROSS-FEMALE GID is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_FEMALE_GID.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_FEMALE_GID.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-FEMALE PREFERRED NAME");
-		Assert.assertTrue("CROSS-FEMALE PREFERRED NAME is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-MALE GID");
-		Assert.assertTrue("CROSS-MALE GID is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_MALE_GID.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_MALE_GID.getName(), String.class, "");
 
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-MALE PREFERRED NAME");
-		Assert.assertTrue("CROSS-MALE PREFERRED NAME is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), String.class, "");
+
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), String.class, "");
+
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GROUP_SOURCE_GID.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GROUP_SOURCE_GID.getName(), String.class, "");
+
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), String.class, "");
+
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
+		Mockito.verify(newTable).addContainerProperty(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), String.class, "");
 
 		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "DUMMY COLUMN");
-		Assert.assertTrue("DUMMY COLUMN is added to the newTable.", noOfColumnsAdded == newTable.getColumnHeaders().length);
+		Mockito.verify(newTable, Mockito.times(0)).addContainerProperty("DUMMY COLUMN", String.class, "");
 	}
 
 	@Test
