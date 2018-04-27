@@ -608,6 +608,57 @@ public class ListSelectorComponentTest {
 
 	}
 
+	// Selected List Id is Program Lists folder.
+	@Test
+	public void testToggleFolderSectionForItemSelected1() {
+
+		listSelectorComponent.initializeAddRenameFolderPanel();
+		listSelectorComponent.showAddRenameFolderSection(true);
+		listSelectorComponent.setSelectedListId(ListSelectorComponent.PROGRAM_LISTS);
+		listSelectorComponent.setFolderSaveMode(FolderSaveMode.RENAME);
+
+		listSelectorComponent.toggleFolderSectionForItemSelected();
+
+		Assert.assertFalse(listSelectorComponent.getAddRenameFolderLayout().isVisible());
+
+	}
+
+	// Selected List Id is Crop Lists folder.
+	@Test
+	public void testToggleFolderSectionForItemSelected2() {
+
+		listSelectorComponent.initializeAddRenameFolderPanel();
+		listSelectorComponent.showAddRenameFolderSection(true);
+		listSelectorComponent.setSelectedListId(ListSelectorComponent.PROGRAM_LISTS);
+		listSelectorComponent.setFolderSaveMode(FolderSaveMode.RENAME);
+
+		listSelectorComponent.toggleFolderSectionForItemSelected();
+
+		Assert.assertFalse(listSelectorComponent.getAddRenameFolderLayout().isVisible());
+
+	}
+
+	// Selected List Id is a folder.
+	@Test
+	public void testToggleFolderSectionForItemSelected3() {
+
+		final Integer folderListId = 1234;
+		final String folderName = "folderName";
+		Mockito.when(germplasmListSource.getItemCaption(folderListId)).thenReturn(folderName);
+
+		listSelectorComponent.initializeAddRenameFolderPanel();
+		listSelectorComponent.showAddRenameFolderSection(true);
+		listSelectorComponent.setSelectedListId(folderListId);
+		listSelectorComponent.setFolderSaveMode(FolderSaveMode.RENAME);
+		final SanitizedTextField folderTextField = Mockito.mock(SanitizedTextField.class);
+		listSelectorComponent.setFolderTextField(folderTextField);
+
+		listSelectorComponent.toggleFolderSectionForItemSelected();
+		Mockito.verify(folderTextField).setValue(folderName);
+		Mockito.verify(folderTextField).focus();
+
+	}
+
 	private GermplasmList createGermplasmList(final Integer id, final String name, final String description) {
 		final GermplasmList germplasmList = new GermplasmList();
 		germplasmList.setId(id);
