@@ -77,6 +77,8 @@ import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.help.document.HelpButton;
+import org.generationcp.commons.help.document.HelpModule;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -160,6 +162,7 @@ public class ListComponent extends VerticalLayout
 	private String designationOfListEntriesDeleted = "";
 
 	private Label topLabel;
+	private HelpButton inventoryHelpButton;
 	private Button viewHeaderButton;
 	private Label totalListEntriesLabel;
 	private Label totalSelectedListEntriesLabel;
@@ -323,9 +326,11 @@ public class ListComponent extends VerticalLayout
 
 		this.topLabel = new Label(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		this.topLabel.setDebugId("topLabel");
-		this.topLabel.setWidth("120px");
+		this.topLabel.setWidth("90px");
 		this.topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-
+		
+		this.inventoryHelpButton = new HelpButton(HelpModule.MANAGE_INVENTORY, "View Manage Inventory Tutorial");
+		
 		this.viewListHeaderWindow = new ViewListHeaderWindow(this.germplasmList, BreedingManagerUtil.getAllNamesAsMap(this.userDataManager),
 				this.germplasmListManager.getGermplasmListTypes());
 
@@ -759,7 +764,11 @@ public class ListComponent extends VerticalLayout
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.topLabel);
 		headingLayout.setDebugId("headingLayout");
 		this.headerLayout.addComponent(headingLayout);
-
+		
+		inventoryHelpButton.setCaption("<span class='bms-fa-question-circle' style='position: relative; left: 0px; top:3px; color: #5A5A5A;font-size: 20px; font-weight: bold;'></span>");
+		headingLayout.addComponent(this.inventoryHelpButton);
+		
+		this.inventoryHelpButton.setVisible(false);
 		this.toolsMenuContainer = new HorizontalLayout();
 		this.toolsMenuContainer.setDebugId("toolsMenuContainer");
 		this.toolsMenuContainer.setWidth("90px");
@@ -2052,6 +2061,7 @@ public class ListComponent extends VerticalLayout
 			this.toolsMenuContainer.removeComponent(this.inventoryViewToolsButton);
 
 			this.topLabel.setValue(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+			this.inventoryHelpButton.setVisible(false);
 			this.updateNoOfEntries();
 			this.updateNoOfSelectedEntries();
 			this.setHasUnsavedChanges(false);
@@ -2064,8 +2074,8 @@ public class ListComponent extends VerticalLayout
 			this.listInventoryTable.setVisible(true);
 			this.toolsMenuContainer.removeComponent(this.actionsButton);
 			this.toolsMenuContainer.addComponent(this.inventoryViewToolsButton);
-
 			this.topLabel.setValue(this.messageSource.getMessage(Message.INVENTORY));
+			this.inventoryHelpButton.setVisible(true);
 			this.updateNoOfEntries();
 			this.updateNoOfSelectedEntries();
 			this.setHasUnsavedChanges(false);
