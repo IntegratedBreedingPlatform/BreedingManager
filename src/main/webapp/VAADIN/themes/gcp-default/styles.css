@@ -130,7 +130,7 @@
   white-space: normal;
 }
 
-/* Modify row height for Nursery Conditions with ComboBox components */
+/* Modify row height for Study Conditions with ComboBox components */
 .v-table-condition-rows .v-table-cell-content {
 	vertical-align: middle;
     height: 28px;
