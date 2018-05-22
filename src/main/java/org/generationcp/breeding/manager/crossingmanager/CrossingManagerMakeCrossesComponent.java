@@ -82,7 +82,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	@Resource
 	private ContextUtil contextUtil;
 
-	private final Button.ClickListener nurseryBackButtonDefaultClickListener = new Button.ClickListener() {
+	private final Button.ClickListener studyBackButtonDefaultClickListener = new Button.ClickListener() {
 
 		/**
 		 *
@@ -92,7 +92,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		@Override
 		public void buttonClick(final Button.ClickEvent event) {
 			final Integer listId = CrossingManagerMakeCrossesComponent.this.crossesTableComponent.saveTemporaryList();
-			CrossingManagerMakeCrossesComponent.this.sendToNurseryAction(listId);
+			CrossingManagerMakeCrossesComponent.this.sendToStudyAction(listId);
 		}
 	};
 
@@ -203,11 +203,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		}
 	}
 
-	public void toggleNurseryBackButton() {
+	public void toggleStudyBackButton() {
 		this.studyBackButton.setEnabled(this.isCrossListMade());
 	}
 
-	public void sendToNurseryAction(final Integer id) {
+	public void sendToStudyAction(final Integer id) {
 		final String aditionalParameters =
 			"?restartApplication&loggedInUserId=" + contextUtil.getContextInfoFromSession().getLoggedInUserId() + "&selectedProjectId="
 				+ contextUtil.getContextInfoFromSession().getSelectedProjectId() + "&authToken=" + contextUtil.getContextInfoFromSession()
@@ -285,11 +285,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	protected Button constructStudyBackButton() {
-		final Button nurseryBackButton = new Button();
-		nurseryBackButton.setDebugId("studyBackButton");
-		nurseryBackButton.setCaption(this.messageSource.getMessage(Message.BACK_TO_STUDY));
-		nurseryBackButton.addListener(this.nurseryBackButtonDefaultClickListener);
-		return nurseryBackButton;
+		final Button studyBackButton = new Button();
+		studyBackButton.setDebugId("studyBackButton");
+		studyBackButton.setCaption(this.messageSource.getMessage(Message.BACK_TO_STUDY));
+		studyBackButton.addListener(this.studyBackButtonDefaultClickListener);
+		return studyBackButton;
 	}
 
 	LinkButton constructStudyCancelButton() {
@@ -301,10 +301,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			BreedingManagerApplication.URL_STUDY[0] + this.studyId + aditionalParameters
 				+ BreedingManagerApplication.URL_STUDY[1]);
 
-		final LinkButton nurseryCancelButton = new LinkButton(urlStudy, "");
-		nurseryCancelButton.setDebugId("studyCancelButton");
-		this.messageSource.setCaption(nurseryCancelButton, Message.CANCEL);
-		return nurseryCancelButton;
+		final LinkButton studyCancelButton = new LinkButton(urlStudy, "");
+		studyCancelButton.setDebugId("studyCancelButton");
+		this.messageSource.setCaption(studyCancelButton, Message.CANCEL);
+		return studyCancelButton;
 	}
 
 	boolean isNavigatedFromStudy() {

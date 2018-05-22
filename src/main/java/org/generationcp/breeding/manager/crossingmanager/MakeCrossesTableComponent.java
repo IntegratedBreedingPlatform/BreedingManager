@@ -288,7 +288,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final int crossesCount = this.tableCrossesMade.size();
 		this.generateTotalCrossesLabel(crossesCount);
 		this.updateCrossesMadeSaveButton();
-		this.makeCrossesMain.toggleNurseryBackButton();
+		this.makeCrossesMain.toggleStudyBackButton();
 
 		this.tableCrossesMade.setPageLength(0);
 		this.tableCrossesMade.requestRepaint();

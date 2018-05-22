@@ -182,7 +182,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 		Mockito.when(studyCancelButton.getResource()).thenReturn(externalResource);
 		Mockito.when(externalResource.getURL()).thenReturn("url");
 		this.makeCrosses.setStudyCancelButton(studyCancelButton);
-		this.makeCrosses.sendToNurseryAction(1);
+		this.makeCrosses.sendToStudyAction(1);
 		Mockito.verify(studyCancelButton).getResource();
 		Mockito.verify(externalResource).getURL();
 		Mockito.verify(this.window).open(Matchers.any(ExternalResource.class), Matchers.anyString());
