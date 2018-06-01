@@ -72,7 +72,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 		Mockito.doReturn(new String[] {CrossingManagerMakeCrossesComponentTest.LIST_ID}).when(this.mockRequest)
 				.getParameterValues(BreedingManagerApplication.REQ_PARAM_LIST_ID);
 
-		ContextInfo cxt = new ContextInfo(CrossingManagerMakeCrossesComponentTest.USER_ID,CrossingManagerMakeCrossesComponentTest.PROJECT_ID,CrossingManagerMakeCrossesComponentTest.AUTHTOKEN);
+		final ContextInfo cxt = new ContextInfo(CrossingManagerMakeCrossesComponentTest.USER_ID,CrossingManagerMakeCrossesComponentTest.PROJECT_ID,CrossingManagerMakeCrossesComponentTest.AUTHTOKEN);
 		Mockito.when(this.contextUtil.getContextInfoFromSession()).thenReturn(cxt);
 		this.makeCrosses.setContextUtil(this.contextUtil);
 
@@ -151,34 +151,10 @@ public class CrossingManagerMakeCrossesComponentTest {
 	}
 
 	@Test
-	public void testBackNavigationControlsWhenComingFromNursery() {
-
-		// Setup Mocks
-		this.makeCrosses.setSelectParentsComponent(Mockito.mock(SelectParentsComponent.class));
-		this.makeCrosses.setParentsComponent(Mockito.mock(MakeCrossesParentsComponent.class));
-		this.makeCrosses.setCrossingMethodComponent(Mockito.mock(CrossingMethodComponent.class));
-		this.makeCrosses.setCrossesTableComponent(Mockito.mock(MakeCrossesTableComponent.class));
-
-		Mockito.doReturn(new LinkButton(new ExternalResource("url"), "Back")).when(this.makeCrosses).constructStudyCancelButton();
-
-		// Set "from nursery" flag to true
-		this.makeCrosses.setNavigatedFromStudy(true);
-
-		// Layout components
-		this.makeCrosses.layoutComponents();
-
-		// Expect cancel and back to nursery buttons to be initialized (non-null)
-		Assert.assertNotNull("Expecting cancel button initialized when navigating to crossing manager from a Study.",
-			this.makeCrosses.getStudyCancelButton());
-		Assert.assertNotNull("Expecting nursery back button initialized when navigating to crossing manager from a Study.",
-			this.makeCrosses.getStudyBackButton());
-	}
-
-	@Test
 	@Ignore("Fix this Test")
 	public void testSendToStudyAction() {
-		LinkButton studyCancelButton = Mockito.mock(LinkButton.class);
-		ExternalResource externalResource = Mockito.mock(ExternalResource.class);
+		final LinkButton studyCancelButton = Mockito.mock(LinkButton.class);
+		final ExternalResource externalResource = Mockito.mock(ExternalResource.class);
 		Mockito.when(studyCancelButton.getResource()).thenReturn(externalResource);
 		Mockito.when(externalResource.getURL()).thenReturn("url");
 		this.makeCrosses.setStudyCancelButton(studyCancelButton);
