@@ -51,9 +51,6 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	@Value("${workbench.import.germplasm.permissible.roles}")
-	private String importGermplasmPermissibleRoles;
-
 	private HorizontalLayout titleLayout;
 	private Label toolTitle;
 
@@ -80,7 +77,6 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		AuthorizationUtil.preAuthorize(importGermplasmPermissibleRoles);
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
@@ -246,7 +242,4 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 		return this.tabSheet;
 	}
 
-	public void setImportGermplasmPermissibleRoles(String importGermplasmPermissibleRoles) {
-		this.importGermplasmPermissibleRoles = importGermplasmPermissibleRoles;
-	}
 }
