@@ -276,9 +276,6 @@
 	</bean>
 	
 	<bean id="seedSourceGenerator" class="org.generationcp.commons.service.impl.SeedSourceGenerator">
-		<constructor-arg name="germplasmNamingProperties" ref="germplasmNamingProperties"/>
-		<constructor-arg name="contextUtil" ref="contextUtil"/>
-		<constructor-arg name="ontologyVariableDataManager" ref="ontologyVariableManager"/>
 	</bean>
 	
 	<!-- Including all beans used for generating Code Sheet when exporting Germplasm List excel file -->
