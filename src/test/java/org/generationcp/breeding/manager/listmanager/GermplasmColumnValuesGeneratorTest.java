@@ -489,6 +489,19 @@ public class GermplasmColumnValuesGeneratorTest {
 		Mockito.verify(this.fillColumnSource).propagateUIChanges();
 	}
 	
-	
+	@Test
+	public void testSetImmediateSourcePreferredNameColumnValues() {
+		final String columnName = ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName();
+		final Map<Integer, String> namesMap = this.generateGIDStringMap("ABCDEFG", new ArrayList<>(GID_LIST));
+		Mockito.doReturn(namesMap).when(this.germplasmDataManager).getImmediateSourcePreferredNamesByGids(Matchers.anyListOf(Integer.class));
+		this.valuesGenerator.setImmediateSourcePreferredNameColumnValues(columnName);
+		for (int i = 0; i < GermplasmColumnValuesGeneratorTest.ITEMS_LIST.size(); i++) {
+			final Integer gid = GermplasmColumnValuesGeneratorTest.GID_LIST.get(i);
+			Mockito.verify(this.fillColumnSource).setColumnValueForItem(GermplasmColumnValuesGeneratorTest.ITEMS_LIST.get(i), columnName,
+					namesMap.get(gid));
+		}
+		Mockito.verify(this.germplasmDataManager).getImmediateSourcePreferredNamesByGids(Matchers.anyListOf(Integer.class));
+		Mockito.verify(this.fillColumnSource, Mockito.times(5)).propagateUIChanges();
+	}
 	
 }

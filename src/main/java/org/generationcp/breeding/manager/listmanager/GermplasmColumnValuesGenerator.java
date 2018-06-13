@@ -434,7 +434,7 @@ public class GermplasmColumnValuesGenerator {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		if (!itemIds.isEmpty()) {
 			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-			final Map<Integer, String> gidAndPreferredNameMap = this.germplasmDataManager.getGroupSourcePreferredNamesByGids(gids);
+			final Map<Integer, String> gidAndPreferredNameMap = this.germplasmDataManager.getImmediateSourcePreferredNamesByGids(gids);
 			fillColumnsWithPreferredName(itemIds, gidAndPreferredNameMap, columnName);
 		}
 	}
