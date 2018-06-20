@@ -19,5 +19,5 @@ package org.generationcp.breeding.manager.constants;
  *
  */
 public enum TemplateUploadSource {
-	CROSSING_MANAGER, NURSERY_TEMPLATE
+	CROSSING_MANAGER, STUDY_TEMPLATE
 }
