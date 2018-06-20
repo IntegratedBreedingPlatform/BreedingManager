@@ -270,13 +270,9 @@
 	
 	<!-- Singleton bean as there is nothing request specific in here. -->
 	<bean id="germplasmNamingProperties" class="org.generationcp.commons.service.GermplasmNamingProperties">
-		<property name="germplasmOriginNurseriesDefault" value="${germplasm.origin.nurseries.default}"/>
-		<property name="germplasmOriginNurseriesWheat" value="${germplasm.origin.nurseries.wheat}"/>
-		<property name="germplasmOriginNurseriesMaize" value="${germplasm.origin.nurseries.maize}"/>
-		
-		<property name="germplasmOriginTrialsDefault" value="${germplasm.origin.trials.default}"/>
-		<property name="germplasmOriginTrialsWheat" value="${germplasm.origin.trials.wheat}"/>
-		<property name="germplasmOriginTrialsMaize" value="${germplasm.origin.trials.maize}"/>
+		<property name="germplasmOriginStudiesDefault" value="${germplasm.origin.studies.default}"/>
+		<property name="germplasmOriginStudiesWheat" value="${germplasm.origin.studies.wheat}"/>
+		<property name="germplasmOriginStudiesMaize" value="${germplasm.origin.studies.maize}"/>
 	</bean>
 	
 	<bean id="seedSourceGenerator" class="org.generationcp.commons.service.impl.SeedSourceGenerator">
