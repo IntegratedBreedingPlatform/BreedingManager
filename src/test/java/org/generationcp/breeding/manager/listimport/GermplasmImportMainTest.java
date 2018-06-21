@@ -80,36 +80,5 @@ public class GermplasmImportMainTest {
 		Assert.assertEquals("Page height is 300px", 300.0f, tabSheet.getHeight());
 		Assert.assertEquals(0, tabSheet.getHeightUnits());
 	}
-
-	@Test
-	public void testAfterPropertiesSetWithAdminUser() throws Exception {
-		this.germplasmImportMain.setImportGermplasmPermissibleRoles("Admin");
-		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + "ADMIN");
-
-		UsernamePasswordAuthenticationToken loggedInUser =
-				new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
-		SecurityContextHolder.getContext().setAuthentication(loggedInUser);
-		try {
-			this.germplasmImportMain.afterPropertiesSet();
-		} catch (AccessDeniedException e) {
-			Assert.fail("Access Import germplsm link should not throw Access Denied exception.");
-		}
-
-	}
-
-	@Test
-	public void testAfterPropertiesSetWithTechnicianUser() throws Exception {
-		this.germplasmImportMain.setImportGermplasmPermissibleRoles("Admin");
-		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + "TECHNICIAN");
-
-		UsernamePasswordAuthenticationToken loggedInUser =
-				new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
-		SecurityContextHolder.getContext().setAuthentication(loggedInUser);
-		try {
-			this.germplasmImportMain.afterPropertiesSet();
-		} catch (AccessDeniedException e) {
-			Assert.assertEquals("Access Denied. User does not have appropriate role to access the functionality.", e.getMessage());
-		}
-
-	}
+	
 }
