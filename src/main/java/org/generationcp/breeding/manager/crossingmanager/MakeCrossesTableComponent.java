@@ -288,7 +288,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final int crossesCount = this.tableCrossesMade.size();
 		this.generateTotalCrossesLabel(crossesCount);
 		this.updateCrossesMadeSaveButton();
-		this.makeCrossesMain.toggleNurseryBackButton();
+		this.makeCrossesMain.toggleStudyBackButton();
 
 		this.tableCrossesMade.setPageLength(0);
 		this.tableCrossesMade.requestRepaint();
@@ -395,13 +395,13 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		String seedSource = this.appendWithSeparator(femaleSource, maleSource);
 
 		// If crossing for a Nursery, use the seed source generation service.
-		final Workbook nurseryWorkbook = this.makeCrossesMain.getNurseryWorkbook();
-		if (nurseryWorkbook != null) {
+		final Workbook workbook = this.makeCrossesMain.getWorkbook();
+		if (workbook != null) {
 			String malePlotNo = "";
 			String femalePlotNo = "";
 
 			// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
-			for (final MeasurementRow row : nurseryWorkbook.getObservations()) {
+			for (final MeasurementRow row : workbook.getObservations()) {
 				final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
 				final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
 
@@ -416,8 +416,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 			// Single nursery is in context here, so set the same study name as both male/female parts. For import crosses case, these
 			// could be different Nurseries.
-			seedSource = this.seedSourceGenerator.generateSeedSourceForCross(nurseryWorkbook, malePlotNo, femalePlotNo,
-				nurseryWorkbook.getStudyName(), nurseryWorkbook.getStudyName());
+			seedSource = this.seedSourceGenerator.generateSeedSourceForCross(workbook, malePlotNo, femalePlotNo,
+				workbook.getStudyName(), workbook.getStudyName());
 		}
 		return seedSource;
 	}

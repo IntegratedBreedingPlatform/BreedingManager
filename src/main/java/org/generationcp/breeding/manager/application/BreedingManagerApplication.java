@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
@@ -33,12 +34,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	private static final long serialVersionUID = 1L;
 
 	public static final String LIST_MANAGER_WINDOW_NAME = "list-manager";
-	public static final String NAVIGATION_FROM_NURSERY_PREFIX = "createcrosses";
-	public static final String REQ_PARAM_NURSERY_ID = "nurseryid";
+	public static final String NAVIGATION_FROM_STUDY_PREFIX = "createcrosses";
+	public static final String REQ_PARAM_STUDY_ID = "studyid";
 	public static final String REQ_PARAM_LIST_ID = "germplasmlistid";
+	public static final String REQ_PARAM_STUDY_TYPE = "studyType";
 	public static final String REQ_PARAM_CROSSES_LIST_ID = "crosseslistid";
-	public static final String PATH_TO_NURSERY = "/Fieldbook/NurseryManager/";
-	public static final String PATH_TO_EDIT_NURSERY = "/Fieldbook/NurseryManager/editNursery/";
+	public static final String[] URL_STUDY = {"/Fieldbook/TrialManager/openTrial/","#/trialSettings"};
 
 	private Window window;
 
@@ -99,7 +100,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 				return listManagerWindow;
 
-			} else if (name.startsWith(NAVIGATION_FROM_NURSERY_PREFIX)) {
+			} else if (name.startsWith(NAVIGATION_FROM_STUDY_PREFIX)) {
 
 				final Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
 				manageCrossingSettings.setDebugId("manageCrossingSettings");
@@ -110,16 +111,25 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 							listIdParameterValues[0] : "";
 					final Integer listId = Integer.parseInt(listIdParam);
 
-					final String[] nurseryIdParameterValues =
-							BreedingManagerUtil.getApplicationRequest().getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID);
-					final String nurseryId = nurseryIdParameterValues != null && nurseryIdParameterValues.length > 0 ?
-							nurseryIdParameterValues[0] : "";
+					final String[] studyIdParameterValues =
+							BreedingManagerUtil.getApplicationRequest().getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_ID);
+					final String studyId = studyIdParameterValues != null && studyIdParameterValues.length > 0 ?
+							studyIdParameterValues[0] : "";
+
+					final String[] studyTypeParameterValues =
+						BreedingManagerUtil.getApplicationRequest().getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_TYPE);
+					final String studyTypeParam =
+						studyTypeParameterValues != null && studyTypeParameterValues.length > 0 ? listIdParameterValues[0] : "";
+
 					final boolean errorWithListIdReqParam = listId == -1;
-					final boolean errorWithNurseryIdReqParam = nurseryId.isEmpty() || !NumberUtils.isDigits(nurseryId);
+					final boolean errorWithStudyIdReqParam = studyId.isEmpty() || !NumberUtils.isDigits(studyId);
+					final boolean errorWithStudyTypeReqParam = StringUtils.isBlank(studyTypeParam);
+
 
 					manageCrossingSettings.setSizeUndefined();
 
-					return validateAndConstructWindow(manageCrossingSettings, listId, errorWithListIdReqParam, errorWithNurseryIdReqParam);
+					return validateAndConstructWindow(manageCrossingSettings, listId, errorWithListIdReqParam, errorWithStudyIdReqParam,
+						errorWithStudyTypeReqParam);
 				} catch (final NumberFormatException nfe) {
 					return getWindowWithErrorMessage(manageCrossingSettings,
 							this.messageSource.getMessage(Message.ERROR_WRONG_GERMPLASM_LIST_ID));
@@ -131,17 +141,22 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	}
 
 	private Window validateAndConstructWindow(final Window manageCrossingSettings, final Integer listId, final boolean errorWithListIdReqParam,
-			final boolean errorWithNurseryIdReqParam) {
-		if (!errorWithListIdReqParam && !errorWithNurseryIdReqParam) {
+			final boolean errorWithStudyIdReqParam, final boolean errorWithStudyTypeReqParam) {
+		if (!errorWithListIdReqParam && !errorWithStudyIdReqParam && !errorWithStudyTypeReqParam) {
 			constructCreateCrossesWindow(manageCrossingSettings, listId);
-		} else if (errorWithListIdReqParam && errorWithNurseryIdReqParam) {
+		} else if (errorWithListIdReqParam && errorWithStudyIdReqParam && errorWithStudyTypeReqParam) {
 			return getWindowWithErrorMessage(manageCrossingSettings,
 					this.messageSource.getMessage(Message.ERROR_WRONG_GERMPLASM_LIST_ID) + " "
-							+ this.messageSource.getMessage(Message.ERROR_WRONG_NURSERY_ID));
-		} else if  (errorWithNurseryIdReqParam) {
+							+ this.messageSource.getMessage(Message.ERROR_WRONG_STUDY_ID) + " "
+						+ this.messageSource.getMessage(Message.ERROR_WRONG_STUDY_TYPE));
+		} else if  (errorWithStudyIdReqParam) {
 			constructCreateCrossesWindow(manageCrossingSettings, listId);
 			MessageNotifier.showWarning(manageCrossingSettings, this.messageSource.getMessage(Message.ERROR_WITH_REQUEST_PARAMETERS),
-					this.messageSource.getMessage(Message.ERROR_WRONG_NURSERY_ID));
+					this.messageSource.getMessage(Message.ERROR_WRONG_STUDY_ID));
+		} else if  (errorWithStudyTypeReqParam) {
+			constructCreateCrossesWindow(manageCrossingSettings, listId);
+			MessageNotifier.showWarning(manageCrossingSettings, this.messageSource.getMessage(Message.ERROR_WITH_REQUEST_PARAMETERS),
+				this.messageSource.getMessage(Message.ERROR_WRONG_STUDY_TYPE));
 		} else {
 			return getWindowWithErrorMessage(manageCrossingSettings,
 					this.messageSource.getMessage(Message.ERROR_WRONG_GERMPLASM_LIST_ID));
