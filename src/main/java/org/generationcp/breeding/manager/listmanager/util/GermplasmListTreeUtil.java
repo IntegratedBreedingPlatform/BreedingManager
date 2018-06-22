@@ -6,6 +6,7 @@ import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.handler.GermplasmListSourceDropHandler;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
@@ -107,6 +108,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
 		if (ListSelectorComponent.CROP_LISTS.equals(targetItemId)) {
 			sourceGermplasmList.setProgramUUID(null);
+			sourceGermplasmList.setStatus(SaveListAsDialog.LIST_LOCKED_STATUS);
 		} else {
 			sourceGermplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 		}
