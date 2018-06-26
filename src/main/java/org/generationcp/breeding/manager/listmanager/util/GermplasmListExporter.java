@@ -1,9 +1,19 @@
 
 package org.generationcp.breeding.manager.listmanager.util;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Table;
-import net.sf.jasperreports.engine.JRException;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
@@ -21,7 +31,6 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -42,17 +51,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import javax.annotation.Resource;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Table;
+
+import net.sf.jasperreports.engine.JRException;
 
 @Configurable
 public class GermplasmListExporter {
@@ -483,20 +485,15 @@ public class GermplasmListExporter {
 
 		exportColumnHeaders.add(new ExportColumnHeader(5, this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns.get(String
 				.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()))));
-		
-		exportColumnHeaders.add(new ExportColumnHeader(6, this.getTermNameFromOntology(ColumnLabels.STOCKID), visibleColumns.get(String
-				.valueOf(ColumnLabels.STOCKID.getTermId().getId()))));
-
-		exportColumnHeaders.add(new ExportColumnHeader(7, this.getTermNameFromOntology(ColumnLabels.SEED_AMOUNT_G), true));
-		
-		addAttributesHeaders(currentColumnsInfo, exportColumnHeaders);
+				
+		this.addAttributesHeaders(currentColumnsInfo, exportColumnHeaders);
 
 		return exportColumnHeaders;
 	}
 
 	protected void addAttributesHeaders(final GermplasmListNewColumnsInfo currentColumnsInfo,
 			final List<ExportColumnHeader> exportColumnHeaders) {
-		int j = 8;
+		int j = 6;
 		if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null && currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
 			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
 				if(ColumnLabels.get(columnEntry.getKey()) == null) {
@@ -508,11 +505,9 @@ public class GermplasmListExporter {
 	}
 
 	protected List<Map<Integer, ExportColumnValue>> getExportColumnValuesFromTable(final Table listDataTable,
-		final GermplasmListNewColumnsInfo currentColumnsInfo) throws GermplasmListExporterException {
+		final GermplasmListNewColumnsInfo currentColumnsInfo) {
 
 		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
-		final GermplasmList germplasmList = this.getGermplasmListAndListData(currentColumnsInfo.getListId());
-		final Map<String, String> gidToSeedAmountMap = this.createGIDtoSeedAmountMap(germplasmList);
 		for (final Object itemId : listDataTable.getItemIds()) {
 			final Map<Integer, ExportColumnValue> row = new HashMap<>();
 
@@ -524,9 +519,6 @@ public class GermplasmListExporter {
 			final String parentageValue = listDataTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue().toString();
 			final String seedSourceValue =
 					listDataTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue().toString();
-			final String stockIdValue =
-					listDataTable.getItem(itemId).getItemProperty(ColumnLabels.STOCKID.getName()).getValue().toString();
-			final String inventoryAmountValue = gidToSeedAmountMap.get(itemId.toString());
 			
 			row.put(0, new ExportColumnValue(0, entryIdValue));
 			row.put(1, new ExportColumnValue(1, gidValue));
@@ -534,10 +526,8 @@ public class GermplasmListExporter {
 			row.put(3, new ExportColumnValue(3, designationValue));
 			row.put(4, new ExportColumnValue(4, parentageValue));
 			row.put(5, new ExportColumnValue(5, seedSourceValue));
-			row.put(6, new ExportColumnValue(6, stockIdValue));
-			row.put(7, new ExportColumnValue(7, inventoryAmountValue));
-			
-			addAttributesValues(currentColumnsInfo, itemId, row);
+
+			this.addAttributesValues(currentColumnsInfo, itemId, row);
 			exportColumnValues.add(row);
 		}
 
@@ -546,7 +536,7 @@ public class GermplasmListExporter {
 
 	protected void addAttributesValues(final GermplasmListNewColumnsInfo currentColumnsInfo, final Object itemId,
 			final Map<Integer, ExportColumnValue> row) {
-		int i = 8;
+		int i = 6;
 		if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null
 			&& currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
 			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
@@ -565,15 +555,6 @@ public class GermplasmListExporter {
 				}
 			}
 		}
-	}
-
-	private Map<String, String> createGIDtoSeedAmountMap(GermplasmList germplasmList) {
-		Map<String, String> gidToSeedAmountMap = new HashMap<>();
-		final List<? extends GermplasmExportSource> listData = germplasmList.getListData();
-		for (final GermplasmExportSource data : listData) {
-			gidToSeedAmountMap.put(data.getGermplasmId().toString(), data.getSeedAmount());
-		}
-		return gidToSeedAmountMap;
 	}
 
 	protected Integer getCurrentLocalIbdbUserId() {
