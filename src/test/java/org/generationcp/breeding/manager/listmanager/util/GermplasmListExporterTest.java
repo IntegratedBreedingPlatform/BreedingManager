@@ -531,7 +531,6 @@ public class GermplasmListExporterTest {
 			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getDesignation(), row.get(3).getValue());
 			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getGroupName(), row.get(4).getValue());
 			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getSeedSource(), row.get(5).getValue());
-			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getStockIDs(), row.get(6).getValue());
 			Assert.assertEquals(LIST_NAME, row.get(6).getValue()); //PREFERRED_NAME
 		}
 	}
