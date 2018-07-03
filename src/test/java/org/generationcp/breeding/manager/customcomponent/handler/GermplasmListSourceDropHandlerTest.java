@@ -1,14 +1,6 @@
 package org.generationcp.breeding.manager.customcomponent.handler;
 
-import com.vaadin.event.Transferable;
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import junit.framework.Assert;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListTree;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
@@ -22,9 +14,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Resource;
+import com.vaadin.event.Transferable;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Window;
+
+import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListSourceDropHandlerTest {
@@ -166,43 +163,9 @@ public class GermplasmListSourceDropHandlerTest {
 
 		this.germplasmListSourceDropHandler.drop(event);
 
-		Mockito.verify(germplasmListTreeUtil).setParent(sourceItemId, targetParent);
-		Mockito.verify(listSelectorComponent).refreshRemoteTree();
-		Mockito.verify(this.window, Mockito.never()).showNotification(Mockito.any(Window.Notification.class));
+		Mockito.verify(germplasmListTreeUtil, Mockito.never()).setParent(sourceItemId, targetParent);
+		Mockito.verify(listSelectorComponent, Mockito.never()).refreshRemoteTree();
+		Mockito.verify(this.window).showNotification(Mockito.any(Window.Notification.class));
 
 	}
-
-	@Test
-	public void testDropListToAListWithNoParent() {
-
-		final Object targetItemId = 2;
-		final Object targetParent = 3;
-		final Object sourceItemId = 1;
-
-		final DragAndDropEvent event = Mockito.mock(DragAndDropEvent.class);
-		final Transferable transferable = Mockito.mock(Transferable.class);
-		final AbstractSelect.AbstractSelectTargetDetails target =  Mockito.mock(AbstractSelect.AbstractSelectTargetDetails.class);
-		Mockito.when(event.getTransferable()).thenReturn(transferable);
-		Mockito.when(event.getTargetDetails()).thenReturn(target);
-		Mockito.when(target.getDropLocation()).thenReturn(VerticalDropLocation.MIDDLE);
-		Mockito.when(target.getItemIdOver()).thenReturn(targetItemId);
-		Mockito.when(transferable.getData("itemId")).thenReturn(sourceItemId);
-		Mockito.when(transferable.getSourceComponent()).thenReturn(targetListSource);
-
-		final GermplasmList sourceItem = new GermplasmList();
-		sourceItem.setId((Integer) sourceItemId);
-		final GermplasmList targetItem = new GermplasmList();
-		targetItem.setId((Integer) targetItemId);
-		targetItem.setParent(null);
-		Mockito.when(germplasmListManager.getGermplasmListById((Integer) sourceItemId)).thenReturn(sourceItem);
-		Mockito.when(germplasmListManager.getGermplasmListById((Integer) targetItemId)).thenReturn(targetItem);
-
-		this.germplasmListSourceDropHandler.drop(event);
-
-		Mockito.verify(germplasmListTreeUtil).setParent(sourceItemId, ListSelectorComponent.PROGRAM_LISTS);
-		Mockito.verify(listSelectorComponent).refreshRemoteTree();
-		Mockito.verify(this.window, Mockito.never()).showNotification(Mockito.any(Window.Notification.class));
-
-	}
-
 }
