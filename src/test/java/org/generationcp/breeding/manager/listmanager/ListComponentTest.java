@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryAction;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
@@ -1000,7 +1001,43 @@ public class ListComponentTest {
 		verify(messageSource).getMessage(Message.ERROR_UNFIX_LINES_NOTHING_SELECTED);
 
 	}
-
+	
+	
+	@Test
+	public void testUpdateGermplasmListStatusLocked() {
+		this.initializeTableWithTestData();
+		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(1);
+		this.germplasmList.setStatus(100);
+		Mockito.when(this.germplasmListManager.getGermplasmListById(this.germplasmList.getId())).thenReturn(germplasmList);
+		this.listComponent.setGermplasmList(germplasmList);
+		ViewListHeaderWindow viewListHeaderWindow = Mockito.mock(ViewListHeaderWindow.class);
+		listComponent.setViewListHeaderWindow(viewListHeaderWindow);
+		this.listComponent.updateGermplasmListStatus();
+		Mockito.verify(this.germplasmListManager).getGermplasmListById(this.germplasmList.getId());
+		Mockito.verify(viewListHeaderWindow).setGermplasmListStatus(this.germplasmList.getStatus());
+		Assert.assertFalse(this.listComponent.getLockButton().isVisible());
+		Assert.assertTrue(this.listComponent.getUnlockButton().isVisible());
+		Assert.assertFalse(this.listComponent.getEditHeaderButton().isVisible());
+	}
+	
+	@Test
+	public void testUpdateGermplasmListStatusNotLocked() {
+		this.initializeTableWithTestData();
+		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(1);
+		this.germplasmList.setStatus(1);
+		Mockito.when(this.germplasmListManager.getGermplasmListById(this.germplasmList.getId())).thenReturn(germplasmList);
+		this.listComponent.setGermplasmList(germplasmList);
+		ViewListHeaderWindow viewListHeaderWindow = Mockito.mock(ViewListHeaderWindow.class);
+		listComponent.setViewListHeaderWindow(viewListHeaderWindow);
+		this.listComponent.updateGermplasmListStatus();
+		Mockito.verify(this.germplasmListManager).getGermplasmListById(this.germplasmList.getId());
+		Mockito.verify(viewListHeaderWindow).setGermplasmListStatus(this.germplasmList.getStatus());
+		Assert.assertTrue(this.listComponent.getLockButton().isVisible());
+		Assert.assertFalse(this.listComponent.getUnlockButton().isVisible());
+		Assert.assertTrue(this.listComponent.getEditHeaderButton().isVisible());
+	}
+	
+	
 	@Test
 	public void testUpdateGermplasmListTableGermplasmHasNoMGID() {
 

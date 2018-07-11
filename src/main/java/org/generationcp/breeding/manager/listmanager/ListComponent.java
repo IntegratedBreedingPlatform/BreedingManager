@@ -2674,4 +2674,16 @@ public class ListComponent extends VerticalLayout
 		}
 
 	}
+	
+	public Button getLockButton() {
+		return this.lockButton;
+	}
+	
+	public Button getUnlockButton() {
+		return this.unlockButton;
+	}
+	
+	public Button getEditHeaderButton() {
+		return this.editHeaderButton;
+	}
 }

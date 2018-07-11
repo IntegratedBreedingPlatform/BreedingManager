@@ -7,8 +7,11 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSelectionComponent;
+import org.generationcp.breeding.manager.listmanager.ListSelectionLayout;
+import org.generationcp.breeding.manager.listmanager.ListTabComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.InventoryDetailsTestDataInitializer;
@@ -30,7 +33,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.TabSheet.Tab;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListCommonActionsUtilTest {
@@ -248,7 +253,25 @@ public class ListCommonActionsUtilTest {
 		Assert.assertEquals(1, lotDetailsMap.size());
 
 	}
-
+	
+	@Test
+	public void testUpdateGermplasmListStatusUI() {
+		Mockito.when(listManagerMain.getListSelectionComponent()).thenReturn(listSelectionComponent);
+		ListSelectionLayout listSelectionLayout = Mockito.mock(ListSelectionLayout.class);
+		Mockito.when(this.listSelectionComponent.getListDetailsLayout()).thenReturn(listSelectionLayout);
+		TabSheet tabSheet = Mockito.mock(TabSheet.class);
+		Mockito.when(listSelectionLayout.getDetailsTabsheet()).thenReturn(tabSheet);
+		Mockito.when(tabSheet.getComponentCount()).thenReturn(1);
+		Tab tab = Mockito.mock(Tab.class);
+		Mockito.when(tabSheet.getTab(0)).thenReturn(tab);
+		ListTabComponent listTabComponent = Mockito.mock(ListTabComponent.class);
+		Mockito.when(tab.getComponent()).thenReturn(listTabComponent);
+		ListComponent listComponent = Mockito.mock(ListComponent.class);
+		Mockito.when(listTabComponent.getListComponent()).thenReturn(listComponent);
+		ListCommonActionsUtil.updateGermplasmListStatusUI(this.listManagerMain);
+		Mockito.verify(listComponent).updateGermplasmListStatus();
+	}
+	
 	@Test
 	public void testgetLotCountButton(){
 		Button lotButton = ListCommonActionsUtil.getLotCountButton(2,  2, "Germplasm", this.source, 2);
