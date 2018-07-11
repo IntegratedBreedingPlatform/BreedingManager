@@ -86,13 +86,11 @@ public class GermplasmListSourceDropHandler implements DropHandler {
 		if (targetItemId instanceof String || targetList == null || AppConstants.DB.FOLDER.equalsIgnoreCase(targetList.getType())) {
 			this.utilSource.setParent(sourceItemId, targetItemId);
 			// Dropped on a list
-		} else if (targetList != null) {
-			if (targetList.getParentId() == null && (Integer) targetItemId > 0) {
-				targetItemId = ListSelectorComponent.PROGRAM_LISTS;
-			} else {
-				targetItemId = targetList.getParentId();
-			}
-			this.utilSource.setParent(sourceItemId, targetItemId);
+		} else {
+			MessageNotifier
+			.showError(dropEvent.getTransferable().getSourceComponent().getWindow(), messageSource.getMessage(Message.ERROR),
+					messageSource.getMessage(Message.CANNOT_MOVE_ITEM_TO_GERMPLASM_LIST));
+			return;
 		}
 
 		this.source.refreshRemoteTree();
