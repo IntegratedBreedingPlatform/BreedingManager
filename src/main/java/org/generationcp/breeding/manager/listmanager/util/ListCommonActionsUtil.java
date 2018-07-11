@@ -3,13 +3,16 @@ package org.generationcp.breeding.manager.listmanager.util;
 import com.vaadin.Application;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.themes.BaseTheme;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.ListTabComponent;
 import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -454,5 +457,17 @@ public class ListCommonActionsUtil {
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		inventoryButton.setDescription(ListCommonActionsUtil.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		return inventoryButton;
+	}
+	
+	public static void updateGermplasmListStatusUI(final ListManagerMain listManagerMain) {
+		if(listManagerMain != null) {
+			final TabSheet sheet =  listManagerMain.getListSelectionComponent().getListDetailsLayout().getDetailsTabsheet();
+			final int count = sheet.getComponentCount();
+			for(int i=0; i<count; i++) {
+				final Tab tab = sheet.getTab(i);
+				final ListTabComponent component = (ListTabComponent)tab.getComponent();
+				component.getListComponent().updateGermplasmListStatus();
+			}
+		}
 	}
 }

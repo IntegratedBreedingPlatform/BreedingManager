@@ -1,15 +1,9 @@
 package org.generationcp.breeding.manager.customcomponent;
 
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
@@ -18,7 +12,9 @@ import org.generationcp.breeding.manager.customfields.ListDateField;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
+import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -34,9 +30,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SaveListAsDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
@@ -50,7 +53,8 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	private HorizontalLayout buttonLayout;
 
 	private final SaveListAsDialogSource source;
-
+	private ListManagerMain listManagerMain;
+	
 	private Label guideMessage;
 	private LocalListFoldersTreeComponent germplasmListTree;
 	private BreedingManagerListDetailsComponent listDetailsComponent;
@@ -74,14 +78,15 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	public static final Integer LIST_LOCKED_STATUS = 101;
 
 	public SaveListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList) {
-		this(source, germplasmList, null);
+		this(source, germplasmList, null, null);
 	}
 
-	public SaveListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList, final String windowCaption) {
+	public SaveListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList, final ListManagerMain main, final String windowCaption) {
 		this.source = source;
 		this.originalGermplasmList = germplasmList;
 		this.germplasmList = germplasmList;
 		this.windowCaption = windowCaption;
+		this.listManagerMain = main;
 	}
 
 	@Override
@@ -155,6 +160,15 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				SaveListAsDialog.this.doSaveAction(event);
+				ListCommonActionsUtil.updateGermplasmListStatusUI(SaveListAsDialog.this.listManagerMain);
+			}
+		});
+		this.addListener(new CloseListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void windowClose(CloseEvent event) {
+				ListCommonActionsUtil.updateGermplasmListStatusUI(SaveListAsDialog.this.listManagerMain);
 			}
 		});
 	}

@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listimport.GermplasmImportPopupSource;
+import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.commons.constant.ListTreeState;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -25,6 +26,8 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -140,6 +143,17 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		if (caption.equals(this.messageSource.getMessage(Message.SEARCH_FOR_LISTS))) {
 			popupWindow.setOverrideFocus(true);
 			this.listSearchComponent.focusOnSearchField();
+		}
+		
+		if(!caption.equals(this.messageSource.getMessage(Message.SEARCH_FOR_LISTS))) {
+			popupWindow.addListener(new CloseListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void windowClose(CloseEvent event) {
+					ListCommonActionsUtil.updateGermplasmListStatusUI(ListSelectionComponent.this.source);
+				}
+			});
 		}
 
 		window.addWindow(popupWindow);
