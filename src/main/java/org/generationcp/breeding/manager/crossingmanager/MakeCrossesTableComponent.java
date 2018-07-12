@@ -41,7 +41,6 @@ import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListen
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.service.impl.SeedSourceGenerator;
 import org.generationcp.commons.util.CollectionTransformationUtil;
 import org.generationcp.commons.util.DateUtil;
@@ -49,6 +48,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.Workbook;
@@ -178,6 +178,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	@Override
 	public void updateLabels() {
+		// no implementation for this method
+	}
+	
+	@Override
+	public void updateListUI() {
 		// no implementation for this method
 	}
 

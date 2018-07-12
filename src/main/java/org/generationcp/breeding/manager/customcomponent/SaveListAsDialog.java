@@ -12,9 +12,7 @@ import org.generationcp.breeding.manager.customfields.ListDateField;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
-import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
-import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -53,7 +51,6 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	private HorizontalLayout buttonLayout;
 
 	private final SaveListAsDialogSource source;
-	private ListManagerMain listManagerMain;
 	
 	private Label guideMessage;
 	private LocalListFoldersTreeComponent germplasmListTree;
@@ -78,15 +75,14 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	public static final Integer LIST_LOCKED_STATUS = 101;
 
 	public SaveListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList) {
-		this(source, germplasmList, null, null);
+		this(source, germplasmList, null);
 	}
 
-	public SaveListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList, final ListManagerMain main, final String windowCaption) {
+	public SaveListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList, final String windowCaption) {
 		this.source = source;
 		this.originalGermplasmList = germplasmList;
 		this.germplasmList = germplasmList;
 		this.windowCaption = windowCaption;
-		this.listManagerMain = main;
 	}
 
 	@Override
@@ -160,7 +156,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				SaveListAsDialog.this.doSaveAction(event);
-				ListCommonActionsUtil.updateGermplasmListStatusUI(SaveListAsDialog.this.listManagerMain);
+				SaveListAsDialog.this.source.updateListUI();
 			}
 		});
 		this.addListener(new CloseListener() {
@@ -168,7 +164,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 			@Override
 			public void windowClose(CloseEvent event) {
-				ListCommonActionsUtil.updateGermplasmListStatusUI(SaveListAsDialog.this.listManagerMain);
+				SaveListAsDialog.this.source.updateListUI();
 			}
 		});
 	}

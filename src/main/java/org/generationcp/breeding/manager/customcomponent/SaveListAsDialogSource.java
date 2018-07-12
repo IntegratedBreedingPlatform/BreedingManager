@@ -12,4 +12,6 @@ public interface SaveListAsDialogSource {
 	public void setCurrentlySavedGermplasmList(GermplasmList list);
 
 	public Component getParentComponent();
+	
+	public void updateListUI();
 }

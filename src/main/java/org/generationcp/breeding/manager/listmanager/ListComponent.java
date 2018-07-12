@@ -1940,7 +1940,7 @@ public class ListComponent extends VerticalLayout
 	}
 
 	public void openSaveListAsDialog() {
-		this.dialog = new SaveListAsDialog(this, this.germplasmList, this.getListManagerMain(), this.messageSource.getMessage(Message.EDIT_LIST_HEADER));
+		this.dialog = new SaveListAsDialog(this, this.germplasmList, this.messageSource.getMessage(Message.EDIT_LIST_HEADER));
 		this.dialog.setDebugId("dialog");
 		this.getWindow().addWindow(this.dialog);
 	}
@@ -1976,6 +1976,11 @@ public class ListComponent extends VerticalLayout
 		// Refresh tree on save
 		this.refreshTreeOnSave();
 
+	}
+	
+	@Override
+	public void updateListUI() {
+		ListCommonActionsUtil.updateGermplasmListStatusUI(this.source);
 	}
 
 	protected void refreshTreeOnSave() {

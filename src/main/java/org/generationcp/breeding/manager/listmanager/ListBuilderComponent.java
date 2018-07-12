@@ -1455,6 +1455,11 @@ public class ListBuilderComponent extends VerticalLayout
 			this.setUIForNewList();
 		}
 	}
+	
+	@Override
+	public void updateListUI() {
+		ListCommonActionsUtil.updateGermplasmListStatusUI(this.source);
+	}
 
 	public ListManagerMain getSource() {
 		return this.source;
@@ -1465,7 +1470,7 @@ public class ListBuilderComponent extends VerticalLayout
 	}
 
 	public void openSaveListAsDialog() {
-		this.dialog = new SaveListAsDialog(this, this.currentlySavedGermplasmList, source, this.messageSource.getMessage(Message.EDIT_LIST_HEADER));
+		this.dialog = new SaveListAsDialog(this, this.currentlySavedGermplasmList, this.messageSource.getMessage(Message.EDIT_LIST_HEADER));
 		this.dialog.setDebugId("dialog");
 		this.getWindow().addWindow(this.dialog);
 	}

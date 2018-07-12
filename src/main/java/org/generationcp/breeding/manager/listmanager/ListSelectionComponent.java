@@ -144,17 +144,6 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 			popupWindow.setOverrideFocus(true);
 			this.listSearchComponent.focusOnSearchField();
 		}
-		
-		if(!caption.equals(this.messageSource.getMessage(Message.SEARCH_FOR_LISTS))) {
-			popupWindow.addListener(new CloseListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void windowClose(CloseEvent event) {
-					ListCommonActionsUtil.updateGermplasmListStatusUI(ListSelectionComponent.this.source);
-				}
-			});
-		}
 
 		window.addWindow(popupWindow);
 
@@ -165,8 +154,17 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		this.listTreeComponent.showAddRenameFolderSection(false);
 		this.treeStateSaver = new SaveTreeStateListener((TreeTable) this.listTreeComponent.getGermplasmListSource(),
 				ListTreeState.GERMPLASM_LIST.name(), ListSelectorComponent.PROGRAM_LISTS);
-		this.launchListSelectionWindow(this.getWindow(), this.listTreeComponent,
-				this.messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(this.treeStateSaver);
+		Window w = this.launchListSelectionWindow(this.getWindow(), this.listTreeComponent,
+				this.messageSource.getMessage(Message.BROWSE_FOR_LISTS));
+		w.addListener(this.treeStateSaver);
+		w.addListener(new CloseListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void windowClose(CloseEvent event) {
+				ListCommonActionsUtil.updateGermplasmListStatusUI(ListSelectionComponent.this.source);
+			}
+		});
 
 		this.listTreeComponent.reinitializeTree(false);
 
