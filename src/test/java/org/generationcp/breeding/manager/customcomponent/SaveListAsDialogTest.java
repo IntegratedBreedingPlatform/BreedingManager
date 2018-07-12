@@ -37,9 +37,8 @@ public class SaveListAsDialogTest {
 
 	private static final String PROGRAM_UUID = "hdklashf-1837894-askdhasd";
 
-	private static SaveListAsDialog dialog;
-	private static GermplasmList germplasmList;
-	private static GermplasmList originalGermplasmList;
+	private SaveListAsDialog dialog;
+	private GermplasmList germplasmList;
 
 	@Mock
 	private ListComponent source;
@@ -76,8 +75,8 @@ public class SaveListAsDialogTest {
 
 	@Before
 	public void setUp() {
-		SaveListAsDialogTest.germplasmList = this.createGermplasmList();
-		SaveListAsDialogTest.dialog = new SaveListAsDialog(source, SaveListAsDialogTest.germplasmList);
+		germplasmList = this.createGermplasmList();
+		dialog = new SaveListAsDialog(source, germplasmList);
 		dialog.setGermplasmListTree(germplasmListTree);
 		dialog.setListDetailsComponent(listDetailsComponent);
 		dialog.setGermplasmListManager(germplasmListManager);
@@ -116,7 +115,7 @@ public class SaveListAsDialogTest {
 	@Test
 	public void testGetCurrentParsedListDateForValidDateFormat() {
 		Long expectedDate = 20111106L;
-		Long parsedDate = SaveListAsDialogTest.dialog.getCurrentParsedListDate("Thu Nov 06 09:39:00 SGT 2011");
+		Long parsedDate = dialog.getCurrentParsedListDate("Thu Nov 06 09:39:00 SGT 2011");
 
 		Assert.assertEquals("Expected for input E MMM dd HH:mm:ss Z yyyy will return yyyymmdd but didn't.", expectedDate, parsedDate);
 	}
@@ -130,7 +129,7 @@ public class SaveListAsDialogTest {
 		Long expectedDate = Long.parseLong(currentDateString);
 
 		// invalid date
-		Long parsedDate = SaveListAsDialogTest.dialog.getCurrentParsedListDate("2014-22-22");
+		Long parsedDate = dialog.getCurrentParsedListDate("2014-22-22");
 		Assert.assertEquals("Expected for invalid input return the current date in this format yyyymmdd but didn't.", expectedDate,
 				parsedDate);
 	}
@@ -141,75 +140,75 @@ public class SaveListAsDialogTest {
 
 	@Test
 	public void testIsSelectedListLockedReturnsTrueForAList() {
-		SaveListAsDialogTest.germplasmList.setStatus(100);
+		germplasmList.setStatus(100);
 		Assert.assertTrue("Expected to return true for a germplasm list with status >= 100 but didn't.",
-				SaveListAsDialogTest.dialog.isSelectedListLocked());
+				dialog.isSelectedListLocked());
 	}
 
 	@Test
 	public void testIsSelectedListLockedReturnsFalseForAList() {
-		SaveListAsDialogTest.germplasmList.setStatus(1);
+		germplasmList.setStatus(1);
 		Assert.assertFalse("Expected to return false for a germplasm list with status < 100 but didn't.",
-				SaveListAsDialogTest.dialog.isSelectedListLocked());
+				dialog.isSelectedListLocked());
 
 		// reset germplasm list instance
 		this.createGermplasmList();
 
-		SaveListAsDialogTest.germplasmList = null;
+		germplasmList = null;
 		Assert.assertFalse("Expected to return false for a germplasm list that is null but didn't.",
-				SaveListAsDialogTest.dialog.isSelectedListLocked());
+				dialog.isSelectedListLocked());
 	}
 
 	@Test
 	public void testIsSelectedListAnExistingListReturnsTrueForAList() {
-		SaveListAsDialogTest.germplasmList.setId(-1);
-		SaveListAsDialogTest.germplasmList.setType("LST");
-		SaveListAsDialogTest.dialog.setOriginalGermplasmList(null);
+		germplasmList.setId(-1);
+		germplasmList.setType("LST");
+		dialog.setOriginalGermplasmList(null);
 
 		Assert.assertTrue("Expected to return true for a germplasm list with LST type but didn't.",
-				SaveListAsDialogTest.dialog.isSelectedListAnExistingList());
+				dialog.isSelectedListAnExistingList());
 	}
 
 	@Test
 	public void testIsSelectedListAnExistingListReturnsFalseForAList() {
 		// new list
-		SaveListAsDialogTest.germplasmList.setId(null);
-		SaveListAsDialogTest.germplasmList.setType("LST");
-		SaveListAsDialogTest.dialog.setOriginalGermplasmList(null);
+		germplasmList.setId(null);
+		germplasmList.setType("LST");
+		dialog.setOriginalGermplasmList(null);
 
 		Assert.assertFalse("Expected to return false for a germplasm list with id = null but didn't.",
-				SaveListAsDialogTest.dialog.isSelectedListAnExistingList());
+				dialog.isSelectedListAnExistingList());
 
 		// is a folder
-		SaveListAsDialogTest.germplasmList.setId(-1);
-		SaveListAsDialogTest.germplasmList.setType("FOLDER");
-		SaveListAsDialogTest.dialog.setOriginalGermplasmList(null);
+		germplasmList.setId(-1);
+		germplasmList.setType("FOLDER");
+		dialog.setOriginalGermplasmList(null);
 		Assert.assertFalse("Expected to return false when the item selected is a folder but didn't.",
-				SaveListAsDialogTest.dialog.isSelectedListAnExistingList());
+				dialog.isSelectedListAnExistingList());
 	}
 
 	@Test
 	public void testisSelectedListNotSameWithTheOriginalListReturnsTrueForAList() {
-		SaveListAsDialogTest.germplasmList.setId(-1);
-		SaveListAsDialogTest.dialog.setOriginalGermplasmList(SaveListAsDialogTest.germplasmList);
+		germplasmList.setId(-1);
+		dialog.setOriginalGermplasmList(germplasmList);
 
 		Assert.assertFalse("Expecting the selected list is the original list in the save dialog but didn't.",
-				SaveListAsDialogTest.dialog.isSelectedListNotSameWithTheOriginalList());
+				dialog.isSelectedListNotSameWithTheOriginalList());
 	}
 
 	@Test
 	public void testisSelectedListNotSameWithTheOriginalListReturnsFalseForAList() {
-		SaveListAsDialogTest.germplasmList.setId(-1);
-		SaveListAsDialogTest.originalGermplasmList = SaveListAsDialogTest.dialog.getOriginalGermplasmList();
-		SaveListAsDialogTest.originalGermplasmList.setId(-2);
+		germplasmList.setId(-1);
+		GermplasmList originalGermplasmList = dialog.getOriginalGermplasmList();
+		originalGermplasmList.setId(-2);
 
 		Assert.assertFalse("Expecting the selected list is not the original list in the save dialog but didn't.",
-				SaveListAsDialogTest.dialog.isSelectedListNotSameWithTheOriginalList());
+				dialog.isSelectedListNotSameWithTheOriginalList());
 	}
 
 	@Test
 	public void testIsSelectedListAnExistingListButNotItself() {
-		SaveListAsDialog proxy = Mockito.spy(SaveListAsDialogTest.dialog);
+		SaveListAsDialog proxy = Mockito.spy(dialog);
 
 		Mockito.when(proxy.isSelectedListAnExistingList()).thenReturn(true);
 
@@ -219,7 +218,7 @@ public class SaveListAsDialogTest {
 
 	@Test
 	public void testIsSelectedListAnExistingListButNotItselfNoListToOverwrite() {
-		SaveListAsDialog proxy = Mockito.spy(SaveListAsDialogTest.dialog);
+		SaveListAsDialog proxy = Mockito.spy(dialog);
 
 		Mockito.when(proxy.isSelectedListAnExistingList()).thenReturn(false);
 		GermplasmList listToOverWrite = null;
@@ -234,7 +233,7 @@ public class SaveListAsDialogTest {
 
 	@Test
 	public void testIsSelectedListAnExistingListButNotItselfAnExistingListWithListToOverwrite() {
-		SaveListAsDialog proxy = Mockito.spy(SaveListAsDialogTest.dialog);
+		SaveListAsDialog proxy = Mockito.spy(dialog);
 
 		Mockito.when(proxy.isSelectedListAnExistingList()).thenReturn(false);
 		GermplasmList listToOverWrite = new GermplasmList(-1000);
@@ -248,7 +247,7 @@ public class SaveListAsDialogTest {
 
 	@Test
 	public void testIsSelectedListAnExistingListButNotItselfANewListWithListToOverwrite() {
-		SaveListAsDialog proxy = Mockito.spy(SaveListAsDialogTest.dialog);
+		SaveListAsDialog proxy = Mockito.spy(dialog);
 
 		Mockito.when(proxy.isSelectedListAnExistingList()).thenReturn(false);
 		GermplasmList listToOverWrite = new GermplasmList(-1000);
