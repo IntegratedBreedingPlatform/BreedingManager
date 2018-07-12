@@ -12,9 +12,11 @@ import org.generationcp.breeding.manager.customfields.ListNotesField;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.customfields.ListTypeField;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
+import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Before;
@@ -26,8 +28,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Calendar;
-import java.util.Date;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Window;
+
+import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SaveListAsDialogTest {
@@ -513,6 +517,48 @@ public class SaveListAsDialogTest {
 		Mockito.when(germplasmListTree.getParentOfListItem(selectedItemId)).thenReturn(123);
 		Assert.assertFalse(dialog.isCropList(selectedItemId));
 
+	}
+	
+	@Test
+	public void testCloseEvent() throws Exception {
+		Window window = new Window();
+		ListComponent component = Mockito.mock(ListComponent.class);
+		Mockito.when(component.getWindow()).thenReturn(window);
+		SaveListAsDialog saveListAsDialog = new SaveListAsDialog(component, GermplasmListTestDataInitializer.createGermplasmList(1));
+		saveListAsDialog.setCancelButton(new Button());
+		saveListAsDialog.setSaveButton(new Button());
+		saveListAsDialog.addListeners();
+		component.getWindow().addWindow(saveListAsDialog);
+		saveListAsDialog.getParent().removeWindow(saveListAsDialog);
+		Mockito.verify(component).updateListUI();
+	}
+	
+	@Test
+	public void testCancelButtonClick() throws Exception {
+		Window window = new Window();
+		ListComponent component = Mockito.mock(ListComponent.class);
+		Mockito.when(component.getWindow()).thenReturn(window);
+		SaveListAsDialog saveListAsDialog = new SaveListAsDialog(component, GermplasmListTestDataInitializer.createGermplasmList(1));
+		saveListAsDialog.setCancelButton(new Button());
+		saveListAsDialog.setSaveButton(new Button());
+		saveListAsDialog.addListeners();
+		component.getWindow().addWindow(saveListAsDialog);
+		saveListAsDialog.addComponent(saveListAsDialog.getCancelButton());
+		saveListAsDialog.getCancelButton().click();
+		Mockito.verify(component).updateListUI();
+	}
+	
+	@Test
+	public void testSaveButtonClickEvent() throws Exception {
+		dialog.setCancelButton(new Button());
+		dialog.setSaveButton(new Button());
+		dialog.addListeners();
+		Mockito.when(this.germplasmListTree.getSelectedListId()).thenReturn("1");
+		Mockito.when(this.listDetailsComponent.createGermplasmListFromListDetails(false)).thenReturn(this.germplasmList);
+		dialog.getSaveButton().click();
+		Mockito.verify(this.saveListAsDialogSource).updateListUI();
+		Mockito.verify(this.germplasmListTree, Mockito.times(2)).getSelectedListId();
+		Mockito.verify(this.listDetailsComponent).createGermplasmListFromListDetails(false);
 	}
 
 }
