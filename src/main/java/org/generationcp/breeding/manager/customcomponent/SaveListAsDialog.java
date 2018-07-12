@@ -450,4 +450,20 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
+	
+	public void setCancelButton(final Button cancelButton) {
+		this.cancelButton = cancelButton;
+	}
+	
+	public void setSaveButton(final Button saveButton) {
+		this.saveButton = saveButton;
+	}
+	
+	public Button getSaveButton() {
+		return this.saveButton;
+	}
+	
+	public Button getCancelButton() {
+		return this.cancelButton;
+	}
 }

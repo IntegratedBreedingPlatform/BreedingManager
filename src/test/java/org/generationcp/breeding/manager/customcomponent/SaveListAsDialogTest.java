@@ -1,8 +1,8 @@
 package org.generationcp.breeding.manager.customcomponent;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Window;
-import junit.framework.Assert;
+import java.util.Calendar;
+import java.util.Date;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.ListDateField;
