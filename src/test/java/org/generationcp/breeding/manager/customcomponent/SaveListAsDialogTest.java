@@ -16,7 +16,6 @@ import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
-import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Before;
@@ -43,7 +42,7 @@ public class SaveListAsDialogTest {
 	private static GermplasmList originalGermplasmList;
 
 	@Mock
-	private SaveListAsDialogSource saveListAsDialogSource;
+	private ListComponent source;
 
 	@Mock
 	private LocalListFoldersTreeComponent germplasmListTree;
@@ -78,16 +77,16 @@ public class SaveListAsDialogTest {
 	@Before
 	public void setUp() {
 		SaveListAsDialogTest.germplasmList = this.createGermplasmList();
-		SaveListAsDialogTest.dialog = new SaveListAsDialog(saveListAsDialogSource, SaveListAsDialogTest.germplasmList);
+		SaveListAsDialogTest.dialog = new SaveListAsDialog(source, SaveListAsDialogTest.germplasmList);
 		dialog.setGermplasmListTree(germplasmListTree);
 		dialog.setListDetailsComponent(listDetailsComponent);
 		dialog.setGermplasmListManager(germplasmListManager);
 		dialog.setMessageSource(messageSource);
-
-		Window parent = Mockito.mock(Window.class);
-		Mockito.when(parent.getWindow()).thenReturn(window);
-		dialog.setParent(parent);
-
+		
+		Window window = new Window();
+		Mockito.when(source.getWindow()).thenReturn(window);
+		source.getWindow().addWindow(dialog);
+		
 		Mockito.when(listDetailsComponent.getListDateField()).thenReturn(listDateField);
 		Mockito.doNothing().when(listDateField).validate();
 
@@ -275,7 +274,12 @@ public class SaveListAsDialogTest {
 		Mockito.when(messageSource.getMessage(Message.UNABLE_TO_EDIT_LOCKED_LIST)).thenReturn("Unable to edit list");
 		Mockito.when(germplasmListTree.getSelectedListId()).thenReturn(selectedListId);
 		Mockito.when(germplasmListManager.getGermplasmListById(selectedListId)).thenReturn(germplasmList);
-
+		
+		Window parent = Mockito.mock(Window.class);
+		Mockito.when(parent.getWindow()).thenReturn(window);
+		dialog.getParent().removeWindow(dialog);
+		dialog.setParent(parent);
+		
 		dialog.doSaveAction(Mockito.mock(Button.ClickEvent.class));
 
 		ArgumentCaptor<Window.Notification> captor = ArgumentCaptor.forClass(Window.Notification.class);
@@ -313,7 +317,12 @@ public class SaveListAsDialogTest {
 				.thenReturn("List data willbe deleted");
 		Mockito.when(messageSource.getMessage(Message.OK)).thenReturn("Ok");
 		Mockito.when(messageSource.getMessage(Message.CANCEL)).thenReturn("Cancel");
-
+		
+		Window parent = Mockito.mock(Window.class);
+		Mockito.when(parent.getWindow()).thenReturn(window);
+		dialog.getParent().removeWindow(dialog);
+		dialog.setParent(parent);
+		
 		dialog.doSaveAction(Mockito.mock(Button.ClickEvent.class));
 
 		ArgumentCaptor<ConfirmDialog> captor = ArgumentCaptor.forClass(ConfirmDialog.class);
@@ -369,7 +378,7 @@ public class SaveListAsDialogTest {
 		Assert.assertEquals("Sample Notes", newGermplasmList.getNotes());
 		Assert.assertEquals(SaveListAsDialog.LIST_NAMES_STATUS, newGermplasmList.getStatus());
 
-		Mockito.verify(saveListAsDialogSource).saveList(newGermplasmList);
+		Mockito.verify(source).saveList(newGermplasmList);
 		Mockito.verify(parentWindow).removeWindow(Mockito.any(Window.class));
 
 	}
@@ -411,7 +420,7 @@ public class SaveListAsDialogTest {
 		Assert.assertEquals("Sample Notes", newGermplasmList.getNotes());
 		Assert.assertEquals(SaveListAsDialog.LIST_LOCKED_STATUS, newGermplasmList.getStatus());
 
-		Mockito.verify(saveListAsDialogSource).saveList(newGermplasmList);
+		Mockito.verify(source).saveList(newGermplasmList);
 		Mockito.verify(parentWindow).removeWindow(Mockito.any(Window.class));
 
 	}
@@ -448,7 +457,7 @@ public class SaveListAsDialogTest {
 
 		GermplasmList germplasmListToSave = dialog.getGermplasmListToSave();
 
-		Mockito.verify(saveListAsDialogSource).setCurrentlySavedGermplasmList(germplasmListToSave);
+		Mockito.verify(source).setCurrentlySavedGermplasmList(germplasmListToSave);
 		Assert.assertEquals(selectedGermplasmListParent, germplasmListToSave.getParent());
 
 	}
@@ -521,31 +530,21 @@ public class SaveListAsDialogTest {
 	
 	@Test
 	public void testCloseEvent() throws Exception {
-		Window window = new Window();
-		ListComponent component = Mockito.mock(ListComponent.class);
-		Mockito.when(component.getWindow()).thenReturn(window);
-		SaveListAsDialog saveListAsDialog = new SaveListAsDialog(component, GermplasmListTestDataInitializer.createGermplasmList(1));
-		saveListAsDialog.setCancelButton(new Button());
-		saveListAsDialog.setSaveButton(new Button());
-		saveListAsDialog.addListeners();
-		component.getWindow().addWindow(saveListAsDialog);
-		saveListAsDialog.getParent().removeWindow(saveListAsDialog);
-		Mockito.verify(component).updateListUI();
+		dialog.setCancelButton(new Button());
+		dialog.setSaveButton(new Button());
+		dialog.addListeners();
+		dialog.getParent().removeWindow(dialog);
+		Mockito.verify(source).updateListUI();
 	}
 	
 	@Test
 	public void testCancelButtonClick() throws Exception {
-		Window window = new Window();
-		ListComponent component = Mockito.mock(ListComponent.class);
-		Mockito.when(component.getWindow()).thenReturn(window);
-		SaveListAsDialog saveListAsDialog = new SaveListAsDialog(component, GermplasmListTestDataInitializer.createGermplasmList(1));
-		saveListAsDialog.setCancelButton(new Button());
-		saveListAsDialog.setSaveButton(new Button());
-		saveListAsDialog.addListeners();
-		component.getWindow().addWindow(saveListAsDialog);
-		saveListAsDialog.addComponent(saveListAsDialog.getCancelButton());
-		saveListAsDialog.getCancelButton().click();
-		Mockito.verify(component).updateListUI();
+		dialog.setCancelButton(new Button());
+		dialog.setSaveButton(new Button());
+		dialog.addListeners();
+		dialog.addComponent(dialog.getCancelButton());
+		dialog.getCancelButton().click();
+		Mockito.verify(source).updateListUI();
 	}
 	
 	@Test
@@ -556,7 +555,7 @@ public class SaveListAsDialogTest {
 		Mockito.when(this.germplasmListTree.getSelectedListId()).thenReturn("1");
 		Mockito.when(this.listDetailsComponent.createGermplasmListFromListDetails(false)).thenReturn(this.germplasmList);
 		dialog.getSaveButton().click();
-		Mockito.verify(this.saveListAsDialogSource).updateListUI();
+		Mockito.verify(this.source).updateListUI();
 		Mockito.verify(this.germplasmListTree, Mockito.times(2)).getSelectedListId();
 		Mockito.verify(this.listDetailsComponent).createGermplasmListFromListDetails(false);
 	}
