@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryAction;
@@ -208,7 +209,7 @@ public class ListComponentTest {
 		germplasmListToBeSaved.setNotes(ListComponentTest.UPDATED_GERMPLASM_LIST_NOTE);
 		germplasmListToBeSaved.setDate(ListComponentTest.UPDATED_GERMPLASM_LIST_DATE);
 		germplasmListToBeSaved.setType(ListComponentTest.UPDATED_GERMPLASM_LIST_TYPE);
-		germplasmListToBeSaved.setStatus(1);
+		germplasmListToBeSaved.setStatus(SaveListAsDialog.LIST_LOCKED_STATUS);
 
 		try {
 			Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
