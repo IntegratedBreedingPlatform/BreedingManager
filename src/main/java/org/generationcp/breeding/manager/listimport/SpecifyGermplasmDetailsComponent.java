@@ -164,6 +164,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		this.messageSource.setCaption(this.backButton, Message.BACK);
 		this.messageSource.setCaption(this.nextButton, Message.FINISH);
 	}
+	
+	@Override
+	public void updateListUI() {
+		// no implementation for this method
+	}
 
 	public void nextButtonClickAction() {
 		if (this.validateSeedLocation() && this.validatePedigreeOption()) {

@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listimport.GermplasmImportPopupSource;
+import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.commons.constant.ListTreeState;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -25,6 +26,8 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -151,8 +154,17 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		this.listTreeComponent.showAddRenameFolderSection(false);
 		this.treeStateSaver = new SaveTreeStateListener((TreeTable) this.listTreeComponent.getGermplasmListSource(),
 				ListTreeState.GERMPLASM_LIST.name(), ListSelectorComponent.PROGRAM_LISTS);
-		this.launchListSelectionWindow(this.getWindow(), this.listTreeComponent,
-				this.messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(this.treeStateSaver);
+		Window w = this.launchListSelectionWindow(this.getWindow(), this.listTreeComponent,
+				this.messageSource.getMessage(Message.BROWSE_FOR_LISTS));
+		w.addListener(this.treeStateSaver);
+		w.addListener(new CloseListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void windowClose(CloseEvent event) {
+				ListCommonActionsUtil.updateGermplasmListStatusUI(ListSelectionComponent.this.source);
+			}
+		});
 
 		this.listTreeComponent.reinitializeTree(false);
 

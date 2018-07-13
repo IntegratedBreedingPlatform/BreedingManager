@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -343,6 +344,7 @@ public class GermplasmListTreeUtilTest {
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		Assert.assertNull(this.germplasmList.getParent());
 		Assert.assertNull(this.germplasmList.getProgramUUID());
+		Assert.assertEquals(SaveListAsDialog.LIST_LOCKED_STATUS, this.germplasmList.getStatus());
 		Mockito.verify(this.germplasmListManager).updateGermplasmList(this.germplasmList);
 		// Verify UI updates
 		this.verifyUIChangesToTargetItem(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, ListSelectorComponent.CROP_LISTS);

@@ -1,15 +1,9 @@
 package org.generationcp.breeding.manager.customcomponent;
 
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
@@ -34,9 +28,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SaveListAsDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
@@ -50,7 +51,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	private HorizontalLayout buttonLayout;
 
 	private final SaveListAsDialogSource source;
-
+	
 	private Label guideMessage;
 	private LocalListFoldersTreeComponent germplasmListTree;
 	private BreedingManagerListDetailsComponent listDetailsComponent;
@@ -155,6 +156,15 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				SaveListAsDialog.this.doSaveAction(event);
+				SaveListAsDialog.this.source.updateListUI();
+			}
+		});
+		this.addListener(new CloseListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void windowClose(CloseEvent event) {
+				SaveListAsDialog.this.source.updateListUI();
 			}
 		});
 	}
@@ -439,5 +449,21 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+	
+	public void setCancelButton(final Button cancelButton) {
+		this.cancelButton = cancelButton;
+	}
+	
+	public void setSaveButton(final Button saveButton) {
+		this.saveButton = saveButton;
+	}
+	
+	public Button getSaveButton() {
+		return this.saveButton;
+	}
+	
+	public Button getCancelButton() {
+		return this.cancelButton;
 	}
 }

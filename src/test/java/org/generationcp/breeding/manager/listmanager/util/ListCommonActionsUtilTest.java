@@ -7,12 +7,15 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSelectionComponent;
+import org.generationcp.breeding.manager.listmanager.ListSelectionLayout;
+import org.generationcp.breeding.manager.listmanager.ListTabComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.InventoryDetailsTestDataInitializer;
-import org.generationcp.middleware.domain.inventory.ListDataInventory;
+import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -24,12 +27,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -77,10 +83,12 @@ public class ListCommonActionsUtilTest {
 		this.entriesToDelete = new ArrayList<GermplasmListData>();
 
 		Mockito.when(this.dataManager.countGermplasmListDataByListId(this.listToSave.getId())).thenReturn(5L);
-		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId())).thenReturn(this.listToSave.getListData());
+		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId()))
+				.thenReturn(this.listToSave.getListData());
 
-		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(this.listToSave, this.listEntries, this.forceHasChanges, this.newEntries,
-				this.entriesToUpdate, this.entriesToDelete, this.dataManager, this.source, this.messageSource);
+		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(this.listToSave, this.listEntries, this.forceHasChanges,
+				this.newEntries, this.entriesToUpdate, this.entriesToDelete, this.dataManager, this.source,
+				this.messageSource);
 
 		Assert.assertTrue("Expecting that the newEntries has entries but didn't.", !this.newEntries.isEmpty());
 	}
@@ -106,7 +114,8 @@ public class ListCommonActionsUtilTest {
 		ListCommonActionsUtil.setDesignationOfMatchingSavedEntry(entry, matchingSavedEntry);
 
 		final String actualDesignation = matchingSavedEntry.getDesignation();
-		Assert.assertEquals("Expecting that the designation value is " + expectedDesignation + " but returned " + actualDesignation,
+		Assert.assertEquals(
+				"Expecting that the designation value is " + expectedDesignation + " but returned " + actualDesignation,
 				expectedDesignation, actualDesignation);
 	}
 
@@ -118,7 +127,8 @@ public class ListCommonActionsUtilTest {
 
 		ListCommonActionsUtil.setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		Assert.assertEquals("Expecting that the entry code value is " + entry.getEntryId() + " when the source entry is null.",
+		Assert.assertEquals(
+				"Expecting that the entry code value is " + entry.getEntryId() + " when the source entry is null.",
 				entry.getEntryId().toString(), matchingSavedEntry.getEntryCode());
 	}
 
@@ -132,7 +142,8 @@ public class ListCommonActionsUtilTest {
 		ListCommonActionsUtil.setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
 
 		final String actualEntryCode = matchingSavedEntry.getEntryCode();
-		Assert.assertEquals("Expecting that the entry code value is " + expectedEntryCode + " but returned " + actualEntryCode,
+		Assert.assertEquals(
+				"Expecting that the entry code value is " + expectedEntryCode + " but returned " + actualEntryCode,
 				expectedEntryCode, actualEntryCode);
 	}
 
@@ -157,7 +168,8 @@ public class ListCommonActionsUtilTest {
 		ListCommonActionsUtil.setSeedSourceOfMatchingSavedEntry(entry, matchingSavedEntry);
 
 		final String actualSeedSource = matchingSavedEntry.getSeedSource();
-		Assert.assertEquals("Expecting that the seed source value is " + expectedSeedSource + " but returned " + actualSeedSource,
+		Assert.assertEquals(
+				"Expecting that the seed source value is " + expectedSeedSource + " but returned " + actualSeedSource,
 				expectedSeedSource, actualSeedSource);
 	}
 
@@ -182,7 +194,8 @@ public class ListCommonActionsUtilTest {
 		ListCommonActionsUtil.setGroupNameOfMatchingSavedEntry(entry, matchingSavedEntry);
 
 		final String actualGroupName = matchingSavedEntry.getGroupName();
-		Assert.assertEquals("Expecting that the group name value is " + expectedGroupName + " but returned " + actualGroupName,
+		Assert.assertEquals(
+				"Expecting that the group name value is " + expectedGroupName + " but returned " + actualGroupName,
 				expectedGroupName, actualGroupName);
 	}
 
@@ -198,41 +211,49 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testHasReservationForAnyListEntriesReturnsTrue() {
-		List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
+		final List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer
+				.createGermplasmListDataForReservedEntries();
 		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0).setWithdrawalStatus("Reserved");
 
-		boolean hasAnyReservation = ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListData);
+		final boolean hasAnyReservation = ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListData);
 		Assert.assertTrue(hasAnyReservation);
 	}
 
 	@Test
 	public void testHasReservationForAnyListEntriesReturnsFalse() {
-		List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
+		final List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer
+				.createGermplasmListDataForReservedEntries();
 		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0).setWithdrawalStatus("Committed");
 
-		boolean hasAnyReservation = ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListData);
+		final boolean hasAnyReservation = ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListData);
 		Assert.assertFalse(hasAnyReservation);
 	}
 
 	@Test
 	public void testHandleCreateLabelsActionWithNoReservation() {
-		List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
-		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0).setWithdrawalStatus(ListDataInventory.WITHDRAWN);
+		final List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer
+				.createGermplasmListDataForReservedEntries();
+		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0)
+				.setWithdrawalStatus(GermplasmInventory.WITHDRAWN);
 
-		Mockito.when(this.inventoryDataManager.
-				getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt())).thenReturn(germplasmListData);
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Matchers.isA(Integer.class), Matchers.anyInt(),
+				Matchers.anyInt())).thenReturn(germplasmListData);
 
-		ListCommonActionsUtil.handleCreateLabelsAction(1, this.inventoryDataManager, this.messageSource, null, null, this.window);
+		ListCommonActionsUtil.handleCreateLabelsAction(1, this.inventoryDataManager, this.messageSource, null, null,
+				this.window);
 
 		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.PRINT_LABELS);
-		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION);
+		Mockito.verify(this.messageSource, Mockito.times(1))
+				.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION);
 	}
 
 	@Test
 	public void testCreateListEntryLotDetailsMap() {
-		List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
+		final List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer
+				.createGermplasmListDataForReservedEntries();
 
-		Map<Integer, ListEntryLotDetails> listEntryLotDetailsMap = ListCommonActionsUtil.createListEntryLotDetailsMap(germplasmListData);
+		final Map<Integer, ListEntryLotDetails> listEntryLotDetailsMap = ListCommonActionsUtil
+				.createListEntryLotDetailsMap(germplasmListData);
 
 		Assert.assertNotNull(listEntryLotDetailsMap);
 		Assert.assertEquals(1, listEntryLotDetailsMap.size());
@@ -240,9 +261,10 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testCreateLotDetailsMap() {
-		List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
+		final List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer
+				.createGermplasmListDataForReservedEntries();
 
-		Map<Integer, LotDetails> lotDetailsMap = ListCommonActionsUtil.createLotDetailsMap(germplasmListData);
+		final Map<Integer, LotDetails> lotDetailsMap = ListCommonActionsUtil.createLotDetailsMap(germplasmListData);
 
 		Assert.assertNotNull(lotDetailsMap);
 		Assert.assertEquals(1, lotDetailsMap.size());
@@ -250,10 +272,27 @@ public class ListCommonActionsUtilTest {
 	}
 
 	@Test
-	public void testgetLotCountButton(){
-		Button lotButton = ListCommonActionsUtil.getLotCountButton(2,  2, "Germplasm", this.source, 2);
-		Assert.assertEquals("Expecting lot count value as 2", 2, Integer.parseInt
-				(lotButton.getCaption()));
+	public void testUpdateGermplasmListStatusUI() {
+		Mockito.when(this.listManagerMain.getListSelectionComponent()).thenReturn(this.listSelectionComponent);
+		final ListSelectionLayout listSelectionLayout = Mockito.mock(ListSelectionLayout.class);
+		Mockito.when(this.listSelectionComponent.getListDetailsLayout()).thenReturn(listSelectionLayout);
+		final TabSheet tabSheet = Mockito.mock(TabSheet.class);
+		Mockito.when(listSelectionLayout.getDetailsTabsheet()).thenReturn(tabSheet);
+		Mockito.when(tabSheet.getComponentCount()).thenReturn(1);
+		final Tab tab = Mockito.mock(Tab.class);
+		Mockito.when(tabSheet.getTab(0)).thenReturn(tab);
+		final ListTabComponent listTabComponent = Mockito.mock(ListTabComponent.class);
+		Mockito.when(tab.getComponent()).thenReturn(listTabComponent);
+		final ListComponent listComponent = Mockito.mock(ListComponent.class);
+		Mockito.when(listTabComponent.getListComponent()).thenReturn(listComponent);
+		ListCommonActionsUtil.updateGermplasmListStatusUI(this.listManagerMain);
+		Mockito.verify(listComponent).updateGermplasmListStatus();
+	}
+
+	@Test
+	public void testgetLotCountButton() {
+		final Button lotButton = ListCommonActionsUtil.getLotCountButton(2, 2, "Germplasm", this.source, 2);
+		Assert.assertEquals("Expecting lot count value as 2", 2, Integer.parseInt(lotButton.getCaption()));
 
 	}
 
@@ -262,47 +301,16 @@ public class ListCommonActionsUtilTest {
 
 		final Integer listId = 1;
 
-		final GermplasmList germplasmListToSave = createGermplasmList(listId);
+		final GermplasmList germplasmListToSave = this.createGermplasmList(listId);
 		final GermplasmList germplasmListFromDatabase = new GermplasmList();
-
-		Mockito.when(dataManager.getGermplasmListById(listId)).thenReturn(germplasmListFromDatabase);
-		Mockito.when(dataManager.updateGermplasmList(germplasmListFromDatabase)).thenReturn(listId);
-		Mockito.when(listBuilderComponent.getSource()).thenReturn(listManagerMain);
-		Mockito.when(listManagerMain.getListSelectionComponent()).thenReturn(listSelectionComponent);
-
-		ListCommonActionsUtil.overwriteList(germplasmListToSave, dataManager, listBuilderComponent, messageSource, true);
-
-		Assert.assertEquals(germplasmListToSave.getName(), germplasmListFromDatabase.getName());
-		Assert.assertEquals(germplasmListToSave.getDescription(), germplasmListFromDatabase.getDescription());
-		Assert.assertEquals(germplasmListToSave.getDate(), germplasmListFromDatabase.getDate());
-		Assert.assertEquals(germplasmListToSave.getType(), germplasmListFromDatabase.getType());
-		Assert.assertEquals(germplasmListToSave.getNotes(), germplasmListFromDatabase.getNotes());
-		Assert.assertEquals(germplasmListToSave.getProgramUUID(), germplasmListFromDatabase.getProgramUUID());
-
-		Mockito.verify(dataManager).updateGermplasmList(germplasmListFromDatabase);
-		Mockito.verify(listBuilderComponent).setCurrentlySavedGermplasmList(germplasmListFromDatabase);
-		Mockito.verify(listBuilderComponent).setHasUnsavedChanges(false);
-		Mockito.verify(listSelectionComponent).showNodeOnTree(listId);
-
-	}
-
-	@Test
-	public void testOverwriteListSourceIsListManagerMain() {
-
-		final Integer listId = 1;
-
-		final GermplasmList germplasmListToSave = createGermplasmList(listId);
-		final GermplasmList germplasmListFromDatabase = new GermplasmList();
-		germplasmListFromDatabase.setId(listId);
 
 		Mockito.when(this.dataManager.getGermplasmListById(listId)).thenReturn(germplasmListFromDatabase);
 		Mockito.when(this.dataManager.updateGermplasmList(germplasmListFromDatabase)).thenReturn(listId);
-		Mockito.when(this.listBuilderComponent.getSource()).thenReturn(listManagerMain);
-		Mockito.when(this.listManagerMain.getListSelectionComponent()).thenReturn(listSelectionComponent);
-		Mockito.when(this.listManagerMain.getWindow()).thenReturn(window);
-		Mockito.when(this.messageSource.getMessage(Message.SUCCESS)).thenReturn(SUCCESS);
+		Mockito.when(this.listBuilderComponent.getSource()).thenReturn(this.listManagerMain);
+		Mockito.when(this.listManagerMain.getListSelectionComponent()).thenReturn(this.listSelectionComponent);
 
-		ListCommonActionsUtil.overwriteList(germplasmListToSave, this.dataManager, this.listManagerMain, this.messageSource, true);
+		ListCommonActionsUtil.overwriteList(germplasmListToSave, this.dataManager, this.listBuilderComponent,
+				this.messageSource, true);
 
 		Assert.assertEquals(germplasmListToSave.getName(), germplasmListFromDatabase.getName());
 		Assert.assertEquals(germplasmListToSave.getDescription(), germplasmListFromDatabase.getDescription());
@@ -312,21 +320,53 @@ public class ListCommonActionsUtilTest {
 		Assert.assertEquals(germplasmListToSave.getProgramUUID(), germplasmListFromDatabase.getProgramUUID());
 
 		Mockito.verify(this.dataManager).updateGermplasmList(germplasmListFromDatabase);
-		Mockito.verify(this.listSelectionComponent).updateUIForRenamedList(germplasmListToSave, germplasmListToSave.getName());
+		Mockito.verify(this.listBuilderComponent).setCurrentlySavedGermplasmList(germplasmListFromDatabase);
+		Mockito.verify(this.listBuilderComponent).setHasUnsavedChanges(false);
 		Mockito.verify(this.listSelectionComponent).showNodeOnTree(listId);
-
-		ArgumentCaptor<Window.Notification> captor = ArgumentCaptor.forClass(Window.Notification.class);
-
-		Mockito.verify(window).showNotification(captor.capture());
-
-		final Window.Notification notification = captor.getValue();
-
-		Assert.assertEquals(SUCCESS, notification.getCaption());
-		Assert.assertEquals("</br>Changes to list header were saved.", notification.getDescription());
 
 	}
 
+	@Test
+	public void testOverwriteListSourceIsListManagerMain() {
 
+		final Integer listId = 1;
+
+		final GermplasmList germplasmListToSave = this.createGermplasmList(listId);
+		final GermplasmList germplasmListFromDatabase = new GermplasmList();
+		germplasmListFromDatabase.setId(listId);
+
+		Mockito.when(this.dataManager.getGermplasmListById(listId)).thenReturn(germplasmListFromDatabase);
+		Mockito.when(this.dataManager.updateGermplasmList(germplasmListFromDatabase)).thenReturn(listId);
+		Mockito.when(this.listBuilderComponent.getSource()).thenReturn(this.listManagerMain);
+		Mockito.when(this.listManagerMain.getListSelectionComponent()).thenReturn(this.listSelectionComponent);
+		Mockito.when(this.listManagerMain.getWindow()).thenReturn(this.window);
+		Mockito.when(this.messageSource.getMessage(Message.SUCCESS)).thenReturn(ListCommonActionsUtilTest.SUCCESS);
+
+		ListCommonActionsUtil.overwriteList(germplasmListToSave, this.dataManager, this.listManagerMain,
+				this.messageSource, true);
+
+		Assert.assertEquals(germplasmListToSave.getName(), germplasmListFromDatabase.getName());
+		Assert.assertEquals(germplasmListToSave.getDescription(), germplasmListFromDatabase.getDescription());
+		Assert.assertEquals(germplasmListToSave.getDate(), germplasmListFromDatabase.getDate());
+		Assert.assertEquals(germplasmListToSave.getType(), germplasmListFromDatabase.getType());
+		Assert.assertEquals(germplasmListToSave.getNotes(), germplasmListFromDatabase.getNotes());
+		Assert.assertEquals(germplasmListToSave.getProgramUUID(), germplasmListFromDatabase.getProgramUUID());
+
+		Mockito.verify(this.dataManager).updateGermplasmList(germplasmListFromDatabase);
+		Mockito.verify(this.listSelectionComponent).updateUIForRenamedList(germplasmListToSave,
+				germplasmListToSave.getName());
+		Mockito.verify(this.listSelectionComponent).showNodeOnTree(listId);
+
+		final ArgumentCaptor<Window.Notification> captor = ArgumentCaptor.forClass(Window.Notification.class);
+
+		Mockito.verify(this.window).showNotification(captor.capture());
+
+		final Window.Notification notification = captor.getValue();
+
+		Assert.assertEquals(ListCommonActionsUtilTest.SUCCESS, notification.getCaption());
+		Assert.assertEquals("</br>Changes to list header were saved.", notification.getDescription());
+
+	}
 
 	GermplasmList createGermplasmList(final Integer id) {
 
@@ -340,8 +380,6 @@ public class ListCommonActionsUtilTest {
 		germplasmList.setParent(null);
 		germplasmList.setProgramUUID("6476340934-dhaksjhdf-327472936");
 		return germplasmList;
-
-
 
 	}
 }
