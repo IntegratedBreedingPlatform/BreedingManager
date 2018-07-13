@@ -9,6 +9,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.themes.BaseTheme;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -95,7 +96,9 @@ public class ListCommonActionsUtil {
 			listFromDB.setNotes(listToSave.getNotes());
 			listFromDB.setParent(listToSave.getParent());
 			listFromDB.setProgramUUID(listToSave.getProgramUUID());
-
+			if(listToSave.getProgramUUID() == null) {
+				listFromDB.setStatus(SaveListAsDialog.LIST_LOCKED_STATUS);
+			}
 			listId = dataManager.updateGermplasmList(listFromDB);
 		}
 
