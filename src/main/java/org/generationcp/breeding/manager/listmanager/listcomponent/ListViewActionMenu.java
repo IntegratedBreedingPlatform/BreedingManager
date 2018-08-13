@@ -105,14 +105,6 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		return this.menuDeleteList;
 	}
 
-	public ContextMenuItem getMenuInventoryView() {
-		return this.menuInventoryView;
-	}
-
-	public ContextMenuItem getMenuSelectAll() {
-		return this.menuSelectAll;
-	}
-
 	public ContextMenuItem getListEditingOptions() {
 		return this.listEditingOptions;
 	}
