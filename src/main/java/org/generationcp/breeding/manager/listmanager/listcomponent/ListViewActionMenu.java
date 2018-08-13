@@ -114,7 +114,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	}
 
 	public ContextMenuItem getListEditingOptions() {
-		return listEditingOptions;
+		return this.listEditingOptions;
 	}
 
 	public ContextMenuItem getRemoveSelectedGermplasm() {
@@ -198,5 +198,9 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 
 	protected void setListEditingOptions(final ContextMenuItem listEditingOptions) {
 		this.listEditingOptions = listEditingOptions;
+	}
+
+	protected void setCodingAndGroupingOptions(final ContextMenuItem codingAndGroupingOptions) {
+	  this.codingAndGroupingOptions = codingAndGroupingOptions;
 	}
 }
