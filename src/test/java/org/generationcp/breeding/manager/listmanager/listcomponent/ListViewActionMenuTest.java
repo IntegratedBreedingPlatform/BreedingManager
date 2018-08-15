@@ -122,22 +122,25 @@ public class ListViewActionMenuTest {
 	@Test
 	public void testLayoutAdminLink() {
 
-		final String message = "removeSelectedGermplasm";
+		final String removeSelectedGermplasmMessage = "removeSelectedGermplasm";
+	  final String ungroupMessage = "removeSelectedGermplasm";
 
-		Mockito.when(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM)).thenReturn(message);
+		Mockito.when(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM)).thenReturn(removeSelectedGermplasmMessage);
+	  	Mockito.when(this.messageSource.getMessage(Message.UNGROUP)).thenReturn(ungroupMessage);
 
 		final ContextMenu.ContextMenuItem removeSelectedGermplasmContextMenuItem = Mockito.mock(ContextMenu.ContextMenuItem.class);
 		final ContextMenu.ContextMenuItem listEditiongOptionsContextMenuItem = Mockito.mock(ContextMenu.ContextMenuItem.class);
-		Mockito.when(listEditiongOptionsContextMenuItem.addItem(message)).thenReturn(removeSelectedGermplasmContextMenuItem);
-
+		Mockito.when(listEditiongOptionsContextMenuItem.addItem(removeSelectedGermplasmMessage)).thenReturn(removeSelectedGermplasmContextMenuItem);
 		this.menu.setListEditingOptions(listEditiongOptionsContextMenuItem);
 
+	  	final ContextMenu.ContextMenuItem codingAndGroupingOptions = Mockito.mock(ContextMenu.ContextMenuItem.class);
+		this.menu.setCodingAndGroupingOptions(codingAndGroupingOptions);
 		this.menu.layoutAdminLink();
 
 		// Verify that removeSelectedGermplasmContextMenuItem is added inside listEditiongOptionsContextMenuItem
-		Mockito.verify(listEditiongOptionsContextMenuItem).addItem(message);
+		Mockito.verify(listEditiongOptionsContextMenuItem).addItem(removeSelectedGermplasmMessage);
 		Assert.assertSame(removeSelectedGermplasmContextMenuItem, this.menu.getRemoveSelectedGermplasm());
-
+	  	Mockito.verify(codingAndGroupingOptions).addItem(ungroupMessage);
 	}
 
 }

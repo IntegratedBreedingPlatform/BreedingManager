@@ -33,7 +33,6 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	private ContextMenuItem listEditingOptions;
 	private ContextMenuItem codingAndGroupingOptions;
 	private ContextMenuItem removeSelectedGermplasm;
-	private ContextMenuItem ungroupLines;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -106,16 +105,8 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		return this.menuDeleteList;
 	}
 
-	public ContextMenuItem getMenuInventoryView() {
-		return this.menuInventoryView;
-	}
-
-	public ContextMenuItem getMenuSelectAll() {
-		return this.menuSelectAll;
-	}
-
 	public ContextMenuItem getListEditingOptions() {
-		return listEditingOptions;
+		return this.listEditingOptions;
 	}
 
 	public ContextMenuItem getRemoveSelectedGermplasm() {
@@ -143,7 +134,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		}
 	}
 
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasRole('ROLE_SUPERADMIN')")
 	private void setRemoveSelectedGermplasmWhenListIsLocked(final boolean visible) {
 		if (this.removeSelectedGermplasm != null) {
 			this.removeSelectedGermplasm.setVisible(visible);
@@ -191,13 +182,17 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.messageSource = messageSource;
 	}
 
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN') or hasRole('ROLE_SUPERADMIN')")
 	protected void layoutAdminLink() {
-		this.removeSelectedGermplasm = listEditingOptions.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM));
-		this.ungroupLines = codingAndGroupingOptions.addItem(this.messageSource.getMessage(Message.UNGROUP));
+		this.removeSelectedGermplasm = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM));
+		this.codingAndGroupingOptions.addItem(this.messageSource.getMessage(Message.UNGROUP));
 	}
 
 	protected void setListEditingOptions(final ContextMenuItem listEditingOptions) {
 		this.listEditingOptions = listEditingOptions;
+	}
+
+	protected void setCodingAndGroupingOptions(final ContextMenuItem codingAndGroupingOptions) {
+	  this.codingAndGroupingOptions = codingAndGroupingOptions;
 	}
 }
