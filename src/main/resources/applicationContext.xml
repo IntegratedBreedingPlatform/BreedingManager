@@ -12,7 +12,7 @@
 
 	<!-- Declare property file locations -->
 	<context:property-placeholder
-		location="classpath:workbench.properties, classpath:crossing.properties" />
+		location="classpath:workbench.properties, classpath:crossing.properties, classpath:breedingmanager.properties" />
 	<util:properties id="workbenchProperties" location="classpath:workbench.properties" />
 	<util:properties id="helpProperties" location="classpath:helplinks.properties" />
 	<!-- Enable Spring annotations -->
@@ -308,7 +308,7 @@
 	</bean>
 
 	<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.J2eeUserTransaction">
-		<property name="transactionTimeout" value="300" />
+		<property name="transactionTimeout" value="${atomikos.transaction.timeout}" />
 	</bean>
 
 	<bean id="transactionManager"
