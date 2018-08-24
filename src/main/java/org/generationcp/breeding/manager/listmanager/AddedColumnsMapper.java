@@ -20,53 +20,67 @@ public class AddedColumnsMapper {
 	
 	private GermplasmColumnValuesGenerator valuesGenerator;
 	
-	public AddedColumnsMapper(FillColumnSource fillWithSource) {
+	public AddedColumnsMapper(final FillColumnSource fillWithSource) {
 		super();
 		this.valuesGenerator = new GermplasmColumnValuesGenerator(fillWithSource);
 	}
 	
 	public void generateValuesForAddedColumns(final Object[] visibleColumns, final boolean attributeTypesAddable) {
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.PREFERRED_ID.getName())) {
-			valuesGenerator.setPreferredIdColumnValues(ColumnLabels.PREFERRED_ID.getName());
+			this.valuesGenerator.setPreferredIdColumnValues(ColumnLabels.PREFERRED_ID.getName());
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.GERMPLASM_LOCATION.getName())) {
-			valuesGenerator.setLocationNameColumnValues(ColumnLabels.GERMPLASM_LOCATION.getName());
+			this.valuesGenerator.setLocationNameColumnValues(ColumnLabels.GERMPLASM_LOCATION.getName());
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.PREFERRED_NAME.getName())) {
-			valuesGenerator.setPreferredNameColumnValues(ColumnLabels.PREFERRED_NAME.getName());
+			this.valuesGenerator.setPreferredNameColumnValues(ColumnLabels.PREFERRED_NAME.getName());
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.GERMPLASM_DATE.getName())) {
-			valuesGenerator.setGermplasmDateColumnValues(ColumnLabels.GERMPLASM_DATE.getName());
+			this.valuesGenerator.setGermplasmDateColumnValues(ColumnLabels.GERMPLASM_DATE.getName());
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.BREEDING_METHOD_NAME.getName())) {
-			valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NAME.getName(),
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NAME.getName(),
 					FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())) {
-			valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(),
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(),
 					FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV);
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.BREEDING_METHOD_NUMBER.getName())) {
-			valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NUMBER.getName(),
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NUMBER.getName(),
 					FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER);
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.BREEDING_METHOD_GROUP.getName())) {
-			valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_GROUP.getName(),
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_GROUP.getName(),
 					FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_FEMALE_GID.getName())) {
-			valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(),
+			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(),
 					FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())) {
-			valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
+			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
 					FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_MALE_GID.getName())) {
-			valuesGenerator.setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
+			this.valuesGenerator.setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())) {
-			valuesGenerator.setCrossMalePrefNameColumnValues(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
+			this.valuesGenerator.setCrossMalePrefNameColumnValues(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
+		}
+		if (this.isColumnVisible(visibleColumns, ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName())) {
+			this.valuesGenerator.setGroupSourcePreferredNameColumnValues(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName());
+		}
+		if (this.isColumnVisible(visibleColumns, ColumnLabels.GROUP_SOURCE_GID.getName())) {
+			this.valuesGenerator.setGroupSourceGidColumnValues(ColumnLabels.GROUP_SOURCE_GID.getName());
+		}
+		if (this.isColumnVisible(visibleColumns, ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName())) {
+			this.valuesGenerator.setImmediateSourcePreferredNameColumnValues(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName());
+		}
+		if (this.isColumnVisible(visibleColumns, ColumnLabels.IMMEDIATE_SOURCE_GID.getName())) {
+			this.valuesGenerator.setImmediateSourceGidColumnValues(
+
+				ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
 		}
 		
 		// Check if any of the columns are attribute types
@@ -76,7 +90,7 @@ public class AddedColumnsMapper {
 				final String columnName = column.toString().toUpperCase();
 				final Integer attributeTypeId = attributeTypesMap.get(columnName);
 				if (attributeTypeId != null) {
-					valuesGenerator.fillWithAttribute(attributeTypeId, columnName);
+					this.valuesGenerator.fillWithAttribute(attributeTypeId, columnName);
 				}
 			}
 		}
@@ -101,12 +115,12 @@ public class AddedColumnsMapper {
 		return false;
 	}
 	
-	public void setValuesGenerator(GermplasmColumnValuesGenerator valuesGenerator) {
+	public void setValuesGenerator(final GermplasmColumnValuesGenerator valuesGenerator) {
 		this.valuesGenerator = valuesGenerator;
 	}
 
 	
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
