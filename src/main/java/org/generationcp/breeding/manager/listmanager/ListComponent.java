@@ -2,6 +2,8 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -473,7 +475,7 @@ public class ListComponent extends VerticalLayout
 				new ListComponentAddColumnSource(this.parentListDetailsComponent, this.listDataTable, ColumnLabels.GID.getName());
 		this.addColumnContextMenu =
 				new AddColumnContextMenu(addColumnSource, this.menu, this.menu.getListEditingOptions(), this.messageSource);
-		addColumnContextMenu.addListener(new AddColumnMenuItemClickListener(addColumnSource));
+		this.addColumnContextMenu.addListener(new AddColumnMenuItemClickListener(addColumnSource));
 	}
 
 	public void initializeListInventoryTable() {
@@ -1427,7 +1429,7 @@ public class ListComponent extends VerticalLayout
 
 	protected void unfixLines(final Set<Integer> gidsToProcess) {
 
-		final int numberOfGermplasmWithoutGroup = countGermplasmWithoutGroup(gidsToProcess);
+		final int numberOfGermplasmWithoutGroup = this.countGermplasmWithoutGroup(gidsToProcess);
 
 		if (numberOfGermplasmWithoutGroup > 0) {
 			MessageNotifier.showWarning(this.getWindow(), "", this.messageSource.getMessage(Message.WARNING_UNFIX_LINES));
@@ -1453,7 +1455,7 @@ public class ListComponent extends VerticalLayout
 	protected int countGermplasmWithoutGroup(final Set<Integer> gidsToProcess) {
 
 		final List<Germplasm> listOfGermplasmWithoutGroup =
-				ListComponent.this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess));
+			this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess));
 
 		return listOfGermplasmWithoutGroup.size();
 
@@ -1478,17 +1480,29 @@ public class ListComponent extends VerticalLayout
 	 * @param listDataTable
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	Set<Integer> extractGidListFromListDataTable(final Table listDataTable) {
 
-		@SuppressWarnings("unchecked") final Collection<Integer> selectedTableRows = (Collection<Integer>) listDataTable.getValue();
+		final List<Integer> sortedList = new ArrayList();
+		final List originalList = new ArrayList();
 
+		final Collection<Integer> selectedTableRows = (Collection<Integer>) listDataTable.getValue();
+		sortedList.addAll(selectedTableRows);
+		originalList.addAll(listDataTable.getItemIds());
+
+		Collections.sort(sortedList, new Comparator<Object>() {
+
+			public int compare(final Object o1, final Object o2) {
+				return originalList.indexOf(o1) - originalList.indexOf(o2);
+			}
+		});
 		// We use linkedHashSet to preserve the insertion order of GIDs based on order of the entries in the list.
 		// It's possible that the entries don't have a sequential GIDs so we cannot base the sequence of coded name through a sorted GID
 		// list.
 		// The sequence number in the coded name should follow the same order as the entries in the list.
 		final Set<Integer> gidsToProcess = new LinkedHashSet<>();
 
-		for (final Integer selectedRowId : selectedTableRows) {
+		for (final Integer selectedRowId : sortedList) {
 			final Item selectedRowItem = this.listDataTable.getItem(selectedRowId);
 			final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
 			if (gidCell != null) {
@@ -2247,7 +2261,7 @@ public class ListComponent extends VerticalLayout
 
 		// enables the save reservation option if there is actual lot that needs to be cancel which is already there in database
 		if (!this.persistedReservationToCancel.isEmpty()) {
-			ListComponent.this.inventoryViewMenu.setMenuInventorySaveChanges();
+			this.inventoryViewMenu.setMenuInventorySaveChanges();
 			this.setHasUnsavedChanges(true);
 		}
 
@@ -2391,8 +2405,9 @@ public class ListComponent extends VerticalLayout
 				return;
 			}
 
-			MessageNotifier.showMessage(ListComponent.this.getWindow(), ListComponent.this.messageSource.getMessage(Message.SUCCESS),
-					ListComponent.this.messageSource.getMessage(Message.LOTS_CLOSED_SUCCESSFULLY));
+			MessageNotifier.showMessage(
+				this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
+				this.messageSource.getMessage(Message.LOTS_CLOSED_SUCCESSFULLY));
 		}
 
 		final List<ListEntryLotDetails> lotWithAvailableBalanceEntryDetails = mapLotDetails.get(ListComponent.CLOSE_LOT_AVAILABLE_BALANCE);
@@ -2673,8 +2688,8 @@ public class ListComponent extends VerticalLayout
 		@Override
 		public void onClose(final ConfirmDialog dialog) {
 			if (dialog.isConfirmed()) {
-				listComponent.unfixLines(gidsToProcess);
-				listComponent.updateGermplasmListTable(gidsToProcess);
+				this.listComponent.unfixLines(this.gidsToProcess);
+				this.listComponent.updateGermplasmListTable(this.gidsToProcess);
 			}
 		}
 
