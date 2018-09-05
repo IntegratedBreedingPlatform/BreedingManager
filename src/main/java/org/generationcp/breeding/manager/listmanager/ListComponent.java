@@ -2144,12 +2144,12 @@ public class ListComponent extends VerticalLayout
 		// checks if the screen is in the inventory view
 		if (!this.inventoryViewMenu.isVisible()) {
 			MessageNotifier
-					.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING), "Please change to Inventory View first.");
+					.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING), "Please change to Inventory View first.");
 		} else {
 			final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
 			if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
-				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 						"Please select at least 1 lot to reserve.");
 			} else {
 				// this util handles the inventory reservation related functions
