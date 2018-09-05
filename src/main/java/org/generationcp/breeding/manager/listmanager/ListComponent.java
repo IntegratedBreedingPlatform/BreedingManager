@@ -655,7 +655,10 @@ public class ListComponent extends VerticalLayout
 			}
 		});
 
-		this.setFillWith();
+		final ListComponentFillWithSource fillWithSource =
+				new ListComponentFillWithSource(this.parentListDetailsComponent, this.listDataTable, ColumnLabels.GID.getName());
+		this.fillWith = new FillWith(fillWithSource, this.parentListDetailsComponent, this.messageSource);
+		this.fillWith.setContextMenuEnabled(this.listDataTable, !this.germplasmList.isLockedList());
 
 		this.makeTableEditable();
 
@@ -742,15 +745,7 @@ public class ListComponent extends VerticalLayout
 	}
 
 	private void setFillWith() {
-		if (!this.germplasmList.isLockedList()) {
-			final ListComponentFillWithSource fillWithSource =
-					new ListComponentFillWithSource(this.parentListDetailsComponent, this.listDataTable, ColumnLabels.GID.getName());
-			this.fillWith = new FillWith(fillWithSource, this.parentListDetailsComponent, this.messageSource);
-			this.fillWith.setTableHeaderListener(this.listDataTable);
-
-		} else {
-			this.fillWith = null;
-		}
+		this.fillWith.setContextMenuEnabled(this.listDataTable, !this.germplasmList.isLockedList());
 	}
 
 	@Override
