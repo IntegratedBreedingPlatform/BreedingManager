@@ -744,10 +744,6 @@ public class ListComponent extends VerticalLayout
 
 	}
 
-	private void setFillWith() {
-		this.fillWith.setContextMenuEnabled(this.listDataTable, !this.germplasmList.isLockedList());
-	}
-
 	@Override
 	public void layoutComponents() {
 		this.headerLayout = new HorizontalLayout();
@@ -1632,12 +1628,8 @@ public class ListComponent extends VerticalLayout
 	protected void setLockedState(final boolean locked) {
 		this.lockButton.setVisible(!locked);
 		this.unlockButton.setVisible(locked);
-
 		this.editHeaderButton.setVisible(!locked);
-
-		if (this.fillWith != null) {
-			this.fillWith.setContextMenuEnabled(this.listDataTable, !locked);
-		}
+		this.fillWith.setContextMenuEnabled(this.listDataTable, !locked);
 	}
 
 	private void copyToNewListAction() {
@@ -1927,7 +1919,6 @@ public class ListComponent extends VerticalLayout
 		this.germplasmList = this.germplasmListManager.getGermplasmListById(this.germplasmList.getId());
 
 		this.germplasmList.setStatus(toggledStatus);
-		this.setFillWith();
 		this.germplasmListManager.updateGermplasmList(this.germplasmList);
 		this.setLockedState(this.germplasmList.isLockedList());
 
@@ -1943,7 +1934,6 @@ public class ListComponent extends VerticalLayout
 	
 	public void updateGermplasmListStatus() {
 		this.germplasmList = this.germplasmListManager.getGermplasmListById(this.germplasmList.getId());
-		this.setFillWith();
 		this.setLockedState(this.germplasmList.isLockedList());
 		this.viewListHeaderWindow.setGermplasmListStatus(this.germplasmList.getStatus());
 	}
@@ -2700,5 +2690,9 @@ public class ListComponent extends VerticalLayout
 	
 	public Button getEditHeaderButton() {
 		return this.editHeaderButton;
+	}
+
+	public void setFillWith(final FillWith fillWith) {
+	  this.fillWith = fillWith;
 	}
 }
