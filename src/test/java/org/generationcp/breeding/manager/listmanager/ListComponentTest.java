@@ -1134,6 +1134,16 @@ public class ListComponentTest {
 
 	}
 
+	@Test
+    public void testReserveInventoryActionWithoutSelectedLot() {
+        this.listComponent.setInventoryViewMenu(this.inventoryViewMenu);
+        this.listComponent.setListInventoryTable(this.listManagerInventoryTable);
+        this.listComponent.reserveInventoryAction();
+
+        Mockito.verify(this.messageSource).getMessage(Message.ERROR);
+        Mockito.verify(this.messageSource).getMessage(Message.ERROR_RESERVE_INVENTORY_IF_NO_LOT_IS_SELECTED);
+    }
+
 	private Germplasm createGermplasm(final int gid, final int mgid) {
 		final Germplasm germplasm = new Germplasm();
 		germplasm.setMgid(mgid);

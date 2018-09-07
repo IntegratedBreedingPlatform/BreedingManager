@@ -2141,26 +2141,21 @@ public class ListComponent extends VerticalLayout
 	}
 
 	public void reserveInventoryAction() {
-		// checks if the screen is in the inventory view
-		if (!this.inventoryViewMenu.isVisible()) {
-			MessageNotifier
-					.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING), "Please change to Inventory View first.");
-		} else {
-			final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
-			if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
-				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-						"Please select at least 1 lot to reserve.");
+		final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
+
+		if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.ERROR_RESERVE_INVENTORY_IF_NO_LOT_IS_SELECTED));
+		} else {
+			// this util handles the inventory reservation related functions
+			this.reserveInventoryUtil = new ReserveInventoryUtil(this, lotDetailsGid);
+			if (ReserveInventoryUtil.isLotsContainsScale(lotDetailsGid)) {
+				this.reserveInventoryUtil.viewReserveInventoryWindow();
 			} else {
-				// this util handles the inventory reservation related functions
-				this.reserveInventoryUtil = new ReserveInventoryUtil(this, lotDetailsGid);
-				if (ReserveInventoryUtil.isLotsContainsScale(lotDetailsGid)) {
-					this.reserveInventoryUtil.viewReserveInventoryWindow();
-				} else {
-					MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.RESERVATION_STATUS),
-							this.messageSource
-									.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
-				}
+				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.RESERVATION_STATUS),
+						this.messageSource
+								.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
 			}
 		}
 	}
