@@ -1582,32 +1582,27 @@ public class ListBuilderComponent extends VerticalLayout
 	}
 
 	protected void reserveInventoryAction() {
-		// checks if the screen is in the inventory view
-		if (!this.inventoryViewMenu.isVisible()) {
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					this.messageSource.getMessage(Message.ERROR_RESERVE_INVENTORY_CHANGE_TO_INVENTORY_VIEW));
-		} else {
-			if (this.listInventoryTable.getInventoryTableDropHandler().isChanged()) {
-				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
-						this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_RESERVING_INVENTORY));
-			} else {
-				final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
-				if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
-					MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-							this.messageSource.getMessage(Message.ERROR_RESERVE_INVENTORY_IF_NO_LOT_IS_SELECTED));
+		if (this.listInventoryTable.getInventoryTableDropHandler().isChanged()) {
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
+					this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_RESERVING_INVENTORY));
+		} else {
+			final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
+
+			if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+						this.messageSource.getMessage(Message.ERROR_RESERVE_INVENTORY_IF_NO_LOT_IS_SELECTED));
+			} else {
+				// this util handles the inventory reservation related
+				// functions
+				this.reserveInventoryUtil = new ReserveInventoryUtil(this, lotDetailsGid);
+				if (ReserveInventoryUtil.isLotsContainsScale(lotDetailsGid)) {
+					this.reserveInventoryUtil.viewReserveInventoryWindow();
 				} else {
-					// this util handles the inventory reservation related
-					// functions
-					this.reserveInventoryUtil = new ReserveInventoryUtil(this, lotDetailsGid);
-					if (ReserveInventoryUtil.isLotsContainsScale(lotDetailsGid)) {
-						this.reserveInventoryUtil.viewReserveInventoryWindow();
-					} else {
-						MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.RESERVATION_STATUS),
-								this.messageSource
-										.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES)
-										+ ".");
-					}
+					MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.RESERVATION_STATUS),
+							this.messageSource
+									.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES)
+									+ ".");
 				}
 			}
 		}
