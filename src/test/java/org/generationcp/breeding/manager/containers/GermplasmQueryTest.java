@@ -309,7 +309,7 @@ public class GermplasmQueryTest {
 		// Add attribute type property Id
 		propertyIdsDefinition.add(ORI_COUN);
 		
-		List<String> result = query.getPropertyIdsOfAddableColumns(propertyIdsDefinition);
+		List<String> result = query.getPropertyIdsOfAddedColumns(propertyIdsDefinition);
 
 		Assert.assertFalse(result.contains(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID));
 		Assert.assertFalse(result.contains(GermplasmSearchResultsComponent.NAMES));

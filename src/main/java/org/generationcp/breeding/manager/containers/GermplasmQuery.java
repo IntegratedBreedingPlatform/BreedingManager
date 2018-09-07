@@ -227,13 +227,13 @@ public class GermplasmQuery implements Query {
 
 		// Retrieve and set the names of 'Fill With' columns added to the table so that search query will generate values for them.
 		this.searchParameter
-				.setAddedColumnsPropertyIds(getPropertyIdsOfAddableColumns(this.definition.getPropertyIds()));
+				.setAddedColumnsPropertyIds(getPropertyIdsOfAddedColumns(this.definition.getPropertyIds()));
 
 
 		return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
 	}
 
-	protected List<String> getPropertyIdsOfAddableColumns(final Collection<?> propertyIds) {
+	protected List<String> getPropertyIdsOfAddedColumns(final Collection<?> propertyIds) {
 
 		final List<String> propertyIdsOfColumnsAdded = new LinkedList<>();
 
