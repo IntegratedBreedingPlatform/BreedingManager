@@ -310,6 +310,22 @@ public class GermplasmColumnValuesGenerator {
 
 	}
 	
+	public void fillWithGermplasmName(final Integer nameType, final String columnName) {
+		if (nameType != null) {
+			final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
+			if (!gids.isEmpty()) {
+				Map<Integer, String> gidNamesMap = this.germplasmDataManager.getNamesByTypeAndGIDList(nameType, gids);
+				List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
+				for (final Object itemId : itemIds) {
+					Integer gid = this.fillColumnSource.getGidForItemId(itemId);
+					this.fillColumnSource.setColumnValueForItem(itemId, columnName, gidNamesMap.get(gid));
+				}
+				this.fillColumnSource.propagateUIChanges();
+			}
+		}
+
+	}
+	
 	public void fillWithSequence(final String columnName, final String prefix, final String suffix, final int startNumber, final int numOfZeros,
 			final boolean spaceBetweenPrefixAndCode, final boolean spaceBetweenSuffixAndCode) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();

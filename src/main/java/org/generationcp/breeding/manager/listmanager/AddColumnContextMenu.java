@@ -193,6 +193,10 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 			this.menuFillWithImmediateSourcePreferredName.setEnabled(!doExcludeImmediateSourcePreferredName);
 			this.sourceContextMenu.setWidth("325px");
 		}
+		
+		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_GERMPLASM_NAME)) {
+			this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_GERMPLASM_NAME);
+		}
 	}
 
 	private ContextMenuItem addFillWIthOptionToMenu(final FillWithOption option) {

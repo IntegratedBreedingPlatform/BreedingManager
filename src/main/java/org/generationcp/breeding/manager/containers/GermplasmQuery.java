@@ -203,10 +203,18 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), new ObjectProperty<>(germplasm.getImmediateSourceGID()));
 		propertyMap.put(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getImmediateSourcePreferredName()));
 
+		// Add Attribute Types
 		for (final Map.Entry<String, String> entry : germplasm.getAttributeTypesValueMap().entrySet()) {
 			final String attributeTypePropertyId = entry.getKey();
 			final String attributeTypeValue = entry.getValue();
 			propertyMap.put(attributeTypePropertyId, new ObjectProperty<>(attributeTypeValue));
+		}
+		
+		// Add Name Types
+		for (final Map.Entry<String, String> entry : germplasm.getNameTypesValueMap().entrySet()) {
+			final String nameTypePropertyId = entry.getKey();
+			final String nameTypeValue = entry.getValue();
+			propertyMap.put(nameTypePropertyId, new ObjectProperty<>(nameTypeValue));
 		}
 
 		for (final String propertyId : propertyMap.keySet()) {

@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
+import org.generationcp.breeding.manager.listmanager.FillWithGermplasmNameWindow;
 import org.generationcp.breeding.manager.listmanager.GermplasmColumnValuesGenerator;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
@@ -74,7 +75,11 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME.getMessageKey())
 				.equals(clickedOptionName)) {
 			addImmediateSourcePreferredNameColumn();
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GERMPLASM_NAME.getMessageKey())
+				.equals(clickedOptionName)) {
+			displayFillWithGermplasmNameWindow();
 		}
+		
 	}
 
 	void addImmediateSourcePreferredNameColumn() {
