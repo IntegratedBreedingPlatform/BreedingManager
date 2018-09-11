@@ -22,7 +22,7 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
 
-	protected ListTabComponent listTabComponent;
+	protected ListComponent listComponent;
 	protected Table targetTable;
 	protected String gidPropertyId;
 
@@ -30,8 +30,8 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 		// empty constructor needed for subclass
 	}
 
-	public ListComponentAddColumnSource(final ListTabComponent listTabComponent, final Table targetTable, final String gidPropertyId) {
-		this.listTabComponent = listTabComponent;
+	public ListComponentAddColumnSource(final ListComponent listComponent, final Table targetTable, final String gidPropertyId) {
+		this.listComponent = listComponent;
 		this.targetTable = targetTable;
 		this.gidPropertyId = gidPropertyId;
 	}
@@ -74,7 +74,7 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	@Override
 	public void propagateUIChanges() {
 		this.resetEditableTable();
-		this.listTabComponent.getListComponent().setHasUnsavedChanges(true);
+		this.listComponent.setHasUnsavedChanges(true);
 	}
 
 	protected void resetEditableTable() {
@@ -99,6 +99,11 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 
 	@Override
 	public void addColumn(final String columnName) {
+		addColumnToTable(columnName);
+		this.listComponent.addAttributeAndNameTypeColumn(columnName);
+	}
+
+	protected void addColumnToTable(final String columnName) {
 		this.targetTable.addContainerProperty(columnName.toUpperCase(), String.class, "");
 		this.targetTable.setColumnHeader(columnName.toUpperCase(), columnName);
 	}

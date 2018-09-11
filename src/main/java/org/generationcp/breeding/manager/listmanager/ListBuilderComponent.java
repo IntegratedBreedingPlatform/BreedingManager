@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -416,6 +417,7 @@ public class ListBuilderComponent extends VerticalLayout
 	private List<ListEntryLotDetails> persistedReservationToCancel;
 
 	private long listEntriesCount;
+	protected Set<String> attributeAndNameTypeColumns = new HashSet<>();
 
 	public ListBuilderComponent() {
 		super();
@@ -2177,6 +2179,15 @@ public class ListBuilderComponent extends VerticalLayout
 
 	public void setContextMenu(final ContextMenu menu) {
 		this.menu = menu;
+	}
+	
+	protected void addAttributeAndNameTypeColumn(final String column) {
+		this.attributeAndNameTypeColumns.add(column);
+	}
+
+	
+	public Set<String> getAttributeAndNameTypeColumns() {
+		return attributeAndNameTypeColumns;
 	}
 
 }

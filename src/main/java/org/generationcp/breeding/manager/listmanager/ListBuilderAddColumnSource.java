@@ -18,5 +18,11 @@ public class ListBuilderAddColumnSource extends ListComponentAddColumnSource {
 		resetEditableTable();
 		this.listBuilderComponent.setHasUnsavedChanges(true);
 	}
+	
+	@Override
+	public void addColumn(final String columnName) {
+		addColumnToTable(columnName);
+		this.listBuilderComponent.addAttributeAndNameTypeColumn(columnName);
+	}
 
 }

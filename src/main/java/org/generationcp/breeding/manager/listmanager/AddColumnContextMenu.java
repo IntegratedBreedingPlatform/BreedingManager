@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
@@ -309,7 +310,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	 *
 	 * @return
 	 */
-	public List<ListDataInfo> getListDataCollectionFromTable(final Table table) {
+	public List<ListDataInfo> getListDataCollectionFromTable(final Table table, final Set<String> attributeAndNameTypes) {
 		final List<ListDataInfo> listDataCollection = new ArrayList<>();
 		final List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
 
@@ -317,7 +318,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 			final Item item = table.getItem(itemId);
 			final List<ListDataColumn> columns = new ArrayList<>();
 			for (final String propertyId : propertyIds) {
-				if (ColumnLabels.getAddableGermplasmColumns().contains(propertyId)) {
+				if (ColumnLabels.getAddableGermplasmColumns().contains(propertyId) || attributeAndNameTypes.contains(propertyId)) {
 					if (item.getItemProperty(propertyId).getValue() != null) {
 						columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
 					} else {

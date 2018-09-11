@@ -41,6 +41,10 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This handles saving logic in ListBuilder component
+ *
+ */
 @Configurable
 public class SaveListButtonClickListener implements Button.ClickListener, InitializingBean {
 
@@ -216,7 +220,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 	private void saveListDataColumns(final GermplasmList listToSave) {
 		try {
 			this.germplasmListManager
-					.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(this.listDataTable));
+					.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(this.listDataTable, this.source.getAttributeAndNameTypeColumns()));
 		} catch (final MiddlewareQueryException e) {
 			SaveListButtonClickListener.LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),

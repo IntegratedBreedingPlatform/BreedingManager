@@ -4,7 +4,6 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.Arrays;
 import java.util.List;
 
-import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Before;
@@ -37,9 +36,6 @@ public class ListComponentAddColumnSourceTest {
 	private OntologyDataManager ontologyDataManager;
 
 	@Mock
-	private ListTabComponent listTabComponent;
-
-	@Mock
 	private ListComponent listComponent;
 
 	@Mock
@@ -54,7 +50,7 @@ public class ListComponentAddColumnSourceTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.addColumnSource =
-				new ListComponentAddColumnSource(this.listTabComponent, this.targetTable, ListComponentAddColumnSourceTest.GID_PROPERTY_ID);
+				new ListComponentAddColumnSource(this.listComponent, this.targetTable, ListComponentAddColumnSourceTest.GID_PROPERTY_ID);
 		this.addColumnSource.setOntologyDataManager(this.ontologyDataManager);
 
 		Mockito.doReturn(ListComponentAddColumnSourceTest.ITEMS_LIST).when(this.targetTable).getItemIds();
@@ -70,7 +66,6 @@ public class ListComponentAddColumnSourceTest {
 					new ObjectProperty<Button>(new Button(ListComponentAddColumnSourceTest.GID_LIST.get(i).toString())));
 			Mockito.doReturn(item).when(this.targetTable).getItem(itemId);
 		}
-		Mockito.doReturn(this.listComponent).when(this.listTabComponent).getListComponent();
 		Mockito.doReturn(this.window).when(this.targetTable).getWindow();
 	}
 

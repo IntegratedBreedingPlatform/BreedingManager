@@ -398,7 +398,7 @@ public class ListComponentTest {
 		this.listComponent.setAddColumnContextMenu(this.addColumnContextMenu);
 		this.listComponent.instantiateComponents();
 
-		Mockito.when(this.addColumnContextMenu.getListDataCollectionFromTable(listDataTable))
+		Mockito.when(this.addColumnContextMenu.getListDataCollectionFromTable(Matchers.eq(listDataTable), Matchers.anySetOf(String.class)))
 				.thenReturn(new ArrayList<ListDataInfo>());
 
 		this.listComponent.setListDataTable(listDataTable);
