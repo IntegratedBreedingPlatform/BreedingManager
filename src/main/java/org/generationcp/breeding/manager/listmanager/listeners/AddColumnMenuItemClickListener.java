@@ -197,11 +197,22 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 
 	void displayFillWithAttributeWindow() {
 		final Window mainWindow = this.addColumnSource.getWindow();
-		// 2nd parameter is null because user is yet to select the attribute
-		// type, which will become column name
-		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null, false);
+		// 2nd parameter is null because user is yet to select the attribute type, which will become column name
+		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null, isFromGermplasmSearchWindow());
 		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
 		mainWindow.addWindow(attributeWindow);
+	}
+	
+	void displayFillWithGermplasmNameWindow() {
+		final Window mainWindow = this.addColumnSource.getWindow();
+		// 2nd parameter is null because user is yet to select the name type, which will become column name
+		final Window attributeWindow = new FillWithGermplasmNameWindow(this.addColumnSource, null, isFromGermplasmSearchWindow());
+		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
+		mainWindow.addWindow(attributeWindow);
+	}
+	
+	Boolean isFromGermplasmSearchWindow() {
+		return false;
 	}
 
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {

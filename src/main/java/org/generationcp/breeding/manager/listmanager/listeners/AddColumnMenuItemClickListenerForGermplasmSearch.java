@@ -1,12 +1,10 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class AddColumnMenuItemClickListenerForGermplasmSearch extends AddColumnMenuItemClickListener {
@@ -135,16 +133,8 @@ public class AddColumnMenuItemClickListenerForGermplasmSearch extends AddColumnM
 	}
 
 	@Override
-	void displayFillWithAttributeWindow() {
-		// Get the main window to make sure that the attribute window will be
-		// added to the main window instead of the sub window
-		final Window mainWindow = this.addColumnSource.getWindow().getApplication().getMainWindow();
-
-		// 2nd parameter is null because user is yet to select the attribute
-		// type, which will become column name
-		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null, true);
-		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
-		mainWindow.addWindow(attributeWindow);
+	Boolean isFromGermplasmSearchWindow() {
+		return true;
 	}
 
 }

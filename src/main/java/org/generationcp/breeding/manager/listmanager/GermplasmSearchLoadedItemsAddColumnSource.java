@@ -139,7 +139,7 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 	@Override
 	public Window getWindow() {
-		return this.targetTable.getWindow();
+		return this.targetTable.getWindow().getApplication().getMainWindow();
 	}
 
 	@Override
