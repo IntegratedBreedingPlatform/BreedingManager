@@ -87,9 +87,9 @@ public class FillWithGermplasmNameWindow extends BaseSubWindow
 		this.nameTypesList = this.germplasmDataManager.getNameTypesByGIDList(gids);
 
 		for (final UserDefinedField nameType : this.nameTypesList) {
-			if(!this.addColumnSource.columnExists(nameType.getFcode())){
+			if(!this.addColumnSource.columnExists(nameType.getFname())){
 				this.namesTypeBox.addItem(nameType.getFldno());
-				this.namesTypeBox.setItemCaption(nameType.getFldno(), nameType.getFcode());
+				this.namesTypeBox.setItemCaption(nameType.getFldno(), nameType.getFname().toUpperCase());
 			}
 		}
 	}
