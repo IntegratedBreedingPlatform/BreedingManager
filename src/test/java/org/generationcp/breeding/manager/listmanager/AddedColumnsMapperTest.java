@@ -61,8 +61,7 @@ public class AddedColumnsMapperTest {
 
 	@Test
 	public void testGenerateValuesForAddedColumnsWhenNoAddedColumns() {
-		final boolean attributeTypesIncluded = false;
-		this.addedColumnsMapper.generateValuesForAddedColumns(STANDARD_COLUMNS, attributeTypesIncluded);
+		this.addedColumnsMapper.generateValuesForAddedColumns(STANDARD_COLUMNS);
 
 		Mockito.verifyZeroInteractions(this.valuesGenerator);
 		Mockito.verifyZeroInteractions(this.germplasmDataManager);
@@ -70,10 +69,9 @@ public class AddedColumnsMapperTest {
 
 	@Test
 	public void testGenerateValuesForAddedColumnsWhenColumnsAdded() {
-		final boolean attributeTypesIncluded = false;
 		final List<String> columns = new ArrayList<>(Arrays.asList(STANDARD_COLUMNS));
 		columns.addAll(ADDED_COLUMNS);
-		this.addedColumnsMapper.generateValuesForAddedColumns(columns.toArray(), attributeTypesIncluded);
+		this.addedColumnsMapper.generateValuesForAddedColumns(columns.toArray());
 		
 		Mockito.verify(this.valuesGenerator).setPreferredNameColumnValues(ColumnLabels.PREFERRED_NAME.getName());
 		Mockito.verify(this.valuesGenerator).setPreferredIdColumnValues(ColumnLabels.PREFERRED_ID.getName());
@@ -98,12 +96,11 @@ public class AddedColumnsMapperTest {
 	
 	@Test
 	public void testGenerateValuesForAddedColumnsWhenAtributeColumnsAdded() {
-		final boolean attributeTypesIncluded = true;
 		final List<String> columns = new ArrayList<>(Arrays.asList(STANDARD_COLUMNS));
 		columns.add(ATTRIBUTE_TYPE_CODE1);
 		columns.add(ATTRIBUTE_TYPE_CODE2);
 		
-		this.addedColumnsMapper.generateValuesForAddedColumns(columns.toArray(), attributeTypesIncluded);
+		this.addedColumnsMapper.generateValuesForAddedColumns(columns.toArray());
 		
 		// Check that attribute type columns are capitalized
 		Mockito.verify(this.valuesGenerator).fillWithAttribute(ATTRIBUTE_TYPE_ID1, ATTRIBUTE_TYPE_CODE1.toUpperCase());

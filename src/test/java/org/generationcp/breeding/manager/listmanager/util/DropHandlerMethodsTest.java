@@ -530,7 +530,7 @@ public class DropHandlerMethodsTest {
 		
 		Mockito.verify(this.newEntriesFillSource).setAddedGids(selectedItems);
 		Mockito.verify(this.newEntriesFillSource).setAddedItemIds(selectedItems);
-		Mockito.verify(this.addedColumnsMapper).generateValuesForAddedColumns(this.targetTable.getVisibleColumns(), false);
+		Mockito.verify(this.addedColumnsMapper).generateValuesForAddedColumns(this.targetTable.getVisibleColumns());
 	}
 
 	private void verifyGermplasmListDataFromListIsTransferredProperly(final GermplasmList germplasmList) {

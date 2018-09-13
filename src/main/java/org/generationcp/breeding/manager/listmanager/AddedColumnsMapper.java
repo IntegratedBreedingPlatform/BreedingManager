@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.listmanager.api.FillColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -18,6 +19,9 @@ public class AddedColumnsMapper {
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 	
+	@Autowired
+	private GermplasmListManager germplasmListManager;
+	
 	private GermplasmColumnValuesGenerator valuesGenerator;
 	
 	public AddedColumnsMapper(final FillColumnSource fillWithSource) {
@@ -25,7 +29,7 @@ public class AddedColumnsMapper {
 		this.valuesGenerator = new GermplasmColumnValuesGenerator(fillWithSource);
 	}
 	
-	public void generateValuesForAddedColumns(final Object[] visibleColumns, final boolean attributeTypesAddable) {
+	public void generateValuesForAddedColumns(final Object[] visibleColumns) {
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.PREFERRED_ID.getName())) {
 			this.valuesGenerator.setPreferredIdColumnValues(ColumnLabels.PREFERRED_ID.getName());
 		}
@@ -78,20 +82,26 @@ public class AddedColumnsMapper {
 			this.valuesGenerator.setImmediateSourcePreferredNameColumnValues(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName());
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.IMMEDIATE_SOURCE_GID.getName())) {
-			this.valuesGenerator.setImmediateSourceGidColumnValues(
-
-				ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
+			this.valuesGenerator.setImmediateSourceGidColumnValues(ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
 		}
 		
 		// Check if any of the columns are attribute types
-		if (attributeTypesAddable) {
-			final Map<String, Integer> attributeTypesMap = this.getAllAttributeTypesMap();
-			for (final Object column : visibleColumns){
-				final String columnName = column.toString().toUpperCase();
-				final Integer attributeTypeId = attributeTypesMap.get(columnName);
-				if (attributeTypeId != null) {
-					this.valuesGenerator.fillWithAttribute(attributeTypeId, columnName);
-				}
+		final Map<String, Integer> attributeTypesMap = this.getAllAttributeTypesMap();
+		for (final Object column : visibleColumns){
+			final String columnName = column.toString().toUpperCase();
+			final Integer attributeTypeId = attributeTypesMap.get(columnName);
+			if (attributeTypeId != null) {
+				this.valuesGenerator.fillWithAttribute(attributeTypeId, columnName);
+			}
+		}
+		
+		// Check if any of the columns are name types
+		final Map<String, Integer> nameTypesMap = this.getAllNameTypesMap();
+		for (final Object column : visibleColumns){
+			final String columnName = column.toString().toUpperCase();
+			final Integer nameTypeId = nameTypesMap.get(columnName);
+			if (nameTypeId != null) {
+				this.valuesGenerator.fillWithGermplasmName(nameTypeId, columnName);
 			}
 		}
 	}
@@ -104,6 +114,15 @@ public class AddedColumnsMapper {
 			attributeTypesMap.put(attributeType.getFcode().toUpperCase(), attributeType.getFldno());
 		}
 		return attributeTypesMap;
+	}
+	
+	Map<String, Integer> getAllNameTypesMap() {
+		final Map<String, Integer> nameTypesMap = new HashMap<>();
+		final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
+		for (final UserDefinedField attributeType : nameTypes) {
+			nameTypesMap.put(attributeType.getFname().toUpperCase(), attributeType.getFldno());
+		}
+		return nameTypesMap;
 	}
 	
 	private boolean isColumnVisible(final Object[] columns, final String columnName) {

@@ -389,16 +389,17 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		final Table newTable = new Table();
 		newTable.setDebugId("newTable");
 
+		List<String> addedColumns = this.source.getAddColumnContextMenu().getAddedColumns(sourceTable, this.source.getAttributeAndNameTypeColumns());
 		// copy added column values from source table
 		for (final Object sourceItemId : sourceTable.getItemIds()) {
 			final Item sourceItem = sourceTable.getItem(sourceItemId);
 			final Item newItem = newTable.addItem(sourceItemId);
 
-			for (final String addablePropertyId : ColumnLabels.getAddableGermplasmColumns()) {
+			for (final String addablePropertyId : addedColumns) {
 				// copy only addable properties present in source table
 				if (AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable)) {
 					// setup added columns first before copying values
-					this.createContainerPropertyOfAddedColumnToTempTable(newTable, addablePropertyId);
+					newTable.addContainerProperty(addablePropertyId, String.class, "");
 
 					// copy value to new table
 					final Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
@@ -408,13 +409,6 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		}
 
 		return newTable;
-	}
-
-	public void createContainerPropertyOfAddedColumnToTempTable(final Table newTable, final String addablePropertyId) {
-
-		if (ColumnLabels.getAddableGermplasmColumns().contains(addablePropertyId)) {
-			newTable.addContainerProperty(addablePropertyId, String.class, "");
-		}
 	}
 
 	private void copyAddedColumnsFromTemp(final Table tempTable) {

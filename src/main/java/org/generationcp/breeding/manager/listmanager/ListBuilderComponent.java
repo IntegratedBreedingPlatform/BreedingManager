@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -61,14 +60,12 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -307,9 +304,6 @@ public class ListBuilderComponent extends VerticalLayout
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Autowired
-	private GermplasmDataManager germplasmDataManager;
-
-	@Autowired
 	private GermplasmListManager germplasmListManager;
 
 	@Autowired
@@ -318,9 +312,6 @@ public class ListBuilderComponent extends VerticalLayout
 	@Autowired
 	@Resource
 	private OntologyDataManager ontologyDataManager;
-
-	@Autowired
-	private PedigreeService pedigreeService;
 
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
@@ -417,7 +408,7 @@ public class ListBuilderComponent extends VerticalLayout
 	private List<ListEntryLotDetails> persistedReservationToCancel;
 
 	private long listEntriesCount;
-	protected Set<String> attributeAndNameTypeColumns = new HashSet<>();
+	protected List<String> attributeAndNameTypeColumns = new ArrayList<>();
 
 	public ListBuilderComponent() {
 		super();
@@ -589,9 +580,7 @@ public class ListBuilderComponent extends VerticalLayout
 		this.inventoryViewToolsButton.setData(ListBuilderComponent.TOOLS_BUTTON_ID);
 
 		this.dropHandler =
-				new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
-						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
-						this.transactionManager);
+				new BuildNewListDropHandler(this.source, this.tableWithSelectAllLayout.getTable());
 
 		this.saveButton = new Button();
 		this.saveButton.setDebugId("saveButton");
@@ -1172,9 +1161,7 @@ public class ListBuilderComponent extends VerticalLayout
 		this.buildNewListTitle.setValue(this.messageSource.getMessage(Message.BUILD_A_NEW_LIST));
 
 		this.dropHandler =
-				new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
-						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
-						this.transactionManager);
+				new BuildNewListDropHandler(this.source,this.tableWithSelectAllLayout.getTable());
 		this.initializeHandlers();
 
 		// Reset Save Listener
@@ -2184,10 +2171,13 @@ public class ListBuilderComponent extends VerticalLayout
 	protected void addAttributeAndNameTypeColumn(final String column) {
 		this.attributeAndNameTypeColumns.add(column);
 	}
-
 	
-	public Set<String> getAttributeAndNameTypeColumns() {
+	public List<String> getAttributeAndNameTypeColumns() {
 		return attributeAndNameTypeColumns;
+	}
+	
+	public Boolean listHasAddedColumns() {
+		return this.addColumnContextMenu.hasAddedColumn(listDataTable, attributeAndNameTypeColumns); 
 	}
 
 }

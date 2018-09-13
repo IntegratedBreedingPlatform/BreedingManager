@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -156,7 +155,7 @@ public class ListComponent extends VerticalLayout
 	private ListTabComponent parentListDetailsComponent;
 	private GermplasmList germplasmList;
 
-	private Set<String> attributeAndNameTypeColumns = new HashSet<>();
+	private List<String> attributeAndNameTypeColumns = new ArrayList<>();
 	private long listEntriesCount;
 	private String designationOfListEntriesDeleted = "";
 
@@ -2667,6 +2666,11 @@ public class ListComponent extends VerticalLayout
 		this.attributeAndNameTypeColumns.add(column);
 	}
 	
+	
+	public List<String> getAttributeAndNameTypeColumns() {
+		return attributeAndNameTypeColumns;
+	}
+
 	public Button getLockButton() {
 		return this.lockButton;
 	}
@@ -2677,5 +2681,9 @@ public class ListComponent extends VerticalLayout
 	
 	public Button getEditHeaderButton() {
 		return this.editHeaderButton;
+	}
+	
+	public Boolean listHasAddedColumns() {
+		return this.addColumnContextMenu.hasAddedColumn(listDataTable, attributeAndNameTypeColumns); 
 	}
 }

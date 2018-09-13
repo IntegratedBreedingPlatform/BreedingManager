@@ -28,6 +28,8 @@ public class AddColumnContextMenuTest {
 	private static final String ADD_COLUMN = "Add Column";
 
 	private static final String FILL_WITH_ATTRIBUTE = "Fill with Attribute";
+	
+	private static final String FILL_WITH_GERMPLASM_NAME = "Fill with Germplasm Name";
 
 	private static final String[] STANDARD_COLUMNS =
 			{ColumnLabels.GID.getName(), ColumnLabels.DESIGNATION.getName(), ColumnLabels.SEED_SOURCE.getName(),
@@ -39,10 +41,8 @@ public class AddColumnContextMenuTest {
 			ColumnLabels.BREEDING_METHOD_NUMBER.getName(), ColumnLabels.BREEDING_METHOD_GROUP.getName(),
 			ColumnLabels.CROSS_FEMALE_GID.getName(), ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
 			ColumnLabels.CROSS_MALE_GID.getName(), ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(),
-
-		ColumnLabels.GROUP_SOURCE_GID.getName(), ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(),
-		ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()
-		);
+			ColumnLabels.GROUP_SOURCE_GID.getName(), ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(),
+			ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()		);
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -140,7 +140,8 @@ public class AddColumnContextMenuTest {
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey());
 		Mockito.doReturn(AddColumnContextMenuTest.FILL_WITH_ATTRIBUTE).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey());
-
+		Mockito.doReturn(AddColumnContextMenuTest.FILL_WITH_GERMPLASM_NAME).when(this.messageSource)
+				.getMessage(FillWithOption.FILL_WITH_GERMPLASM_NAME.getMessageKey());
 
 		Mockito.doReturn(FillWithOption.FILL_WITH_GROUP_SOURCE_INFO.name()).when(this.messageSource)
 			.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_INFO.getMessageKey());
@@ -213,6 +214,9 @@ public class AddColumnContextMenuTest {
 		Mockito.verify(spySubMenuItem).addItem(FillWithOption.FILL_WITH_CROSS_FEMALE_INFO.name());
 		Mockito.verify(spySubMenuItem).addItem(FillWithOption.FILL_WITH_CROSS_MALE_INFO.name());
 		Mockito.verify(spySubMenuItem).addItem(AddColumnContextMenuTest.FILL_WITH_ATTRIBUTE);
+		Mockito.verify(spySubMenuItem).addItem(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_INFO.name());
+		Mockito.verify(spySubMenuItem).addItem(FillWithOption.FILL_WITH_GROUP_SOURCE_INFO.name());
+		Mockito.verify(spySubMenuItem).addItem(AddColumnContextMenuTest.FILL_WITH_GERMPLASM_NAME);
 	}
 
 	@Test
@@ -381,22 +385,6 @@ public class AddColumnContextMenuTest {
 		Mockito.verify(spySubMenuItem).addItem(FillWithOption.FILL_WITH_CROSS_FEMALE_INFO.name());
 		Mockito.verify(spySubMenuItem).addItem(FillWithOption.FILL_WITH_CROSS_MALE_INFO.name());
 		Mockito.verify(spySubMenuItem, Mockito.never()).addItem(AddColumnContextMenuTest.FILL_WITH_ATTRIBUTE);
-	}
-
-	@Test
-	public void testSourceHadAddedColumnWhenNoAddedColumns() {
-		final boolean hasAddedColumn = AddColumnContextMenu.sourceHadAddedColumn(AddColumnContextMenuTest.STANDARD_COLUMNS);
-		Assert.assertFalse(hasAddedColumn);
-	}
-
-	@Test
-	public void testSourceHadAddedColumnWhenThereAreAddedColumns() {
-		final List<String> columns = new ArrayList<>(Arrays.asList(AddColumnContextMenuTest.STANDARD_COLUMNS));
-		columns.add(ColumnLabels.PREFERRED_NAME.getName());
-		columns.add(ColumnLabels.GERMPLASM_LOCATION.getName());
-
-		final boolean hasAddedColumn = AddColumnContextMenu.sourceHadAddedColumn(columns.toArray());
-		Assert.assertTrue(hasAddedColumn);
 	}
 
 	@Test

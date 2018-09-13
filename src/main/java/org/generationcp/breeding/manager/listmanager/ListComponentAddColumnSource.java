@@ -18,11 +18,11 @@ import com.vaadin.ui.Window;
 
 @Configurable
 public class ListComponentAddColumnSource implements AddColumnSource {
-
+	
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
 
-	protected ListComponent listComponent;
+	private ListComponent listComponent;
 	protected Table targetTable;
 	protected String gidPropertyId;
 
@@ -100,12 +100,12 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	@Override
 	public void addColumn(final String columnName) {
 		addColumnToTable(columnName);
-		this.listComponent.addAttributeAndNameTypeColumn(columnName);
+		this.listComponent.addAttributeAndNameTypeColumn(columnName.toUpperCase());
 	}
 
 	protected void addColumnToTable(final String columnName) {
 		this.targetTable.addContainerProperty(columnName.toUpperCase(), String.class, "");
-		this.targetTable.setColumnHeader(columnName.toUpperCase(), columnName);
+		this.targetTable.setColumnHeader(columnName.toUpperCase(), columnName.toUpperCase());
 	}
 
 	@Override

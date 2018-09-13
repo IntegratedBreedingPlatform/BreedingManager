@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
@@ -13,6 +12,8 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -22,6 +23,8 @@ import com.vaadin.ui.Table;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AddColumnContextMenu.class);
 
 	private final SimpleResourceBundleMessageSource messageSource;
 
@@ -310,7 +313,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	 *
 	 * @return
 	 */
-	public List<ListDataInfo> getListDataCollectionFromTable(final Table table, final Set<String> attributeAndNameTypes) {
+	public List<ListDataInfo> getListDataCollectionFromTable(final Table table, final List<String> attributeAndNameTypes) {
 		final List<ListDataInfo> listDataCollection = new ArrayList<>();
 		final List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
 
@@ -318,17 +321,46 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 			final Item item = table.getItem(itemId);
 			final List<ListDataColumn> columns = new ArrayList<>();
 			for (final String propertyId : propertyIds) {
-				if (ColumnLabels.getAddableGermplasmColumns().contains(propertyId) || attributeAndNameTypes.contains(propertyId)) {
+				if (isAddedColumn(attributeAndNameTypes, propertyId)) {
 					if (item.getItemProperty(propertyId).getValue() != null) {
 						columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
 					} else {
 						columns.add(new ListDataColumn(propertyId, null));
 					}
+					LOG.info(">> Added column " + propertyId + " for item id: " + itemId + " with value = " + item.getItemProperty(propertyId).getValue() + " >> " + (item.getItemProperty(propertyId).getValue() == null));
 				}
 			}
 			listDataCollection.add(new ListDataInfo(Integer.valueOf(itemId.toString()), columns));
 		}
 		return listDataCollection;
+	}
+	
+	public List<String> getAddedColumns(final Table table, final List<String> attributeAndNameTypes) {
+		final List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
+		final List<String> addedColumns = new ArrayList<>();
+		for (final String propertyId : propertyIds) {
+			if (isAddedColumn(attributeAndNameTypes, propertyId)) {
+				addedColumns.add(propertyId);
+			}
+		}
+		return addedColumns;
+	}
+	
+	public Boolean hasAddedColumn(final Table table, final List<String> attributeAndNameTypes) {
+		if (!attributeAndNameTypes.isEmpty()) {
+			return true;
+		}
+		final List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
+		for (final String propertyId : propertyIds) {
+			if (ColumnLabels.getAddableGermplasmColumns().contains(propertyId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isAddedColumn(final List<String> attributeAndNameTypes, final String propertyId) {
+		return ColumnLabels.getAddableGermplasmColumns().contains(propertyId) || attributeAndNameTypes.contains(propertyId);
 	}
 
 	public void showHideAddColumnMenu(final boolean visible) {
@@ -342,15 +374,6 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 	public void setVisible(final Boolean state) {
 		this.addColumnItem.setVisible(state);
-	}
-
-	public static boolean sourceHadAddedColumn(final Object[] visibleColumns) {
-		for (final Object column : visibleColumns) {
-			if (ColumnLabels.getAddableGermplasmColumns().contains(column.toString())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public ContextMenuItem getAddColumnItem() {

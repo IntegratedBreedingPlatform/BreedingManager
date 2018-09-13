@@ -147,62 +147,6 @@ public class SaveListButtonClickListenerTest {
 	}
 
 	@Test
-	public void testCreateContainerPropertyOfAddedColumnToTempTable() {
-		final Table newTable = Mockito.mock(Table.class);
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.PREFERRED_ID.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.PREFERRED_ID.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.PREFERRED_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.PREFERRED_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GERMPLASM_DATE.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GERMPLASM_DATE.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GERMPLASM_LOCATION.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_NUMBER.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_GROUP.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_GROUP.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_FEMALE_GID.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_FEMALE_GID.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_MALE_GID.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_MALE_GID.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GROUP_SOURCE_GID.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GROUP_SOURCE_GID.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "DUMMY COLUMN");
-		Mockito.verify(newTable, Mockito.times(0)).addContainerProperty("DUMMY COLUMN", String.class, "");
-	}
-
-	@Test
 	public void testDoSaveActionWhenUnsavedReservationThrowErrorMessageOfUnsavedReservation() {
 		final ListManagerMain listManagerMain = Mockito.mock(ListManagerMain.class);
 		final ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);

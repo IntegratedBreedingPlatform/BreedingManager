@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.List;
+
 import com.vaadin.ui.Table;
 
 public class ListBuilderAddColumnSource extends ListComponentAddColumnSource {
@@ -22,7 +24,7 @@ public class ListBuilderAddColumnSource extends ListComponentAddColumnSource {
 	@Override
 	public void addColumn(final String columnName) {
 		addColumnToTable(columnName);
-		this.listBuilderComponent.addAttributeAndNameTypeColumn(columnName);
+		this.listBuilderComponent.addAttributeAndNameTypeColumn(columnName.toUpperCase());
 	}
 
 }

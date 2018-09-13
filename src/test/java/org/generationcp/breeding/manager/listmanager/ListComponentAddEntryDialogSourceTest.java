@@ -119,7 +119,7 @@ public class ListComponentAddEntryDialogSourceTest {
 		Mockito.verify(this.listComponent).addListEntryToTable(Matchers.any(GermplasmListData.class));
 		Mockito.verify(this.newEntriesSource).setAddedItemIds(Matchers.anyListOf(Integer.class));
 		Mockito.verify(this.newEntriesSource).setAddedGids(Matchers.anyListOf(Integer.class));
-		Mockito.verify(this.addedColumnsMapper).generateValuesForAddedColumns(columns.toArray(), false);
+		Mockito.verify(this.addedColumnsMapper).generateValuesForAddedColumns(columns.toArray());
 		;
 		Mockito.verify(this.listComponent).saveChangesAction(this.listComponent.getWindow(), false);
 		Mockito.verify(this.table).refreshRowCache();

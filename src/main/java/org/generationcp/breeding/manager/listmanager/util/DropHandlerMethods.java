@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.containers.GermplasmQuery;
 import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
@@ -41,6 +42,7 @@ import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -75,10 +77,22 @@ public class DropHandlerMethods {
 	private NewGermplasmEntriesFillColumnSource newEntriesFillSource;
 	private AddedColumnsMapper addedColumnsMapper;
 
+	@Autowired
 	protected GermplasmDataManager germplasmDataManager;
+	
+	@Autowired
 	protected GermplasmListManager germplasmListManager;
+	
+	@Autowired
 	protected InventoryDataManager inventoryDataManager;
+	
+	@Autowired
+	protected CrossExpansionProperties crossExpansionProperties;
+	
+	@Autowired
 	protected PedigreeService pedigreeService;
+	
+	@Resource
 	protected PlatformTransactionManager transactionManager;
 
 	private static final Logger LOG = LoggerFactory.getLogger(DropHandlerMethods.class);
@@ -98,8 +112,6 @@ public class DropHandlerMethods {
 	protected static final String MATCHING_GERMPLASMS_TABLE_DATA = GermplasmSearchResultsComponent.MATCHING_GEMRPLASM_TABLE_DATA;
 	protected static final String MATCHING_LISTS_TABLE_DATA = ListSearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
 	protected static final String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
-
-	protected CrossExpansionProperties crossExpansionProperties;
 
 	@SuppressWarnings("unchecked")
 	protected Boolean hasSelectedItems(final Table table) {
@@ -641,12 +653,16 @@ public class DropHandlerMethods {
 	}
 
 	void generateAddedColumnValuesForAddedEntry(final List<Integer> itemIds, final List<Integer> gids) {
-		if (AddColumnContextMenu.sourceHadAddedColumn(this.targetTable.getVisibleColumns())) {
+		if (this.targetTableHasAddedColumn()) {
 			this.newEntriesFillSource.setAddedItemIds(itemIds);
 			this.newEntriesFillSource.setAddedGids(gids);
-			// Add Column > "Fill With Attribute" is disabled in ListBuilder context hence 2nd parameter is false
-			this.addedColumnsMapper.generateValuesForAddedColumns(this.targetTable.getVisibleColumns(), false);
+			this.addedColumnsMapper.generateValuesForAddedColumns(this.targetTable.getVisibleColumns());
 		}
+	}
+	
+	Boolean targetTableHasAddedColumn() {
+		// By default, assume that table has no added column. Logic will be overridden in subclasses, if necessary
+		return false;
 	}
 
 	/**

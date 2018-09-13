@@ -179,8 +179,7 @@ public class BuildNewListDropHandlerTest {
 
 		Mockito.doReturn(listData).when(this.inventoryDataManager).getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList());
 
-		this.dropHandler = new BuildNewListDropHandler(this.listManagerMain, this.germplasmDataManager, this.germplasmListManager,
-				this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.targetTable, this.transactionManager);
+		this.dropHandler = new BuildNewListDropHandler(this.listManagerMain, this.targetTable);
 
 		// other mock injections
 		this.dropHandler.setCurrentColumnsInfo(this.currentColumnsInfo);

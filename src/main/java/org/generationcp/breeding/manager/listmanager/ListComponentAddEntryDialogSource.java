@@ -151,11 +151,10 @@ public class ListComponentAddEntryDialogSource implements AddEntryDialogSource {
 				this.listComponent.addListEntryToTable(listData);
 
 				// Generate values for added columns, if any
-				if (AddColumnContextMenu.sourceHadAddedColumn(this.listDataTable.getVisibleColumns())) {
+				if (this.listComponent.listHasAddedColumns()) {
 					this.newEntriesSource.setAddedItemIds(Arrays.asList(listDataId));
 					this.newEntriesSource.setAddedGids(Arrays.asList(gid));
-					// Add Column > "Fill With Attribute" is disabled in View List context hence 2nd parameter is false
-					this.addedColumnsMapper.generateValuesForAddedColumns(this.listDataTable.getVisibleColumns(), false);
+					this.addedColumnsMapper.generateValuesForAddedColumns(this.listDataTable.getVisibleColumns());
 				}
 
 				this.listComponent.saveChangesAction(this.listComponent.getWindow(), false);

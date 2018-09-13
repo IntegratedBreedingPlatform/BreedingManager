@@ -7,14 +7,9 @@ import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.middleware.constant.ColumnLabels;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.service.api.PedigreeService;
-import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -29,23 +24,16 @@ import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableTransferable;
 
+@Configurable
 public class BuildNewListDropHandler extends DropHandlerMethods implements DropHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BuildNewListDropHandler.class);
 	private static final long serialVersionUID = 1L;
 
-	public BuildNewListDropHandler(final ListManagerMain listManagerMain, final GermplasmDataManager germplasmDataManager,
-			final GermplasmListManager germplasmListManager, final InventoryDataManager inventoryDataManager,
-			final PedigreeService pedigreeService, final CrossExpansionProperties crossExpansionProperties, final Table targetTable,
-			final PlatformTransactionManager transactionManager) {
+	
+	public BuildNewListDropHandler(final ListManagerMain listManagerMain, final Table targetTable) {
 		this.listManagerMain = listManagerMain;
-		this.germplasmDataManager = germplasmDataManager;
-		this.germplasmListManager = germplasmListManager;
-		this.inventoryDataManager = inventoryDataManager;
-		this.pedigreeService = pedigreeService;
-		this.crossExpansionProperties = crossExpansionProperties;
 		this.setTargetTable(targetTable);
-		this.transactionManager = transactionManager;
 	}
 
 	@Override
@@ -157,5 +145,10 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 	@Override
 	public AcceptCriterion getAcceptCriterion() {
 		return AcceptAll.get();
+	}
+
+	@Override
+	Boolean targetTableHasAddedColumn() {
+		return this.listManagerMain.getListBuilderComponent().listHasAddedColumns();
 	}
 }
