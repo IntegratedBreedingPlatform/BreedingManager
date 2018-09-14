@@ -217,7 +217,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		}
 	}
 
-	private void saveListDataColumns(final GermplasmList listToSave) {
+	void saveListDataColumns(final GermplasmList listToSave) {
 		try {
 			this.germplasmListManager
 					.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(this.listDataTable, this.source.getAttributeAndNameTypeColumns()));
@@ -385,7 +385,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		return tagCheckBox;
 	}
 
-	private Table cloneAddedColumnsToTemp(final Table sourceTable) {
+	Table cloneAddedColumnsToTemp(final Table sourceTable) {
 		final Table newTable = new Table();
 		newTable.setDebugId("newTable");
 
@@ -396,15 +396,12 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 			final Item newItem = newTable.addItem(sourceItemId);
 
 			for (final String addablePropertyId : addedColumns) {
-				// copy only addable properties present in source table
-				if (AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable)) {
-					// setup added columns first before copying values
-					newTable.addContainerProperty(addablePropertyId, String.class, "");
+				// setup added columns first before copying values
+				newTable.addContainerProperty(addablePropertyId, String.class, "");
 
-					// copy value to new table
-					final Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
-					newItem.getItemProperty(addablePropertyId).setValue(sourceItemProperty.getValue());
-				}
+				// copy value to new table
+				final Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
+				newItem.getItemProperty(addablePropertyId).setValue(sourceItemProperty.getValue());
 			}
 		}
 

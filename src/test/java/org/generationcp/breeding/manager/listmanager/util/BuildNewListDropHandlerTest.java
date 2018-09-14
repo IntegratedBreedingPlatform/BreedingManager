@@ -39,6 +39,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableTransferable;
 
+import junit.framework.Assert;
+
 public class BuildNewListDropHandlerTest {
 	
 	private static final String[] STANDARD_COLUMNS =
@@ -180,6 +182,12 @@ public class BuildNewListDropHandlerTest {
 		Mockito.doReturn(listData).when(this.inventoryDataManager).getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList());
 
 		this.dropHandler = new BuildNewListDropHandler(this.listManagerMain, this.targetTable);
+		this.dropHandler.setTransactionManager(this.transactionManager);
+		this.dropHandler.setCrossExpansionProperties(this.crossExpansionProperties);
+		this.dropHandler.setInventoryDataManager(this.inventoryDataManager);
+		this.dropHandler.setGermplasmDataManager(this.germplasmDataManager);
+		this.dropHandler.setGermplasmListManager(this.germplasmListManager);
+		this.dropHandler.setPedigreeService(this.pedigreeService);
 
 		// other mock injections
 		this.dropHandler.setCurrentColumnsInfo(this.currentColumnsInfo);
@@ -290,6 +298,16 @@ public class BuildNewListDropHandlerTest {
 		Mockito.verify(this.sourceTable, Mockito.times(1)).getItem(BuildNewListDropHandlerTest.GID2);
 
 		this.verifyEachPropertyIsProperlyFilledUp(newItem);
+	}
+	
+	@Test
+	public void testTargetTableHasAddedColumn() {
+		Mockito.doReturn(true).when(this.listBuilderComponent).listHasAddedColumns();
+		Assert.assertTrue(this.dropHandler.targetTableHasAddedColumn());
+		
+		Mockito.doReturn(false).when(this.listBuilderComponent).listHasAddedColumns();
+		Assert.assertFalse(this.dropHandler.targetTableHasAddedColumn());
+		
 	}
 
 	private void addMockPropToItem(final Item item) {

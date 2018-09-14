@@ -12,8 +12,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -24,8 +22,6 @@ import com.vaadin.ui.Table;
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(AddColumnContextMenu.class);
-
 	private final SimpleResourceBundleMessageSource messageSource;
 
 	private final ContextMenu sourceContextMenu;
@@ -316,18 +312,17 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	public List<ListDataInfo> getListDataCollectionFromTable(final Table table, final List<String> attributeAndNameTypes) {
 		final List<ListDataInfo> listDataCollection = new ArrayList<>();
 		final List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
-
+		final List<String> addedColumns = this.getAddedColumns(table, attributeAndNameTypes);
 		for (final Object itemId : table.getItemIds()) {
 			final Item item = table.getItem(itemId);
 			final List<ListDataColumn> columns = new ArrayList<>();
 			for (final String propertyId : propertyIds) {
-				if (isAddedColumn(attributeAndNameTypes, propertyId)) {
+				if (addedColumns.contains(propertyId)) {
 					if (item.getItemProperty(propertyId).getValue() != null) {
 						columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
 					} else {
 						columns.add(new ListDataColumn(propertyId, null));
 					}
-					LOG.info(">> Added column " + propertyId + " for item id: " + itemId + " with value = " + item.getItemProperty(propertyId).getValue() + " >> " + (item.getItemProperty(propertyId).getValue() == null));
 				}
 			}
 			listDataCollection.add(new ListDataInfo(Integer.valueOf(itemId.toString()), columns));

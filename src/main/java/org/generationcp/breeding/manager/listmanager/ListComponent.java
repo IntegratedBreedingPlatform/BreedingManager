@@ -2671,6 +2671,10 @@ public class ListComponent extends VerticalLayout
 		return attributeAndNameTypeColumns;
 	}
 
+	void setAttributeAndNameTypeColumns(List<String> attributeAndNameTypeColumns) {
+		this.attributeAndNameTypeColumns = attributeAndNameTypeColumns;
+	}
+	
 	public Button getLockButton() {
 		return this.lockButton;
 	}

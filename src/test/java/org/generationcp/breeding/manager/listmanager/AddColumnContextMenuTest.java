@@ -8,8 +8,9 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
+import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -19,6 +20,8 @@ import org.mockito.Spy;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 
 import junit.framework.Assert;
@@ -34,15 +37,6 @@ public class AddColumnContextMenuTest {
 	private static final String[] STANDARD_COLUMNS =
 			{ColumnLabels.GID.getName(), ColumnLabels.DESIGNATION.getName(), ColumnLabels.SEED_SOURCE.getName(),
 					ColumnLabels.ENTRY_CODE.getName(), ColumnLabels.GROUP_ID.getName(), ColumnLabels.STOCKID.getName()};
-
-	private static final List<String> ADDED_COLUMNS = Arrays.asList(ColumnLabels.PREFERRED_NAME.getName(),
-			ColumnLabels.PREFERRED_ID.getName(), ColumnLabels.GERMPLASM_DATE.getName(), ColumnLabels.GERMPLASM_LOCATION.getName(),
-			ColumnLabels.BREEDING_METHOD_NAME.getName(), ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(),
-			ColumnLabels.BREEDING_METHOD_NUMBER.getName(), ColumnLabels.BREEDING_METHOD_GROUP.getName(),
-			ColumnLabels.CROSS_FEMALE_GID.getName(), ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
-			ColumnLabels.CROSS_MALE_GID.getName(), ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(),
-			ColumnLabels.GROUP_SOURCE_GID.getName(), ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(),
-			ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()		);
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -156,12 +150,13 @@ public class AddColumnContextMenuTest {
 			.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID.getMessageKey());
 		Mockito.doReturn(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()).when(this.messageSource)
 			.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME.getMessageKey());
+		
+		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
+
 	}
 
 	@Test
 	public void testSetupContextMenuWithNullSourceSubMenuItem() {
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
-
 		final ContextMenuItem addColumnMenuItem = this.addColumnMenu.getAddColumnItem();
 		Assert.assertNotNull(addColumnMenuItem);
 		Mockito.verify(this.sourceMenu).addItem(AddColumnContextMenuTest.ADD_COLUMN);
@@ -192,7 +187,6 @@ public class AddColumnContextMenuTest {
 
 		final ContextMenuItem addColumnMenuItem = this.addColumnMenu.getAddColumnItem();
 		Assert.assertNotNull(addColumnMenuItem);
-		Mockito.verify(this.sourceMenu, Mockito.never()).addItem(AddColumnContextMenuTest.ADD_COLUMN);
 		Mockito.verify(spySubMenuItem).addItem(AddColumnContextMenuTest.ADD_COLUMN);
 	}
 
@@ -223,7 +217,6 @@ public class AddColumnContextMenuTest {
 	public void testSetupSubMenuItemsExcludeFillWithPreferredId() {
 		Mockito.doReturn(Arrays.asList(FillWithOption.FILL_WITH_PREFERRED_ID)).when(this.addColumnSource).getColumnsToExclude();
 		// Need to spy "Add Column" item to verify if sub menu items were added. Cannot use mock because of NPE when adding items to submenu
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
 		final ContextMenuItem addColumnMenuItem = this.addColumnMenu.getAddColumnItem();
 		final ContextMenuItem spySubMenuItem = Mockito.spy(addColumnMenuItem);
 
@@ -244,7 +237,6 @@ public class AddColumnContextMenuTest {
 	public void testSetupSubMenuItemsExcludeFillWithPreferredName() {
 		Mockito.doReturn(Arrays.asList(FillWithOption.FILL_WITH_PREFERRED_NAME)).when(this.addColumnSource).getColumnsToExclude();
 		// Need to spy "Add Column" item to verify if sub menu items were added. Cannot use mock because of NPE when adding items to submenu
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
 		final ContextMenuItem addColumnMenuItem = this.addColumnMenu.getAddColumnItem();
 		final ContextMenuItem spySubMenuItem = Mockito.spy(addColumnMenuItem);
 
@@ -265,7 +257,6 @@ public class AddColumnContextMenuTest {
 	public void testSetupSubMenuItemsExcludeFillWithGermplasmDate() {
 		Mockito.doReturn(Arrays.asList(FillWithOption.FILL_WITH_GERMPLASM_DATE)).when(this.addColumnSource).getColumnsToExclude();
 		// Need to spy "Add Column" item to verify if sub menu items were added. Cannot use mock because of NPE when adding items to submenu
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
 		final ContextMenuItem addColumnMenuItem = this.addColumnMenu.getAddColumnItem();
 		final ContextMenuItem spySubMenuItem = Mockito.spy(addColumnMenuItem);
 
@@ -286,7 +277,6 @@ public class AddColumnContextMenuTest {
 	public void testSetupSubMenuItemsExcludeFillWithGermplasmLocation() {
 		Mockito.doReturn(Arrays.asList(FillWithOption.FILL_WITH_LOCATION)).when(this.addColumnSource).getColumnsToExclude();
 		// Need to spy "Add Column" item to verify if sub menu items were added. Cannot use mock because of NPE when adding items to submenu
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
 		final ContextMenuItem addColumnMenuItem = this.addColumnMenu.getAddColumnItem();
 		final ContextMenuItem spySubMenuItem = Mockito.spy(addColumnMenuItem);
 
@@ -307,7 +297,6 @@ public class AddColumnContextMenuTest {
 	public void testSetupSubMenuItemsExcludeFillWithBreedingMethodInfo() {
 		Mockito.doReturn(Arrays.asList(FillWithOption.FILL_WITH_BREEDING_METHOD_INFO)).when(this.addColumnSource).getColumnsToExclude();
 		// Need to spy "Add Column" item to verify if sub menu items were added. Cannot use mock because of NPE when adding items to submenu
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
 		final ContextMenuItem addColumnMenuItem = this.addColumnMenu.getAddColumnItem();
 		final ContextMenuItem spySubMenuItem = Mockito.spy(addColumnMenuItem);
 
@@ -328,7 +317,6 @@ public class AddColumnContextMenuTest {
 	public void testSetupSubMenuItemsExcludeFillWithCrossFemaleInfo() {
 		Mockito.doReturn(Arrays.asList(FillWithOption.FILL_WITH_CROSS_FEMALE_INFO)).when(this.addColumnSource).getColumnsToExclude();
 		// Need to spy "Add Column" item to verify if sub menu items were added. Cannot use mock because of NPE when adding items to submenu
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
 		final ContextMenuItem addColumnMenuItem = this.addColumnMenu.getAddColumnItem();
 		final ContextMenuItem spySubMenuItem = Mockito.spy(addColumnMenuItem);
 
@@ -349,7 +337,6 @@ public class AddColumnContextMenuTest {
 	public void testSetupSubMenuItemsExcludeFillWithCrossMaleInfo() {
 		Mockito.doReturn(Arrays.asList(FillWithOption.FILL_WITH_CROSS_MALE_INFO)).when(this.addColumnSource).getColumnsToExclude();
 		// Need to spy "Add Column" item to verify if sub menu items were added. Cannot use mock because of NPE when adding items to submenu
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
 		final ContextMenuItem addColumnMenuItem = this.addColumnMenu.getAddColumnItem();
 		final ContextMenuItem spySubMenuItem = Mockito.spy(addColumnMenuItem);
 
@@ -370,7 +357,6 @@ public class AddColumnContextMenuTest {
 	public void testSetupSubMenuItemsExcludeFillWithAttribute() {
 		Mockito.doReturn(Arrays.asList(FillWithOption.FILL_WITH_ATTRIBUTE)).when(this.addColumnSource).getColumnsToExclude();
 		// Need to spy "Add Column" item to verify if sub menu items were added. Cannot use mock because of NPE when adding items to submenu
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
 		final ContextMenuItem addColumnMenuItem = this.addColumnMenu.getAddColumnItem();
 		final ContextMenuItem spySubMenuItem = Mockito.spy(addColumnMenuItem);
 
@@ -389,7 +375,6 @@ public class AddColumnContextMenuTest {
 
 	@Test
 	public void testRefreshMenuWhenNoColumnsAdded() {
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
 		this.setupMenuItemMocks();
 		Mockito.doReturn(Arrays.asList(AddColumnContextMenuTest.STANDARD_COLUMNS)).when(this.table).getContainerPropertyIds();
 
@@ -399,15 +384,103 @@ public class AddColumnContextMenuTest {
 
 	@Test
 	public void testRefreshMenuWhenColumnsAdded() {
-		this.addColumnMenu = new AddColumnContextMenu(this.addColumnSource, this.sourceMenu, null, this.messageSource);
 		this.setupMenuItemMocks();
 
 		final List<String> columns = new ArrayList<>(Arrays.asList(AddColumnContextMenuTest.STANDARD_COLUMNS));
-		columns.addAll(AddColumnContextMenuTest.ADDED_COLUMNS);
+		columns.addAll(ColumnLabels.getAddableGermplasmColumns());
 		Mockito.doReturn(columns).when(this.table).getContainerPropertyIds();
 
 		this.addColumnMenu.refreshAddColumnMenu(this.table);
 		this.verifyMenuItemsAreEnabled(false);
+	}
+	
+	@Test
+	public void testGetListDataCollectionFromTableWhenNoAddedColumn() {
+		Mockito.doReturn(Arrays.asList(STANDARD_COLUMNS)).when(this.table).getContainerPropertyIds();
+		final List<Integer> tableEntryIds = Arrays.asList(1, 2, 3);
+		Mockito.doReturn(tableEntryIds).when(this.table).getItemIds();
+
+		final List<ListDataInfo> listDataInfo = this.addColumnMenu.getListDataCollectionFromTable(this.table, new ArrayList<String>());
+		Assert.assertEquals(tableEntryIds.size(), listDataInfo.size());
+		for (final ListDataInfo info : listDataInfo) {
+			Assert.assertTrue(tableEntryIds.contains(info.getListDataId()));
+			Assert.assertTrue(info.getColumns().isEmpty());
+		}
+	}
+	
+	@Test
+	public void testGetListDataCollectionFromTableWithAddedColumns() {
+		final String noteAttributeField = "NOTE_ATTRIBUTE";
+		final String notesPrefix = "NOTES ";
+		final String preferredNamePrefix = "PREFERRED NAME ";
+		final List<String> columns = new ArrayList<>(Arrays.asList(STANDARD_COLUMNS));
+		columns.add(ColumnLabels.PREFERRED_NAME.getName());
+		columns.add(noteAttributeField);
+		Mockito.doReturn(columns).when(this.table).getContainerPropertyIds();
+		final List<Integer> tableEntryIds = Arrays.asList(1, 2, 3);
+		Mockito.doReturn(tableEntryIds).when(this.table).getItemIds();
+		
+		for (final Integer id: tableEntryIds) {
+			final Item item = Mockito.mock(Item.class);
+			Mockito.doReturn(item).when(this.table).getItem(id);
+			final Property property1 = Mockito.mock(Property.class);
+			Mockito.doReturn(property1).when(item).getItemProperty(ColumnLabels.PREFERRED_NAME.getName());
+			Mockito.doReturn(new String(preferredNamePrefix + id)).when(property1).getValue();
+			final Property property2 = Mockito.mock(Property.class);
+			Mockito.doReturn(property2).when(item).getItemProperty(noteAttributeField);
+			Mockito.doReturn(new String(notesPrefix + id)).when(property2).getValue();
+		}
+		
+		final List<ListDataInfo> listDataInfo = this.addColumnMenu.getListDataCollectionFromTable(this.table, Arrays.asList(noteAttributeField));
+		Assert.assertEquals(tableEntryIds.size(), listDataInfo.size());
+		for (final ListDataInfo info : listDataInfo) {
+			final Integer id = info.getListDataId();
+			Assert.assertTrue(tableEntryIds.contains(id));
+			Assert.assertEquals(2, info.getColumns().size());
+			Assert.assertEquals(preferredNamePrefix + id, info.getColumns().get(0).getValue());
+			Assert.assertEquals(notesPrefix + id, info.getColumns().get(1).getValue());
+		}
+	}
+	
+	@Test
+	public void testGetAddedColumnsWhenNoAddedColumn() {
+		Mockito.doReturn(Arrays.asList(STANDARD_COLUMNS)).when(this.table).getContainerPropertyIds();
+		final List<String> addedColumns = this.addColumnMenu.getAddedColumns(this.table, new ArrayList<String>());
+		Assert.assertTrue(addedColumns.isEmpty());
+	}
+	
+	@Test
+	public void testGetAddedColumnsWhenThereAreAddedColumns() {
+		final String noteAttributeField = "NOTE_ATTRIBUTE";
+		final List<String> columns = new ArrayList<>(Arrays.asList(STANDARD_COLUMNS));
+		columns.add(ColumnLabels.PREFERRED_NAME.getName());
+		columns.add(noteAttributeField);
+		Mockito.doReturn(columns).when(this.table).getContainerPropertyIds();
+		final List<String> addedColumns = this.addColumnMenu.getAddedColumns(this.table, Arrays.asList(noteAttributeField));
+		Assert.assertEquals(Arrays.asList(ColumnLabels.PREFERRED_NAME.getName(), noteAttributeField), addedColumns);
+	}
+	
+	@Test
+	public void testHasAddedColumnsWhenNoAddedColumn() {
+		Mockito.doReturn(Arrays.asList(STANDARD_COLUMNS)).when(this.table).getContainerPropertyIds();
+		Assert.assertFalse(this.addColumnMenu.hasAddedColumn(this.table, new ArrayList<String>()));
+	}
+	
+	@Test
+	public void testHasAddedColumnsWhenThereIsPredefinedColumnAdded() {
+		final List<String> columns = new ArrayList<>(Arrays.asList(STANDARD_COLUMNS));
+		columns.add(ColumnLabels.PREFERRED_NAME.getName());
+		Mockito.doReturn(columns).when(this.table).getContainerPropertyIds();
+		Assert.assertTrue(this.addColumnMenu.hasAddedColumn(this.table, new ArrayList<String>()));
+	}
+	
+	@Test
+	public void testHasAddedColumnsWhenThereIsAttributeColumnAdded() {
+		final String noteAttributeField = "NOTE_ATTRIBUTE";
+		final List<String> columns = new ArrayList<>(Arrays.asList(STANDARD_COLUMNS));
+		columns.add(noteAttributeField);
+		Mockito.doReturn(columns).when(this.table).getContainerPropertyIds();
+		Assert.assertTrue(this.addColumnMenu.hasAddedColumn(this.table, Arrays.asList(noteAttributeField)));
 	}
 
 	protected void verifyMenuItemsAreEnabled(final boolean isEnabled) {

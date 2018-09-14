@@ -38,6 +38,7 @@ import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
+import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -178,7 +179,6 @@ public class ListComponentTest {
 	private final ListComponent listComponent = new ListComponent();
 
 	private GermplasmList germplasmList;
-	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
 
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
@@ -190,7 +190,6 @@ public class ListComponentTest {
 		this.setUpOntologyManager();
 		this.setUpListComponent();
 		this.setUpGermplasmDataManager();
-		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 	}
 
 	private void setUpGermplasmDataManager() {
@@ -390,20 +389,27 @@ public class ListComponentTest {
 	}
 
 	@Test
-	public void testSaveChangesActionVerifyIfTheListTreeIsRefreshedAfterSavingList() {
-
+	public void testSaveChangesAction() {
 		Mockito.when(this.messageSource.getMessage(Matchers.any(Message.class))).thenReturn("");
 
-		final Table listDataTable = new Table();
+		final Table listDataTable = Mockito.mock(Table.class);
+		this.listComponent.setListDataTable(listDataTable);
+		final String column = "PASSPORT ATTRIBUTE";
+
+		final List<String> attributeAndNameTypes = Arrays.asList(column);
+		this.listComponent.setAttributeAndNameTypeColumns(attributeAndNameTypes);
 		this.listComponent.setAddColumnContextMenu(this.addColumnContextMenu);
 		this.listComponent.instantiateComponents();
 
-		Mockito.when(this.addColumnContextMenu.getListDataCollectionFromTable(Matchers.eq(listDataTable), Matchers.anyListOf(String.class)))
-				.thenReturn(new ArrayList<ListDataInfo>());
+		final List<ListDataInfo> listDataInfo = Arrays.asList(new ListDataInfo(1, Arrays.asList(new ListDataColumn(column, "123"))));
+		Mockito.when(this.addColumnContextMenu.getListDataCollectionFromTable(Matchers.eq(listDataTable), Matchers.eq(attributeAndNameTypes)))
+				.thenReturn(listDataInfo);
 
-		this.listComponent.setListDataTable(listDataTable);
 		this.listComponent.saveChangesAction(this.window, false);
-
+		Mockito.verify(this.germplasmListManager).updateGermplasmListData(Matchers.anyListOf(GermplasmListData.class));
+		Mockito.verify(this.germplasmListManager).saveListDataColumns(listDataInfo);
+		Mockito.verify(listDataTable).requestRepaint();
+		Mockito.verify(this.breedingManagerApplication).refreshListManagerTree();
 	}
 
 	@Test
@@ -1132,6 +1138,32 @@ public class ListComponentTest {
 		Assert.assertEquals(String.valueOf(mgid),
 				selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
 
+	}
+	
+	@Test
+	public void testAddAttributeAndNameTypeColumn() {
+		final List<String> attributeAndNameTypes = new ArrayList<>();
+		this.listComponent.setAttributeAndNameTypeColumns(attributeAndNameTypes);
+		final String column = "PASSPORT ATTRIBUTE";
+		this.listComponent.addAttributeAndNameTypeColumn(column);
+		Assert.assertFalse(this.listComponent.getAttributeAndNameTypeColumns().isEmpty());
+		Assert.assertTrue(this.listComponent.getAttributeAndNameTypeColumns().contains(column));
+	}
+	
+	@Test
+	public void testListHasAddedColumns() {
+		final Table table = new Table();
+		final List<String> attributeAndNameTypes = new ArrayList<>();
+		this.listComponent.setListDataTable(table);
+		this.listComponent.setAttributeAndNameTypeColumns(attributeAndNameTypes);
+		this.listComponent.setAddColumnContextMenu(this.addColumnContextMenu);
+		
+		Mockito.doReturn(true).when(this.addColumnContextMenu).hasAddedColumn(table, attributeAndNameTypes);
+		Assert.assertTrue(this.listComponent.listHasAddedColumns());
+		
+		Mockito.doReturn(false).when(this.addColumnContextMenu).hasAddedColumn(table, attributeAndNameTypes);
+		Assert.assertFalse(this.listComponent.listHasAddedColumns());
+		
 	}
 
 	private Germplasm createGermplasm(final int gid, final int mgid) {

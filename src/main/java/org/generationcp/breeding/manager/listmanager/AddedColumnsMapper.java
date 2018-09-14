@@ -143,4 +143,9 @@ public class AddedColumnsMapper {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
+	
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
 }

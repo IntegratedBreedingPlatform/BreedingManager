@@ -1,7 +1,5 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.List;
-
 import com.vaadin.ui.Table;
 
 public class ListBuilderAddColumnSource extends ListComponentAddColumnSource {
@@ -14,7 +12,7 @@ public class ListBuilderAddColumnSource extends ListComponentAddColumnSource {
 		this.targetTable = targetTable;
 		this.gidPropertyId = gidPropertyId;
 	}
-	
+ 	
 	@Override
 	public void propagateUIChanges() {
 		resetEditableTable();

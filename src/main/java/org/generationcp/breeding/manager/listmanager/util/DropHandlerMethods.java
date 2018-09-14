@@ -901,6 +901,11 @@ public class DropHandlerMethods {
 		this.inventoryDataManager = inventoryDataManager;
 	}
 
+	
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
 	public Table getTargetTable() {
 		return this.targetTable;
 	}

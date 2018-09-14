@@ -10,11 +10,13 @@ import org.generationcp.breeding.manager.listmanager.api.FillColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -27,20 +29,25 @@ public class AddedColumnsMapperTest {
 	private static final String ATTRIBUTE_TYPE_NAME1 = "Ipstat";
 	private static final String ATTRIBUTE_TYPE_CODE2 = "NEW_PAZZPORT";
 	private static final String ATTRIBUTE_TYPE_CODE1 = "Ipstat";
+	private static final String NAMETYPE_NAME3 = "Line Accession Name";
+	private static final String NAMETYPE_CODE3 = "LACCNM";
+	private static final int NAMETYPE_ID3 = 3;
+	private static final int NAME_TYPE_ID2 = 2;
+	private static final int NAME_TYPE_ID1 = 1;
+	private static final String NAME_TYPE_CODE2 = "COOL_NAME";
+	private static final String NAME_TYPE_CODE1 = "COOLER_NAME";
+	private static final String NAME_TYPE_NAME2 = "Some Cool Name";
+	private static final String NAME_TYPE_NAME1 = "Some Cooler Name";
 
 	private static final String[] STANDARD_COLUMNS =
 			{ColumnLabels.GID.getName(), ColumnLabels.DESIGNATION.getName(), ColumnLabels.SEED_SOURCE.getName(),
 					ColumnLabels.ENTRY_CODE.getName(), ColumnLabels.GROUP_ID.getName(), ColumnLabels.STOCKID.getName()};
 
-	private static final List<String> ADDED_COLUMNS = Arrays.asList(ColumnLabels.PREFERRED_NAME.getName(),
-			ColumnLabels.PREFERRED_ID.getName(), ColumnLabels.GERMPLASM_DATE.getName(), ColumnLabels.GERMPLASM_LOCATION.getName(),
-			ColumnLabels.BREEDING_METHOD_NAME.getName(), ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(),
-			ColumnLabels.BREEDING_METHOD_NUMBER.getName(), ColumnLabels.BREEDING_METHOD_GROUP.getName(),
-			ColumnLabels.CROSS_FEMALE_GID.getName(), ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
-			ColumnLabels.CROSS_MALE_GID.getName(), ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
-
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
+	
+	@Mock
+	private GermplasmListManager germplasmListManager;
 
 	@Mock
 	private GermplasmColumnValuesGenerator valuesGenerator;
@@ -56,7 +63,11 @@ public class AddedColumnsMapperTest {
 		MockitoAnnotations.initMocks(this);
 		this.addedColumnsMapper.setValuesGenerator(this.valuesGenerator);
 		this.addedColumnsMapper.setGermplasmDataManager(this.germplasmDataManager);
+		this.addedColumnsMapper.setGermplasmListManager(this.germplasmListManager);
+		
 		Mockito.doReturn(this.getAttributeTypes()).when(this.germplasmDataManager).getAllAttributesTypes();
+		Mockito.doReturn(this.getNameTypes()).when(this.germplasmListManager).getGermplasmNameTypes();
+		
 	}
 
 	@Test
@@ -64,13 +75,12 @@ public class AddedColumnsMapperTest {
 		this.addedColumnsMapper.generateValuesForAddedColumns(STANDARD_COLUMNS);
 
 		Mockito.verifyZeroInteractions(this.valuesGenerator);
-		Mockito.verifyZeroInteractions(this.germplasmDataManager);
 	}
 
 	@Test
-	public void testGenerateValuesForAddedColumnsWhenColumnsAdded() {
+	public void testGenerateValuesForAddedColumnsWhenAllPredefinedColumnsAdded() {
 		final List<String> columns = new ArrayList<>(Arrays.asList(STANDARD_COLUMNS));
-		columns.addAll(ADDED_COLUMNS);
+		columns.addAll(ColumnLabels.getAddableGermplasmColumns());
 		this.addedColumnsMapper.generateValuesForAddedColumns(columns.toArray());
 		
 		Mockito.verify(this.valuesGenerator).setPreferredNameColumnValues(ColumnLabels.PREFERRED_NAME.getName());
@@ -91,11 +101,16 @@ public class AddedColumnsMapperTest {
 				FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
 		Mockito.verify(this.valuesGenerator).setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
 		Mockito.verify(this.valuesGenerator).setCrossMalePrefNameColumnValues(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
-		Mockito.verifyZeroInteractions(this.germplasmDataManager);
+		Mockito.verify(this.valuesGenerator).setGroupSourceGidColumnValues(ColumnLabels.GROUP_SOURCE_GID.getName());
+		Mockito.verify(this.valuesGenerator).setGroupSourcePreferredNameColumnValues(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName());
+		Mockito.verify(this.valuesGenerator).setImmediateSourceGidColumnValues(ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
+		Mockito.verify(this.valuesGenerator).setImmediateSourcePreferredNameColumnValues(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName());
+		Mockito.verify(this.valuesGenerator, Mockito.never()).fillWithAttribute(Matchers.anyInt(), Matchers.anyString());
+		Mockito.verify(this.valuesGenerator, Mockito.never()).fillWithGermplasmName(Matchers.anyInt(), Matchers.anyString());
 	}
 	
 	@Test
-	public void testGenerateValuesForAddedColumnsWhenAtributeColumnsAdded() {
+	public void testGenerateValuesForAddedColumnsWhenAttributeColumnsAdded() {
 		final List<String> columns = new ArrayList<>(Arrays.asList(STANDARD_COLUMNS));
 		columns.add(ATTRIBUTE_TYPE_CODE1);
 		columns.add(ATTRIBUTE_TYPE_CODE2);
@@ -108,6 +123,19 @@ public class AddedColumnsMapperTest {
 	}
 	
 	@Test
+	public void testGenerateValuesForAddedColumnsWhenGermplasmNameColumnsAdded() {
+		final List<String> columns = new ArrayList<>(Arrays.asList(STANDARD_COLUMNS));
+		columns.add(NAME_TYPE_NAME1);
+		columns.add(NAME_TYPE_NAME2);
+		
+		this.addedColumnsMapper.generateValuesForAddedColumns(columns.toArray());
+		
+		// Check that name type columns are capitalized
+		Mockito.verify(this.valuesGenerator).fillWithGermplasmName(NAME_TYPE_ID1, NAME_TYPE_NAME1.toUpperCase());
+		Mockito.verify(this.valuesGenerator).fillWithGermplasmName(NAME_TYPE_ID2, NAME_TYPE_NAME2.toUpperCase());
+	}
+	
+	@Test
 	public void testGetAttributeTypesMap() {
 		final List<UserDefinedField> expectedAttributeTypes = this.getAttributeTypes();
 		final Map<String, Integer> attributeTypesMap = this.addedColumnsMapper.getAllAttributeTypesMap();
@@ -115,6 +143,17 @@ public class AddedColumnsMapperTest {
 			final String fieldCode = attributeType.getFcode().toUpperCase();
 			Assert.assertTrue(attributeTypesMap.containsKey(fieldCode));
 			Assert.assertEquals(attributeType.getFldno(), attributeTypesMap.get(fieldCode));
+		}
+	}
+	
+	@Test
+	public void testGetNameTypesMap() {
+		final List<UserDefinedField> expectedNameTypes = this.getNameTypes();
+		final Map<String, Integer> nameTypesMap = this.addedColumnsMapper.getAllNameTypesMap();
+		for (final UserDefinedField nameType : expectedNameTypes) {
+			final String fieldName = nameType.getFname().toUpperCase();
+			Assert.assertTrue(nameTypesMap.containsKey(fieldName));
+			Assert.assertEquals(nameType.getFldno(), nameTypesMap.get(fieldName));
 		}
 	}
 	
@@ -129,6 +168,19 @@ public class AddedColumnsMapperTest {
 		attributeType3.setFname("Grower");
 		attributeType3.setFcode("Grow");
 		return Arrays.asList(attributeType1, attributeType2, attributeType3);
+	}
+	
+	private List<UserDefinedField> getNameTypes() {
+		final UserDefinedField type1 = new UserDefinedField(AddedColumnsMapperTest.NAME_TYPE_ID1);
+		type1.setFname(AddedColumnsMapperTest.NAME_TYPE_NAME1);
+		type1.setFcode(AddedColumnsMapperTest.NAME_TYPE_CODE1);
+		final UserDefinedField type2 = new UserDefinedField(AddedColumnsMapperTest.NAME_TYPE_ID2);
+		type2.setFname(AddedColumnsMapperTest.NAME_TYPE_NAME2);
+		type2.setFcode(AddedColumnsMapperTest.NAME_TYPE_CODE2);
+		final UserDefinedField type3 = new UserDefinedField(NAMETYPE_ID3);
+		type3.setFname(NAMETYPE_NAME3);
+		type3.setFcode(NAMETYPE_CODE3);
+		return Arrays.asList(type1, type2, type3);
 	}
 
 }

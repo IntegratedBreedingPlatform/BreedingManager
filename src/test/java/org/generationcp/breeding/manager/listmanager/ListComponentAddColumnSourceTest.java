@@ -114,7 +114,8 @@ public class ListComponentAddColumnSourceTest {
 		this.addColumnSource.addColumn(columnName);
 
 		Mockito.verify(this.targetTable).addContainerProperty(columnName.toUpperCase(), String.class, "");
-		Mockito.verify(this.targetTable).setColumnHeader(columnName.toUpperCase(), columnName);
+		Mockito.verify(this.targetTable).setColumnHeader(columnName.toUpperCase(), columnName.toUpperCase());
+		Mockito.verify(this.listComponent).addAttributeAndNameTypeColumn(columnName.toUpperCase());
 	}
 
 	@Test

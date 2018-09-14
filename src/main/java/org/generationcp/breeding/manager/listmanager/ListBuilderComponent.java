@@ -2176,6 +2176,11 @@ public class ListBuilderComponent extends VerticalLayout
 		return attributeAndNameTypeColumns;
 	}
 	
+	
+	void setAttributeAndNameTypeColumns(List<String> attributeAndNameTypeColumns) {
+		this.attributeAndNameTypeColumns = attributeAndNameTypeColumns;
+	}
+
 	public Boolean listHasAddedColumns() {
 		return this.addColumnContextMenu.hasAddedColumn(listDataTable, attributeAndNameTypeColumns); 
 	}
