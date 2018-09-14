@@ -2367,7 +2367,7 @@ public class ListComponent extends VerticalLayout
 				this.processCloseLots(validLotEntryDetails);
 			} catch (final CloseLotException e) {
 				final String errorMessage = this.messageSource.getMessage(e.getMessage(), null, Locale.getDefault());
-				ListComponent.LOG.error(errorMessage);
+				ListComponent.LOG.error(errorMessage, e);
 				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR), errorMessage);
 				return;
 			}

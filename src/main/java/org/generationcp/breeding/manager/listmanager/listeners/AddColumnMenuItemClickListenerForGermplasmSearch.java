@@ -4,8 +4,6 @@ import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Window;
-
 @Configurable
 public class AddColumnMenuItemClickListenerForGermplasmSearch extends AddColumnMenuItemClickListener {
 
