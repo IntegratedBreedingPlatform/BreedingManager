@@ -79,19 +79,19 @@ public class DropHandlerMethods {
 
 	@Autowired
 	protected GermplasmDataManager germplasmDataManager;
-	
+
 	@Autowired
 	protected GermplasmListManager germplasmListManager;
-	
+
 	@Autowired
 	protected InventoryDataManager inventoryDataManager;
-	
+
 	@Autowired
 	protected CrossExpansionProperties crossExpansionProperties;
-	
+
 	@Autowired
 	protected PedigreeService pedigreeService;
-	
+
 	@Resource
 	protected PlatformTransactionManager transactionManager;
 
@@ -250,7 +250,8 @@ public class DropHandlerMethods {
 					availInv = availInvGid.toString();
 				}
 
-				final Button inventoryButton = new SortableButton(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+				final Button inventoryButton =
+						new SortableButton(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
 				inventoryButton.setDebugId("inventoryButton");
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -564,8 +565,8 @@ public class DropHandlerMethods {
 			final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
 
 			final Integer gid = this.getGidFromButtonCaption(sourceTable, itemId);
-			final Button gidButton =
-					new SortableButton(String.format("%s", gid), new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
+			final Button gidButton = new SortableButton(String.format("%s", gid),
+					new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 			gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 			gidButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
@@ -659,7 +660,7 @@ public class DropHandlerMethods {
 			this.addedColumnsMapper.generateValuesForAddedColumns(this.targetTable.getVisibleColumns());
 		}
 	}
-	
+
 	Boolean targetTableHasAddedColumn() {
 		// By default, assume that table has no added column. Logic will be overridden in subclasses, if necessary
 		return false;
@@ -778,7 +779,8 @@ public class DropHandlerMethods {
 			availableButtonCaption = ((Button) item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue()).getCaption();
 		}
 
-		final Button availableButton = new SortableButton(availableButtonCaption, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+		final Button availableButton =
+				new SortableButton(availableButtonCaption, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
 		availableButton.setDebugId("availableButton");
 		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 		availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -901,8 +903,7 @@ public class DropHandlerMethods {
 		this.inventoryDataManager = inventoryDataManager;
 	}
 
-	
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+	public void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 

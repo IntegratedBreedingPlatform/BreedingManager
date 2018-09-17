@@ -18,7 +18,7 @@ import com.vaadin.ui.Window;
 
 @Configurable
 public class ListComponentAddColumnSource implements AddColumnSource {
-	
+
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
 
@@ -99,7 +99,7 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 
 	@Override
 	public void addColumn(final String columnName) {
-		addColumnToTable(columnName);
+		this.addColumnToTable(columnName);
 		this.listComponent.addAttributeAndNameTypeColumn(columnName.toUpperCase());
 	}
 
@@ -122,8 +122,8 @@ public class ListComponentAddColumnSource implements AddColumnSource {
 	public List<Integer> getAllGids() {
 		return this.getGidsToProcess();
 	}
-	
-	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+
+	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
 	}
 

@@ -30,7 +30,6 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 	private static final Logger LOG = LoggerFactory.getLogger(BuildNewListDropHandler.class);
 	private static final long serialVersionUID = 1L;
 
-	
 	public BuildNewListDropHandler(final ListManagerMain listManagerMain, final Table targetTable) {
 		this.listManagerMain = listManagerMain;
 		this.setTargetTable(targetTable);

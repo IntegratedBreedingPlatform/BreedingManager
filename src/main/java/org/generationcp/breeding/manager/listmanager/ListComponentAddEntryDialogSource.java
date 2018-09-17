@@ -30,7 +30,7 @@ import com.vaadin.ui.Table;
 
 @Configurable
 public class ListComponentAddEntryDialogSource implements AddEntryDialogSource {
-	
+
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 
@@ -115,7 +115,7 @@ public class ListComponentAddEntryDialogSource implements AddEntryDialogSource {
 		listData.setSeedSource(this.germplasmDataManager.getPlotCodeValue(gid));
 		listData.setGroupId(germplasm.getMgid());
 
-		String groupName =  "-";
+		String groupName = "-";
 		groupName = this.pedigreeService.getCrossExpansion(gid, this.crossExpansionProperties);
 		listData.setGroupName(groupName);
 
@@ -158,7 +158,6 @@ public class ListComponentAddEntryDialogSource implements AddEntryDialogSource {
 		this.listComponent.setDoneInitializing(true);
 		return true;
 
-
 	}
 
 	@Override
@@ -166,53 +165,43 @@ public class ListComponentAddEntryDialogSource implements AddEntryDialogSource {
 		return this.listComponent.getListManagerMain();
 	}
 
-	
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
-	
-	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
 
-	
-	public void setPedigreeService(PedigreeService pedigreeService) {
+	public void setPedigreeService(final PedigreeService pedigreeService) {
 		this.pedigreeService = pedigreeService;
 	}
 
-	
-	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+	public void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
 		this.inventoryDataManager = inventoryDataManager;
 	}
 
-	
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	
-	public void setCrossExpansionProperties(CrossExpansionProperties crossExpansionProperties) {
+	public void setCrossExpansionProperties(final CrossExpansionProperties crossExpansionProperties) {
 		this.crossExpansionProperties = crossExpansionProperties;
 	}
 
-	
-	public void setListComponent(ListComponent listComponent) {
+	public void setListComponent(final ListComponent listComponent) {
 		this.listComponent = listComponent;
 	}
 
-	
-	public void setListDataTable(Table listDataTable) {
+	public void setListDataTable(final Table listDataTable) {
 		this.listDataTable = listDataTable;
 	}
 
-	
-	public void setNewEntriesSource(NewGermplasmEntriesFillColumnSource newEntriesSource) {
+	public void setNewEntriesSource(final NewGermplasmEntriesFillColumnSource newEntriesSource) {
 		this.newEntriesSource = newEntriesSource;
 	}
 
-	
-	public void setAddedColumnsMapper(AddedColumnsMapper addedColumnsMapper) {
+	public void setAddedColumnsMapper(final AddedColumnsMapper addedColumnsMapper) {
 		this.addedColumnsMapper = addedColumnsMapper;
 	}
 

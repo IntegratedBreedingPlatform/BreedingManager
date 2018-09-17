@@ -60,25 +60,26 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	}
 
 	@Override
-	public void drop(DragAndDropEvent event) {
+	public void drop(final DragAndDropEvent event) {
 
 		if (event.getTransferable() instanceof TableTransferable) {
 
-			TableTransferable transferable = (TableTransferable) event.getTransferable();
-			Table sourceTable = transferable.getSourceComponent();
-			String sourceTableData = sourceTable.getData().toString();
+			final TableTransferable transferable = (TableTransferable) event.getTransferable();
+			final Table sourceTable = transferable.getSourceComponent();
+			final String sourceTableData = sourceTable.getData().toString();
 
 			if (sourceTableData.equals(DropHandlerMethods.MATCHING_GERMPLASMS_TABLE_DATA)) {
-				String message = "Please switch to list view first before adding a germplasm entry to the list.";
+				final String message = "Please switch to list view first before adding a germplasm entry to the list.";
 
 				MessageNotifier.showWarning(this.listManagerMain.getWindow(), "Warning!", message);
 
-			} else if (sourceTableData.equals(ListManagerInventoryTable.INVENTORY_TABLE_DATA) && !sourceTable.equals(this.getTargetTable())) {
+			} else if (sourceTableData.equals(ListManagerInventoryTable.INVENTORY_TABLE_DATA)
+					&& !sourceTable.equals(this.getTargetTable())) {
 				super.setHasUnsavedChanges(true);
 
 				this.lastDroppedListId = ((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
 
-				List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+				final List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 
 				// If table has selected items, add selected items
 				if (this.hasSelectedItems(sourceTable)) {
@@ -97,7 +98,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				this.lastDroppedListId =
 						((SelectParentsListDataComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
 
-				List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+				final List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 
 				// If table has selected items, add selected items
 				if (this.hasSelectedItems(sourceTable)) {
@@ -125,23 +126,23 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 	/**
 	 * Use this to handle drop events from list inventory view of list tab to list inventory view of list builder
-	 * 
+	 *
 	 * @param selectedItemIds
 	 * @param sourceTable
 	 */
-	private void addSelectedInventoryDetails(List<ListEntryLotDetails> selectedItemIds, Table sourceTable) {
+	private void addSelectedInventoryDetails(final List<ListEntryLotDetails> selectedItemIds, final Table sourceTable) {
 
-		List<Integer> uniqueEntryIds = this.getUniqueEntryNumbers(selectedItemIds, sourceTable);
-		List<ListEntryLotDetails> allLotDetailsToBeAdded = new ArrayList<ListEntryLotDetails>();
+		final List<Integer> uniqueEntryIds = this.getUniqueEntryNumbers(selectedItemIds, sourceTable);
+		final List<ListEntryLotDetails> allLotDetailsToBeAdded = new ArrayList<ListEntryLotDetails>();
 
-		for (Integer uniqueEntryId : uniqueEntryIds) {
+		for (final Integer uniqueEntryId : uniqueEntryIds) {
 			allLotDetailsToBeAdded.addAll(this.getLotDetailsWithEntryId(uniqueEntryId, sourceTable));
 		}
 
 		int nextId = this.getInventoryTableNextEntryId();
 		int lastLrecId = allLotDetailsToBeAdded.get(0).getId();
 
-		for (ListEntryLotDetails lotDetail : allLotDetailsToBeAdded) {
+		for (final ListEntryLotDetails lotDetail : allLotDetailsToBeAdded) {
 			if (lastLrecId != lotDetail.getId()) {
 				nextId++;
 			}
@@ -161,18 +162,18 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 	/**
 	 * Get distinct entry #'s, given a list of selected item ids and the source table
-	 * 
+	 *
 	 * @param selectedItemIds
 	 * @param sourceTable
 	 * @return
 	 */
-	private List<Integer> getUniqueEntryNumbers(List<ListEntryLotDetails> selectedItemIds, Table sourceTable) {
-		List<Integer> uniqueEntryIds = new ArrayList<Integer>();
-		for (ListEntryLotDetails lotDetail : selectedItemIds) {
+	private List<Integer> getUniqueEntryNumbers(final List<ListEntryLotDetails> selectedItemIds, final Table sourceTable) {
+		final List<Integer> uniqueEntryIds = new ArrayList<Integer>();
+		for (final ListEntryLotDetails lotDetail : selectedItemIds) {
 
-			Item item = sourceTable.getItem(lotDetail);
+			final Item item = sourceTable.getItem(lotDetail);
 			if (item != null) {
-				int currentEntryId = (Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
+				final int currentEntryId = (Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
 				if (!uniqueEntryIds.contains(currentEntryId)) {
 					uniqueEntryIds.add(currentEntryId);
 				}
@@ -185,22 +186,22 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 	/**
 	 * Get lotDetails with given entry ID, given the entry ID and the source table
-	 * 
+	 *
 	 * @param entryId
 	 * @param sourceTable
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ListEntryLotDetails> getLotDetailsWithEntryId(Integer entryId, Table sourceTable) {
-		List<ListEntryLotDetails> allLotDetails = new ArrayList<ListEntryLotDetails>();
-		List<ListEntryLotDetails> matchingLotDetails = new ArrayList<ListEntryLotDetails>();
+	private List<ListEntryLotDetails> getLotDetailsWithEntryId(final Integer entryId, final Table sourceTable) {
+		final List<ListEntryLotDetails> allLotDetails = new ArrayList<ListEntryLotDetails>();
+		final List<ListEntryLotDetails> matchingLotDetails = new ArrayList<ListEntryLotDetails>();
 		allLotDetails.addAll((Collection<? extends ListEntryLotDetails>) sourceTable.getItemIds());
 
-		for (ListEntryLotDetails lotDetail : allLotDetails) {
+		for (final ListEntryLotDetails lotDetail : allLotDetails) {
 
-			Item item = sourceTable.getItem(lotDetail);
+			final Item item = sourceTable.getItem(lotDetail);
 			if (item != null) {
-				int currentEntryId = (Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
+				final int currentEntryId = (Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
 				if (currentEntryId == entryId) {
 					matchingLotDetails.add(lotDetail);
 				}
@@ -213,19 +214,19 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 	/**
 	 * To be called after (callback) saving new entries in list builder (on list inventory view) to update lrecid of listentrylotdetails
-	 * 
+	 *
 	 * @param lrecId
 	 * @param entryId
 	 */
-	public void assignLrecIdToRowsFromListWithEntryId(Integer listId, Integer entryId) {
-		List<ListEntryLotDetails> itemIds = this.getLotDetailsWithEntryId(entryId, this.getTargetTable());
-		for (ListEntryLotDetails itemId : itemIds) {
+	public void assignLrecIdToRowsFromListWithEntryId(final Integer listId, final Integer entryId) {
+		final List<ListEntryLotDetails> itemIds = this.getLotDetailsWithEntryId(entryId, this.getTargetTable());
+		for (final ListEntryLotDetails itemId : itemIds) {
 			try {
-				GermplasmListData listData = this.germplasmListManager.getGermplasmListDataByListIdAndEntryId(listId, entryId);
+				final GermplasmListData listData = this.germplasmListManager.getGermplasmListDataByListIdAndEntryId(listId, entryId);
 				if (listData != null) {
 					itemId.setId(listData.getId());
 				}
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				InventoryTableDropHandler.LOG.error(e.getMessage(), e);
 			}
 		}
@@ -233,11 +234,11 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 	/**
 	 * Use this to handle drop events from list inventory view of list tab to list inventory view of list builder
-	 * 
+	 *
 	 * @param selectedItemIds
 	 * @param sourceTable
 	 */
-	public void addGermplasmListInventoryData(Integer listId) {
+	public void addGermplasmListInventoryData(final Integer listId) {
 
 		List<GermplasmListData> inventoryDetails;
 
@@ -248,26 +249,26 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		try {
 			inventoryDetails = this.inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
 
-			Integer lastEntryId = this.getInventoryTableLastEntryId();
+			final Integer lastEntryId = this.getInventoryTableLastEntryId();
 
 			if (inventoryDetails != null) {
-				for (GermplasmListData inventoryDetail : inventoryDetails) {
+				for (final GermplasmListData inventoryDetail : inventoryDetails) {
 
 					this.listDataAndLotDetails
 							.add(new ListDataAndLotDetails(listId, inventoryDetail.getId(), inventoryDetail.getEntryId()));
 
-					Integer entryId = lastEntryId + inventoryDetail.getEntryId();
-					String designation = inventoryDetail.getDesignation();
+					final Integer entryId = lastEntryId + inventoryDetail.getEntryId();
+					final String designation = inventoryDetail.getDesignation();
 
-					ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
+					final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
 					@SuppressWarnings("unchecked")
-					List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
+					final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
 
 					if (lotDetails != null) {
-						for (ListEntryLotDetails lotDetail : lotDetails) {
-							Item newItem = this.getTargetTable().addItem(lotDetail);
+						for (final ListEntryLotDetails lotDetail : lotDetails) {
+							final Item newItem = this.getTargetTable().addItem(lotDetail);
 
-							CheckBox itemCheckBox = new CheckBox();
+							final CheckBox itemCheckBox = new CheckBox();
 							itemCheckBox.setDebugId("itemCheckBox");
 							itemCheckBox.setData(lotDetail);
 							itemCheckBox.setImmediate(true);
@@ -276,8 +277,8 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 								private static final long serialVersionUID = 1L;
 
 								@Override
-								public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-									CheckBox itemCheckBox = (CheckBox) event.getButton();
+								public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+									final CheckBox itemCheckBox = (CheckBox) event.getButton();
 									if (((Boolean) itemCheckBox.getValue()).equals(true)) {
 										InventoryTableDropHandler.this.getTargetTable().select(itemCheckBox.getData());
 									} else {
@@ -287,9 +288,8 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 							});
 
-							Button desigButton =
-									new SortableButton(String.format("%s", designation), new GidLinkButtonClickListener(inventoryDetail.getGid()
-											.toString(), true));
+							final Button desigButton = new SortableButton(String.format("%s", designation),
+									new GidLinkButtonClickListener(inventoryDetail.getGid().toString(), true));
 							desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 							newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
@@ -317,21 +317,22 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				this.inventoryDropTargetContainer.refreshListInventoryItemCount();
 			}
 
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			InventoryTableDropHandler.LOG.error(e.getMessage(), e);
 		}
 
 	}
 
-	private Item addItemToDestinationTable(ListEntryLotDetails lotDetail, Integer entryId, Table sourceTable, final Table targetTable) {
+	private Item addItemToDestinationTable(final ListEntryLotDetails lotDetail, final Integer entryId, final Table sourceTable,
+			final Table targetTable) {
 
 		this.listDataAndLotDetails.add(new ListDataAndLotDetails(this.lastDroppedListId, lotDetail.getId(), entryId));
 
-		ListEntryLotDetails newLotDetail = lotDetail.makeClone();
-		Item newItem = targetTable.addItem(newLotDetail);
+		final ListEntryLotDetails newLotDetail = lotDetail.makeClone();
+		final Item newItem = targetTable.addItem(newLotDetail);
 		newLotDetail.setId(0);
 
-		CheckBox itemCheckBox = new CheckBox();
+		final CheckBox itemCheckBox = new CheckBox();
 		itemCheckBox.setDebugId("itemCheckBox");
 		itemCheckBox.setData(newLotDetail);
 		itemCheckBox.setImmediate(true);
@@ -340,8 +341,8 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				CheckBox itemCheckBox = (CheckBox) event.getButton();
+			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+				final CheckBox itemCheckBox = (CheckBox) event.getButton();
 				if (((Boolean) itemCheckBox.getValue()).equals(true)) {
 					targetTable.select(itemCheckBox.getData());
 				} else {
@@ -351,23 +352,24 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 		});
 
-		Button targetDesignationButton = new SortableButton();
+		final Button targetDesignationButton = new SortableButton();
 		targetDesignationButton.setDebugId("targetDesignationButton");
 
-		Item itemFromSourceTable = sourceTable.getItem(lotDetail);
+		final Item itemFromSourceTable = sourceTable.getItem(lotDetail);
 		String seedSource = "";
 		if (itemFromSourceTable != null) {
-			Button sourceDesignationButton = (SortableButton) itemFromSourceTable.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
+			final Button sourceDesignationButton =
+					(SortableButton) itemFromSourceTable.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 			sourceDesignationButton.setDebugId("sourceDesignationButton");
 			if (sourceDesignationButton != null) {
 				targetDesignationButton.setValue(sourceDesignationButton.getValue());
 				targetDesignationButton.setCaption(sourceDesignationButton.getCaption());
-				for (Object listener : sourceDesignationButton.getListeners(ClickEvent.class)) {
+				for (final Object listener : sourceDesignationButton.getListeners(ClickEvent.class)) {
 					targetDesignationButton.addListener((GidLinkButtonClickListener) listener);
 				}
 			}
-			
-			Property seedSourceProperty = itemFromSourceTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName());
+
+			final Property seedSourceProperty = itemFromSourceTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName());
 			if (seedSourceProperty != null) {
 				seedSource = (String) seedSourceProperty.getValue();
 			}
@@ -379,7 +381,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(targetDesignationButton);
 
-		StringBuilder lotLocation = new StringBuilder("");
+		final StringBuilder lotLocation = new StringBuilder("");
 		if (lotDetail.getLocationOfLot() != null) {
 			lotLocation.append(lotDetail.getLocationOfLot().getLname());
 		}
@@ -391,20 +393,20 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
 		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(lotDetail.getStockIds());
 
-		final Button lotButton = new SortableButton(lotDetail.getLotId().toString(),
-				new LotDetailsButtonClickListener(lotDetail.getEntityIdOfLot(), targetDesignationButton.toString(), this.getTargetTable(), lotDetail.getLotId()));
+		final Button lotButton =
+				new SortableButton(lotDetail.getLotId().toString(), new LotDetailsButtonClickListener(lotDetail.getEntityIdOfLot(),
+						targetDesignationButton.toString(), this.getTargetTable(), lotDetail.getLotId()));
 		lotButton.setStyleName(BaseTheme.BUTTON_LINK);
 		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotButton);
 
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(seedSource);
-		
 
 		return newItem;
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ListEntryLotDetails> getInventoryTableSelectedItemIds(Table table) {
-		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+	private List<ListEntryLotDetails> getInventoryTableSelectedItemIds(final Table table) {
+		final List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 		lotDetails.addAll((Collection<? extends ListEntryLotDetails>) table.getValue());
 		return lotDetails;
 	}
@@ -412,10 +414,10 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	@SuppressWarnings("unchecked")
 	private Integer getInventoryTableLastEntryId() {
 		int topId = 0;
-		for (ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) this.getTargetTable().getItemIds()) {
+		for (final ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) this.getTargetTable().getItemIds()) {
 
 			Integer entryId = 0;
-			Item item = this.getTargetTable().getItem(lotDetails);
+			final Item item = this.getTargetTable().getItem(lotDetails);
 			if (item != null) {
 				entryId = (Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
 			}
@@ -436,7 +438,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		return this.listDataAndLotDetails;
 	}
 
-	public void setListDataAndLotDetails(List<ListDataAndLotDetails> listDataAndLotDetails) {
+	public void setListDataAndLotDetails(final List<ListDataAndLotDetails> listDataAndLotDetails) {
 		this.listDataAndLotDetails = listDataAndLotDetails;
 	}
 
@@ -448,7 +450,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		return this.hasChanges;
 	}
 
-	public void setHasChanges(boolean hasChanges) {
+	public void setHasChanges(final boolean hasChanges) {
 		this.hasChanges = hasChanges;
 	}
 

@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
@@ -37,49 +38,48 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 		final ContextMenuItem clickedItem = event.getClickedItem();
 		final String clickedOptionName = clickedItem.getName();
 		if (this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_ID.getMessageKey()).equals(clickedOptionName)) {
-			addPreferredIdColumn();
+			this.addPreferredIdColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_PREFERRED_NAME.getMessageKey()).equals(clickedOptionName)) {
-			addPreferredNameColumn();
+			this.addPreferredNameColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GERMPLASM_DATE.getMessageKey()).equals(clickedOptionName)) {
-			addGermplasmDateColumn();
+			this.addGermplasmDateColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_LOCATION.getMessageKey()).equals(clickedOptionName)) {
-			addLocationColumn();
+			this.addLocationColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NAME.getMessageKey()).equals(clickedOptionName)) {
-			addMethodNameColumn();
+			this.addMethodNameColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV.getMessageKey())
 				.equals(clickedOptionName)) {
-			addMethodAbbrevColumn();
+			this.addMethodAbbrevColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER.getMessageKey())
 				.equals(clickedOptionName)) {
-			addMethodNumberColumn();
+			this.addMethodNumberColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.getMessageKey())
 				.equals(clickedOptionName)) {
-			addMethodGroupColumn();
+			this.addMethodGroupColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_GID.getMessageKey()).equals(clickedOptionName)) {
-			addCrossFemaleGidColumn();
+			this.addCrossFemaleGidColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.getMessageKey()).equals(clickedOptionName)) {
-			addCrossFemalePrefNameColumn();
+			this.addCrossFemalePrefNameColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey()).equals(clickedOptionName)) {
-			addCrossMaleGIDColumn();
+			this.addCrossMaleGIDColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey()).equals(clickedOptionName)) {
-			addCrossMalePrefNameColumn();
+			this.addCrossMalePrefNameColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey()).equals(clickedOptionName)) {
-			displayFillWithAttributeWindow();
+			this.displayFillWithAttributeWindow();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_GID.getMessageKey()).equals(clickedOptionName)) {
-			addGroupSourceGidColumn();
+			this.addGroupSourceGidColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME.getMessageKey())
 				.equals(clickedOptionName)) {
-			addGroupPreferredNameColumn();
+			this.addGroupPreferredNameColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID.getMessageKey()).equals(clickedOptionName)) {
-			addImmediateSourceGidColumn();
+			this.addImmediateSourceGidColumn();
 		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME.getMessageKey())
 				.equals(clickedOptionName)) {
-			addImmediateSourcePreferredNameColumn();
-		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GERMPLASM_NAME.getMessageKey())
-				.equals(clickedOptionName)) {
-			displayFillWithGermplasmNameWindow();
+			this.addImmediateSourcePreferredNameColumn();
+		} else if (this.messageSource.getMessage(FillWithOption.FILL_WITH_GERMPLASM_NAME.getMessageKey()).equals(clickedOptionName)) {
+			this.displayFillWithGermplasmNameWindow();
 		}
-		
+
 	}
 
 	void addImmediateSourcePreferredNameColumn() {
@@ -141,8 +141,8 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 	void addMethodNameColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.BREEDING_METHOD_NAME.getName())) {
 			this.addColumnSource.addColumn(ColumnLabels.BREEDING_METHOD_NAME);
-			this.valuesGenerator
-				.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NAME.getName(), FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NAME.getName(),
+					FillWithOption.FILL_WITH_BREEDING_METHOD_NAME);
 		}
 	}
 
@@ -150,23 +150,23 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 		if (!this.addColumnSource.columnExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())) {
 			this.addColumnSource.addColumn(ColumnLabels.BREEDING_METHOD_ABBREVIATION);
 			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(),
-				FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV);
+					FillWithOption.FILL_WITH_BREEDING_METHOD_ABBREV);
 		}
 	}
 
 	void addMethodNumberColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName())) {
 			this.addColumnSource.addColumn(ColumnLabels.BREEDING_METHOD_NUMBER);
-			this.valuesGenerator
-				.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER);
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_NUMBER.getName(),
+					FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER);
 		}
 	}
 
 	void addMethodGroupColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.BREEDING_METHOD_GROUP.getName())) {
 			this.addColumnSource.addColumn(ColumnLabels.BREEDING_METHOD_GROUP);
-			this.valuesGenerator
-				.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_GROUP.getName(), FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
+			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_GROUP.getName(),
+					FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
 		}
 	}
 
@@ -187,8 +187,8 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 	void addCrossFemaleGidColumn() {
 		if (!this.addColumnSource.columnExists(ColumnLabels.CROSS_FEMALE_GID.getName())) {
 			this.addColumnSource.addColumn(ColumnLabels.CROSS_FEMALE_GID);
-			this.valuesGenerator
-				.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(), FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
+			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(),
+					FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
 		}
 	}
 
@@ -196,26 +196,26 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 		if (!this.addColumnSource.columnExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())) {
 			this.addColumnSource.addColumn(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME);
 			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
-				FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
+					FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
 		}
 	}
 
 	void displayFillWithAttributeWindow() {
 		final Window mainWindow = this.addColumnSource.getWindow();
 		// 2nd parameter is null because user is yet to select the attribute type, which will become column name
-		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null, isFromGermplasmSearchWindow());
+		final Window attributeWindow = new FillWithAttributeWindow(this.addColumnSource, null, this.isFromGermplasmSearchWindow());
 		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
 		mainWindow.addWindow(attributeWindow);
 	}
-	
+
 	void displayFillWithGermplasmNameWindow() {
 		final Window mainWindow = this.addColumnSource.getWindow();
 		// 2nd parameter is null because user is yet to select the name type, which will become column name
-		final Window attributeWindow = new FillWithGermplasmNameWindow(this.addColumnSource, null, isFromGermplasmSearchWindow());
+		final Window attributeWindow = new FillWithGermplasmNameWindow(this.addColumnSource, null, this.isFromGermplasmSearchWindow());
 		attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
 		mainWindow.addWindow(attributeWindow);
 	}
-	
+
 	Boolean isFromGermplasmSearchWindow() {
 		return false;
 	}

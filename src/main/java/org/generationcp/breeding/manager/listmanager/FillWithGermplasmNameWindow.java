@@ -30,10 +30,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
 /**
- * This class opens a pop-up window for selecting name types available for
- * all GIDs of source screen. It will proceed to fill to add selected name
- * type as column to source table, if no existing property specified, and fill up
- * names for chosen name type per germplasm on target table.
+ * This class opens a pop-up window for selecting name types available for all GIDs of source screen. It will proceed to fill to add
+ * selected name type as column to source table, if no existing property specified, and fill up names for chosen name type per germplasm on
+ * target table.
  *
  */
 
@@ -87,7 +86,7 @@ public class FillWithGermplasmNameWindow extends BaseSubWindow
 		this.nameTypesList = this.germplasmDataManager.getNameTypesByGIDList(gids);
 
 		for (final UserDefinedField nameType : this.nameTypesList) {
-			if(!this.addColumnSource.columnExists(nameType.getFname())){
+			if (!this.addColumnSource.columnExists(nameType.getFname())) {
 				this.namesTypeBox.addItem(nameType.getFldno());
 				this.namesTypeBox.setItemCaption(nameType.getFldno(), nameType.getFname().toUpperCase());
 			}

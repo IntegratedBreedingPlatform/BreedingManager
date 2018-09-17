@@ -1,10 +1,10 @@
+
 package org.generationcp.breeding.manager.listmanager;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
@@ -14,13 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 
 /**
- * This takes care of adding columns and generating values for those added columns when  there are items
- * loaded in Germplasm Search Results table. The item ids and GIDs for current page are available once the items are loaded.
+ * This takes care of adding columns and generating values for those added columns when there are items loaded in Germplasm Search Results
+ * table. The item ids and GIDs for current page are available once the items are loaded.
  */
 @Configurable
 public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSource {
@@ -90,6 +92,11 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 			this.targetTable.addGeneratedColumn(columnLabel.getName(), new Table.ColumnGenerator() {
 
+				/**
+				 *
+				 */
+				private static final long serialVersionUID = -3683644590912323882L;
+
 				@Override
 				public Object generateCell(final Table table, final Object o, final Object o1) {
 					return table.getItem(o).getItemProperty(o1).getValue();
@@ -98,7 +105,7 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 			this.targetTable.setColumnHeader(columnLabel.getName(), columnLabel.getTermNameFromOntology(this.ontologyDataManager));
 
-			if(!this.targetTable.getItemIds().isEmpty()) {
+			if (!this.targetTable.getItemIds().isEmpty()) {
 				this.targetTable.refresh();
 			}
 		}
@@ -119,7 +126,12 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 			definition.addProperty(columnName, String.class, "", false, true);
 
-			targetTable.addGeneratedColumn(columnName, new Table.ColumnGenerator() {
+			this.targetTable.addGeneratedColumn(columnName, new Table.ColumnGenerator() {
+
+				/**
+				 *
+				 */
+				private static final long serialVersionUID = 3578093271455392974L;
 
 				@Override
 				public Object generateCell(final Table table, final Object o, final Object o1) {

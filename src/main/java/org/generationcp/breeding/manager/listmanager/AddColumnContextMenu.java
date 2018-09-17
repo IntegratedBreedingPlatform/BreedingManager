@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import com.vaadin.ui.Table;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent {
-	
+
 	private final SimpleResourceBundleMessageSource messageSource;
 
 	private final ContextMenu sourceContextMenu;
@@ -53,14 +54,13 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	private final ContextMenuItem listEditingOptions;
 	private final AddColumnSource addColumnSource;
 
-
 	/**
 	 * Add "Add column" context menu to a parent context menu item
 	 *
-	 * @param addColumnSource   - source component where AddColumn was called from
+	 * @param addColumnSource - source component where AddColumn was called from
 	 * @param sourceContextMenu - parent context menu object
 	 * @param listEditingOption - parent context menu item to attach to
-	 * @param messageSource     - internationalized message resource bundle
+	 * @param messageSource - internationalized message resource bundle
 	 */
 	public AddColumnContextMenu(final AddColumnSource addColumnSource, final ContextMenu sourceContextMenu,
 			final ContextMenuItem listEditingOption, final SimpleResourceBundleMessageSource messageSource) {
@@ -167,13 +167,13 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 			final boolean doExcludeGroupSourceGid = columnsToExclude.contains(FillWithOption.FILL_WITH_GROUP_SOURCE_GID);
 			this.menuFillWithGroupSourceGID =
-				this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_GROUP_SOURCE_GID, this.menuFillWithGroupSourceInfo);
+					this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_GROUP_SOURCE_GID, this.menuFillWithGroupSourceInfo);
 			this.menuFillWithGroupSourceGID.setEnabled(!doExcludeGroupSourceGid);
 
 			final boolean doExcludeGroupSourcePreferredName =
-				columnsToExclude.contains(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME);
+					columnsToExclude.contains(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME);
 			this.menuFillWithGroupSourcePreferredName =
-				this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME, this.menuFillWithGroupSourceInfo);
+					this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME, this.menuFillWithGroupSourceInfo);
 			this.menuFillWithGroupSourcePreferredName.setEnabled(!doExcludeGroupSourcePreferredName);
 		}
 
@@ -183,17 +183,17 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 			final boolean doExcludeImmediateSourceGid = columnsToExclude.contains(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID);
 			this.menuFillWithImmediateSourceGID =
-				this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID, this.menuFillWithImmediateSourceInfo);
+					this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID, this.menuFillWithImmediateSourceInfo);
 			this.menuFillWithImmediateSourceGID.setEnabled(!doExcludeImmediateSourceGid);
 
 			final boolean doExcludeImmediateSourcePreferredName =
-				columnsToExclude.contains(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME);
-			this.menuFillWithImmediateSourcePreferredName =
-				this.addFillWithOptionToSubMenu(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME, this.menuFillWithImmediateSourceInfo);
+					columnsToExclude.contains(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME);
+			this.menuFillWithImmediateSourcePreferredName = this.addFillWithOptionToSubMenu(
+					FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME, this.menuFillWithImmediateSourceInfo);
 			this.menuFillWithImmediateSourcePreferredName.setEnabled(!doExcludeImmediateSourcePreferredName);
 			this.sourceContextMenu.setWidth("325px");
 		}
-		
+
 		if (!columnsToExclude.contains(FillWithOption.FILL_WITH_GERMPLASM_NAME)) {
 			this.addFillWIthOptionToMenu(FillWithOption.FILL_WITH_GERMPLASM_NAME);
 		}
@@ -223,48 +223,48 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.CROSS_MALE_PREFERRED_NAME, this.menuFillWithCrossMalePrefName);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.GROUP_SOURCE_GID, this.menuFillWithGroupSourceGID);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.GROUP_SOURCE_PREFERRED_NAME,
-			this.menuFillWithGroupSourcePreferredName);
+				this.menuFillWithGroupSourcePreferredName);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.IMMEDIATE_SOURCE_GID, this.menuFillWithImmediateSourceGID);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME,
-			this.menuFillWithImmediateSourcePreferredName);
+				this.menuFillWithImmediateSourcePreferredName);
 
 		// Disable main "Breeding Method Information" menu item if columns were added for all sub-menu items
-		if (AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_NAME.getName(), table) && AddColumnContextMenu
-			.propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), table) && AddColumnContextMenu
-			.propertyExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), table) && AddColumnContextMenu
-			.propertyExists(ColumnLabels.BREEDING_METHOD_GROUP.getName(), table)) {
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_NAME.getName(), table)
+				&& AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), table)
+				&& AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), table)
+				&& AddColumnContextMenu.propertyExists(ColumnLabels.BREEDING_METHOD_GROUP.getName(), table)) {
 			this.menuFillWithMethodInfo.setEnabled(false);
 		} else {
 			this.menuFillWithMethodInfo.setEnabled(true);
 		}
 
 		// Disable main "Cross Female Information" menu item if columns were added for all sub-menu items
-		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_FEMALE_GID.getName(), table) && AddColumnContextMenu
-			.propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), table)) {
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_FEMALE_GID.getName(), table)
+				&& AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), table)) {
 			this.menuFillWithCrossFemaleInfo.setEnabled(false);
 		} else {
 			this.menuFillWithCrossFemaleInfo.setEnabled(true);
 		}
 
 		// Disable main "Cross Male Information" menu item if columns were added for all sub-menu items
-		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_MALE_GID.getName(), table) && AddColumnContextMenu
-			.propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), table)) {
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_MALE_GID.getName(), table)
+				&& AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), table)) {
 			this.menuFillWithCrossMaleInfo.setEnabled(false);
 		} else {
 			this.menuFillWithCrossMaleInfo.setEnabled(true);
 		}
 
 		// Disable main "Group Source Information" menu item if columns were added for all sub-menu items
-		if (AddColumnContextMenu.propertyExists(ColumnLabels.GROUP_SOURCE_GID.getName(), table) && AddColumnContextMenu
-			.propertyExists(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), table)) {
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.GROUP_SOURCE_GID.getName(), table)
+				&& AddColumnContextMenu.propertyExists(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), table)) {
 			this.menuFillWithGroupSourceInfo.setEnabled(false);
 		} else {
 			this.menuFillWithGroupSourceInfo.setEnabled(true);
 		}
 
 		// Disable main "Immediate Source Information" menu item if columns were added for all sub-menu items
-		if (AddColumnContextMenu.propertyExists(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), table) && AddColumnContextMenu
-			.propertyExists(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), table)) {
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), table)
+				&& AddColumnContextMenu.propertyExists(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), table)) {
 			this.menuFillWithImmediateSourceInfo.setEnabled(false);
 		} else {
 			this.menuFillWithImmediateSourceInfo.setEnabled(true);
@@ -329,18 +329,18 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		}
 		return listDataCollection;
 	}
-	
+
 	public List<String> getAddedColumns(final Table table, final List<String> attributeAndNameTypes) {
 		final List<String> propertyIds = AddColumnContextMenu.getTablePropertyIds(table);
 		final List<String> addedColumns = new ArrayList<>();
 		for (final String propertyId : propertyIds) {
-			if (isAddedColumn(attributeAndNameTypes, propertyId)) {
+			if (this.isAddedColumn(attributeAndNameTypes, propertyId)) {
 				addedColumns.add(propertyId);
 			}
 		}
 		return addedColumns;
 	}
-	
+
 	public Boolean hasAddedColumn(final Table table, final List<String> attributeAndNameTypes) {
 		if (!attributeAndNameTypes.isEmpty()) {
 			return true;
@@ -353,7 +353,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		}
 		return false;
 	}
-	
+
 	private boolean isAddedColumn(final List<String> attributeAndNameTypes, final String propertyId) {
 		return ColumnLabels.getAddableGermplasmColumns().contains(propertyId) || attributeAndNameTypes.contains(propertyId);
 	}
@@ -372,7 +372,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	}
 
 	public ContextMenuItem getAddColumnItem() {
-		return addColumnItem;
+		return this.addColumnItem;
 	}
 
 	public void setAddColumnItem(final ContextMenuItem addColumnItem) {
@@ -440,7 +440,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	}
 
 	public ContextMenuItem getMenuFillWithGroupSourceInfo() {
-		return menuFillWithGroupSourceInfo;
+		return this.menuFillWithGroupSourceInfo;
 	}
 
 	public void setMenuFillWithGroupSourceInfo(final ContextMenuItem menuFillWithGroupSourceInfo) {
@@ -448,7 +448,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	}
 
 	public ContextMenuItem getMenuFillWithGroupSourceGID() {
-		return menuFillWithGroupSourceGID;
+		return this.menuFillWithGroupSourceGID;
 	}
 
 	public void setMenuFillWithGroupSourceGID(final ContextMenuItem menuFillWithGroupSourceGID) {
@@ -456,7 +456,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	}
 
 	public ContextMenuItem getMenuFillWithGroupSourcePreferredName() {
-		return menuFillWithGroupSourcePreferredName;
+		return this.menuFillWithGroupSourcePreferredName;
 	}
 
 	public void setMenuFillWithGroupSourcePreferredName(final ContextMenuItem menuFillWithGroupSourcePreferredName) {
@@ -464,7 +464,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	}
 
 	public ContextMenuItem getMenuFillWithImmediateSourceInfo() {
-		return menuFillWithImmediateSourceInfo;
+		return this.menuFillWithImmediateSourceInfo;
 	}
 
 	public void setMenuFillWithImmediateSourceInfo(final ContextMenuItem menuFillWithImmediateSourceInfo) {
@@ -472,7 +472,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	}
 
 	public ContextMenuItem getMenuFillWithImmediateSourceGID() {
-		return menuFillWithImmediateSourceGID;
+		return this.menuFillWithImmediateSourceGID;
 	}
 
 	public void setMenuFillWithImmediateSourceGID(final ContextMenuItem menuFillWithImmediateSourceGID) {
@@ -480,7 +480,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	}
 
 	public ContextMenuItem getMenuFillWithImmediateSourcePreferredName() {
-		return menuFillWithImmediateSourcePreferredName;
+		return this.menuFillWithImmediateSourcePreferredName;
 	}
 
 	public void setMenuFillWithImmediateSourcePreferredName(final ContextMenuItem menuFillWithImmediateSourcePreferredName) {
@@ -488,6 +488,6 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	}
 
 	public AddColumnSource getAddColumnSource() {
-		return addColumnSource;
+		return this.addColumnSource;
 	}
 }
