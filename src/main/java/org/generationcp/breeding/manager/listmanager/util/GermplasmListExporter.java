@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 import org.apache.commons.collections.CollectionUtils;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
-import org.generationcp.commons.pojo.ExportColumnValue;
+import org.generationcp.commons.pojo.ExportRow;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.GermplasmExportService;
@@ -102,10 +102,10 @@ public class GermplasmListExporter {
 	public FileOutputStream exportKBioScienceGenotypingOrderXLS(final int germplasmListID, final String filename, final int plateSize) throws GermplasmListExporterException {
 
 		final List<ExportColumnHeader> exportColumnHeaders = this.getColumnHeadersForGenotypingData(plateSize);
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getColumnValuesForGenotypingData(germplasmListID, plateSize);
+		final List<ExportRow> exportRows = this.getColumnValuesForGenotypingData(germplasmListID, plateSize);
 
 		try {
-			return this.germplasmExportService.generateExcelFileForSingleSheet(exportColumnValues, exportColumnHeaders, filename, "List");
+			return this.germplasmExportService.generateExcelFileForSingleSheet(exportRows, exportColumnHeaders, filename, "List");
 		} catch (final IOException e) {
 			throw new GermplasmListExporterException("Error with writing to: " + filename, e);
 		}
@@ -125,9 +125,9 @@ public class GermplasmListExporter {
 		return exportColumnHeaders;
 	}
 
-	protected List<Map<Integer, ExportColumnValue>> getColumnValuesForGenotypingData(final int germplasmListID, final int plateSize) throws GermplasmListExporterException {
+	protected List<ExportRow> getColumnValuesForGenotypingData(final int germplasmListID, final int plateSize) throws GermplasmListExporterException {
 
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
+		final List<ExportRow> exportRows = new ArrayList<>();
 
 		final GermplasmList germplasmList = this.getGermplasmListAndListData(germplasmListID);
 		final String listName = germplasmList.getName();
@@ -167,21 +167,21 @@ public class GermplasmListExporter {
 				well = well + wellNumberIndex;
 			}
 
-			final Map<Integer, ExportColumnValue> exportRowValue = new HashMap<>();
-			exportRowValue.put(0, new ExportColumnValue(0, listData.getEntryId().toString()));
-			exportRowValue.put(1, new ExportColumnValue(1, plateName));
-			exportRowValue.put(2, new ExportColumnValue(2, well));
-			exportRowValue.put(3, new ExportColumnValue(3, null));
-			exportRowValue.put(4, new ExportColumnValue(4, null));
-			exportRowValue.put(5, new ExportColumnValue(5, null));
-			exportRowValue.put(6, new ExportColumnValue(6, null));
-			exportRowValue.put(7, new ExportColumnValue(7, null));
+			final ExportRow exportRow = new ExportRow();
+			exportRow.addColumnValue(0, listData.getEntryId().toString());
+			exportRow.addColumnValue(1, plateName);
+			exportRow.addColumnValue(2, well);
+			exportRow.addColumnValue(3, null);
+			exportRow.addColumnValue(4, null);
+			exportRow.addColumnValue(5, null);
+			exportRow.addColumnValue(6, null);
+			exportRow.addColumnValue(7, null);
 
-			exportColumnValues.add(exportRowValue);
+			exportRows.add(exportRow);
 
 			wellNumberIndex++;
 		}
-		return exportColumnValues;
+		return exportRows;
 	}
 
 	public Reporter exportGermplasmListCustomReport(final int germplasmListID, final String fileName, final String reportCode) throws GermplasmListExporterException {
@@ -448,7 +448,7 @@ public class GermplasmListExporter {
 	public void exportGermplasmListCSV(final String fileName, final Table listDataTable, final Integer germplasmListId) throws GermplasmListExporterException {
 
 		final GermplasmListNewColumnsInfo currentColumnsInfo = this.germplasmListManager.getAdditionalColumnsForList(germplasmListId);
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getExportColumnValuesFromTable(listDataTable, currentColumnsInfo);
+		final List<ExportRow> exportColumnValues = this.getExportColumnValuesFromTable(listDataTable, currentColumnsInfo);
 		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeadersFromTable(listDataTable, currentColumnsInfo);
 
 		try {
@@ -504,12 +504,12 @@ public class GermplasmListExporter {
 		}
 	}
 
-	protected List<Map<Integer, ExportColumnValue>> getExportColumnValuesFromTable(final Table listDataTable,
+	protected List<ExportRow> getExportColumnValuesFromTable(final Table listDataTable,
 		final GermplasmListNewColumnsInfo currentColumnsInfo) {
 
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
+		final List<ExportRow> exportRows = new ArrayList<>();
 		for (final Object itemId : listDataTable.getItemIds()) {
-			final Map<Integer, ExportColumnValue> row = new HashMap<>();
+			final ExportRow row = new ExportRow();
 
 			final String entryIdValue = listDataTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue().toString();
 			final String gidValue = ((Button) listDataTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption();
@@ -520,22 +520,22 @@ public class GermplasmListExporter {
 			final String seedSourceValue =
 					listDataTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue().toString();
 			
-			row.put(0, new ExportColumnValue(0, entryIdValue));
-			row.put(1, new ExportColumnValue(1, gidValue));
-			row.put(2, new ExportColumnValue(2, entryCodeValue));
-			row.put(3, new ExportColumnValue(3, designationValue));
-			row.put(4, new ExportColumnValue(4, parentageValue));
-			row.put(5, new ExportColumnValue(5, seedSourceValue));
+			row.addColumnValue(0, entryIdValue);
+			row.addColumnValue(1, gidValue);
+			row.addColumnValue(2, entryCodeValue);
+			row.addColumnValue(3, designationValue);
+			row.addColumnValue(4, parentageValue);
+			row.addColumnValue(5, seedSourceValue);
 
 			this.addAttributesValues(currentColumnsInfo, itemId, row);
-			exportColumnValues.add(row);
+			exportRows.add(row);
 		}
 
-		return exportColumnValues;
+		return exportRows;
 	}
 
 	protected void addAttributesValues(final GermplasmListNewColumnsInfo currentColumnsInfo, final Object itemId,
-			final Map<Integer, ExportColumnValue> row) {
+			final ExportRow row) {
 		int i = 6;
 		if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null
 			&& currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
@@ -550,7 +550,7 @@ public class GermplasmListExporter {
 							}
 						});
 					final String value = (listDataColumnValues != null ? listDataColumnValues.getValue() : "");
-					row.put(i, new ExportColumnValue(i, value));
+					row.addColumnValue(i, value);
 					i++;
 				}
 			}
