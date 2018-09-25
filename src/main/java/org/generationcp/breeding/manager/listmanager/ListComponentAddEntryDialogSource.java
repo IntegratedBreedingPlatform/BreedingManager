@@ -12,10 +12,9 @@ import javax.annotation.Resource;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -84,15 +83,7 @@ public class ListComponentAddEntryDialogSource implements AddEntryDialogSource {
 
 	Boolean finishAddingEntry(final Integer gid, final Boolean showSuccessMessage) {
 
-		final Germplasm germplasm;
-
-		try {
-			germplasm = this.germplasmDataManager.getGermplasmWithPrefName(gid);
-		} catch (final MiddlewareQueryException ex) {
-			MessageNotifier.showError(this.listComponent.getWindow(), ListComponent.DATABASE_ERROR,
-					"Error with getting germplasm with id: " + gid + ". " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
-			return false;
-		}
+		final Germplasm germplasm = this.germplasmDataManager.getGermplasmWithPrefName(gid);
 
 		Integer maxEntryId = 0;
 		if (this.listDataTable != null) {
@@ -124,60 +115,48 @@ public class ListComponentAddEntryDialogSource implements AddEntryDialogSource {
 		listData.setSeedSource(this.germplasmDataManager.getPlotCodeValue(gid));
 		listData.setGroupId(germplasm.getMgid());
 
-		String groupName;
-		try {
-			groupName = this.pedigreeService.getCrossExpansion(gid, this.crossExpansionProperties);
-		} catch (final MiddlewareQueryException ex) {
-			groupName = "-";
-		}
+		String groupName = "-";
+		groupName = this.pedigreeService.getCrossExpansion(gid, this.crossExpansionProperties);
 		listData.setGroupName(groupName);
 
 		final Integer listDataId;
-		try {
-			listDataId = this.germplasmListManager.addGermplasmListData(listData);
+		listDataId = this.germplasmListManager.addGermplasmListData(listData);
 
-			// create table if added entry is first listdata record
-			if (this.listDataTable == null) {
-				this.listComponent.initializeListDataTable(new TableWithSelectAllLayout(this.listComponent.getNoOfEntries(),
-						this.listComponent.getNoOfEntries(), ColumnLabels.TAG.getName()));
-				this.listComponent.initializeValues();
-			} else {
-				this.listDataTable.setEditable(false);
-				final List<GermplasmListData> inventoryData = this.inventoryDataManager.getLotCountsForListEntries(
-						this.listComponent.getGermplasmList().getId(), new ArrayList<>(Collections.singleton(listDataId)));
-				if (inventoryData != null) {
-					listData = inventoryData.get(0);
-				}
-				this.listComponent.addListEntryToTable(listData);
+		// create table if added entry is first listdata record
+		if (this.listDataTable == null) {
+			this.listComponent.initializeListDataTable(new TableWithSelectAllLayout(this.listComponent.getNoOfEntries(),
+					this.listComponent.getNoOfEntries(), ColumnLabels.TAG.getName()));
+			this.listComponent.initializeValues();
+		} else {
+			this.listDataTable.setEditable(false);
+			final List<GermplasmListData> inventoryData = this.inventoryDataManager.getLotCountsForListEntries(
+					this.listComponent.getGermplasmList().getId(), new ArrayList<>(Collections.singleton(listDataId)));
+			if (inventoryData != null) {
+				listData = inventoryData.get(0);
+			}
+			this.listComponent.addListEntryToTable(listData);
 
-				// Generate values for added columns, if any
-				if (AddColumnContextMenu.sourceHadAddedColumn(this.listDataTable.getVisibleColumns())) {
-					this.newEntriesSource.setAddedItemIds(Arrays.asList(listDataId));
-					this.newEntriesSource.setAddedGids(Arrays.asList(gid));
-					// Add Column > "Fill With Attribute" is disabled in View List context hence 2nd parameter is false
-					this.addedColumnsMapper.generateValuesForAddedColumns(this.listDataTable.getVisibleColumns(), false);
-				}
-
-				this.listComponent.saveChangesAction(this.listComponent.getWindow(), false);
-				this.listDataTable.refreshRowCache();
-				this.listDataTable.setImmediate(true);
-				this.listDataTable.setEditable(true);
+			// Generate values for added columns, if any
+			if (this.listComponent.listHasAddedColumns()) {
+				this.newEntriesSource.setAddedItemIds(Arrays.asList(listDataId));
+				this.newEntriesSource.setAddedGids(Arrays.asList(gid));
+				this.addedColumnsMapper.generateValuesForAddedColumns(this.listDataTable.getVisibleColumns());
 			}
 
-			if (showSuccessMessage) {
-				this.listComponent.setHasUnsavedChanges(false);
-				MessageNotifier.showMessage(this.listComponent.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-						"Successful in adding list entries.", 3000);
-			}
-
-			this.listComponent.setDoneInitializing(true);
-			return true;
-
-		} catch (final MiddlewareQueryException ex) {
-			MessageNotifier.showError(this.listComponent.getWindow(), ListComponent.DATABASE_ERROR,
-					"Error with adding list entry. " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
-			return false;
+			this.listComponent.saveChangesAction(this.listComponent.getWindow(), false);
+			this.listDataTable.refreshRowCache();
+			this.listDataTable.setImmediate(true);
+			this.listDataTable.setEditable(true);
 		}
+
+		if (showSuccessMessage) {
+			this.listComponent.setHasUnsavedChanges(false);
+			MessageNotifier.showMessage(this.listComponent.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
+					"Successful in adding list entries.", 3000);
+		}
+
+		this.listComponent.setDoneInitializing(true);
+		return true;
 
 	}
 
@@ -186,53 +165,43 @@ public class ListComponentAddEntryDialogSource implements AddEntryDialogSource {
 		return this.listComponent.getListManagerMain();
 	}
 
-	
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
-	
-	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
 
-	
-	public void setPedigreeService(PedigreeService pedigreeService) {
+	public void setPedigreeService(final PedigreeService pedigreeService) {
 		this.pedigreeService = pedigreeService;
 	}
 
-	
-	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+	public void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
 		this.inventoryDataManager = inventoryDataManager;
 	}
 
-	
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	
-	public void setCrossExpansionProperties(CrossExpansionProperties crossExpansionProperties) {
+	public void setCrossExpansionProperties(final CrossExpansionProperties crossExpansionProperties) {
 		this.crossExpansionProperties = crossExpansionProperties;
 	}
 
-	
-	public void setListComponent(ListComponent listComponent) {
+	public void setListComponent(final ListComponent listComponent) {
 		this.listComponent = listComponent;
 	}
 
-	
-	public void setListDataTable(Table listDataTable) {
+	public void setListDataTable(final Table listDataTable) {
 		this.listDataTable = listDataTable;
 	}
 
-	
-	public void setNewEntriesSource(NewGermplasmEntriesFillColumnSource newEntriesSource) {
+	public void setNewEntriesSource(final NewGermplasmEntriesFillColumnSource newEntriesSource) {
 		this.newEntriesSource = newEntriesSource;
 	}
 
-	
-	public void setAddedColumnsMapper(AddedColumnsMapper addedColumnsMapper) {
+	public void setAddedColumnsMapper(final AddedColumnsMapper addedColumnsMapper) {
 		this.addedColumnsMapper = addedColumnsMapper;
 	}
 

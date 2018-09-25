@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 
+import com.vaadin.Application;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.ObjectProperty;
@@ -145,7 +146,11 @@ public class GermplasmSearchLoadedItemsAddColumnSourceTest {
 
 	@Test
 	public void testGetWindow() {
-		Assert.assertEquals(this.window, this.addColumnSource.getWindow());
+		final Application application = Mockito.mock(Application.class);
+		final Window mainWindow = Mockito.mock(Window.class);
+		Mockito.doReturn(application).when(this.window).getApplication();
+		Mockito.doReturn(mainWindow).when(application).getMainWindow();
+		Assert.assertEquals(mainWindow, this.addColumnSource.getWindow());
 	}
 
 	@Test

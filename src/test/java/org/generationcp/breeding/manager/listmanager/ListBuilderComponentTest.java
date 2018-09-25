@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -58,7 +59,6 @@ import com.beust.jcommander.internal.Lists;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
@@ -570,5 +570,31 @@ public class ListBuilderComponentTest {
 		Mockito.when(item.addItem(Matchers.anyString())).thenReturn(item);
 		this.listBuilderComponent.initializeAddColumnContextMenu();
 		Mockito.verify(this.contextMenu).addListener(Matchers.any(ContextMenu.ClickListener.class));
+	}
+	
+	@Test
+	public void testAddAttributeAndNameTypeColumn() {
+		final List<String> attributeAndNameTypes = new ArrayList<>();
+		this.listBuilderComponent.setAttributeAndNameTypeColumns(attributeAndNameTypes);
+		final String column = "PASSPORT ATTRIBUTE";
+		this.listBuilderComponent.addAttributeAndNameTypeColumn(column);
+		Assert.assertFalse(this.listBuilderComponent.getAttributeAndNameTypeColumns().isEmpty());
+		Assert.assertTrue(this.listBuilderComponent.getAttributeAndNameTypeColumns().contains(column));
+	}
+	
+	@Test
+	public void testListHasAddedColumns() {
+		final Table table = new Table();
+		final List<String> attributeAndNameTypes = new ArrayList<>();
+		this.listBuilderComponent.setListDataTable(table);
+		this.listBuilderComponent.setAttributeAndNameTypeColumns(attributeAndNameTypes);
+		this.listBuilderComponent.setAddColumnContextMenu(this.addColumnContextMenu);
+		
+		Mockito.doReturn(true).when(this.addColumnContextMenu).hasAddedColumn(table, attributeAndNameTypes);
+		Assert.assertTrue(this.listBuilderComponent.listHasAddedColumns());
+		
+		Mockito.doReturn(false).when(this.addColumnContextMenu).hasAddedColumn(table, attributeAndNameTypes);
+		Assert.assertFalse(this.listBuilderComponent.listHasAddedColumns());
+		
 	}
 }

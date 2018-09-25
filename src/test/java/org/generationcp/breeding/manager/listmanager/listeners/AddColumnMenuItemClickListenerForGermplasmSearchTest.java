@@ -1,9 +1,7 @@
 
-package org.generationcp.breeding.manager.listmanager.listeners.test;
+package org.generationcp.breeding.manager.listmanager.listeners;
 
-import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;
-import org.generationcp.breeding.manager.listmanager.listeners.AddColumnMenuItemClickListenerForGermplasmSearch;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.constant.ColumnLabels;
@@ -11,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -20,13 +17,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Window;
-
 @RunWith(MockitoJUnitRunner.class)
 public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 
 	private static final String FILL_WITH_ATTRIBUTE = "Fill With Attribute";
+	
+	private static final String FILL_WITH_GERMPLASM_NAME = "Fill With Germplasm Name";
 
 	@Mock
 	private ClickEvent clickEvent;
@@ -74,8 +70,18 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey());
 		Mockito.doReturn(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey());
-		Mockito.doReturn(AddColumnMenuItemClickListenerForGermplasmSearchTest.FILL_WITH_ATTRIBUTE)
-				.when(this.messageSource).getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey());
+		Mockito.doReturn(AddColumnMenuItemClickListenerForGermplasmSearchTest.FILL_WITH_ATTRIBUTE).when(this.messageSource)
+				.getMessage(FillWithOption.FILL_WITH_ATTRIBUTE.getMessageKey());
+		Mockito.doReturn(ColumnLabels.GROUP_SOURCE_GID.getName()).when(this.messageSource)
+				.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_GID.getMessageKey());
+		Mockito.doReturn(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName()).when(this.messageSource)
+				.getMessage(FillWithOption.FILL_WITH_GROUP_SOURCE_PREFERRED_NAME.getMessageKey());
+		Mockito.doReturn(ColumnLabels.IMMEDIATE_SOURCE_GID.getName()).when(this.messageSource)
+				.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID.getMessageKey());
+		Mockito.doReturn(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()).when(this.messageSource)
+				.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME.getMessageKey());
+		Mockito.doReturn(AddColumnMenuItemClickListenerForGermplasmSearchTest.FILL_WITH_GERMPLASM_NAME).when(this.messageSource)
+				.getMessage(FillWithOption.FILL_WITH_GERMPLASM_NAME.getMessageKey());
 	}
 
 	@Test
@@ -185,25 +191,39 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.CROSS_MALE_PREFERRED_NAME);
 
 	}
-
+	
 	@Test
-	public void testFillWithAttributeItemClick() {
-		Mockito.doReturn(AddColumnMenuItemClickListenerForGermplasmSearchTest.FILL_WITH_ATTRIBUTE)
-				.when(this.contextMenuItem).getName();
-		final Application application = Mockito.mock(Application.class);
-		final Window parentWindow = Mockito.mock(Window.class);
-		Mockito.doReturn(parentWindow).when(this.addColumnSource).getWindow();
-		Mockito.doReturn(application).when(parentWindow).getApplication();
-		Mockito.doReturn(parentWindow).when(application).getMainWindow();
+	public void testFillWithGroupSourceGIDItemClick() {
+		Mockito.doReturn(ColumnLabels.GROUP_SOURCE_GID.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
-		final ArgumentCaptor<Window> subWindowCaptor = ArgumentCaptor.forClass(Window.class);
-		Mockito.verify(parentWindow).addWindow(subWindowCaptor.capture());
-		Assert.assertTrue(subWindowCaptor.getValue() instanceof FillWithAttributeWindow);
-
-		final FillWithAttributeWindow attributeWindow = (FillWithAttributeWindow) subWindowCaptor.getValue();
-		Assert.assertEquals(this.addColumnSource, attributeWindow.getAddColumnSource());
+		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.GROUP_SOURCE_GID);
 	}
+	
+	@Test
+	public void testFillWithGroupSourcePreferredNameItemClick() {
+		Mockito.doReturn(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName()).when(this.contextMenuItem).getName();
+		this.addColumnClickListener.contextItemClick(this.clickEvent);
+
+		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME);
+	}
+	
+	@Test
+	public void testFillWithImmediateSourceGIDItemClick() {
+		Mockito.doReturn(ColumnLabels.IMMEDIATE_SOURCE_GID.getName()).when(this.contextMenuItem).getName();
+		this.addColumnClickListener.contextItemClick(this.clickEvent);
+
+		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.IMMEDIATE_SOURCE_GID);
+	}
+	
+	@Test
+	public void testFillWithImmediateSourcePreferredNameItemClick() {
+		Mockito.doReturn(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()).when(this.contextMenuItem).getName();
+		this.addColumnClickListener.contextItemClick(this.clickEvent);
+
+		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME);
+	}
+	
 
 	@Test
 	public void testFillWithPreferredIDItemClickAndColumnExists() {
@@ -316,6 +336,47 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
 		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.CROSS_MALE_PREFERRED_NAME);
+	}
+	
+	@Test
+	public void testFillWithGroupSourceGIDItemClickAndColumnExists() {
+		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.GROUP_SOURCE_GID.getName());
+		Mockito.doReturn(ColumnLabels.GROUP_SOURCE_GID.getName()).when(this.contextMenuItem).getName();
+		this.addColumnClickListener.contextItemClick(this.clickEvent);
+
+		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.GROUP_SOURCE_GID);
+	}
+	
+	@Test
+	public void testFillWithGroupSourcePreferredNameItemClickAndColumnExists() {
+		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName());
+		Mockito.doReturn(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName()).when(this.contextMenuItem).getName();
+		this.addColumnClickListener.contextItemClick(this.clickEvent);
+
+		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME);
+	}
+	
+	@Test
+	public void testFillWithImmediateSourceGIDItemClickAndColumnExists() {
+		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
+		Mockito.doReturn(ColumnLabels.IMMEDIATE_SOURCE_GID.getName()).when(this.contextMenuItem).getName();
+		this.addColumnClickListener.contextItemClick(this.clickEvent);
+
+		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.IMMEDIATE_SOURCE_GID);
+	}
+	
+	@Test
+	public void testFillWithImmediateSourcePreferredNameItemClickAndColumnExists() {
+		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName());
+		Mockito.doReturn(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()).when(this.contextMenuItem).getName();
+		this.addColumnClickListener.contextItemClick(this.clickEvent);
+
+		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME);
+	}
+	
+	@Test
+	public void testIsFromGermplasmSearchWindow() {
+		Assert.assertTrue(this.addColumnClickListener.isFromGermplasmSearchWindow());
 	}
 
 }
