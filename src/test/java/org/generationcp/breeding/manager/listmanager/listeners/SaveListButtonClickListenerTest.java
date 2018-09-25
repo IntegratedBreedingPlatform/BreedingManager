@@ -1,25 +1,23 @@
-package org.generationcp.breeding.manager.listmanager.listeners.test;
+package org.generationcp.breeding.manager.listmanager.listeners;
 
-import com.beust.jcommander.internal.Lists;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSelectionComponent;
-import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
+import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -33,7 +31,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.util.List;
+import com.beust.jcommander.internal.Lists;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 
 public class SaveListButtonClickListenerTest {
 
@@ -59,6 +61,9 @@ public class SaveListButtonClickListenerTest {
 
 	@Mock
 	private ContextUtil contextUtil;
+	
+	@Mock
+	private AddColumnContextMenu addColumnContextMenu;
 
 	private Project project;
 
@@ -69,7 +74,7 @@ public class SaveListButtonClickListenerTest {
 	private static final String DUMMY_PROGRAM_UUID = "12345678";
 
 	@Before
-	public void setUp() throws MiddlewareQueryException, IllegalAccessException {
+	public void setUp() throws IllegalAccessException {
 		MockitoAnnotations.initMocks(this);
 
 		this.initializeGermplasmList();
@@ -86,7 +91,8 @@ public class SaveListButtonClickListenerTest {
 		Mockito.when(this.source.getWindow()).thenReturn(new Window());
 
 		Mockito.when(this.messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK)).thenReturn(SaveListButtonClickListenerTest.DUMMY_OPTION);
-
+		Mockito.when(this.source.getAddColumnContextMenu()).thenReturn(this.addColumnContextMenu);
+		
 		this.saveListener.setDataManager(this.dataManager);
 		this.saveListener.setMessageSource(this.messageSource);
 		this.saveListener.setInventoryDataManager(this.inventoryDataManager);
@@ -147,62 +153,6 @@ public class SaveListButtonClickListenerTest {
 	}
 
 	@Test
-	public void testCreateContainerPropertyOfAddedColumnToTempTable() {
-		final Table newTable = Mockito.mock(Table.class);
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.PREFERRED_ID.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.PREFERRED_ID.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.PREFERRED_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.PREFERRED_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GERMPLASM_DATE.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GERMPLASM_DATE.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GERMPLASM_LOCATION.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_NUMBER.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.BREEDING_METHOD_GROUP.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.BREEDING_METHOD_GROUP.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_FEMALE_GID.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_FEMALE_GID.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_MALE_GID.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_MALE_GID.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.GROUP_SOURCE_GID.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.GROUP_SOURCE_GID.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
-		Mockito.verify(newTable).addContainerProperty(ColumnLabels.IMMEDIATE_SOURCE_GID.getName(), String.class, "");
-
-		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "DUMMY COLUMN");
-		Mockito.verify(newTable, Mockito.times(0)).addContainerProperty("DUMMY COLUMN", String.class, "");
-	}
-
-	@Test
 	public void testDoSaveActionWhenUnsavedReservationThrowErrorMessageOfUnsavedReservation() {
 		final ListManagerMain listManagerMain = Mockito.mock(ListManagerMain.class);
 		final ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
@@ -238,10 +188,6 @@ public class SaveListButtonClickListenerTest {
 		Mockito.when(this.source.getBuildNewListDropHandler()).thenReturn(buildNewListDropHandler);
 		Mockito.when(this.source.saveListAction()).thenReturn(true);
 
-		final AddColumnContextMenu addColumnContextMenu = Mockito.mock(AddColumnContextMenu.class);
-
-		Mockito.when(this.source.getAddColumnContextMenu()).thenReturn(addColumnContextMenu);
-
 		final GermplasmListData germplasmListData = ListInventoryDataInitializer.createGermplasmListData(1);
 		Mockito.when(this.source.getListEntriesFromTable()).thenReturn(Lists.newArrayList(germplasmListData));
 
@@ -273,5 +219,53 @@ public class SaveListButtonClickListenerTest {
 		Assert.assertNull(currentlySavedGermplasmList.getProgramUUID());
 		Assert.assertEquals(101, currentlySavedGermplasmList.getStatus().intValue());
 
+	}
+	
+	@Test
+	public void testSaveListDataColumns() {
+		final List<String> addedColumns = Arrays.asList("NOTES");
+		Mockito.doReturn(addedColumns).when(this.source).getAttributeAndNameTypeColumns();
+		final List<ListDataInfo> listDataInfo = Arrays.asList(new ListDataInfo(1, Arrays.asList(new ListDataColumn(ColumnLabels.PREFERRED_NAME.getName(), "IBP-001"))));
+		Mockito.doReturn(listDataInfo).when(this.addColumnContextMenu).getListDataCollectionFromTable(this.listDataTable, addedColumns);
+		
+		this.saveListener.saveListDataColumns(new GermplasmList());
+		Mockito.verify(this.dataManager).saveListDataColumns(listDataInfo);
+	}
+	
+	@Test
+	public void testCloneAddedColumnsToTemp() {
+		final Table sourceTable = Mockito.mock(Table.class);
+		
+		final String noteAttributeField = "NOTE_ATTRIBUTE";
+		final String notesPrefix = "NOTES ";
+		final String preferredNamePrefix = "PREFERRED NAME ";
+		final List<String> addedColumns = new ArrayList<>(Arrays.asList(ColumnLabels.PREFERRED_NAME.getName(), noteAttributeField));
+		final List<String> attributeAndNameTypes = Arrays.asList(noteAttributeField);
+		Mockito.doReturn(attributeAndNameTypes).when(this.source).getAttributeAndNameTypeColumns();
+		Mockito.doReturn(addedColumns).when(this.addColumnContextMenu).getAddedColumns(sourceTable, attributeAndNameTypes);
+		
+		final List<Integer> tableEntryIds = Arrays.asList(1, 2, 3);
+		Mockito.doReturn(tableEntryIds).when(sourceTable).getItemIds();
+		
+		for (final Integer id: tableEntryIds) {
+			final Item item = Mockito.mock(Item.class);
+			Mockito.doReturn(item).when(sourceTable).getItem(id);
+			final Property property1 = Mockito.mock(Property.class);
+			Mockito.doReturn(property1).when(item).getItemProperty(ColumnLabels.PREFERRED_NAME.getName());
+			Mockito.doReturn(new String(preferredNamePrefix + id)).when(property1).getValue();
+			final Property property2 = Mockito.mock(Property.class);
+			Mockito.doReturn(property2).when(item).getItemProperty(noteAttributeField);
+			Mockito.doReturn(new String(notesPrefix + id)).when(property2).getValue();
+		}
+		final Table tempTable = this.saveListener.cloneAddedColumnsToTemp(sourceTable);
+		Assert.assertEquals(tableEntryIds.size(), tempTable.getItemIds().size());
+		for (final Integer id: tableEntryIds) {
+			Assert.assertTrue(tempTable.getItemIds().contains(id));
+			Assert.assertEquals(new String(preferredNamePrefix + id),
+					tempTable.getItem(id).getItemProperty(ColumnLabels.PREFERRED_NAME.getName()).getValue());
+			Assert.assertEquals(new String(notesPrefix + id),
+					tempTable.getItem(id).getItemProperty(noteAttributeField).getValue());
+		}
+		
 	}
 }
