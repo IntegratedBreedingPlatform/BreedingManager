@@ -13,6 +13,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
@@ -65,33 +66,14 @@ public class GermplasmQueryTest {
 	public static final Double AVAILABLE_BALANCE = 5.0d;
 	public static final String ORI_COUN = "ORI_COUN";
 	public static final String NOTE = "NOTE";
+	public static final String NAMETYPE1 = "DRVNM";
+	public static final String NAMETYPE2 = "CROSS";
+	
 
-	private final String[] itemPropertyIds = new String[] {
-			"GROUP ID"
-			,"METHOD ABBREV"
-			,"Tag All Column"
-			,"PREFERRED NAME"
-			,"PARENTAGE"
-			,"CROSS-MALE PREFERRED NAME"
-			,"AVAILABLE"
-			,"CROSS-FEMALE GID"
-			,"METHOD GROUP"
-			,"METHOD NUMBER"
-			,"GID"
-			,"LOCATIONS"
-			,"GERMPLASM DATE"
-			,"GID_REF"
-			,"LOTS"
-			,"CROSS-MALE GID"
-			,"PREFERRED ID"
-			,"CROSS-FEMALE PREFERRED NAME"
-			,"METHOD NAME"
-			,"STOCKID"
-			,"NAMES"
-			,"GROUP SOURCE GID"
-			,"GROUP SOURCE"
-			,"IMMEDIATE SOURCE GID"
-			,"IMMEDIATE SOURCE"};
+	private static final String[] STANDARD_COLUMNS = {"Tag All Column", "GROUP ID", "PARENTAGE", "AVAILABLE", "GID", "NAMES", "LOCATIONS",
+			"METHOD NAME", "GID_REF", "LOTS", "STOCKID"};
+	private List<String> itemPropertyIds = new ArrayList<>();
+	
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
 	@Mock
@@ -111,6 +93,13 @@ public class GermplasmQueryTest {
 
 	@Before
 	public void setUp() throws Exception {
+		this.itemPropertyIds.addAll(Arrays.asList(STANDARD_COLUMNS));
+		this.itemPropertyIds.addAll(ColumnLabels.getAddableGermplasmColumns());
+		this.itemPropertyIds.add(ORI_COUN);
+		this.itemPropertyIds.add(NOTE);
+		this.itemPropertyIds.add(NAMETYPE1);
+		this.itemPropertyIds.add(NAMETYPE2);
+		
 		// create a test list of germplasms with inventory information
 		final Map<Integer, String> pedigreeString = new HashMap<>();
 		final Map<Integer, String> groupSourcepreferredNamesMap = new HashMap<>();
@@ -146,6 +135,16 @@ public class GermplasmQueryTest {
 			germplasm.setImmediateSourcePreferredName("-");
 			immediatepreferredNamesMap.put(gid,"AA");
 			groupSourcepreferredNamesMap.put(gid,"-");
+			
+			final Map<String, String> attributesMap = new HashMap<>();
+			attributesMap.put(ORI_COUN, ORI_COUN + gid);
+			attributesMap.put(NOTE, NOTE + gid);
+			germplasm.setAttributeTypesValueMap(attributesMap);
+			
+			final Map<String, String> namesMap = new HashMap<>();
+			namesMap.put(NAMETYPE1, NAMETYPE1 + gid);
+			namesMap.put(NAMETYPE2, NAMETYPE2 + gid);
+			germplasm.setNameTypesValueMap(namesMap);
 
 			if (i < NUMBER_OF_ITEMS_ON_PAGE){
 				this.currentGermplasm.add(germplasm);
@@ -153,7 +152,6 @@ public class GermplasmQueryTest {
 			this.allGermplasm.add(germplasm);
 			this.gids.add(gid);
 
-			Mockito.when(this.germplasmDataManager.getAttributeTypesByGIDList(Mockito.anyList())).thenReturn(this.createAttributeTypes());
 		}
 
 		// initialize middleware service calls
@@ -187,7 +185,7 @@ public class GermplasmQueryTest {
 			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING),
 			Collections.singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_GERMPLASM_NAME));
 
-		final List<String> itemPropertyIDList = Arrays.asList(this.itemPropertyIds);
+		final List<String> itemPropertyIDList = this.itemPropertyIds;
 
 		Assert.assertNotNull("getGermplasmItem should return an item object", item);
 		Assert.assertTrue("the formed item object should contain the property ids",
@@ -196,7 +194,7 @@ public class GermplasmQueryTest {
 		// The following asserts should just verify the content / values of the item object given itemPropertyId
 		Assert.assertEquals("LocationName", item.getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).getValue());
 		Assert.assertEquals(GermplasmQueryTest.TEST_DASH_STRING, item.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
-		Assert.assertEquals(GermplasmQueryTest.TEST_GID, item.getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue());
+		Assert.assertEquals(GermplasmQueryTest.TEST_GID, item.getItemProperty(GermplasmQuery.GID_REF_PROPERTY).getValue());
 		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof CheckBox);
 
 		Assert.assertEquals(GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING,
@@ -223,7 +221,35 @@ public class GermplasmQueryTest {
 		Assert.assertNotNull(listeners);
 		Assert.assertTrue(listeners.size() == 1);
 		Assert.assertTrue(listeners.iterator().next() instanceof InventoryLinkButtonClickListener);
-
+		
+		final Button namesButton = (Button) item.getItemProperty(GermplasmSearchResultsComponent.NAMES).getValue();
+		Assert.assertEquals(germplasm.getGermplasmNamesString().substring(0, 20) + "...", namesButton.getCaption());
+		Assert.assertEquals(germplasm.getGermplasmNamesString(), namesButton.getDescription());
+		listeners = namesButton.getListeners(Button.ClickEvent.class);
+		Assert.assertNotNull(listeners);
+		Assert.assertTrue(listeners.size() == 1);
+		Assert.assertTrue(listeners.iterator().next() instanceof GidLinkButtonClickListener);
+		
+		// Verify added columns
+		Assert.assertEquals(germplasm.getGermplasmPeferredName(), item.getItemProperty(ColumnLabels.PREFERRED_NAME.getName()).getValue());
+		Assert.assertEquals(germplasm.getGermplasmPeferredId(), item.getItemProperty(ColumnLabels.PREFERRED_ID.getName()).getValue());
+		Assert.assertEquals(germplasm.getGermplasmDate(), item.getItemProperty(ColumnLabels.GERMPLASM_DATE.getName()).getValue());
+		Assert.assertEquals(germplasm.getMethodCode(), item.getItemProperty(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName()).getValue());
+		Assert.assertEquals(germplasm.getMethodId(), item.getItemProperty(ColumnLabels.BREEDING_METHOD_NUMBER.getName()).getValue());
+		Assert.assertEquals(germplasm.getFemaleParentPreferredID(), item.getItemProperty(ColumnLabels.CROSS_FEMALE_GID.getName()).getValue());
+		Assert.assertEquals(germplasm.getFemaleParentPreferredName(), item.getItemProperty(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()).getValue());
+		Assert.assertEquals(germplasm.getMaleParentPreferredID(), item.getItemProperty(ColumnLabels.CROSS_MALE_GID.getName()).getValue());
+		Assert.assertEquals(germplasm.getMaleParentPreferredName(), item.getItemProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).getValue());
+		Assert.assertEquals(germplasm.getGroupSourceGID(), item.getItemProperty(ColumnLabels.GROUP_SOURCE_GID.getName()).getValue());
+		Assert.assertEquals(germplasm.getGroupSourcePreferredName(), item.getItemProperty(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName()).getValue());
+		Assert.assertEquals(germplasm.getImmediateSourceGID(), item.getItemProperty(ColumnLabels.IMMEDIATE_SOURCE_GID.getName()).getValue());
+		Assert.assertEquals(germplasm.getImmediateSourcePreferredName(), item.getItemProperty(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()).getValue());
+		
+		// Verify Attribute and Name Type values
+		Assert.assertEquals(ORI_COUN + GermplasmQueryTest.TEST_GID, item.getItemProperty(ORI_COUN).getValue());
+		Assert.assertEquals(NOTE + GermplasmQueryTest.TEST_GID, item.getItemProperty(NOTE).getValue());
+		Assert.assertEquals(NAMETYPE1 + GermplasmQueryTest.TEST_GID, item.getItemProperty(NAMETYPE1).getValue());
+		Assert.assertEquals(NAMETYPE2 + GermplasmQueryTest.TEST_GID, item.getItemProperty(NAMETYPE2).getValue());
 	}
 
 	@Test
@@ -309,7 +335,7 @@ public class GermplasmQueryTest {
 		// Add attribute type property Id
 		propertyIdsDefinition.add(ORI_COUN);
 		
-		List<String> result = query.getPropertyIdsOfAddableColumns(propertyIdsDefinition);
+		List<String> result = query.getPropertyIdsOfAddedColumns(propertyIdsDefinition);
 
 		Assert.assertFalse(result.contains(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID));
 		Assert.assertFalse(result.contains(GermplasmSearchResultsComponent.NAMES));
@@ -323,7 +349,7 @@ public class GermplasmQueryTest {
 		Assert.assertFalse(result.contains(ColumnLabels.BREEDING_METHOD_NAME.getName()));
 		Assert.assertFalse(result.contains(GermplasmQuery.GID_REF_PROPERTY));
 
-		// Only the expected addable columns and attribute type property Ids should be included in the
+		// Only the expected addable columns and attribute and name type property Ids should be included in the
 		// result.
 		Assert.assertTrue(result.contains(ColumnLabels.PREFERRED_ID.getName()));
 		Assert.assertTrue(result.contains(ColumnLabels.PREFERRED_NAME.getName()));

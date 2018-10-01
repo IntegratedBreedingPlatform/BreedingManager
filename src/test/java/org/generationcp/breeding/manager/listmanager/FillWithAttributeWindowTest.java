@@ -27,6 +27,9 @@ import junit.framework.Assert;
 @RunWith(MockitoJUnitRunner.class)
 public class FillWithAttributeWindowTest {
 
+	private static final int ATTRIBUTE_TYPE_ID3 = 3;
+	private static final String ATTRIBUTE_TYPE_CODE3 = "Grow";
+	private static final String ATTRIBUTE_TYPE_NAME3 = "Grower";
 	private static final int ATTRIBUTE_TYPE_ID2 = 2;
 	private static final int ATTRIBUTE_TYPE_ID1 = 1;
 	private static final String ATTRIBUTE_TYPE_CODE2 = "NEW_PAZZPORT";
@@ -77,6 +80,27 @@ public class FillWithAttributeWindowTest {
 			Assert.assertEquals(attributeType.getFcode(), attributeTypesComboBox.getItemCaption(id));
 		}
 	}
+	
+	@Test
+	public void testPopulateAttributeTypesWithAddedColumnAlready() {
+		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ATTRIBUTE_TYPE_CODE3);
+		this.fillWithAttributeWindow.instantiateComponents();
+		this.fillWithAttributeWindow.initializeValues();
+
+		Mockito.verify(this.addColumnSource).getAllGids();
+		Mockito.verify(this.germplasmDataManager)
+				.getAttributeTypesByGIDList(Matchers.eq(FillWithAttributeWindowTest.GID_LIST));
+		final ComboBox attributeTypesComboBox = this.fillWithAttributeWindow.getAttributeBox();
+		Assert.assertNotNull(attributeTypesComboBox);
+		Assert.assertEquals(2, attributeTypesComboBox.size());
+		final List<UserDefinedField> subList = this.attributeTypes.subList(0, 2);
+		for (final UserDefinedField attributeType : subList) {
+			final Integer id = attributeType.getFldno();
+			Assert.assertNotNull(attributeTypesComboBox.getItem(id));
+			Assert.assertEquals(attributeType.getFcode(), attributeTypesComboBox.getItemCaption(id));
+		}
+	}
+
 
 	@Test
 	public void testAddListeners() {
@@ -96,9 +120,9 @@ public class FillWithAttributeWindowTest {
 		final UserDefinedField attributeType2 = new UserDefinedField(FillWithAttributeWindowTest.ATTRIBUTE_TYPE_ID2);
 		attributeType2.setFname(FillWithAttributeWindowTest.ATTRIBUTE_TYPE_NAME2);
 		attributeType2.setFcode(FillWithAttributeWindowTest.ATTRIBUTE_TYPE_CODE2);
-		final UserDefinedField attributeType3 = new UserDefinedField(3);
-		attributeType3.setFname("Grower");
-		attributeType3.setFcode("Grow");
+		final UserDefinedField attributeType3 = new UserDefinedField(ATTRIBUTE_TYPE_ID3);
+		attributeType3.setFname(ATTRIBUTE_TYPE_NAME3);
+		attributeType3.setFcode(ATTRIBUTE_TYPE_CODE3);
 		return Arrays.asList(attributeType1, attributeType2, attributeType3);
 	}
 

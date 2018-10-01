@@ -15,7 +15,7 @@ public class ListComponentFillwithSourceTest {
 	private static final String GID_PROPERTY_ID = "GID_BUTTON";
 
 	@Mock
-	private ListTabComponent listTabComponent;
+	private ListComponent listComponent;
 
 	@Mock
 	private Table targetTable;
@@ -26,7 +26,7 @@ public class ListComponentFillwithSourceTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.fillColumnSource =
-				new ListComponentFillWithSource(this.listTabComponent, this.targetTable, ListComponentFillwithSourceTest.GID_PROPERTY_ID);
+				new ListComponentFillWithSource(this.listComponent, this.targetTable, ListComponentFillwithSourceTest.GID_PROPERTY_ID);
 	}
 
 	@Test

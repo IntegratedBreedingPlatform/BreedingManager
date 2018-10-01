@@ -280,6 +280,24 @@ public class GermplasmColumnValuesGeneratorTest {
 		}
 		Mockito.verify(this.fillColumnSource).propagateUIChanges();
 	}
+	
+	@Test
+	public void testFillWithGermplasmName() {
+		final Integer nameTypeId = 1001;
+		final Map<Integer, String> namesMap = this.generateGIDStringMap("DRVNM ");
+		Mockito.doReturn(namesMap).when(this.germplasmDataManager)
+				.getNamesByTypeAndGIDList(nameTypeId, GermplasmColumnValuesGeneratorTest.GID_LIST);
+
+		final String columnName = ColumnLabels.ENTRY_CODE.getName();
+		this.valuesGenerator.fillWithGermplasmName(nameTypeId, columnName);
+
+		for (int i = 0; i < GermplasmColumnValuesGeneratorTest.ITEMS_LIST.size(); i++) {
+			final Integer gid = GermplasmColumnValuesGeneratorTest.GID_LIST.get(i);
+			Mockito.verify(this.fillColumnSource).setColumnValueForItem(
+					GermplasmColumnValuesGeneratorTest.ITEMS_LIST.get(i), columnName, namesMap.get(gid));
+		}
+		Mockito.verify(this.fillColumnSource).propagateUIChanges();
+	}
 
 	@Test
 	public void testFillWIthSequenceWithSpaceBetweenPrefixAndCode() {

@@ -38,9 +38,7 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 	}
 
 	public void setDropHandler() {
-		this.inventoryTableDropHandler =
-				new InventoryTableDropHandler(this.listManagerMain, this.germplasmDataManager, this.germplasmListManager,
-						this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.listInventoryTable);
+		this.inventoryTableDropHandler = new InventoryTableDropHandler(this.listManagerMain, this.listInventoryTable);
 		if (this.enableDropHandler) {
 			this.listInventoryTable.setDropHandler(this.inventoryTableDropHandler);
 		}

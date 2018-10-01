@@ -47,5 +47,15 @@ public class ListBuilderAddColumnSourceTest {
 		Mockito.verify(this.listBuilderComponent).setHasUnsavedChanges(true);
 		Mockito.verify(this.targetTable, Mockito.never()).setEditable(Matchers.anyBoolean());
 	}
+	
+	@Test
+	public void testAddColumn() {
+		final String columnName = "Derivative Name";
+		this.addColumnSource.addColumn(columnName);
+		
+		Mockito.verify(this.targetTable).addContainerProperty(columnName.toUpperCase(), String.class, "");
+		Mockito.verify(this.targetTable).setColumnHeader(columnName.toUpperCase(), columnName.toUpperCase());
+		Mockito.verify(this.listBuilderComponent).addAttributeAndNameTypeColumn(columnName.toUpperCase());
+	}
 
 }
