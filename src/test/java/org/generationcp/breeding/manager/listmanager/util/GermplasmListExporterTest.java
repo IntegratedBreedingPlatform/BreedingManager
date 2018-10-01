@@ -539,7 +539,7 @@ public class GermplasmListExporterTest {
 	public void testAddAttributesHeaders() {
 		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
 		GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo();
-		this.germplasmListExporter.addAttributesHeaders(currentColumnsInfo, exportColumnHeaders);
+		this.germplasmListExporter.addAttributeAndNameTypeHeaders(currentColumnsInfo, exportColumnHeaders);
 		int counter = 0;
 		for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
 			Assert.assertEquals(columnEntry.getKey(), exportColumnHeaders.get(counter++).getName());
@@ -550,7 +550,7 @@ public class GermplasmListExporterTest {
 	public void testAddAttributesValues() {
 		GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo();
 		final ExportRow row = new ExportRow();
-		this.germplasmListExporter.addAttributesValues(currentColumnsInfo, (Object)1, row);
+		this.germplasmListExporter.addAttributeAndNameTypeValues(currentColumnsInfo, (Object)1, row);
 		Integer counter = 6;
 		for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
 			Assert.assertEquals(columnEntry.getValue().get(0).getValue(), row.getValueForColumn(counter));

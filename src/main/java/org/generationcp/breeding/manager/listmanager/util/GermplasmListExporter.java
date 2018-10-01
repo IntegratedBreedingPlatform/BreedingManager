@@ -486,18 +486,17 @@ public class GermplasmListExporter {
 		exportColumnHeaders.add(new ExportColumnHeader(5, this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns.get(String
 				.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()))));
 				
-		this.addAttributesHeaders(currentColumnsInfo, exportColumnHeaders);
+		this.addAttributeAndNameTypeHeaders(currentColumnsInfo, exportColumnHeaders);
 
 		return exportColumnHeaders;
 	}
 
-	protected void addAttributesHeaders(final GermplasmListNewColumnsInfo currentColumnsInfo,
+	protected void addAttributeAndNameTypeHeaders(final GermplasmListNewColumnsInfo currentColumnsInfo,
 			final List<ExportColumnHeader> exportColumnHeaders) {
 		int j = 6;
-		if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null && currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
-			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
-				if(ColumnLabels.get(columnEntry.getKey()) == null) {
-					final String column = columnEntry.getKey();
+		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
+			for (final String column : currentColumnsInfo.getColumns()) {
+				if(ColumnLabels.get(column) == null) {
 					exportColumnHeaders.add(new ExportColumnHeader(j++, column, true));
 				}
 			}
@@ -527,18 +526,17 @@ public class GermplasmListExporter {
 			row.addColumnValue(4, parentageValue);
 			row.addColumnValue(5, seedSourceValue);
 
-			this.addAttributesValues(currentColumnsInfo, itemId, row);
+			this.addAttributeAndNameTypeValues(currentColumnsInfo, itemId, row);
 			exportRows.add(row);
 		}
 
 		return exportRows;
 	}
 
-	protected void addAttributesValues(final GermplasmListNewColumnsInfo currentColumnsInfo, final Object itemId,
+	protected void addAttributeAndNameTypeValues(final GermplasmListNewColumnsInfo currentColumnsInfo, final Object itemId,
 			final ExportRow row) {
 		int i = 6;
-		if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null
-			&& currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
+		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
 			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
 				if(ColumnLabels.get(columnEntry.getKey()) == null) {
 					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
