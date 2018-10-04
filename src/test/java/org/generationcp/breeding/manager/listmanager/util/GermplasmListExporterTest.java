@@ -3,10 +3,7 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -23,6 +20,7 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListNewColumnsInfoTestDataInitializer;
+import org.generationcp.middleware.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
@@ -72,6 +70,8 @@ public class GermplasmListExporterTest {
 			new GermplasmListNewColumnsInfo(GermplasmListExporterTest.GERMPLASM_LIST_ID);
 	public static final String LIST_NAME = "ABCD";
 	public static final String PREFERRED_NAME = "PREFERRED_NAME";
+	public static final  String CODE1 = "CODE1";
+	public static final  String CODE_1 = "CODE 1";
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -536,7 +536,7 @@ public class GermplasmListExporterTest {
 	}
 	
 	@Test
-	public void testAddAttributesHeaders() {
+	public void testAddAttributeAndNameTypeHeadersForAttributes() {
 		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
 		GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo();
 		this.germplasmListExporter.addAttributeAndNameTypeHeaders(currentColumnsInfo, exportColumnHeaders);
@@ -544,6 +544,14 @@ public class GermplasmListExporterTest {
 		for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
 			Assert.assertEquals(columnEntry.getKey(), exportColumnHeaders.get(counter++).getName());
 		}
+	}
+	@Test
+	public void testAddAttributeAndNameTypeHeadersForNameTypes() {
+		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
+		GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo(GermplasmListExporterTest.CODE_1, GermplasmListExporterTest.CODE_1);
+		Mockito.when(this.germplasmListManager.getGermplasmNameTypes()).thenReturn(Arrays.asList(UserDefinedFieldTestDataInitializer.createUserDefinedField(GermplasmListExporterTest.CODE1, GermplasmListExporterTest.CODE_1)));
+		this.germplasmListExporter.addAttributeAndNameTypeHeaders(currentColumnsInfo, exportColumnHeaders);
+		Assert.assertEquals(GermplasmListExporterTest.CODE1, exportColumnHeaders.get(0).getName());
 	}
 	
 	@Test

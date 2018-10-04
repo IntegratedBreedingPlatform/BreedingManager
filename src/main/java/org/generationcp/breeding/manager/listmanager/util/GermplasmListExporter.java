@@ -5,12 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -39,10 +34,7 @@ import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManage
 import org.generationcp.middleware.manager.ontology.api.OntologyPropertyDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyScaleDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.Person;
-import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.*;
 import org.generationcp.middleware.reports.BuildReportException;
 import org.generationcp.middleware.reports.Reporter;
 import org.generationcp.middleware.service.api.ReportService;
@@ -495,9 +487,15 @@ public class GermplasmListExporter {
 			final List<ExportColumnHeader> exportColumnHeaders) {
 		int j = 6;
 		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
+			final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
+			Map<String, String> nameTypesNameToCodeMap = new HashMap<>();
+			for(UserDefinedField nameType: nameTypes) {
+				nameTypesNameToCodeMap.put(nameType.getFname().toUpperCase(), nameType.getFcode());
+			}
 			for (final String column : currentColumnsInfo.getColumns()) {
 				if(ColumnLabels.get(column) == null) {
-					exportColumnHeaders.add(new ExportColumnHeader(j++, column, true));
+					final String columnHeader = nameTypesNameToCodeMap.get(column) != null ? nameTypesNameToCodeMap.get(column.toUpperCase()) : column;
+					exportColumnHeaders.add(new ExportColumnHeader(j++, columnHeader, true));
 				}
 			}
 		}
