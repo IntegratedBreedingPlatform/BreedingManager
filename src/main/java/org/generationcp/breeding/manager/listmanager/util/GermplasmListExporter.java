@@ -185,7 +185,7 @@ public class GermplasmListExporter {
 			final File createdFile = new File(fileName);
 			baos.writeTo(new FileOutputStream(createdFile));
 			return customReport;
-		} catch (JRException | IOException | BuildReportException e) {
+		} catch (final JRException | IOException | BuildReportException e) {
 			throw new GermplasmListExporterException("Error with exporting using a custom report", e);
 		}
 	}
@@ -488,8 +488,8 @@ public class GermplasmListExporter {
 		int j = 6;
 		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
 			final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
-			Map<String, String> nameTypesNameToCodeMap = new HashMap<>();
-			for(UserDefinedField nameType: nameTypes) {
+			final Map<String, String> nameTypesNameToCodeMap = new HashMap<>();
+			for(final UserDefinedField nameType: nameTypes) {
 				nameTypesNameToCodeMap.put(nameType.getFname().toUpperCase(), nameType.getFcode());
 			}
 			for (final String column : currentColumnsInfo.getColumns()) {
