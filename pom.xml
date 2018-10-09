@@ -212,6 +212,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.generationcp</groupId>
+			<artifactId>ibpcommons</artifactId>
+			<version>${ibpcommons.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.generationcp</groupId>
 			<artifactId>middleware</artifactId>
 			<version>${ibpcommons.version}</version>
 			<exclusions>
