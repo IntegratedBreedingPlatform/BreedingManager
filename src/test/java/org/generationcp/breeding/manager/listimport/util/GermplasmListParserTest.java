@@ -2,12 +2,7 @@
 package org.generationcp.breeding.manager.listimport.util;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -15,9 +10,12 @@ import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListD
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
+import org.generationcp.commons.data.initializer.ImportedFactorTestDataInitializer;
 import org.generationcp.commons.parsing.CrossesListDescriptionSheetParser;
 import org.generationcp.commons.parsing.FileParsingException;
+import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.commons.workbook.generator.RowColumnType;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -58,6 +56,8 @@ public class GermplasmListParserTest {
 	public static final String DUPLICATE_STOCK_ID_FILE = "GermplasmImportTemplate-StockIDs-duplicate-stock-ids.xls";
 	public static final String ADDITIONAL_NAME_FILE = "GermplasmImportTemplate-additional-name.xls";
 	private static final String DUPLICATE_HEADERS_FILE = "GermplasmImportTemplate-DuplicateHeaders.xls";
+	private static final String DRVNM = "DRVNM";
+	private static final String DERIVATIVE_NAME = "DERIVATIVE NAME";
 	private static final int EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT = 12;
 	
 	@Mock
@@ -94,6 +94,8 @@ public class GermplasmListParserTest {
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
 		Mockito.when(this.germplasmListManager.getGermplasmListTypes())
 				.thenReturn(this.userDefinedFieldTestDataInitializer.getValidListType());
+		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndFTypeAndFName(RowColumnType.NAME_TYPES.getFtable(),
+				RowColumnType.NAME_TYPES.getFtype(), GermplasmListParserTest.DERIVATIVE_NAME)).thenReturn(Arrays.asList(UserDefinedFieldTestDataInitializer.createUserDefinedField(GermplasmListParserTest.DRVNM, GermplasmListParserTest.DERIVATIVE_NAME)));
 
 	}
 
@@ -376,6 +378,49 @@ public class GermplasmListParserTest {
 			Assert.assertEquals(
 					"Different exception was thrown. The error should be " + GermplasmListParserTest.GERMPLASM_PARSE_HEADER_ERROR,
 					GermplasmListParserTest.GERMPLASM_PARSE_HEADER_ERROR, e.getMessage());
+		}
+	}
+
+	@Test
+	public void testValidateNameTypesForDuplicates() throws FileParsingException {
+		final List<ImportedFactor> factors = Arrays.asList(ImportedFactorTestDataInitializer.createImportedFactor());
+		this.parser.setNameFactors(Arrays.asList(GermplasmListParserTest.DRVNM));
+		this.parser.validateNameTypesForDuplicates(factors);
+		Mockito.verify(this.germplasmDataManager).getUserDefinedFieldByFieldTableNameAndFTypeAndFName(RowColumnType.NAME_TYPES.getFtable(),
+				RowColumnType.NAME_TYPES.getFtype(), GermplasmListParserTest.DERIVATIVE_NAME);
+	}
+
+	@Test
+	public void testValidateNameTypesForDuplicatesHasDuplicateInDB() {
+		final List<ImportedFactor> factors = Arrays.asList(ImportedFactorTestDataInitializer.createImportedFactor("DUPLICATE", GermplasmListParserTest.DERIVATIVE_NAME));
+
+		this.parser.setNameFactors(Arrays.asList("DUPLICATE"));
+
+		try {
+			this.parser.validateNameTypesForDuplicates(factors);
+			Assert.fail("FileParsingException should be thrown");
+		} catch (final FileParsingException e) {
+			Mockito.verify(this.germplasmDataManager).getUserDefinedFieldByFieldTableNameAndFTypeAndFName(RowColumnType.NAME_TYPES.getFtable(),
+					RowColumnType.NAME_TYPES.getFtype(), GermplasmListParserTest.DERIVATIVE_NAME);
+			Assert.assertEquals(GermplasmListParser.GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_DB, e.getMessage());
+		}
+	}
+
+	@Test
+	public void testValidateNameTypesForDuplicatesHasDuplicateInFile() {
+		final List<ImportedFactor> factors = new ArrayList<>();
+		factors.add(ImportedFactorTestDataInitializer.createImportedFactor("DUPLICATE1", "DUPLICATE DESCRIPTION"));
+		factors.add(ImportedFactorTestDataInitializer.createImportedFactor("DUPLICATE2", "DUPLICATE DESCRIPTION"));
+
+		this.parser.setNameFactors(Arrays.asList("DUPLICATE1", "DUPLICATE2"));
+
+		try {
+			this.parser.validateNameTypesForDuplicates(factors);
+			Assert.fail("FileParsingException should be thrown");
+		} catch (final FileParsingException e) {
+			Mockito.verify(this.germplasmDataManager, Mockito.times(2)).getUserDefinedFieldByFieldTableNameAndFTypeAndFName(Matchers.eq(RowColumnType.NAME_TYPES.getFtable()),
+					Matchers.eq(RowColumnType.NAME_TYPES.getFtype()), Matchers.anyString());
+			Assert.assertEquals(GermplasmListParser.GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_FILE, e.getMessage());
 		}
 	}
 

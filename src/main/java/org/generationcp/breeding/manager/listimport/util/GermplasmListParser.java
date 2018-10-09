@@ -54,6 +54,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	public static final int CONDITION_HEADER_ROW_INDEX = 5;
 	public static final String LIST_DATE = "LIST DATE";
 	public static final String LIST_TYPE = "LIST TYPE";
+	public static final String GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_DB = "GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_DB";
+	public static final String GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_FILE = "GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_FILE";
+
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListParser.class);
 	private static final int OBSERVATION_SHEET_NO = 1;
 
@@ -394,9 +397,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		}
 
 		if(!nameTypesWithDuplicateInDB.isEmpty()) {
-			throw new FileParsingException("GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_DB", 1, "", StringUtils.join(nameTypesWithDuplicateInDB, ", "));
+			throw new FileParsingException(GermplasmListParser.GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_DB, 1, "", StringUtils.join(nameTypesWithDuplicateInDB, ", "));
 		} else if(hasNameTypeDescriptionDuplicates) {
-			throw new FileParsingException("GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_FILE");
+			throw new FileParsingException(GermplasmListParser.GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_FILE);
 		}
 	}
 
@@ -1011,6 +1014,10 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	 */
 	void setImportFileIsAdvanced(final boolean importFileIsAdvanced) {
 		this.importFileIsAdvanced = importFileIsAdvanced;
+	}
+
+	void setNameFactors(final List<String> nameFactors) {
+		this.nameFactors = nameFactors;
 	}
 
 }
