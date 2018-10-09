@@ -30,6 +30,7 @@ import org.generationcp.commons.parsing.validation.NonEmptyValidator;
 import org.generationcp.commons.parsing.validation.ParseValidationMap;
 import org.generationcp.commons.parsing.validation.ValueTypeValidator;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.commons.workbook.generator.RowColumnType;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -358,9 +359,45 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			this.descriptionVariableNames.add(factor.getFactor());
 		}
 
+		this.validateNameTypesForDuplicates(factorList);
+
 		// update current row index
 		this.currentRowIndex = factorDetailsConverter.getCurrentIndex();
 		this.continueTillNextSection();
+	}
+
+	protected void validateNameTypesForDuplicates(final List<ImportedFactor> factors) throws  FileParsingException {
+		final Set<String> nameTypesWithDuplicateInDB = new HashSet<>();
+		final List<String> nameTypesDescriptions = new ArrayList<>();
+		boolean hasNameTypeDescriptionDuplicates = false;
+
+		for(final  ImportedFactor factor: factors) {
+			if(this.nameFactors.contains(factor.getFactor())) {
+				List<UserDefinedField> nameTypes = this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndFTypeAndFName(RowColumnType.NAME_TYPES.getFtable(),
+						RowColumnType.NAME_TYPES.getFtype(), factor.getDescription());
+				//Check if there are nameType factors in the import file that has the same description in the DB with different fcode
+				if(nameTypes != null && !nameTypes.isEmpty()) {
+					for(final UserDefinedField nameType: nameTypes) {
+						if(!nameType.getFcode().equalsIgnoreCase(factor.getFactor())) {
+							nameTypesWithDuplicateInDB.add(factor.getFactor());
+						}
+					}
+				}
+
+				//Check if there are nameType factors in the import file with same description
+				if(!hasNameTypeDescriptionDuplicates && nameTypesWithDuplicateInDB.isEmpty() && nameTypesDescriptions.contains(factor.getDescription().toUpperCase())){
+					hasNameTypeDescriptionDuplicates = true;
+				} else if(!hasNameTypeDescriptionDuplicates) {
+					nameTypesDescriptions.add(factor.getDescription().toUpperCase());
+				}
+			}
+		}
+
+		if(!nameTypesWithDuplicateInDB.isEmpty()) {
+			throw new FileParsingException("GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_DB", 1, "", StringUtils.join(nameTypesWithDuplicateInDB, ", "));
+		} else if(hasNameTypeDescriptionDuplicates) {
+			throw new FileParsingException("GERMPLASM_PARSE_HAS_NAME_TYPE_DUPLICATES_IN_FILE");
+		}
 	}
 
 	protected void parseConditions() throws FileParsingException {
