@@ -641,7 +641,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			}
 		});
 
-		this.setFillWith();
+		final ListComponentFillWithSource fillWithSource =
+				new ListComponentFillWithSource(this, this.listDataTable, ColumnLabels.GID.getName());
+		this.fillWith = new FillWith(fillWithSource, this.parentListDetailsComponent, this.messageSource);
+		this.fillWith.setContextMenuEnabled(this.listDataTable, !this.germplasmList.isLockedList());
 
 		this.makeTableEditable();
 
@@ -725,18 +728,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			}
 		});
 
-	}
-
-	private void setFillWith() {
-		if (!this.germplasmList.isLockedList()) {
-			final ListComponentFillWithSource fillWithSource =
-					new ListComponentFillWithSource(this, this.listDataTable, ColumnLabels.GID.getName());
-			this.fillWith = new FillWith(fillWithSource, this.parentListDetailsComponent, this.messageSource);
-			this.fillWith.setTableHeaderListener(this.listDataTable);
-
-		} else {
-			this.fillWith = null;
-		}
 	}
 
 	@Override
@@ -1617,12 +1608,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	protected void setLockedState(final boolean locked) {
 		this.lockButton.setVisible(!locked);
 		this.unlockButton.setVisible(locked);
-
 		this.editHeaderButton.setVisible(!locked);
-
-		if (this.fillWith != null) {
-			this.fillWith.setContextMenuEnabled(this.listDataTable, !locked);
-		}
+		this.fillWith.setContextMenuEnabled(this.listDataTable, !locked);
 	}
 
 	private void copyToNewListAction() {
@@ -1892,7 +1879,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.germplasmList = this.germplasmListManager.getGermplasmListById(this.germplasmList.getId());
 
 		this.germplasmList.setStatus(toggledStatus);
-		this.setFillWith();
 		this.germplasmListManager.updateGermplasmList(this.germplasmList);
 		this.setLockedState(this.germplasmList.isLockedList());
 
@@ -1908,7 +1894,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public void updateGermplasmListStatus() {
 		this.germplasmList = this.germplasmListManager.getGermplasmListById(this.germplasmList.getId());
-		this.setFillWith();
 		this.setLockedState(this.germplasmList.isLockedList());
 		this.viewListHeaderWindow.setGermplasmListStatus(this.germplasmList.getStatus());
 	}
@@ -2678,6 +2663,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		return this.editHeaderButton;
 	}
 
+	public void setFillWith(final FillWith fillWith) {
+		this.fillWith = fillWith;
+	}
 	public Boolean listHasAddedColumns() {
 		return this.addColumnContextMenu.hasAddedColumn(this.listDataTable, this.attributeAndNameTypeColumns);
 	}

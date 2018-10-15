@@ -30,6 +30,7 @@ import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExport
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
+import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -349,6 +350,8 @@ public class ListComponentTest {
 		Mockito.doReturn("Test").when(this.messageSource).getMessage(Matchers.any(Message.class));
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
 				.getGermplasmListById(this.germplasmList.getId());
+		final FillWith fillWith = Mockito.mock(FillWith.class);
+		this.listComponent.setFillWith(fillWith);
 		this.listComponent.instantiateComponents();
 		this.listComponent.getViewListHeaderWindow().instantiateComponents();
 
@@ -362,6 +365,7 @@ public class ListComponentTest {
 				this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getGermplasmList().getStatus());
 		Assert.assertEquals("Locked List",
 				this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getStatusValueLabel().toString());
+		Mockito.verify(fillWith).setContextMenuEnabled(listComponent.getListDataTable(), false);
 	}
 
 	@Test
@@ -373,7 +377,8 @@ public class ListComponentTest {
 		this.listComponent.setListDataTable(new Table());
 		this.listComponent.instantiateComponents();
 		this.listComponent.getViewListHeaderWindow().instantiateComponents();
-
+		final FillWith fillWith = Mockito.mock(FillWith.class);
+		this.listComponent.setFillWith(fillWith);
 		this.listComponent.toggleGermplasmListStatus();
 
 		Assert.assertEquals("Expecting the that the germplasmList status was changed to unlocked(1) but returned ("
@@ -386,6 +391,7 @@ public class ListComponentTest {
 				this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getGermplasmList().getStatus());
 		Assert.assertEquals("Unlocked List",
 				this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getStatusValueLabel().toString());
+		Mockito.verify(fillWith).setContextMenuEnabled(listComponent.getListDataTable(), true);
 	}
 
 	@Test
@@ -1052,12 +1058,15 @@ public class ListComponentTest {
 		this.listComponent.setGermplasmList(this.germplasmList);
 		final ViewListHeaderWindow viewListHeaderWindow = Mockito.mock(ViewListHeaderWindow.class);
 		this.listComponent.setViewListHeaderWindow(viewListHeaderWindow);
+		final FillWith fillWith = Mockito.mock(FillWith.class);
+		this.listComponent.setFillWith(fillWith);
 		this.listComponent.updateGermplasmListStatus();
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(this.germplasmList.getId());
 		Mockito.verify(viewListHeaderWindow).setGermplasmListStatus(this.germplasmList.getStatus());
 		Assert.assertFalse(this.listComponent.getLockButton().isVisible());
 		Assert.assertTrue(this.listComponent.getUnlockButton().isVisible());
 		Assert.assertFalse(this.listComponent.getEditHeaderButton().isVisible());
+		Mockito.verify(fillWith).setContextMenuEnabled(listComponent.getListDataTable(), false);
 	}
 
 	@Test
@@ -1070,12 +1079,15 @@ public class ListComponentTest {
 		this.listComponent.setGermplasmList(this.germplasmList);
 		final ViewListHeaderWindow viewListHeaderWindow = Mockito.mock(ViewListHeaderWindow.class);
 		this.listComponent.setViewListHeaderWindow(viewListHeaderWindow);
+		final FillWith fillWith = Mockito.mock(FillWith.class);
+		this.listComponent.setFillWith(fillWith);
 		this.listComponent.updateGermplasmListStatus();
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(this.germplasmList.getId());
 		Mockito.verify(viewListHeaderWindow).setGermplasmListStatus(this.germplasmList.getStatus());
 		Assert.assertTrue(this.listComponent.getLockButton().isVisible());
 		Assert.assertFalse(this.listComponent.getUnlockButton().isVisible());
 		Assert.assertTrue(this.listComponent.getEditHeaderButton().isVisible());
+		Mockito.verify(fillWith).setContextMenuEnabled(listComponent.getListDataTable(), true);
 	}
 
 	@Test
