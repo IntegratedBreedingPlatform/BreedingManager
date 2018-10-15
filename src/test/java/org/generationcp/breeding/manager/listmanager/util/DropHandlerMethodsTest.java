@@ -520,17 +520,26 @@ public class DropHandlerMethodsTest {
 	public void testGenerateAddedColumnValuesForAddedEntryWhenColumnsAdded() {
 		this.dropHandlerMethods.setAddedColumnsMapper(this.addedColumnsMapper);
 		this.dropHandlerMethods.setNewEntriesFillSource(this.newEntriesFillSource);
+		final DropHandlerMethods spyHandler = Mockito.spy(this.dropHandlerMethods);
+		Mockito.doReturn(true).when(spyHandler).targetTableHasAddedColumn();
 		this.addColumnsToTable(this.targetTable, ColumnLabels.PREFERRED_NAME, ColumnLabels.GERMPLASM_DATE);
 		final List<Integer> selectedItems = new ArrayList<>();
 		for (int i = 1; i <= NO_OF_ENTRIES_SELECTED; i++) {
 			this.addItemToTestTable(this.targetTable, i);
 			selectedItems.add(i);
 		}
-		this.dropHandlerMethods.generateAddedColumnValuesForAddedEntry(selectedItems, selectedItems);
+		
+		spyHandler.generateAddedColumnValuesForAddedEntry(selectedItems, selectedItems);
 		
 		Mockito.verify(this.newEntriesFillSource).setAddedGids(selectedItems);
 		Mockito.verify(this.newEntriesFillSource).setAddedItemIds(selectedItems);
-		Mockito.verify(this.addedColumnsMapper).generateValuesForAddedColumns(this.targetTable.getVisibleColumns(), false);
+		Mockito.verify(this.addedColumnsMapper).generateValuesForAddedColumns(this.targetTable.getVisibleColumns());
+	}
+	
+	@Test
+	public void testTargetTableHasAddedColumn() {
+		Assert.assertFalse(this.dropHandlerMethods.targetTableHasAddedColumn());
+		
 	}
 
 	private void verifyGermplasmListDataFromListIsTransferredProperly(final GermplasmList germplasmList) {

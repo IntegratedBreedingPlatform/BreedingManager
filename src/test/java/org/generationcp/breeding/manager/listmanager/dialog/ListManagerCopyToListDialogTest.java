@@ -77,8 +77,6 @@ public class ListManagerCopyToListDialogTest {
 
 	private ListManagerCopyToListDialog listManagerCopyToListDialog;
 
-	private UserDefinedFieldTestDataInitializer userDefinedFieldTestDataInitializer;
-
 	private ComboBox comboBox;
 
 	private TextField txtDescription;
@@ -94,9 +92,8 @@ public class ListManagerCopyToListDialogTest {
 	public void setUp() {
 		this.initializeListManagerCopyToListDialog();
 		this.setValues();
-		this.userDefinedFieldTestDataInitializer = new UserDefinedFieldTestDataInitializer();
 		Mockito.when(this.germplasmListManager.getGermplasmListTypes()).thenReturn(Arrays.asList(
-				this.userDefinedFieldTestDataInitializer.createUserDefinedField(ListManagerCopyToListDialogTest.LST, "GERMPLASMLISTS")));
+				UserDefinedFieldTestDataInitializer.createUserDefinedField(ListManagerCopyToListDialogTest.LST, "GERMPLASMLISTS")));
 		Mockito.when(this.table.getValue()).thenReturn(new ArrayList<>());
 		Mockito.when(this.listManagerMain.getListSelectionComponent()).thenReturn(this.listSectionComponent);
 		Mockito.when(this.listSectionComponent.getListTreeComponent()).thenReturn(this.listManagerTreeComponent);

@@ -1,5 +1,5 @@
 
-package org.generationcp.breeding.manager.listmanager.listeners.test;
+package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.listmanager.GermplasmColumnValuesGenerator;
 import org.generationcp.breeding.manager.listmanager.api.AddColumnSource;

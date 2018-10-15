@@ -113,13 +113,14 @@ public class ListComponentAddEntryDialogSourceTest {
 		columns.add(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
 		columns.add(ColumnLabels.CROSS_MALE_GID.getName());
 		Mockito.doReturn(columns.toArray()).when(this.table).getVisibleColumns();
+		Mockito.doReturn(true).when(this.listComponent).listHasAddedColumns();
 		this.addEntrySource.finishAddingEntry(ListComponentAddEntryDialogSourceTest.GID, false);
 
 		Mockito.verify(this.germplasmListManager).addGermplasmListData(Matchers.any(GermplasmListData.class));
 		Mockito.verify(this.listComponent).addListEntryToTable(Matchers.any(GermplasmListData.class));
 		Mockito.verify(this.newEntriesSource).setAddedItemIds(Matchers.anyListOf(Integer.class));
 		Mockito.verify(this.newEntriesSource).setAddedGids(Matchers.anyListOf(Integer.class));
-		Mockito.verify(this.addedColumnsMapper).generateValuesForAddedColumns(columns.toArray(), false);
+		Mockito.verify(this.addedColumnsMapper).generateValuesForAddedColumns(columns.toArray());
 		;
 		Mockito.verify(this.listComponent).saveChangesAction(this.listComponent.getWindow(), false);
 		Mockito.verify(this.table).refreshRowCache();

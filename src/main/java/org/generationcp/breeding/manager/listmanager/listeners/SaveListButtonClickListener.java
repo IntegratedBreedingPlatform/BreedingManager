@@ -1,26 +1,23 @@
+
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.constant.ColumnLabels;
-import org.generationcp.middleware.domain.inventory.ListDataInventory;
+import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -37,10 +34,19 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 
+/**
+ * This handles saving logic in ListBuilder component
+ *
+ */
 @Configurable
 public class SaveListButtonClickListener implements Button.ClickListener, InitializingBean {
 
@@ -145,8 +151,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 					if (SaveListButtonClickListener.this.areThereChangesToList(currentlySavedList, listToSave)
 							|| SaveListButtonClickListener.this.forceHasChanges) {
-						if (!currentlySavedList.getName().equals(listToSave.getName()) && !SaveListButtonClickListener.this
-								.validateListName(listToSave)) {
+						if (!currentlySavedList.getName().equals(listToSave.getName())
+								&& !SaveListButtonClickListener.this.validateListName(listToSave)) {
 							return;
 						}
 
@@ -155,10 +161,9 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					}
 
 					if (listToSave != null) {
-						final boolean thereAreChangesInListEntries = ListCommonActionsUtil
-								.overwriteListEntries(listToSave, listEntries, SaveListButtonClickListener.this.forceHasChanges,
-										SaveListButtonClickListener.this.germplasmListManager, SaveListButtonClickListener.this.source,
-										SaveListButtonClickListener.this.messageSource, showMessages);
+						final boolean thereAreChangesInListEntries = ListCommonActionsUtil.overwriteListEntries(listToSave, listEntries,
+								SaveListButtonClickListener.this.forceHasChanges, SaveListButtonClickListener.this.germplasmListManager,
+								SaveListButtonClickListener.this.source, SaveListButtonClickListener.this.messageSource, showMessages);
 
 						if (thereAreChangesInListEntries) {
 							SaveListButtonClickListener.this.updateListDataTableContent(currentlySavedList);
@@ -171,8 +176,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				}
 
 				SaveListButtonClickListener.this.contextUtil.logProgramActivity("List Manager Save List",
-						"Successfully saved list and list entries for: " + currentlySavedList.getId() + " - " + currentlySavedList
-								.getName());
+						"Successfully saved list and list entries for: " + currentlySavedList.getId() + " - "
+								+ currentlySavedList.getName());
 
 				SaveListButtonClickListener.this.source.getBuildNewListDropHandler().setChanged(false);
 
@@ -213,10 +218,10 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		}
 	}
 
-	private void saveListDataColumns(final GermplasmList listToSave) {
+	void saveListDataColumns(final GermplasmList listToSave) {
 		try {
-			this.germplasmListManager
-					.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(this.listDataTable));
+			this.germplasmListManager.saveListDataColumns(this.source.getAddColumnContextMenu()
+					.getListDataCollectionFromTable(this.listDataTable, this.source.getAttributeAndNameTypeColumns()));
 		} catch (final MiddlewareQueryException e) {
 			SaveListButtonClickListener.LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -233,8 +238,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), this.messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG));
 			isValid = false;
 		} else if (list.getDescription() != null && list.getDescription().length() > 255) {
-			MessageNotifier
-					.showRequiredFieldError(this.source.getWindow(), this.messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
+			MessageNotifier.showRequiredFieldError(this.source.getWindow(),
+					this.messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
 			isValid = false;
 		} else if (list.getDate() == null) {
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), "Please select a date.");
@@ -289,7 +294,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 						new SortableButton(String.format("%s", entry.getGid()), new GidLinkClickListener(entry.getGid().toString(), true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-				final CheckBox tagCheckBox = initializeTagCheckBox(entry);
+				final CheckBox tagCheckBox = this.initializeTagCheckBox(entry);
 
 				final Button designationButton =
 						new SortableButton(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
@@ -299,9 +304,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				// Inventory Related Columns
 
 				// Lots
-				final Button lotButton = ListCommonActionsUtil
-						.getLotCountButton(entry.getInventoryInfo().getLotCount(), entry.getGid(), entry.getDesignation(), this.source,
-								null);
+				final Button lotButton = ListCommonActionsUtil.getLotCountButton(entry.getInventoryInfo().getLotCount(), entry.getGid(),
+						entry.getDesignation(), this.source, null);
 
 				// GROUP ID - the maintenance group id(gid) of a germplasm
 				final String groupId = entry.getGroupId() == 0 ? "-" : entry.getGroupId().toString();
@@ -331,7 +335,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					}
 
 				} else {
-					available.append(ListDataInventory.MIXED);
+					available.append(GermplasmInventory.MIXED);
 				}
 
 				final Button availableButton = new SortableButton(available.toString(),
@@ -381,36 +385,28 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		return tagCheckBox;
 	}
 
-	private Table cloneAddedColumnsToTemp(final Table sourceTable) {
+	Table cloneAddedColumnsToTemp(final Table sourceTable) {
 		final Table newTable = new Table();
 		newTable.setDebugId("newTable");
 
+		final List<String> addedColumns =
+				this.source.getAddColumnContextMenu().getAddedColumns(sourceTable, this.source.getAttributeAndNameTypeColumns());
 		// copy added column values from source table
 		for (final Object sourceItemId : sourceTable.getItemIds()) {
 			final Item sourceItem = sourceTable.getItem(sourceItemId);
 			final Item newItem = newTable.addItem(sourceItemId);
 
-			for (final String addablePropertyId : ColumnLabels.getAddableGermplasmColumns()) {
-				// copy only addable properties present in source table
-				if (AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable)) {
-					// setup added columns first before copying values
-					this.createContainerPropertyOfAddedColumnToTempTable(newTable, addablePropertyId);
+			for (final String addablePropertyId : addedColumns) {
+				// setup added columns first before copying values
+				newTable.addContainerProperty(addablePropertyId, String.class, "");
 
-					// copy value to new table
-					final Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
-					newItem.getItemProperty(addablePropertyId).setValue(sourceItemProperty.getValue());
-				}
+				// copy value to new table
+				final Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
+				newItem.getItemProperty(addablePropertyId).setValue(sourceItemProperty.getValue());
 			}
 		}
 
 		return newTable;
-	}
-
-	public void createContainerPropertyOfAddedColumnToTempTable(final Table newTable, final String addablePropertyId) {
-
-		if (ColumnLabels.getAddableGermplasmColumns().contains(addablePropertyId)) {
-			newTable.addContainerProperty(addablePropertyId, String.class, "");
-		}
 	}
 
 	private void copyAddedColumnsFromTemp(final Table tempTable) {
