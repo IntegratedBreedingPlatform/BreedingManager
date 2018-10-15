@@ -256,6 +256,7 @@ public class ExportListAsDialogTest {
 
 	@Test
 	public void testExportListForGenotypingOrderAction() throws GermplasmListExporterException {
+		ExportListAsDialogTest.germplasmList.setStatus(100);
 		this.dialog.exportListForGenotypingOrderAction();
 		verify(this.listExporter, Mockito.times(1))
 				.exportKBioScienceGenotypingOrderXLS(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH_CSV,
