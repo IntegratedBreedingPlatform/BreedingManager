@@ -1554,13 +1554,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	protected void reserveInventoryAction() {
 
 		if (this.listInventoryTable.getInventoryTableDropHandler().isChanged()) {
-			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
 					this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_RESERVING_INVENTORY));
 		} else {
 			final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
 			if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
-				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
 						this.messageSource.getMessage(Message.ERROR_RESERVE_INVENTORY_IF_NO_LOT_IS_SELECTED));
 			} else {
 				// this util handles the inventory reservation related
