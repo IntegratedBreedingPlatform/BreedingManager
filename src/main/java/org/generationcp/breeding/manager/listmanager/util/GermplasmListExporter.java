@@ -5,19 +5,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
-import org.generationcp.commons.pojo.ExportColumnValue;
+import org.generationcp.commons.pojo.ExportRow;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.GermplasmExportService;
@@ -39,10 +34,7 @@ import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManage
 import org.generationcp.middleware.manager.ontology.api.OntologyPropertyDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyScaleDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.Person;
-import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.*;
 import org.generationcp.middleware.reports.BuildReportException;
 import org.generationcp.middleware.reports.Reporter;
 import org.generationcp.middleware.service.api.ReportService;
@@ -102,10 +94,10 @@ public class GermplasmListExporter {
 	public FileOutputStream exportKBioScienceGenotypingOrderXLS(final int germplasmListID, final String filename, final int plateSize) throws GermplasmListExporterException {
 
 		final List<ExportColumnHeader> exportColumnHeaders = this.getColumnHeadersForGenotypingData(plateSize);
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getColumnValuesForGenotypingData(germplasmListID, plateSize);
+		final List<ExportRow> exportRows = this.getColumnValuesForGenotypingData(germplasmListID, plateSize);
 
 		try {
-			return this.germplasmExportService.generateExcelFileForSingleSheet(exportColumnValues, exportColumnHeaders, filename, "List");
+			return this.germplasmExportService.generateExcelFileForSingleSheet(exportRows, exportColumnHeaders, filename, "List");
 		} catch (final IOException e) {
 			throw new GermplasmListExporterException("Error with writing to: " + filename, e);
 		}
@@ -125,9 +117,9 @@ public class GermplasmListExporter {
 		return exportColumnHeaders;
 	}
 
-	protected List<Map<Integer, ExportColumnValue>> getColumnValuesForGenotypingData(final int germplasmListID, final int plateSize) throws GermplasmListExporterException {
+	protected List<ExportRow> getColumnValuesForGenotypingData(final int germplasmListID, final int plateSize) throws GermplasmListExporterException {
 
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
+		final List<ExportRow> exportRows = new ArrayList<>();
 
 		final GermplasmList germplasmList = this.getGermplasmListAndListData(germplasmListID);
 		final String listName = germplasmList.getName();
@@ -167,21 +159,21 @@ public class GermplasmListExporter {
 				well = well + wellNumberIndex;
 			}
 
-			final Map<Integer, ExportColumnValue> exportRowValue = new HashMap<>();
-			exportRowValue.put(0, new ExportColumnValue(0, listData.getEntryId().toString()));
-			exportRowValue.put(1, new ExportColumnValue(1, plateName));
-			exportRowValue.put(2, new ExportColumnValue(2, well));
-			exportRowValue.put(3, new ExportColumnValue(3, null));
-			exportRowValue.put(4, new ExportColumnValue(4, null));
-			exportRowValue.put(5, new ExportColumnValue(5, null));
-			exportRowValue.put(6, new ExportColumnValue(6, null));
-			exportRowValue.put(7, new ExportColumnValue(7, null));
+			final ExportRow exportRow = new ExportRow();
+			exportRow.addColumnValue(0, listData.getEntryId().toString());
+			exportRow.addColumnValue(1, plateName);
+			exportRow.addColumnValue(2, well);
+			exportRow.addColumnValue(3, null);
+			exportRow.addColumnValue(4, null);
+			exportRow.addColumnValue(5, null);
+			exportRow.addColumnValue(6, null);
+			exportRow.addColumnValue(7, null);
 
-			exportColumnValues.add(exportRowValue);
+			exportRows.add(exportRow);
 
 			wellNumberIndex++;
 		}
-		return exportColumnValues;
+		return exportRows;
 	}
 
 	public Reporter exportGermplasmListCustomReport(final int germplasmListID, final String fileName, final String reportCode) throws GermplasmListExporterException {
@@ -193,7 +185,7 @@ public class GermplasmListExporter {
 			final File createdFile = new File(fileName);
 			baos.writeTo(new FileOutputStream(createdFile));
 			return customReport;
-		} catch (JRException | IOException | BuildReportException e) {
+		} catch (final JRException | IOException | BuildReportException e) {
 			throw new GermplasmListExporterException("Error with exporting using a custom report", e);
 		}
 	}
@@ -448,7 +440,7 @@ public class GermplasmListExporter {
 	public void exportGermplasmListCSV(final String fileName, final Table listDataTable, final Integer germplasmListId) throws GermplasmListExporterException {
 
 		final GermplasmListNewColumnsInfo currentColumnsInfo = this.germplasmListManager.getAdditionalColumnsForList(germplasmListId);
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getExportColumnValuesFromTable(listDataTable, currentColumnsInfo);
+		final List<ExportRow> exportColumnValues = this.getExportColumnValuesFromTable(listDataTable, currentColumnsInfo);
 		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeadersFromTable(listDataTable, currentColumnsInfo);
 
 		try {
@@ -486,30 +478,35 @@ public class GermplasmListExporter {
 		exportColumnHeaders.add(new ExportColumnHeader(5, this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns.get(String
 				.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()))));
 				
-		this.addAttributesHeaders(currentColumnsInfo, exportColumnHeaders);
+		this.addAttributeAndNameTypeHeaders(currentColumnsInfo, exportColumnHeaders);
 
 		return exportColumnHeaders;
 	}
 
-	protected void addAttributesHeaders(final GermplasmListNewColumnsInfo currentColumnsInfo,
+	protected void addAttributeAndNameTypeHeaders(final GermplasmListNewColumnsInfo currentColumnsInfo,
 			final List<ExportColumnHeader> exportColumnHeaders) {
 		int j = 6;
-		if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null && currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
-			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
-				if(ColumnLabels.get(columnEntry.getKey()) == null) {
-					final String column = columnEntry.getKey();
-					exportColumnHeaders.add(new ExportColumnHeader(j++, column, true));
+		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
+			final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
+			final Map<String, String> nameTypesNameToCodeMap = new HashMap<>();
+			for(final UserDefinedField nameType: nameTypes) {
+				nameTypesNameToCodeMap.put(nameType.getFname().toUpperCase(), nameType.getFcode());
+			}
+			for (final String column : currentColumnsInfo.getColumns()) {
+				if(ColumnLabels.get(column) == null) {
+					final String columnHeader = nameTypesNameToCodeMap.get(column) != null ? nameTypesNameToCodeMap.get(column.toUpperCase()) : column;
+					exportColumnHeaders.add(new ExportColumnHeader(j++, columnHeader, true));
 				}
 			}
 		}
 	}
 
-	protected List<Map<Integer, ExportColumnValue>> getExportColumnValuesFromTable(final Table listDataTable,
+	protected List<ExportRow> getExportColumnValuesFromTable(final Table listDataTable,
 		final GermplasmListNewColumnsInfo currentColumnsInfo) {
 
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
+		final List<ExportRow> exportRows = new ArrayList<>();
 		for (final Object itemId : listDataTable.getItemIds()) {
-			final Map<Integer, ExportColumnValue> row = new HashMap<>();
+			final ExportRow row = new ExportRow();
 
 			final String entryIdValue = listDataTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue().toString();
 			final String gidValue = ((Button) listDataTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption();
@@ -520,25 +517,24 @@ public class GermplasmListExporter {
 			final String seedSourceValue =
 					listDataTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue().toString();
 			
-			row.put(0, new ExportColumnValue(0, entryIdValue));
-			row.put(1, new ExportColumnValue(1, gidValue));
-			row.put(2, new ExportColumnValue(2, entryCodeValue));
-			row.put(3, new ExportColumnValue(3, designationValue));
-			row.put(4, new ExportColumnValue(4, parentageValue));
-			row.put(5, new ExportColumnValue(5, seedSourceValue));
+			row.addColumnValue(0, entryIdValue);
+			row.addColumnValue(1, gidValue);
+			row.addColumnValue(2, entryCodeValue);
+			row.addColumnValue(3, designationValue);
+			row.addColumnValue(4, parentageValue);
+			row.addColumnValue(5, seedSourceValue);
 
-			this.addAttributesValues(currentColumnsInfo, itemId, row);
-			exportColumnValues.add(row);
+			this.addAttributeAndNameTypeValues(currentColumnsInfo, itemId, row);
+			exportRows.add(row);
 		}
 
-		return exportColumnValues;
+		return exportRows;
 	}
 
-	protected void addAttributesValues(final GermplasmListNewColumnsInfo currentColumnsInfo, final Object itemId,
-			final Map<Integer, ExportColumnValue> row) {
+	protected void addAttributeAndNameTypeValues(final GermplasmListNewColumnsInfo currentColumnsInfo, final Object itemId,
+			final ExportRow row) {
 		int i = 6;
-		if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null
-			&& currentColumnsInfo.getColumnValuesMap().entrySet() != null) {
+		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
 			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
 				if(ColumnLabels.get(columnEntry.getKey()) == null) {
 					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
@@ -550,7 +546,7 @@ public class GermplasmListExporter {
 							}
 						});
 					final String value = (listDataColumnValues != null ? listDataColumnValues.getValue() : "");
-					row.put(i, new ExportColumnValue(i, value));
+					row.addColumnValue(i, value);
 					i++;
 				}
 			}
