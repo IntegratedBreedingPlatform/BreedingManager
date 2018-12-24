@@ -404,7 +404,7 @@ public class GermplasmListExporter {
 
 		try {
 			final Variable variable =
-					this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false, false);
+					this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false);
 			if (variable != null) {
 				variableMap.put(variable.getId(), variable);
 			}
@@ -438,7 +438,7 @@ public class GermplasmListExporter {
 				termMap.put(term.getId(), this.ontologyScaleDataManager.getScaleById(term.getId(), false));
 			} else {
 				termMap.put(term.getId(),
-						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId(), false, false));
+						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId(), false));
 			}
 		} catch (final MiddlewareQueryException e) {
 			GermplasmListExporter.LOG.error(e.getMessage(), e);
