@@ -1,13 +1,6 @@
 
 package org.generationcp.breeding.manager.listimport.actions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
@@ -21,7 +14,6 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -32,8 +24,6 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.ims.EntityType;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
-import org.generationcp.middleware.service.api.FieldbookService;
-import org.generationcp.middleware.service.api.InventoryService;
 import org.generationcp.middleware.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,6 +40,13 @@ import org.mockito.exceptions.verification.TooLittleActualInvocations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 @RunWith(MockitoJUnitRunner.class)
 public class SaveGermplasmListActionTest {
 
@@ -62,13 +59,11 @@ public class SaveGermplasmListActionTest {
 	private static final int SAVED_GERMPLASM_LIST_ID = 1;
 	private static final int NO_OF_ENTRIES = 10;
 	private static final Integer CURRENT_LOCAL_ID = 1;
-	private static final String PROGRAM_UUID = "1234567890";
 	private static final int LIST_ID = 1;
 	private static final Integer SEED_STORAGE_LOCATION = 2;
 	private static final String FTABLE_ATTRIBUTE = "ATRIBUTS";
 	private static final String FTYPE_ATTRIBUTE = "ATTRIBUTE";
 	private static final String FTYPE_PASSPORT = "PASSPORT";
-	public static final String TEST_SOURCE = "TEST SOURCE";
 	public static final String SOURCE_LIST_XLS = "SourceList.xls";
 
 	@Mock
@@ -81,22 +76,13 @@ public class SaveGermplasmListActionTest {
 	private InventoryDataManager inventoryDataManager;
 
 	@Mock
-	private InventoryService inventoryService;
-
-	@Mock
 	private PlatformTransactionManager transactionManager;
-
-	@Mock
-	private OntologyDataManager ontologyDataManager;
 
 	@Mock
 	private UserDataManager userDataManager;
 
 	@Mock
 	private ContextUtil contextUtil;
-
-	@Mock
-	private FieldbookService fieldbookService;
 
 	@Captor
 	private ArgumentCaptor<List<UserDefinedField>> userDefinedFieldsCaptor;
@@ -120,7 +106,6 @@ public class SaveGermplasmListActionTest {
 		this.excludeGermplasmCreateIds = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);
 		this.newNames = GermplasmTestDataInitializer.createNameList(SaveGermplasmListActionTest.NO_OF_ENTRIES);
 
-		Mockito.doReturn(SaveGermplasmListActionTest.PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
 		Mockito.doReturn(SaveGermplasmListActionTest.CURRENT_LOCAL_ID).when(this.contextUtil).getCurrentUserLocalId();
 		Mockito.doReturn(new ArrayList<UserDefinedField>()).when(this.germplasmManager).getUserDefinedFieldByFieldTableNameAndType(
 				SaveGermplasmListActionTest.FTABLE_ATTRIBUTE, SaveGermplasmListActionTest.FTYPE_ATTRIBUTE);
@@ -138,7 +123,7 @@ public class SaveGermplasmListActionTest {
 
 	@Test
 	public void testGetCropPersonId_WithNullCropUserId() throws MiddlewareQueryException {
-		final Integer cropUserId = 0;
+		final int cropUserId = 0;
 		Mockito.when(this.userDataManager.getUserById(cropUserId)).thenReturn(null);
 
 		Assert.assertEquals("Expecting to return a blank for null userid but didn't.", this.action.getCropPersonId(cropUserId).intValue(),
