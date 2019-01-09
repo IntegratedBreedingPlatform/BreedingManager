@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -72,7 +73,7 @@ public class ReserveInventoryActionTest {
 		boolean status = reserveInventoryAction.saveReserveTransactions(reservations, LIST_ID);
 
 		Assert.assertTrue(status);
-		Mockito.verify(inventoryDataManager, Mockito.times(1)).addTransactions(Matchers.anyList());
+		Mockito.verify(inventoryDataManager, Mockito.times(1)).addTransactions(ArgumentMatchers.<List<Transaction>>any());
 	}
 
 	@Test

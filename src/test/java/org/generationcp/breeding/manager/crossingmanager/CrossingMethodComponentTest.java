@@ -1,11 +1,14 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -69,7 +72,7 @@ public class CrossingMethodComponentTest {
 		Mockito.verify(parentsComponent).getCorrectSortedValue(maleTable);
 		Mockito.verify(parentsComponent).updateFemaleListNameForCrosses();
 		Mockito.verify(parentsComponent).updateMaleListNameForCrosses();
-		Mockito.verify(this.makeCrossesMain).makeCrossButtonAction(Matchers.anyList(), Matchers.anyList(),
+		Mockito.verify(this.makeCrossesMain).makeCrossButtonAction(ArgumentMatchers.<List<GermplasmListEntry>>any(), ArgumentMatchers.<List<GermplasmListEntry>>any(),
 				Matchers.anyString(), Matchers.anyString(), Matchers.eq(CrossType.MULTIPLY), Matchers.anyBoolean(),
 				Matchers.anyBoolean());
 	}

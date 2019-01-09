@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalMatchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -91,7 +92,7 @@ public class GermplasmListParserTest {
 				.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT)))).thenReturn(false);
 		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt()))
 				.thenReturn(GermplasmTestDataInitializer.createGermplasm(1));
-		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
+		Mockito.when(this.inventoryDataManager.getSimilarStockIds(ArgumentMatchers.<List<String>>any())).thenReturn(new ArrayList<String>());
 		Mockito.when(this.germplasmListManager.getGermplasmListTypes())
 				.thenReturn(this.userDefinedFieldTestDataInitializer.getValidListType());
 		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndFTypeAndFName(RowColumnType.NAME_TYPES.getFtable(),

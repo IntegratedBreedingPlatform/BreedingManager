@@ -31,6 +31,7 @@ import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -172,8 +173,10 @@ public class GermplasmQueryTest {
 		Mockito.when(this.germplasmDataManager.getMethodByID(Matchers.anyInt()))
 				.thenReturn(new MethodTestDataInitializer().createMethod(1, "testMethodType"));
 
-		Mockito.when(this.germplasmDataManager.getImmediateSourcePreferredNamesByGids(Matchers.anyList())).thenReturn(immediatepreferredNamesMap);
-		Mockito.when(this.germplasmDataManager.getGroupSourcePreferredNamesByGids(Matchers.anyList())).thenReturn(groupSourcepreferredNamesMap);
+		Mockito.when(this.germplasmDataManager.getImmediateSourcePreferredNamesByGids(ArgumentMatchers.<List<Integer>>any())).thenReturn(
+				immediatepreferredNamesMap);
+		Mockito.when(this.germplasmDataManager.getGroupSourcePreferredNamesByGids(ArgumentMatchers.<List<Integer>>any())).thenReturn(
+				groupSourcepreferredNamesMap);
 
 
 	}

@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -427,7 +428,7 @@ public class GermplasmSearchResultsComponentTest {
 
 		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED);
 		Mockito.verify(this.window, Mockito.times(1)).showNotification(Mockito.any(Window.Notification.class));
-		Mockito.verify(this.listManagerMain, Mockito.times(0)).addPlantsToList(Mockito.anyList());
+		Mockito.verify(this.listManagerMain, Mockito.times(0)).addPlantsToList(ArgumentMatchers.<List<Integer>>any());
 		Mockito.verify(this.pagedTable, Mockito.times(0)).getItem(Mockito.anyInt());
 
 	}

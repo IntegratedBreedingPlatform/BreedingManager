@@ -59,6 +59,7 @@ import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.LotStatus;
+import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
@@ -66,6 +67,7 @@ import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -195,7 +197,7 @@ public class ListComponentTest {
 
 	private void setUpGermplasmDataManager() {
 		final List<UserDefinedField> lattributeList = new ArrayList<>();
-		Mockito.when(this.germplasmDataManager.getAttributeTypesByGIDList(Matchers.anyList()))
+		Mockito.when(this.germplasmDataManager.getAttributeTypesByGIDList(ArgumentMatchers.<List<Integer>>any()))
 				.thenReturn(lattributeList);
 	}
 
@@ -764,7 +766,7 @@ public class ListComponentTest {
 
 		final Map<ListEntryLotDetails, Double> unsavedReservations = new HashMap<>();
 		unsavedReservations.put(new ListEntryLotDetails(), new Double(10));
-		Mockito.when(reserveInventoryAction.saveReserveTransactions(Matchers.anyMap(), Matchers.anyInt()))
+		Mockito.when(reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
 				.thenReturn(false);
 
 		final Future<Void> threadOne = threadPool.submit(new Callable<Void>() {
@@ -840,8 +842,8 @@ public class ListComponentTest {
 
 		this.listComponent.closeLotsActions();
 
-		Mockito.verify(this.inventoryDataManager, Mockito.times(1)).addTransactions(Matchers.anyList());
-		Mockito.verify(this.inventoryDataManager, Mockito.times(1)).updateLots(Matchers.anyList());
+		Mockito.verify(this.inventoryDataManager, Mockito.times(1)).addTransactions(ArgumentMatchers.<List<Transaction>>any());
+		Mockito.verify(this.inventoryDataManager, Mockito.times(1)).updateLots(ArgumentMatchers.<List<Lot>>any());
 		Mockito.verify(this.messageSource).getMessage(Message.LOTS_CLOSED_SUCCESSFULLY);
 	}
 
@@ -875,7 +877,7 @@ public class ListComponentTest {
 
 		this.listComponent.closeLotsActions();
 
-		Mockito.verify(this.closeLotDiscardInventoryAction, Mockito.times(1)).setLotDetails(Matchers.anyList());
+		Mockito.verify(this.closeLotDiscardInventoryAction, Mockito.times(1)).setLotDetails(ArgumentMatchers.<List<ListEntryLotDetails>>any());
 		Mockito.verify(this.closeLotDiscardInventoryAction, Mockito.times(1)).processLotCloseWithDiscard();
 	}
 

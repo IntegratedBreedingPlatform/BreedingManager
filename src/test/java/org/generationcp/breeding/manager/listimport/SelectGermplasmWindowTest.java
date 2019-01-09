@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -147,7 +148,7 @@ public class SelectGermplasmWindowTest {
 		final int nameMatchCount = 3;
 		Mockito.doReturn(new Long(nameMatchCount)).when(this.germplasmManager).countGermplasmByName(Matchers.anyString(),
 				Matchers.any(Operation.class));
-		Mockito.when(this.inventoryDataManager.getAvailableBalanceForGermplasms(Matchers.anyList()))
+		Mockito.when(this.inventoryDataManager.getAvailableBalanceForGermplasms(ArgumentMatchers.<List<Germplasm>>any()))
 			.thenReturn(Collections.<Germplasm>emptyList());
 		final List<Germplasm> germplasm = new ArrayList<Germplasm>();
 		germplasm.add(GermplasmTestDataInitializer.createGermplasm(1));

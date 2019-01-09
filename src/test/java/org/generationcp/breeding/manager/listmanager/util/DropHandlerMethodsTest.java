@@ -31,6 +31,7 @@ import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -194,7 +195,7 @@ public class DropHandlerMethodsTest {
 		List<GermplasmListData> listData4 = Lists.newArrayList(germplasmLists.get(0).getListData().get(3));
 		List<GermplasmListData> listData5 = Lists.newArrayList(germplasmLists.get(0).getListData().get(4));
 
-		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList())).thenReturn(listData1,
+		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), ArgumentMatchers.<List<Integer>>any())).thenReturn(listData1,
 				listData2, listData3, listData4, listData5, listData1,
 				listData2, listData3, listData4, listData5);
 
@@ -377,7 +378,7 @@ public class DropHandlerMethodsTest {
 		List<GermplasmListData> listData4 = Lists.newArrayList(germplasmList.getListData().get(3));
 		List<GermplasmListData> listData5 = Lists.newArrayList(germplasmList.getListData().get(4));
 
-		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList())).thenReturn(listData1,
+		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), ArgumentMatchers.<List<Integer>>any())).thenReturn(listData1,
 				listData2, listData3, listData4, listData5);
 
 		this.dropHandlerMethods.addGermplasmList(DropHandlerMethodsTest.GERMPLASM_LIST_ID);

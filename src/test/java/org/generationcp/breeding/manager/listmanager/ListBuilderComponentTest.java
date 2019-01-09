@@ -45,6 +45,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -271,7 +272,7 @@ public class ListBuilderComponentTest {
 		this.setUpCurrentlySavedGermplasmList();
 		final ReserveInventoryAction reserveInventoryAction = Mockito.mock(ReserveInventoryAction.class);
 		this.listBuilderComponent.setReserveInventoryAction(reserveInventoryAction);
-		Mockito.when(reserveInventoryAction.saveReserveTransactions(Matchers.anyMap(), Matchers.anyInt()))
+		Mockito.when(reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
 				.thenReturn(false);
 		this.listBuilderComponent.saveReservationsAction();
 		Mockito.verify(this.messageSource).getMessage(Message.INVENTORY_NOT_AVAILABLE_BALANCE);
@@ -410,7 +411,7 @@ public class ListBuilderComponentTest {
 		final Map<ListEntryLotDetails, Double> unsavedReservations = new HashMap<>();
 		unsavedReservations.put(new ListEntryLotDetails(), new Double(10));
 		this.listBuilderComponent.setValidReservationsToSave(unsavedReservations);
-		Mockito.when(reserveInventoryAction.saveReserveTransactions(Matchers.anyMap(), Matchers.anyInt()))
+		Mockito.when(reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
 				.thenReturn(true);
 
 		final Future<Void> threadOne = threadPool.submit(new Callable<Void>() {
