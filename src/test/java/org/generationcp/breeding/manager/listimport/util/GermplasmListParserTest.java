@@ -1,9 +1,6 @@
 
 package org.generationcp.breeding.manager.listimport.util;
 
-import java.io.File;
-import java.util.*;
-
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
@@ -16,23 +13,29 @@ import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.workbook.generator.RowColumnType;
-import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalMatchers;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by cyrus on 5/7/15. Unit test will only cover the observation sheet parsing as we will have a separate unit test for parsing
@@ -68,9 +71,6 @@ public class GermplasmListParserTest {
 	private GermplasmDataManager germplasmDataManager;
 
 	@Mock
-	private InventoryDataManager inventoryDataManager;
-
-	@Mock
 	private GermplasmListManager germplasmListManager;
 
 	@Mock
@@ -90,9 +90,6 @@ public class GermplasmListParserTest {
 		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT))).thenReturn(true);
 		Mockito.when(this.ontologyDataManager
 				.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT)))).thenReturn(false);
-		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt()))
-				.thenReturn(GermplasmTestDataInitializer.createGermplasm(1));
-		Mockito.when(this.inventoryDataManager.getSimilarStockIds(ArgumentMatchers.<List<String>>any())).thenReturn(new ArrayList<String>());
 		Mockito.when(this.germplasmListManager.getGermplasmListTypes())
 				.thenReturn(this.userDefinedFieldTestDataInitializer.getValidListType());
 		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndFTypeAndFName(RowColumnType.NAME_TYPES.getFtable(),
