@@ -523,9 +523,6 @@ public class SeedInventoryImportFileComponentTest {
 		this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
 		this.seedInventoryImportFileComponent.processImportedInventoryTransactions();
 
-		Mockito.when(this.messageSource.getMessage(Message.SEED_IMPORT_COMMENT_WARNING))
-				.thenReturn(Message.SEED_IMPORT_COMMENT_WARNING.name());
-
 		Assert.assertEquals(0, this.seedInventoryImportFileComponent.getProcessedTransactions().size());
 
 		Assert.assertEquals(Message.SEED_IMPORT_LOT_CLOSED.name(),
@@ -550,9 +547,6 @@ public class SeedInventoryImportFileComponentTest {
 
 		this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
 		this.seedInventoryImportFileComponent.processImportedInventoryTransactions();
-
-		Mockito.when(this.messageSource.getMessage(Message.SEED_IMPORT_COMMENT_WARNING))
-				.thenReturn(Message.SEED_IMPORT_COMMENT_WARNING.name());
 
 		Assert.assertEquals(0, this.seedInventoryImportFileComponent.getProcessedTransactions().size());
 
@@ -580,9 +574,6 @@ public class SeedInventoryImportFileComponentTest {
 
 		this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
 		this.seedInventoryImportFileComponent.processImportedInventoryTransactions();
-
-		Mockito.when(this.messageSource.getMessage(Message.SEED_IMPORT_COMMENT_WARNING))
-				.thenReturn(Message.SEED_IMPORT_COMMENT_WARNING.name());
 
 		Assert.assertEquals(0, this.seedInventoryImportFileComponent.getProcessedTransactions().size());
 
