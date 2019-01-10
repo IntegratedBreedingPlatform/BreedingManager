@@ -1,17 +1,19 @@
 package org.generationcp.breeding.manager.listmanager;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.containers.GermplasmQuery;
 import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -30,14 +32,9 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
-import com.jensjansson.pagedtable.PagedTable;
-import com.vaadin.data.Container.Indexed;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmSearchResultsComponentTest {
@@ -67,9 +64,6 @@ public class GermplasmSearchResultsComponentTest {
 	@Mock
 	private PagedBreedingManagerTable pagedTable;
 
-	@Mock
-	private Indexed dataSource;
-
 	@Captor
 	private ArgumentCaptor<Object[]> captor;
 
@@ -84,14 +78,10 @@ public class GermplasmSearchResultsComponentTest {
 		Mockito.doReturn("Select All").when(this.messageSource).getMessage(Message.SELECT_ALL);
 		Mockito.doReturn("Total Result").when(this.messageSource).getMessage(Message.TOTAL_RESULTS);
 		Mockito.doReturn("Total Selected Result").when(this.messageSource).getMessage(Message.SELECTED);
-		Mockito.doReturn("Add Column").when(this.messageSource).getMessage(Message.ADD_COLUMN);
-		Mockito.doReturn("DUMMY MESSAGE").when(this.messageSource).getMessage("VALIDATION_INTEGER_FORMAT");
-
 		Mockito.doReturn(this.pagedTable).when(this.tableWithSelectAllLayout).getTable();
-		Mockito.doReturn(this.dataSource).when(this.pagedTable).getContainerDataSource();
 
-		Mockito.when(parentWindow.getWindow()).thenReturn(window);
-		germplasmSearchResultsComponent.setParent(parentWindow);
+		Mockito.when(this.parentWindow.getWindow()).thenReturn(this.window);
+		this.germplasmSearchResultsComponent.setParent(this.parentWindow);
 
 	}
 	
@@ -156,7 +146,6 @@ public class GermplasmSearchResultsComponentTest {
 
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.PARENTAGE.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
-		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.SEED_RESERVATION.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.STOCKID.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.GID.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.GERMPLASM_LOCATION.getTermId().getId());
@@ -459,7 +448,7 @@ public class GermplasmSearchResultsComponentTest {
 	}
 
 	private Collection createDummyItemIds() {
-		Collection itemIds = new ArrayList();
+		final Collection itemIds = new ArrayList();
 		itemIds.add(new Object());
 		itemIds.add(new Object());
 		return itemIds;
