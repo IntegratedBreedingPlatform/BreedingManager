@@ -1,10 +1,11 @@
 
 package org.generationcp.breeding.manager.listmanager.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
@@ -33,11 +34,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListCommonActionsUtilTest {
@@ -84,8 +83,6 @@ public class ListCommonActionsUtilTest {
 		this.entriesToDelete = new ArrayList<GermplasmListData>();
 
 		Mockito.when(this.dataManager.countGermplasmListDataByListId(this.listToSave.getId())).thenReturn(5L);
-		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId()))
-				.thenReturn(this.listToSave.getListData());
 
 		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(this.listToSave, this.listEntries, this.forceHasChanges,
 				this.newEntries, this.entriesToUpdate, this.entriesToDelete, this.dataManager, this.source,
@@ -339,7 +336,7 @@ public class ListCommonActionsUtilTest {
 		Mockito.when(this.dataManager.getGermplasmListById(listId)).thenReturn(germplasmListFromDatabase);
 		Mockito.when(this.dataManager.updateGermplasmList(germplasmListFromDatabase)).thenReturn(listId);
 		Mockito.when(this.listBuilderComponent.getSource()).thenReturn(this.listManagerMain);
-		Mockito.when(this.listManagerMain.getListSelectionComponent()).thenReturn(this.listSelectionComponent);
+
 		Mockito.when(this.listManagerMain.getWindow()).thenReturn(this.window);
 		Mockito.when(this.messageSource.getMessage(Message.SUCCESS)).thenReturn(ListCommonActionsUtilTest.SUCCESS);
 
@@ -381,7 +378,7 @@ public class ListCommonActionsUtilTest {
 
 		Mockito.when(this.dataManager.getGermplasmListById(listId)).thenReturn(germplasmListFromDatabase);
 		Mockito.when(this.dataManager.updateGermplasmList(germplasmListFromDatabase)).thenReturn(listId);
-		Mockito.when(this.listBuilderComponent.getSource()).thenReturn(this.listManagerMain);
+
 		Mockito.when(this.listManagerMain.getListSelectionComponent()).thenReturn(this.listSelectionComponent);
 		Mockito.when(this.listManagerMain.getWindow()).thenReturn(this.window);
 		Mockito.when(this.messageSource.getMessage(Message.SUCCESS)).thenReturn(ListCommonActionsUtilTest.SUCCESS);
