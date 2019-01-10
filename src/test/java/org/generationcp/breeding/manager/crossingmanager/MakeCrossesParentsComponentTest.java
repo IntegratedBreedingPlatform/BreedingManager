@@ -76,7 +76,6 @@ public class MakeCrossesParentsComponentTest {
 	@Before
 	public void setUp() {
 		Mockito.doReturn("Parent List").when(this.messageSource).getMessage(Message.PARENTS_LISTS);
-		Mockito.doReturn("Reserve Inventory").when(this.messageSource).getMessage(Message.RESERVE_INVENTORY);
 
 		this.femaleParent = this.createParentTable();
 		this.maleParent = this.createParentTable();
