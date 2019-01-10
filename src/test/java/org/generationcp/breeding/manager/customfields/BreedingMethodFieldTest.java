@@ -96,8 +96,6 @@ public class BreedingMethodFieldTest {
 
 		ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
 		favouriteMethods.add(Mockito.mock(ProgramFavorite.class));
-		Mockito.when(germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000, BreedingMethodFieldTest.PROGRAM_UUID))
-				.thenReturn(favouriteMethods);
 
 		breedingMethodField.setHasDefaultValue(true);
 
