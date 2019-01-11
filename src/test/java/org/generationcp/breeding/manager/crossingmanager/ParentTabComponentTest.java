@@ -5,15 +5,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
-import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
-import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.data.initializer.GermplasmListDataTestDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.GermplasmListEntryTestDataInitializer;
-import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -25,8 +22,6 @@ import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.service.api.FieldbookService;
@@ -35,20 +30,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class ParentTabComponentTest {
@@ -62,13 +52,7 @@ public class ParentTabComponentTest {
 	private ManageCrossingSettingsMain makeCrossesSettingsMain;
 
 	@Mock
-	private CrossingManagerMakeCrossesComponent crossingManagerMakeCrossesComponent;
-
-	@Mock
 	private OntologyDataManager ontologyDataManager;
-
-	@Mock
-	private SaveGermplasmListActionFactory saveGermplasmListActionFactory;
 
 	@Mock
 	private ContextUtil contextUtil;
@@ -86,22 +70,10 @@ public class ParentTabComponentTest {
 	private InventoryDataManager inventoryDataManager;
 
 	@Mock
-	private UserDataManager userDataManager;
-
-	@Mock
 	private CrossingManagerListTreeComponent crossingManagerListTreeComponent;
 
 	@Mock
-	private ReserveInventorySource reserveInventorySource;
-
-	@Mock
 	private FieldbookService fieldbookMiddlewareService;
-
-	@Spy
-	private final Window window = new Window();
-
-	@Captor
-	ArgumentCaptor<Window.Notification> captor;
 
 	private ParentTabComponent parentTabComponent;
 	private CrossingManagerMakeCrossesComponent makeCrossesMain;
@@ -113,14 +85,8 @@ public class ParentTabComponentTest {
 		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
 		Mockito.doReturn(fromOntology).when(this.ontologyDataManager).getTermById(Matchers.anyInt());
-		Mockito.when(this.messageSource.getMessage(Message.CLEAR_ALL)).thenReturn("CLEAR_ALL");
-		Mockito.when(this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES)).thenReturn("REMOVE_SELECTED_ENTRIES");
-		Mockito.when(this.messageSource.getMessage(Message.SELECT_ALL)).thenReturn("SELECT_ALL");
-		Mockito.when(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES)).thenReturn("SELECT_EVEN_ENTRIES");
-		Mockito.when(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES)).thenReturn("SELECT_ODD_ENTRIES");
-
 		this.makeCrossesMain = new CrossingManagerMakeCrossesComponent(this.makeCrossesSettingsMain);
-		this.makeCrossesMain.setFieldbookMiddlewareService(fieldbookMiddlewareService);
+		this.makeCrossesMain.setFieldbookMiddlewareService(this.fieldbookMiddlewareService);
 
 		final SelectParentsComponent selectParentsComponent = new SelectParentsComponent(this.makeCrossesMain);
 		selectParentsComponent.setMessageSource(this.messageSource);
@@ -143,13 +109,10 @@ public class ParentTabComponentTest {
 		this.parentTabComponent = new ParentTabComponent(this.makeCrossesMain, source, parentLabel, rowCount);
 		source.setMaleParentTab(this.parentTabComponent);
 		source.setFemaleParentTab(this.parentTabComponent);
-		Mockito.doReturn(this.window).when(source).getWindow();
-
 		Mockito.doReturn("TestString").when(this.messageSource).getMessage(Matchers.any(Message.class));
 		this.parentTabComponent.setMessageSource(this.messageSource);
 		this.parentTabComponent.setOntologyDataManager(this.ontologyDataManager);
 		this.parentTabComponent.setInventoryDataManager(this.inventoryDataManager);
-		Mockito.doReturn(this.window).when(this.parent).getWindow();
 		this.parentTabComponent.setParent(this.parent);
 
 		final SaveGermplasmListAction saveGermplasmListAction =
@@ -160,17 +123,10 @@ public class ParentTabComponentTest {
 		saveGermplasmListAction.setGermplasmListManager(this.germplasmListManager);
 		saveGermplasmListAction.setPedigreeService(this.pedigreeService);
 		saveGermplasmListAction.setInventoryDataManager(this.inventoryDataManager);
-		Mockito.doReturn(GermplasmListTestDataInitializer.createGermplasmList(ParentTabComponentTest.GERMPLASM_LIST_ID))
-				.when(this.germplasmListManager).getGermplasmListById(Matchers.anyInt());
-		Mockito.doReturn(saveGermplasmListAction)
-				.when(this.saveGermplasmListActionFactory)
-				.createInstance(Matchers.any(SaveGermplasmListActionSource.class), Matchers.any(GermplasmList.class),
-						Matchers.anyListOf(GermplasmListEntry.class));
 
 		final User user = new User();
 		user.setUserid(12);
 		user.setPersonid(123);
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
 
 	}
 
