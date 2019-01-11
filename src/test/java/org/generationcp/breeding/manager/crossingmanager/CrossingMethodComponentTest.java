@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -73,7 +72,7 @@ public class CrossingMethodComponentTest {
 		Mockito.verify(parentsComponent).updateFemaleListNameForCrosses();
 		Mockito.verify(parentsComponent).updateMaleListNameForCrosses();
 		Mockito.verify(this.makeCrossesMain).makeCrossButtonAction(ArgumentMatchers.<List<GermplasmListEntry>>any(), ArgumentMatchers.<List<GermplasmListEntry>>any(),
-				Matchers.anyString(), Matchers.anyString(), Matchers.eq(CrossType.MULTIPLY), Matchers.anyBoolean(),
-				Matchers.anyBoolean());
+				ArgumentMatchers.<String>isNull(), ArgumentMatchers.<String>isNull(), ArgumentMatchers.eq(CrossType.MULTIPLY), ArgumentMatchers.anyBoolean(),
+				ArgumentMatchers.anyBoolean());
 	}
 }
