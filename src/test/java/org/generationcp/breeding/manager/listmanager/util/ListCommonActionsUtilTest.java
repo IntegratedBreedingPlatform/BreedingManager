@@ -82,8 +82,6 @@ public class ListCommonActionsUtilTest {
 		this.entriesToUpdate = new ArrayList<GermplasmListData>();
 		this.entriesToDelete = new ArrayList<GermplasmListData>();
 
-		Mockito.when(this.dataManager.countGermplasmListDataByListId(this.listToSave.getId())).thenReturn(5L);
-
 		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(this.listToSave, this.listEntries, this.forceHasChanges,
 				this.newEntries, this.entriesToUpdate, this.entriesToDelete, this.dataManager, this.source,
 				this.messageSource);
@@ -335,11 +333,10 @@ public class ListCommonActionsUtilTest {
 
 		Mockito.when(this.dataManager.getGermplasmListById(listId)).thenReturn(germplasmListFromDatabase);
 		Mockito.when(this.dataManager.updateGermplasmList(germplasmListFromDatabase)).thenReturn(listId);
-		Mockito.when(this.listBuilderComponent.getSource()).thenReturn(this.listManagerMain);
 
 		Mockito.when(this.listManagerMain.getWindow()).thenReturn(this.window);
 		Mockito.when(this.messageSource.getMessage(Message.SUCCESS)).thenReturn(ListCommonActionsUtilTest.SUCCESS);
-
+		Mockito.when(this.listManagerMain.getListSelectionComponent()).thenReturn(this.listSelectionComponent);
 		ListCommonActionsUtil.overwriteList(germplasmListToSave, this.dataManager, this.listManagerMain,
 				this.messageSource, true);
 
