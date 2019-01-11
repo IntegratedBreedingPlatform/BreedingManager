@@ -186,7 +186,7 @@ public class ListComponentTest {
 
 		try {
 			Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
-					.getGermplasmListById(this.germplasmList.getId());
+				.getGermplasmListById(this.germplasmList.getId());
 
 			this.listComponent.saveList(germplasmListToBeSaved);
 
@@ -223,7 +223,7 @@ public class ListComponentTest {
 		try {
 			Mockito.doNothing().when(this.source).closeList(germplasmListToBeSaved);
 			Mockito.doReturn(germplasmListToBeSaved).when(this.germplasmListManager)
-					.getGermplasmListById(Matchers.anyInt());
+				.getGermplasmListById(Matchers.anyInt());
 
 			// this will overwrite the list entries of the current germplasm
 			// list. Germplasm List Details will not be updated.
@@ -260,7 +260,7 @@ public class ListComponentTest {
 		germplasmListToBeSaved.setStatus(1);
 
 		Mockito.doReturn(null).when(this.germplasmListManager)
-				.getGermplasmListById(ListComponentTest.TEST_GERMPLASM_LIST_ID);
+			.getGermplasmListById(ListComponentTest.TEST_GERMPLASM_LIST_ID);
 
 		this.listComponent.saveList(germplasmListToBeSaved);
 
@@ -290,8 +290,9 @@ public class ListComponentTest {
 
 		Assert.assertEquals(ListComponentTest.CHECK, table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals(ListComponentTest.HASH, table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
-		Assert.assertEquals(ListComponentTest.AVAIL_INV,
-				table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
+		Assert.assertEquals(
+			ListComponentTest.AVAIL_INV,
+			table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		Assert.assertEquals(ListComponentTest.TOTAL_AVAILBALE, table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		Assert.assertEquals(ListComponentTest.STOCKID, table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		Assert.assertEquals(ListComponentTest.GID, table.getColumnHeader(ColumnLabels.GID.getName()));
@@ -305,14 +306,14 @@ public class ListComponentTest {
 	@Test
 	public void testUserSelectedLotEntriesToCancelReservations() {
 		final List<ListEntryLotDetails> userSelectedLotEntriesToCancel = ListInventoryDataInitializer
-				.createLotDetails(1);
+			.createLotDetails(1);
 		this.listComponent.setValidReservationsToSave(ImportedGermplasmListDataInitializer.createReservations(2));
 		Mockito.doReturn(userSelectedLotEntriesToCancel).when(this.listManagerInventoryTable).getSelectedLots();
 		this.listComponent.userSelectedLotEntriesToCancelReservations();
 		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,
-				this.listComponent.getValidReservationsToSave().size());
+			this.listComponent.getValidReservationsToSave().size());
 		Assert.assertEquals("Expecting Cancel reservation should have size 3 ", 3,
-				this.listComponent.getValidReservationsToCancel().size());
+			this.listComponent.getValidReservationsToCancel().size());
 	}
 
 	@Test
@@ -322,7 +323,7 @@ public class ListComponentTest {
 		Mockito.doNothing().when(contextUtil).logProgramActivity(Matchers.anyString(), Matchers.anyString());
 		Mockito.doReturn("Test").when(this.messageSource).getMessage(Matchers.any(Message.class));
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
-				.getGermplasmListById(this.germplasmList.getId());
+			.getGermplasmListById(this.germplasmList.getId());
 		final FillWith fillWith = Mockito.mock(FillWith.class);
 		this.listComponent.setFillWith(fillWith);
 		this.listComponent.instantiateComponents();
@@ -331,13 +332,16 @@ public class ListComponentTest {
 		this.listComponent.toggleGermplasmListStatus();
 
 		Assert.assertEquals("Expecting the that the germplasmList status was changed to locked(101) but returned ("
-				+ this.germplasmList.getStatus() + ")", Integer.valueOf(101), this.germplasmList.getStatus());
-		Assert.assertEquals(Integer.valueOf(101),
-				this.listComponent.getViewListHeaderWindow().getGermplasmList().getStatus());
-		Assert.assertEquals(Integer.valueOf(101),
-				this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getGermplasmList().getStatus());
-		Assert.assertEquals("Locked List",
-				this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getStatusValueLabel().toString());
+			+ this.germplasmList.getStatus() + ")", Integer.valueOf(101), this.germplasmList.getStatus());
+		Assert.assertEquals(
+			Integer.valueOf(101),
+			this.listComponent.getViewListHeaderWindow().getGermplasmList().getStatus());
+		Assert.assertEquals(
+			Integer.valueOf(101),
+			this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getGermplasmList().getStatus());
+		Assert.assertEquals(
+			"Locked List",
+			this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getStatusValueLabel().toString());
 		Mockito.verify(fillWith).setContextMenuEnabled(listComponent.getListDataTable(), false);
 	}
 
@@ -355,15 +359,19 @@ public class ListComponentTest {
 		this.listComponent.toggleGermplasmListStatus();
 
 		Assert.assertEquals("Expecting the that the germplasmList status was changed to unlocked(1) but returned ("
-				+ this.germplasmList.getStatus() + ")", Integer.valueOf(1), this.germplasmList.getStatus());
-		Assert.assertEquals(Integer.valueOf(1),
-				this.listComponent.getViewListHeaderWindow().getGermplasmList().getStatus());
-		Assert.assertEquals(Integer.valueOf(1),
-				this.listComponent.getViewListHeaderWindow().getGermplasmList().getStatus());
-		Assert.assertEquals(Integer.valueOf(1),
-				this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getGermplasmList().getStatus());
-		Assert.assertEquals("Unlocked List",
-				this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getStatusValueLabel().toString());
+			+ this.germplasmList.getStatus() + ")", Integer.valueOf(1), this.germplasmList.getStatus());
+		Assert.assertEquals(
+			Integer.valueOf(1),
+			this.listComponent.getViewListHeaderWindow().getGermplasmList().getStatus());
+		Assert.assertEquals(
+			Integer.valueOf(1),
+			this.listComponent.getViewListHeaderWindow().getGermplasmList().getStatus());
+		Assert.assertEquals(
+			Integer.valueOf(1),
+			this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getGermplasmList().getStatus());
+		Assert.assertEquals(
+			"Unlocked List",
+			this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getStatusValueLabel().toString());
 		Mockito.verify(fillWith).setContextMenuEnabled(listComponent.getListDataTable(), true);
 	}
 
@@ -381,8 +389,9 @@ public class ListComponentTest {
 		this.listComponent.instantiateComponents();
 
 		final List<ListDataInfo> listDataInfo = Arrays.asList(new ListDataInfo(1, Arrays.asList(new ListDataColumn(column, "123"))));
-		Mockito.when(this.addColumnContextMenu.getListDataCollectionFromTable(Matchers.eq(listDataTable), Matchers.eq(attributeAndNameTypes)))
-				.thenReturn(listDataInfo);
+		Mockito
+			.when(this.addColumnContextMenu.getListDataCollectionFromTable(Matchers.eq(listDataTable), Matchers.eq(attributeAndNameTypes)))
+			.thenReturn(listDataInfo);
 
 		this.listComponent.saveChangesAction(this.window, false);
 		Mockito.verify(this.germplasmListManager).updateGermplasmListData(Matchers.anyListOf(GermplasmListData.class));
@@ -412,30 +421,34 @@ public class ListComponentTest {
 		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
 
 		final List<GermplasmListData> germplasmListData = ListInventoryDataInitializer
-				.createGermplasmListDataWithInventoryDetails();
+			.createGermplasmListDataWithInventoryDetails();
 
 		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Matchers.isA(Integer.class), Matchers.anyInt(),
-				Matchers.anyInt())).thenReturn(germplasmListData);
+			Matchers.anyInt())).thenReturn(germplasmListData);
 
 		this.listComponent.saveReservationChangesAction(this.window);
 
 		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,
-				this.listComponent.getValidReservationsToSave().size());
+			this.listComponent.getValidReservationsToSave().size());
 		Assert.assertEquals("Expecting Cancel reservation should have size 0 ", 0,
-				this.listComponent.getValidReservationsToCancel().size());
+			this.listComponent.getValidReservationsToCancel().size());
 
 	}
 
 	@Test
 	public void testIsInventoryColumn() {
-		Assert.assertTrue("Expecting AVAILABLE_INVENTORY as an inventory column.",
-				this.listComponent.isInventoryColumn(ColumnLabels.AVAILABLE_INVENTORY.getName()));
-		Assert.assertTrue("Expecting SEED_RESERVATION as an inventory column.",
-				this.listComponent.isInventoryColumn(ColumnLabels.SEED_RESERVATION.getName()));
-		Assert.assertTrue("Expecting STOCKID as an inventory column.",
-				this.listComponent.isInventoryColumn(ColumnLabels.STOCKID.getName()));
-		Assert.assertFalse("Expecting ENTRY_ID as an inventory column.",
-				this.listComponent.isInventoryColumn(ColumnLabels.ENTRY_ID.getName()));
+		Assert.assertTrue(
+			"Expecting AVAILABLE_INVENTORY as an inventory column.",
+			this.listComponent.isInventoryColumn(ColumnLabels.AVAILABLE_INVENTORY.getName()));
+		Assert.assertTrue(
+			"Expecting SEED_RESERVATION as an inventory column.",
+			this.listComponent.isInventoryColumn(ColumnLabels.SEED_RESERVATION.getName()));
+		Assert.assertTrue(
+			"Expecting STOCKID as an inventory column.",
+			this.listComponent.isInventoryColumn(ColumnLabels.STOCKID.getName()));
+		Assert.assertFalse(
+			"Expecting ENTRY_ID as an inventory column.",
+			this.listComponent.isInventoryColumn(ColumnLabels.ENTRY_ID.getName()));
 	}
 
 	@Test
@@ -449,7 +462,7 @@ public class ListComponentTest {
 		this.listComponent.deleteRemovedGermplasmEntriesFromTable();
 
 		Mockito.verify(this.germplasmListManager)
-				.deleteGermplasmListDataByListId(ListComponentTest.TEST_GERMPLASM_LIST_ID);
+			.deleteGermplasmListDataByListId(ListComponentTest.TEST_GERMPLASM_LIST_ID);
 
 	}
 
@@ -465,7 +478,7 @@ public class ListComponentTest {
 
 		// deleteGermplasmListDataByListIdLrecId should only be called once
 		Mockito.verify(this.germplasmListManager, Mockito.times(1)).deleteGermplasmListDataByListIdLrecId(
-				Matchers.eq(ListComponentTest.TEST_GERMPLASM_LIST_ID), Matchers.anyInt());
+			Matchers.eq(ListComponentTest.TEST_GERMPLASM_LIST_ID), Matchers.anyInt());
 
 		Assert.assertTrue(this.listComponent.getItemsToDelete().isEmpty());
 
@@ -543,7 +556,7 @@ public class ListComponentTest {
 		table.setValue(table.getItemIds());
 
 		final Set<Integer> result = this.listComponent
-				.extractGidListFromListDataTable(this.listComponent.getListDataTable());
+			.extractGidListFromListDataTable(this.listComponent.getListDataTable());
 
 		Assert.assertEquals(ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES.intValue(), result.size());
 
@@ -553,7 +566,7 @@ public class ListComponentTest {
 			final Item selectedRowItem = table.getItem(selectedRowsIterator.next());
 			final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
 			Assert.assertEquals("The order of extracted GIDs should be same order as the entries in the table.",
-					Integer.valueOf(gidCell.getCaption()), gid);
+				Integer.valueOf(gidCell.getCaption()), gid);
 		}
 
 	}
@@ -568,7 +581,7 @@ public class ListComponentTest {
 		table.setValue(null);
 
 		final Set<Integer> result = this.listComponent
-				.extractGidListFromListDataTable(this.listComponent.getListDataTable());
+			.extractGidListFromListDataTable(this.listComponent.getListDataTable());
 
 		Assert.assertEquals(0, result.size());
 
@@ -584,8 +597,8 @@ public class ListComponentTest {
 	private void initializeTableWithTestData() {
 
 		Mockito.when(this.inventoryDataManager.getLotCountsForList(ListComponentTest.TEST_GERMPLASM_LIST_ID, 0,
-				ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES))
-				.thenReturn(ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails());
+			ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES))
+			.thenReturn(ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails());
 
 		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
@@ -600,28 +613,28 @@ public class ListComponentTest {
 	private void setUpOntologyManager() {
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId()))
-				.thenReturn(this.createTerm(TermId.AVAILABLE_INVENTORY.getId(), ListComponentTest.AVAIL_INV));
+			.thenReturn(this.createTerm(TermId.AVAILABLE_INVENTORY.getId(), ListComponentTest.AVAIL_INV));
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.TOTAL_INVENTORY.getId()))
-				.thenReturn(this.createTerm(TermId.TOTAL_INVENTORY.getId(), ListComponentTest.TOTAL_AVAILBALE));
+			.thenReturn(this.createTerm(TermId.TOTAL_INVENTORY.getId(), ListComponentTest.TOTAL_AVAILBALE));
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.GID.getId()))
-				.thenReturn(this.createTerm(TermId.GID.getId(), ListComponentTest.GID));
+			.thenReturn(this.createTerm(TermId.GID.getId(), ListComponentTest.GID));
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_CODE.getId()))
-				.thenReturn(this.createTerm(TermId.ENTRY_CODE.getId(), ListComponentTest.ENTRY_CODE));
+			.thenReturn(this.createTerm(TermId.ENTRY_CODE.getId(), ListComponentTest.ENTRY_CODE));
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.DESIG.getId()))
-				.thenReturn(this.createTerm(TermId.DESIG.getId(), ListComponentTest.DESIG));
+			.thenReturn(this.createTerm(TermId.DESIG.getId(), ListComponentTest.DESIG));
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.CROSS.getId()))
-				.thenReturn(this.createTerm(TermId.CROSS.getId(), ListComponentTest.CROSS));
+			.thenReturn(this.createTerm(TermId.CROSS.getId(), ListComponentTest.CROSS));
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_SOURCE.getId()))
-				.thenReturn(this.createTerm(TermId.SEED_SOURCE.getId(), ListComponentTest.SEED_SOURCE));
+			.thenReturn(this.createTerm(TermId.SEED_SOURCE.getId(), ListComponentTest.SEED_SOURCE));
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.STOCKID.getId()))
-				.thenReturn(this.createTerm(TermId.STOCKID.getId(), ListComponentTest.STOCKID));
+			.thenReturn(this.createTerm(TermId.STOCKID.getId(), ListComponentTest.STOCKID));
 
 	}
 
@@ -648,16 +661,16 @@ public class ListComponentTest {
 	private void setUpListComponent() {
 
 		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListData(
-				ListComponentTest.TEST_GERMPLASM_LIST_ID, ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES);
+			ListComponentTest.TEST_GERMPLASM_LIST_ID, ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES);
 		this.germplasmList.setStatus(1);
 		this.listComponent.setGermplasmList(this.germplasmList);
 		this.listComponent.setParent(this.parentComponent);
 		this.listComponent.setCloseLotDiscardInventoryAction(this.closeLotDiscardInventoryAction);
 
 		Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(ListComponentTest.TEST_GERMPLASM_LIST_ID))
-				.thenReturn(Long.valueOf(ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES));
+			.thenReturn(Long.valueOf(ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES));
 		Mockito.when(this.germplasmListManager.getGermplasmListById(ListComponentTest.TEST_GERMPLASM_LIST_ID))
-				.thenReturn(this.germplasmList);
+			.thenReturn(this.germplasmList);
 
 		Mockito.when(this.parentComponent.getWindow()).thenReturn(this.window);
 		Mockito.when(this.source.getModeView()).thenReturn(ModeView.LIST_VIEW);
@@ -716,8 +729,9 @@ public class ListComponentTest {
 
 		final Map<ListEntryLotDetails, Double> unsavedReservations = new HashMap<>();
 		unsavedReservations.put(new ListEntryLotDetails(), new Double(10));
-		Mockito.when(reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
-				.thenReturn(false);
+		Mockito.when(
+			reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
+			.thenReturn(false);
 
 		final Future<Void> threadOne = threadPool.submit(new Callable<Void>() {
 
@@ -753,34 +767,36 @@ public class ListComponentTest {
 
 	@Test
 	public void testCloseLotsWithUnCommittedReservation() throws Exception {
-		final List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1,
-				1);
+		final List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(
+			1,
+			1);
 		Mockito.doReturn(userSelectedLotEntriesToClose).when(this.listManagerInventoryTable).getSelectedLots();
 
 		this.listComponent.closeLotsActions();
 		Mockito.verify(this.messageSource)
-				.getMessage(Message.LOTS_HAVE_AVAILABLE_BALANCE_UNCOMMITTED_RESERVATION_ERROR);
+			.getMessage(Message.LOTS_HAVE_AVAILABLE_BALANCE_UNCOMMITTED_RESERVATION_ERROR);
 	}
 
 	@Test
 	public void testCloseLotsWithValidLotsHavingNoBalanceToClose() throws Exception {
-		final List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1,
-				1);
+		final List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(
+			1,
+			1);
 		userSelectedLotEntriesToClose.get(0).setReservedTotal(0D);
 		userSelectedLotEntriesToClose.get(0).setActualLotBalance(0D);
 
 		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer
-				.createGermplasmListDataWithInventoryDetails(1);
+			.createGermplasmListDataWithInventoryDetails(1);
 		inventoryDetails.get(0).getInventoryInfo().setLotRows(userSelectedLotEntriesToClose);
 
 		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Matchers.isA(Integer.class), Matchers.anyInt(),
-				Matchers.anyInt())).thenReturn(inventoryDetails);
+			Matchers.anyInt())).thenReturn(inventoryDetails);
 
 		final Lot activeLot = new Lot();
 		activeLot.setStatus(LotStatus.ACTIVE.getIntValue());
 
 		Mockito.when(this.inventoryDataManager.getLotsByIdList(Matchers.isA(List.class)))
-				.thenReturn(Lists.newArrayList(activeLot));
+			.thenReturn(Lists.newArrayList(activeLot));
 		final User user = new User();
 		user.setUserid(12);
 		user.setPersonid(123);
@@ -799,13 +815,14 @@ public class ListComponentTest {
 
 	@Test
 	public void testCloseLotsWithValidLotsHavingActualBalanceToClose() throws Exception {
-		final List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1,
-				1);
+		final List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(
+			1,
+			1);
 		userSelectedLotEntriesToClose.get(0).setReservedTotal(0D);
 		userSelectedLotEntriesToClose.get(0).setActualLotBalance(5D);
 
 		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer
-				.createGermplasmListDataWithInventoryDetails(1);
+			.createGermplasmListDataWithInventoryDetails(1);
 		inventoryDetails.get(0).getInventoryInfo().setLotRows(userSelectedLotEntriesToClose);
 
 		final Lot activeLot = new Lot();
@@ -819,7 +836,8 @@ public class ListComponentTest {
 
 		this.listComponent.closeLotsActions();
 
-		Mockito.verify(this.closeLotDiscardInventoryAction, Mockito.times(1)).setLotDetails(ArgumentMatchers.<List<ListEntryLotDetails>>any());
+		Mockito.verify(this.closeLotDiscardInventoryAction, Mockito.times(1))
+			.setLotDetails(ArgumentMatchers.<List<ListEntryLotDetails>>any());
 		Mockito.verify(this.closeLotDiscardInventoryAction, Mockito.times(1)).processLotCloseWithDiscard();
 	}
 
@@ -829,14 +847,14 @@ public class ListComponentTest {
 		this.listComponent.setInventoryViewMenu(this.inventoryViewMenu);
 		this.listComponent.setListInventoryTable(this.listManagerInventoryTable);
 		final List<ListEntryLotDetails> userSelectedLotEntriesToCancel = ListInventoryDataInitializer
-				.createLotDetails(1);
+			.createLotDetails(1);
 		userSelectedLotEntriesToCancel.get(0).setScaleId(null);
 		Mockito.doReturn(userSelectedLotEntriesToCancel).when(this.listManagerInventoryTable).getSelectedLots();
 		Mockito.doReturn(true).when(this.listComponent.getInventoryViewMenu()).isVisible();
 		this.listComponent.reserveInventoryAction();
 
 		Mockito.verify(this.messageSource)
-				.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES);
+			.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES);
 
 	}
 
@@ -858,7 +876,7 @@ public class ListComponentTest {
 		final Set<Integer> gidsToProcess = new HashSet<>(Arrays.asList(gid1, gid2, gid3));
 		final List<Germplasm> listOfGermplasm = new ArrayList<>();
 		Mockito.when(this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess)))
-				.thenReturn(listOfGermplasm);
+			.thenReturn(listOfGermplasm);
 
 		this.listComponent.unfixLines(gidsToProcess);
 
@@ -884,7 +902,7 @@ public class ListComponentTest {
 		listOfGermplasmWithoutGroup.add(germplasm3);
 
 		Mockito.when(this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess)))
-				.thenReturn(listOfGermplasmWithoutGroup);
+			.thenReturn(listOfGermplasmWithoutGroup);
 
 		this.listComponent.unfixLines(gidsToProcess);
 
@@ -911,7 +929,7 @@ public class ListComponentTest {
 		listOfGermplasm.add(germplasm3);
 
 		Mockito.when(this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess)))
-				.thenReturn(listOfGermplasm);
+			.thenReturn(listOfGermplasm);
 
 		this.listComponent.unfixLines(gidsToProcess);
 
@@ -930,10 +948,10 @@ public class ListComponentTest {
 		listOfGermplasm.add(this.createGermplasm(2, 0));
 
 		Mockito.when(this.germplasmDataManager.getGermplasmWithoutGroup(new ArrayList<Integer>(gidsToProcess)))
-				.thenReturn(listOfGermplasm);
+			.thenReturn(listOfGermplasm);
 
 		Assert.assertEquals("There are only 2 ungrouped germplasm in the list", 2,
-				this.listComponent.countGermplasmWithoutGroup(gidsToProcess));
+			this.listComponent.countGermplasmWithoutGroup(gidsToProcess));
 
 	}
 
@@ -944,7 +962,7 @@ public class ListComponentTest {
 		final ListComponent listComponent = Mockito.mock(ListComponent.class);
 
 		final ListComponent.ConfirmUnfixLinesListener listener = this.listComponent.new ConfirmUnfixLinesListener(
-				gidsToProcess, listComponent);
+			gidsToProcess, listComponent);
 
 		final ConfirmDialog confirmDialog = ConfirmDialog.show(this.window, "", "", "", "", listener);
 		confirmDialog.getOkButton().click();
@@ -989,7 +1007,7 @@ public class ListComponentTest {
 		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(1);
 		this.germplasmList.setStatus(100);
 		Mockito.when(this.germplasmListManager.getGermplasmListById(this.germplasmList.getId()))
-				.thenReturn(this.germplasmList);
+			.thenReturn(this.germplasmList);
 		this.listComponent.setGermplasmList(this.germplasmList);
 		final ViewListHeaderWindow viewListHeaderWindow = Mockito.mock(ViewListHeaderWindow.class);
 		this.listComponent.setViewListHeaderWindow(viewListHeaderWindow);
@@ -1010,7 +1028,7 @@ public class ListComponentTest {
 		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(1);
 		this.germplasmList.setStatus(1);
 		Mockito.when(this.germplasmListManager.getGermplasmListById(this.germplasmList.getId()))
-				.thenReturn(this.germplasmList);
+			.thenReturn(this.germplasmList);
 		this.listComponent.setGermplasmList(this.germplasmList);
 		final ViewListHeaderWindow viewListHeaderWindow = Mockito.mock(ViewListHeaderWindow.class);
 		this.listComponent.setViewListHeaderWindow(viewListHeaderWindow);
@@ -1044,9 +1062,9 @@ public class ListComponentTest {
 		listOfGermplasmListData.add(germplasmListData);
 
 		Mockito.when(this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsToProcess)))
-				.thenReturn(listOfGermplasm);
+			.thenReturn(listOfGermplasm);
 		Mockito.when(this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId()))
-				.thenReturn(listOfGermplasmListData);
+			.thenReturn(listOfGermplasmListData);
 
 		this.listComponent.updateGermplasmListTable(gidsToProcess);
 
@@ -1075,18 +1093,19 @@ public class ListComponentTest {
 		listOfGermplasmListData.add(germplasmListData);
 
 		Mockito.when(this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsToProcess)))
-				.thenReturn(listOfGermplasm);
+			.thenReturn(listOfGermplasm);
 		Mockito.when(this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId()))
-				.thenReturn(listOfGermplasmListData);
+			.thenReturn(listOfGermplasmListData);
 
 		this.listComponent.updateGermplasmListTable(gidsToProcess);
 
 		final Item selectedRowItem = table.getItem(gid1);
-		Assert.assertEquals(String.valueOf(mgid),
-				selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
+		Assert.assertEquals(
+			String.valueOf(mgid),
+			selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
 
 	}
-	
+
 	@Test
 	public void testAddAttributeAndNameTypeColumn() {
 		final List<String> attributeAndNameTypes = new ArrayList<>();
@@ -1096,7 +1115,7 @@ public class ListComponentTest {
 		Assert.assertFalse(this.listComponent.getAttributeAndNameTypeColumns().isEmpty());
 		Assert.assertTrue(this.listComponent.getAttributeAndNameTypeColumns().contains(column));
 	}
-	
+
 	@Test
 	public void testListHasAddedColumns() {
 		final Table table = new Table();
@@ -1104,13 +1123,13 @@ public class ListComponentTest {
 		this.listComponent.setListDataTable(table);
 		this.listComponent.setAttributeAndNameTypeColumns(attributeAndNameTypes);
 		this.listComponent.setAddColumnContextMenu(this.addColumnContextMenu);
-		
+
 		Mockito.doReturn(true).when(this.addColumnContextMenu).hasAddedColumn(table, attributeAndNameTypes);
 		Assert.assertTrue(this.listComponent.listHasAddedColumns());
-		
+
 		Mockito.doReturn(false).when(this.addColumnContextMenu).hasAddedColumn(table, attributeAndNameTypes);
 		Assert.assertFalse(this.listComponent.listHasAddedColumns());
-		
+
 	}
 
 	private Germplasm createGermplasm(final int gid, final int mgid) {
