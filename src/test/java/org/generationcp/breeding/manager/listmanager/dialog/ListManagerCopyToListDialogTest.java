@@ -22,7 +22,7 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
@@ -98,10 +98,10 @@ public class ListManagerCopyToListDialogTest {
 		Mockito.when(this.listManagerMain.getListSelectionComponent()).thenReturn(this.listSectionComponent);
 		Mockito.when(this.listSectionComponent.getListTreeComponent()).thenReturn(this.listManagerTreeComponent);
 		Mockito.doNothing().when(this.listManagerTreeComponent).createTree();
-		Mockito.doNothing().when(this.listManagerTreeComponent).expandNode(Matchers.anyString());
-		Mockito.doNothing().when(this.listManagerTreeComponent).treeItemClickAction(Matchers.anyInt());
+		Mockito.doNothing().when(this.listManagerTreeComponent).expandNode(ArgumentMatchers.anyString());
+		Mockito.doNothing().when(this.listManagerTreeComponent).treeItemClickAction(ArgumentMatchers.anyInt());
 		Mockito.when(this.listSectionComponent.getListDetailsLayout()).thenReturn(this.listSectionLayout);
-		Mockito.doNothing().when(this.listSectionLayout).removeTab(Matchers.anyInt());
+		Mockito.doNothing().when(this.listSectionLayout).removeTab(ArgumentMatchers.anyInt());
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class ListManagerCopyToListDialogTest {
 
 	@Test
 	public void testPopulateComboBoxListName() {
-		Mockito.when(this.germplasmListManager.getAllGermplasmListsByProgramUUID(Matchers.anyString()))
+		Mockito.when(this.germplasmListManager.getAllGermplasmListsByProgramUUID(ArgumentMatchers.<String>isNull()))
 				.thenReturn(Arrays.asList(GermplasmListTestDataInitializer.createGermplasmList(1)));
 		this.listManagerCopyToListDialog.populateComboBoxListName();
 		Assert.assertEquals("The combo box's value should be an empty string", "", this.comboBox.getValue());
@@ -123,7 +123,7 @@ public class ListManagerCopyToListDialogTest {
 
 	@Test
 	public void testPopulateComboBoxListNameGermplasmListTypeIsFolder() {
-		Mockito.when(this.germplasmListManager.getAllGermplasmListsByProgramUUID(Matchers.anyString())).thenReturn(Arrays
+		Mockito.when(this.germplasmListManager.getAllGermplasmListsByProgramUUID(ArgumentMatchers.<String>isNull())).thenReturn(Arrays
 				.asList(GermplasmListTestDataInitializer.createGermplasmListWithType(1, ListManagerCopyToListDialog.FOLDER_TYPE)));
 		this.listManagerCopyToListDialog.populateComboBoxListName();
 		Assert.assertEquals("The combo box's value should be an empty string", "", this.comboBox.getValue());
