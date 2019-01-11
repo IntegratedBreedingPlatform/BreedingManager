@@ -48,6 +48,7 @@ public class GermplasmListTreeUtilTest {
 	private static final String ERROR_NO_SELECTION = "Please select a folder item";
 	private static final String ERROR_ITEM_DOES_NOT_EXISTS = "Item does not exists";
 	private static final String ERROR_UNABLE_TO_DELETE_LOCKED_LIST = "Unable to delete a locked list";
+
 	private static final String ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER = "You cannot delete a list that you do not own";
 	private static final String ERROR_HAS_CHILDREN = "Folder has child items";
 	private static final Integer FOLDER_ID = (int) (Math.random() * 100);
