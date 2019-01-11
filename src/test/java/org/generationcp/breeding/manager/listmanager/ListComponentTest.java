@@ -21,7 +21,6 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryAction;
-import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
@@ -38,32 +37,25 @@ import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
-import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
-import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.generationcp.middleware.pojos.ims.Transaction;
-import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
-import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -104,8 +96,6 @@ public class ListComponentTest {
 	private static final String UPDATED_GERMPLASM_LIST_DESCRIPTION_VALUE = "UPDATED Germplasm List Description Value";
 	private static final long UPDATED_GERMPLASM_LIST_DATE = 20141205;
 	private static final String UPDATED_GERMPLASM_LIST_TYPE = "F1 LST";
-
-	private static final Integer EXPECTED_USER_ID = 1;
 	private static final Integer TEST_GERMPLASM_LIST_ID = 111;
 	private static final Integer TEST_GERMPLASM_NO_OF_ENTRIES = 5;
 
@@ -113,13 +103,7 @@ public class ListComponentTest {
 	private ListManagerMain source;
 
 	@Mock
-	private ListTabComponent parentListDetailsComponent;
-
-	@Mock
 	private GermplasmListManager germplasmListManager;
-
-	@Mock
-	private WorkbenchDataManager workbenchDataManager;
 
 	@Mock
 	private InventoryViewActionMenu inventoryViewMenu;
@@ -158,12 +142,6 @@ public class ListComponentTest {
 	private ListDataPropertiesRenderer newColumnsRenderer;
 
 	@Mock
-	private CrossExpansionProperties crossExpansionProperties;
-
-	@Mock
-	public ListInventoryTable listInventoryTable;
-
-	@Mock
 	public ListManagerInventoryTable listManagerInventoryTable;
 
 	@Mock
@@ -192,13 +170,6 @@ public class ListComponentTest {
 		this.setUpWorkbenchDataManager();
 		this.setUpOntologyManager();
 		this.setUpListComponent();
-		this.setUpGermplasmDataManager();
-	}
-
-	private void setUpGermplasmDataManager() {
-		final List<UserDefinedField> lattributeList = new ArrayList<>();
-		Mockito.when(this.germplasmDataManager.getAttributeTypesByGIDList(ArgumentMatchers.<List<Integer>>any()))
-				.thenReturn(lattributeList);
 	}
 
 	@Test
@@ -439,7 +410,6 @@ public class ListComponentTest {
 		user.setUserid(12);
 		user.setPersonid(123);
 		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
-		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(1);
 
 		final List<GermplasmListData> germplasmListData = ListInventoryDataInitializer
 				.createGermplasmListDataWithInventoryDetails();
@@ -489,7 +459,7 @@ public class ListComponentTest {
 		this.initializeTableWithTestData();
 
 		// Add one item to delete from list data table
-		this.listComponent.getItemsToDelete().putAll(this.createItemsToDelete(this.listComponent.getListDataTable()));
+		this.listComponent.getItemsToDelete().putAll(this.createItemsToDelete());
 
 		this.listComponent.deleteRemovedGermplasmEntriesFromTable();
 
@@ -658,16 +628,6 @@ public class ListComponentTest {
 	private void setUpWorkbenchDataManager() {
 		final Project dummyProject = new Project();
 		dummyProject.setProjectId((long) 5);
-
-		final Integer userId = 5;
-		try {
-			Mockito.when(this.workbenchDataManager.getLastOpenedProject(userId)).thenReturn(dummyProject);
-			Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(userId, dummyProject.getProjectId()))
-					.thenReturn(ListComponentTest.EXPECTED_USER_ID);
-
-		} catch (final MiddlewareQueryException e) {
-			Assert.fail("Failed to create an ibdbuser instance.");
-		}
 	}
 
 	private Term createTerm(final int id, final String name) {
@@ -675,13 +635,7 @@ public class ListComponentTest {
 		return term;
 	}
 
-	private GermplasmListNewColumnsInfo createGermplasmListNewColumnInfo(final int listId) {
-		final GermplasmListNewColumnsInfo germplasmListNewColumnsInfo = new GermplasmListNewColumnsInfo(listId);
-		germplasmListNewColumnsInfo.setColumnValuesMap(new HashMap<String, List<ListDataColumnValues>>());
-		return germplasmListNewColumnsInfo;
-	}
-
-	private Map<Object, String> createItemsToDelete(final Table table) {
+	private Map<Object, String> createItemsToDelete() {
 
 		final Map<Object, String> itemsToDelete = new HashMap<>();
 
@@ -704,20 +658,16 @@ public class ListComponentTest {
 				.thenReturn(Long.valueOf(ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES));
 		Mockito.when(this.germplasmListManager.getGermplasmListById(ListComponentTest.TEST_GERMPLASM_LIST_ID))
 				.thenReturn(this.germplasmList);
-		Mockito.when(this.germplasmListManager.getAdditionalColumnsForList(ListComponentTest.TEST_GERMPLASM_LIST_ID))
-				.thenReturn(this.createGermplasmListNewColumnInfo(ListComponentTest.TEST_GERMPLASM_LIST_ID));
 
 		Mockito.when(this.parentComponent.getWindow()).thenReturn(this.window);
 		Mockito.when(this.source.getModeView()).thenReturn(ModeView.LIST_VIEW);
 		Mockito.when(this.source.getListSelectionComponent()).thenReturn(this.listSelectionComponent);
 		Mockito.when(this.source.getWindow()).thenReturn(this.window);
 		Mockito.when(this.listSelectionComponent.getListDetailsLayout()).thenReturn(this.listDetailsLayout);
-		Mockito.when(this.crossExpansionProperties.getProfile()).thenReturn("");
 
 		Mockito.when(this.messageSource.getMessage(Matchers.any(Message.class))).thenReturn("");
 		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn(ListComponentTest.CHECK);
 		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn(ListComponentTest.HASH);
-		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(this.createProject());
 
 		Mockito.doNothing().when(this.contextUtil).logProgramActivity(Matchers.anyString(), Matchers.anyString());
 
@@ -858,20 +808,12 @@ public class ListComponentTest {
 				.createGermplasmListDataWithInventoryDetails(1);
 		inventoryDetails.get(0).getInventoryInfo().setLotRows(userSelectedLotEntriesToClose);
 
-		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Matchers.isA(Integer.class), Matchers.anyInt(),
-				Matchers.anyInt())).thenReturn(inventoryDetails);
-
 		final Lot activeLot = new Lot();
 		activeLot.setStatus(LotStatus.ACTIVE.getIntValue());
 
-		Mockito.when(this.inventoryDataManager.getLotsByIdList(Matchers.isA(List.class)))
-				.thenReturn(Lists.newArrayList(activeLot));
 		final User user = new User();
 		user.setUserid(12);
 		user.setPersonid(123);
-
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
-		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(1);
 
 		Mockito.doReturn(userSelectedLotEntriesToClose).when(this.listManagerInventoryTable).getSelectedLots();
 
@@ -895,14 +837,6 @@ public class ListComponentTest {
 
 		Mockito.verify(this.messageSource)
 				.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES);
-
-	}
-
-	private Project createProject() {
-
-		final Project project = new Project();
-		project.setCropType(new CropType(CropType.CropEnum.MAIZE.name()));
-		return project;
 
 	}
 
@@ -944,7 +878,6 @@ public class ListComponentTest {
 		final List<Germplasm> listOfGermplasmWithoutGroup = new ArrayList<>();
 
 		final Germplasm germplasm1 = this.createGermplasm(gid1, 0);
-		final Germplasm germplasm2 = this.createGermplasm(gid2, 102);
 		final Germplasm germplasm3 = this.createGermplasm(gid3, 0);
 
 		listOfGermplasmWithoutGroup.add(germplasm1);
