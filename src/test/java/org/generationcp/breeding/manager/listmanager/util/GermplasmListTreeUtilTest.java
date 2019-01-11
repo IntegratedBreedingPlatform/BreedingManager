@@ -108,9 +108,12 @@ public class GermplasmListTreeUtilTest {
 		
 		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(),
 				RowColumnType.LIST_TYPE.getFtype())).thenReturn(
-						Arrays.asList(new UserDefinedField(1, "LISTNMS", "LISTTYPE", FOLDER, FOLDER, null, null, null, null, null, null)));
-		Mockito.when(this.source.generateCellInfo(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(this.cells);
+				Arrays.asList(new UserDefinedField(1, "LISTNMS", "LISTTYPE", FOLDER, FOLDER, null, null, null, null, null, null)));
+		Mockito.when(this.source.generateCellInfo(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
+				Matchers.anyString())).thenReturn(this.cells);
 		Mockito.when(this.targetListSource.getItem(Matchers.anyInt())).thenReturn(Mockito.mock(Item.class));
+		Mockito.when(this.targetListSource.getItem(Matchers.anyString())).thenReturn(Mockito.mock(Item.class));
+
 		Mockito.when(this.folderTextfield.getValue()).thenReturn(NEW_FOLDER_NAME);
 	}
 
@@ -363,6 +366,7 @@ public class GermplasmListTreeUtilTest {
 		Mockito.verify(this.germplasmListManager).updateGermplasmList(this.germplasmList);
 		// Verify UI updates
 		this.verifyUIChangesToTargetItem(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, ListSelectorComponent.PROGRAM_LISTS);
+		// setChildrenAllowed(ListSelectorComponent.PROGRAM_LISTS
 	}
 	
 	@Test
