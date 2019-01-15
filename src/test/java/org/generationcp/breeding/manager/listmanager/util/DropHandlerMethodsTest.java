@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.AddedColumnsMapper;
@@ -31,6 +32,7 @@ import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -194,7 +196,7 @@ public class DropHandlerMethodsTest {
 		List<GermplasmListData> listData4 = Lists.newArrayList(germplasmLists.get(0).getListData().get(3));
 		List<GermplasmListData> listData5 = Lists.newArrayList(germplasmLists.get(0).getListData().get(4));
 
-		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList())).thenReturn(listData1,
+		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), ArgumentMatchers.<List<Integer>>any())).thenReturn(listData1,
 				listData2, listData3, listData4, listData5, listData1,
 				listData2, listData3, listData4, listData5);
 
@@ -220,10 +222,10 @@ public class DropHandlerMethodsTest {
 		this.dropHandlerMethods.addGermplasm(gidList);
 
 		// Verify bulk call to Middleware methods
-		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGermplasms(Matchers.anyListOf(Integer.class));
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGermplasms(ArgumentMatchers.<List<Integer>>any());
 		Mockito.verify(this.pedigreeService, Mockito.times(1))
-				.getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(), Matchers.any(CrossExpansionProperties.class));
-		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
+				.getCrossExpansions(ArgumentMatchers.<Set<Integer>>any(), ArgumentMatchers.<Integer>isNull(), ArgumentMatchers.<CrossExpansionProperties>any());
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
 
 		this.verifyEachPropertyIsProperlyFilledUpForAddedGermplasm(gidList);
 	}
@@ -256,10 +258,10 @@ public class DropHandlerMethodsTest {
 		this.dropHandlerMethods.addSelectedGermplasmsFromTable(sourceTbl);
 
 		// Verify bulk call to Middleware methods
-		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGermplasms(Matchers.anyListOf(Integer.class));
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGermplasms(ArgumentMatchers.<List<Integer>>any());
 		Mockito.verify(this.pedigreeService, Mockito.times(1))
-				.getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(), Matchers.any(CrossExpansionProperties.class));
-		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
+				.getCrossExpansions(ArgumentMatchers.<Set<Integer>>any(), ArgumentMatchers.<Integer>isNull(), ArgumentMatchers.any(CrossExpansionProperties.class));
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
 
 		this.verifyEachPropertyIsProperlyFilledUpForAddedGermplasm(selectedIDs);
 	}
@@ -341,7 +343,7 @@ public class DropHandlerMethodsTest {
 		// MGID or group ID of Germplasm List Data has default value to 0, so this field will never be null
 		listData.setGroupId(DropHandlerMethodsTest.GROUP_ID);
 
-		Mockito.doReturn(testList.getListData()).when(this.inventoryDataManager).getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyListOf(Integer.class));
+		Mockito.doReturn(testList.getListData()).when(this.inventoryDataManager).getLotCountsForListEntries(Mockito.anyInt(), ArgumentMatchers.<List<Integer>>any());
 
 		this.dropHandlerMethods.addGermplasmFromList(DropHandlerMethodsTest.GERMPLASM_LIST_ID, listData.getId(), testList, false);
 
@@ -377,7 +379,7 @@ public class DropHandlerMethodsTest {
 		List<GermplasmListData> listData4 = Lists.newArrayList(germplasmList.getListData().get(3));
 		List<GermplasmListData> listData5 = Lists.newArrayList(germplasmList.getListData().get(4));
 
-		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList())).thenReturn(listData1,
+		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), ArgumentMatchers.<List<Integer>>any())).thenReturn(listData1,
 				listData2, listData3, listData4, listData5);
 
 		this.dropHandlerMethods.addGermplasmList(DropHandlerMethodsTest.GERMPLASM_LIST_ID);
@@ -410,7 +412,7 @@ public class DropHandlerMethodsTest {
 
 		this.dropHandlerMethods.addFromListDataTable(sourceTbl);
 
-		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Mockito.anyListOf(Integer.class));
+		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
 		this.verifyGermplasmListDataFromListDataTableIsTransferredProperly(selectedIDs, sourceTbl);
 
 	}
@@ -444,7 +446,7 @@ public class DropHandlerMethodsTest {
 		// Create preferred name map for gid in the table
 		final Map<Integer, String> preferredNames = new HashMap<>();
 		preferredNames.put(gid, preferredName);
-		Mockito.doReturn(preferredNames).when(germplasmDataManager).getPreferredNamesByGids(Mockito.anyListOf(Integer.class));
+		Mockito.doReturn(preferredNames).when(germplasmDataManager).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
 
 		for (final Integer itemId : selectedIDs) {
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(itemId);
@@ -452,7 +454,7 @@ public class DropHandlerMethodsTest {
 
 		this.dropHandlerMethods.addFromListDataTable(sourceTable);
 
-		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Mockito.anyListOf(Integer.class));
+		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
 
 		final Item targetTableItem = this.targetTable.getItem(gid);
 		final Item sourceTableItem = sourceTable.getItem(gid);

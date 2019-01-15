@@ -34,7 +34,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -440,7 +440,7 @@ public class ExportListAsDialogTest {
 		finishButtonListener.buttonClick(null);
 
 		// ExportListAction should be called
-		verify(exportListAsDialogMock, Mockito.times(1)).exportListAction(Matchers.any(Table.class));
+		verify(exportListAsDialogMock, Mockito.times(1)).exportListAction(ArgumentMatchers.<Table>isNull());
 		// ExportListAsDialog window should be closed
 		verify(parentWindow, Mockito.times(1)).removeWindow(exportListAsDialogMock);
 	}
@@ -466,7 +466,7 @@ public class ExportListAsDialogTest {
 		finishButtonListener.buttonClick(null);
 
 		// ExportListAction should not be called
-		verify(exportListAsDialogMock, Mockito.times(0)).exportListAction(Matchers.any(Table.class));
+		verify(exportListAsDialogMock, Mockito.times(0)).exportListAction(ArgumentMatchers.any(Table.class));
 		// Window should not be closed
 		verify(parentWindow, Mockito.times(0)).removeWindow(exportListAsDialogMock);
 

@@ -18,6 +18,7 @@ import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -352,14 +353,14 @@ public class GermplasmColumnValuesGeneratorTest {
 		final int crossExpansionLevel = 1;
 		final Map<Integer, String> pedigreeNames = this.generateGIDStringMap("CRUZ");
 		final HashSet<Integer> gidsSet = new HashSet<>(GermplasmColumnValuesGeneratorTest.GID_LIST);
-		Mockito.doReturn(pedigreeNames).when(this.pedigreeService).getCrossExpansions(Matchers.eq(gidsSet),
-				Matchers.eq(crossExpansionLevel), Matchers.any(CrossExpansionProperties.class));
+		Mockito.doReturn(pedigreeNames).when(this.pedigreeService).getCrossExpansions(ArgumentMatchers.eq(gidsSet),
+				ArgumentMatchers.eq(crossExpansionLevel), ArgumentMatchers.<CrossExpansionProperties>isNull());
 
 		final String columnName = ColumnLabels.PARENTAGE.getName();
 		this.valuesGenerator.fillWithCrossExpansion(crossExpansionLevel, columnName);
 
-		Mockito.verify(this.pedigreeService).getCrossExpansions(Matchers.eq(gidsSet), Matchers.eq(crossExpansionLevel),
-				Matchers.any(CrossExpansionProperties.class));
+		Mockito.verify(this.pedigreeService).getCrossExpansions(ArgumentMatchers.eq(gidsSet), ArgumentMatchers.eq(crossExpansionLevel),
+				ArgumentMatchers.<CrossExpansionProperties>isNull());
 		for (int i = 0; i < GermplasmColumnValuesGeneratorTest.ITEMS_LIST.size(); i++) {
 			final Integer gid = GermplasmColumnValuesGeneratorTest.GID_LIST.get(i);
 			Mockito.verify(this.fillColumnSource).setColumnValueForItem(
@@ -373,10 +374,10 @@ public class GermplasmColumnValuesGeneratorTest {
 		final String columnName = ColumnLabels.PARENTAGE.getName();
 		this.valuesGenerator.fillWithCrossExpansion(null, columnName);
 
-		Mockito.verify(this.pedigreeService, Mockito.never()).getCrossExpansion(Matchers.anyInt(),
-				Matchers.any(CrossExpansionProperties.class));
-		Mockito.verify(this.fillColumnSource, Mockito.never()).setColumnValueForItem(Matchers.anyInt(),
-				Matchers.anyString(), Matchers.anyString());
+		Mockito.verify(this.pedigreeService, Mockito.never()).getCrossExpansion(ArgumentMatchers.anyInt(),
+				ArgumentMatchers.any(CrossExpansionProperties.class));
+		Mockito.verify(this.fillColumnSource, Mockito.never()).setColumnValueForItem(ArgumentMatchers.anyInt(),
+				ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 		Mockito.verify(this.fillColumnSource, Mockito.never()).propagateUIChanges();
 	}
 
@@ -421,7 +422,7 @@ public class GermplasmColumnValuesGeneratorTest {
 			Mockito.verify(this.fillColumnSource).setColumnValueForItem(itemId, columnName, "-");
 		}
 		Mockito.verify(this.germplasmDataManager, Mockito.never())
-				.getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
+				.getPreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class));
 		Mockito.verify(this.fillColumnSource).propagateUIChanges();
 	}
 
@@ -437,7 +438,7 @@ public class GermplasmColumnValuesGeneratorTest {
 		final Map<Integer, String> namesMap = this.generateGIDStringMap("ABCDEFG",
 				new ArrayList<>(maleParentsMap.values()));
 		Mockito.doReturn(namesMap).when(this.germplasmDataManager)
-				.getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
+				.getPreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class));
 
 		final String columnName = ColumnLabels.PARENTAGE.getName();
 		this.valuesGenerator.setCrossMalePrefNameColumnValues(columnName);
@@ -450,7 +451,7 @@ public class GermplasmColumnValuesGeneratorTest {
 			Mockito.verify(this.fillColumnSource).setColumnValueForItem(
 					GermplasmColumnValuesGeneratorTest.ITEMS_LIST.get(i), columnName, namesMap.get(maleParentId2));
 		}
-		Mockito.verify(this.germplasmDataManager).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
+		Mockito.verify(this.germplasmDataManager).getPreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class));
 		Mockito.verify(this.fillColumnSource).propagateUIChanges();
 	}
 
@@ -495,7 +496,7 @@ public class GermplasmColumnValuesGeneratorTest {
 			Mockito.verify(this.fillColumnSource).setColumnValueForItem(itemId, columnName, "-");
 		}
 		Mockito.verify(this.germplasmDataManager, Mockito.never())
-				.getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
+				.getPreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class));
 		Mockito.verify(this.fillColumnSource).propagateUIChanges();
 	}
 
@@ -524,7 +525,7 @@ public class GermplasmColumnValuesGeneratorTest {
 			Mockito.verify(this.fillColumnSource).setColumnValueForItem(
 					GermplasmColumnValuesGeneratorTest.ITEMS_LIST.get(i), columnName, namesMap.get(maleParentId2));
 		}
-		Mockito.verify(this.germplasmDataManager).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
+		Mockito.verify(this.germplasmDataManager).getPreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class));
 		Mockito.verify(this.fillColumnSource).propagateUIChanges();
 	}
 
@@ -534,7 +535,7 @@ public class GermplasmColumnValuesGeneratorTest {
 		final Map<Integer, String> namesMap = this.generateGIDStringMap("ABCDEFG",
 				new ArrayList<>(GermplasmColumnValuesGeneratorTest.GID_LIST));
 		Mockito.doReturn(namesMap).when(this.germplasmDataManager)
-				.getImmediateSourcePreferredNamesByGids(Matchers.anyListOf(Integer.class));
+				.getImmediateSourcePreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class));
 		this.valuesGenerator.setImmediateSourcePreferredNameColumnValues(columnName);
 		for (int i = 0; i < GermplasmColumnValuesGeneratorTest.ITEMS_LIST.size(); i++) {
 			final Integer gid = GermplasmColumnValuesGeneratorTest.GID_LIST.get(i);
@@ -542,7 +543,7 @@ public class GermplasmColumnValuesGeneratorTest {
 					GermplasmColumnValuesGeneratorTest.ITEMS_LIST.get(i), columnName, namesMap.get(gid));
 		}
 		Mockito.verify(this.germplasmDataManager)
-				.getImmediateSourcePreferredNamesByGids(Matchers.anyListOf(Integer.class));
+				.getImmediateSourcePreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class));
 		Mockito.verify(this.fillColumnSource, Mockito.times(5)).propagateUIChanges();
 	}
 

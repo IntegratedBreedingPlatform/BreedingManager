@@ -23,6 +23,7 @@ import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -179,7 +180,8 @@ public class BuildNewListDropHandlerTest {
 		final GermplasmList germplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(1, 1);
 		List<GermplasmListData> listData = germplasmList.getListData();
 
-		Mockito.doReturn(listData).when(this.inventoryDataManager).getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList());
+		Mockito.doReturn(listData).when(this.inventoryDataManager).getLotCountsForListEntries(Mockito.anyInt(),
+				ArgumentMatchers.<List<Integer>>any());
 
 		this.dropHandler = new BuildNewListDropHandler(this.listManagerMain, this.targetTable);
 		this.dropHandler.setTransactionManager(this.transactionManager);

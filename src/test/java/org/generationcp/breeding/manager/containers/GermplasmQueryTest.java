@@ -1,15 +1,12 @@
 
 package org.generationcp.breeding.manager.containers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
+import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import junit.framework.Assert;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -18,33 +15,32 @@ import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
-import org.generationcp.middleware.data.initializer.MethodTestDataInitializer;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
-import org.generationcp.middleware.manager.GermplasmNameType;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-
-import junit.framework.Assert;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmQueryTest {
@@ -62,7 +58,6 @@ public class GermplasmQueryTest {
 	public static final int TEST_GID = 0;
 	public static final Integer TEST_SEED_RES_COUNT = 10;
 	public static final Integer TEST_INVENTORY_COUNT = 10;
-	public static final int TEST_LOCATION_ID = 5;
 	public static final Double AVAILABLE_BALANCE = 5.0d;
 	public static final String ORI_COUN = "ORI_COUN";
 	public static final String NOTE = "NOTE";
@@ -72,7 +67,7 @@ public class GermplasmQueryTest {
 
 	private static final String[] STANDARD_COLUMNS = {"Tag All Column", "GROUP ID", "PARENTAGE", "AVAILABLE", "GID", "NAMES", "LOCATIONS",
 			"METHOD NAME", "GID_REF", "LOTS", "STOCKID"};
-	private List<String> itemPropertyIds = new ArrayList<>();
+	private final List<String> itemPropertyIds = new ArrayList<>();
 	
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
@@ -156,26 +151,15 @@ public class GermplasmQueryTest {
 
 		// initialize middleware service calls
 		Mockito.when(
-				this.pedigreeService.getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(), Matchers.eq(this.crossExpansionProperties)))
-				.thenReturn(pedigreeString);
+			this.pedigreeService.getCrossExpansions(Matchers.anySetOf(Integer.class), ArgumentMatchers.isNull(Integer.class),
+				Matchers.eq(this.crossExpansionProperties)))
+			.thenReturn(pedigreeString);
 		Mockito.when(this.germplasmDataManager.searchForGermplasm(this.germplasmSearchParameter)).thenReturn(this.currentGermplasm);
 		Mockito.when(this.germplasmDataManager.retrieveGidsOfSearchGermplasmResult(this.germplasmSearchParameter)).thenReturn(new HashSet<Integer>(this.gids));
 
 		this.searchAllParameter = new GermplasmSearchParameter(this.germplasmSearchParameter);
 		this.searchAllParameter.setStartingRow(0);
 		this.searchAllParameter.setNumberOfEntries(GermplasmQuery.RESULTS_LIMIT);
-		Mockito.when(this.germplasmDataManager.searchForGermplasm(this.searchAllParameter)).thenReturn(this.allGermplasm);
-
-		Mockito.when(this.germplasmDataManager.getNamesByGID(Matchers.anyInt(), Matchers.isNull(Integer.class),
-				Matchers.isNull(GermplasmNameType.class))).thenReturn(GermplasmTestDataInitializer.createNameList(this.currentGermplasm.size()));
-
-		Mockito.when(this.germplasmDataManager.getMethodByID(Matchers.anyInt()))
-				.thenReturn(new MethodTestDataInitializer().createMethod(1, "testMethodType"));
-
-		Mockito.when(this.germplasmDataManager.getImmediateSourcePreferredNamesByGids(Matchers.anyList())).thenReturn(immediatepreferredNamesMap);
-		Mockito.when(this.germplasmDataManager.getGroupSourcePreferredNamesByGids(Matchers.anyList())).thenReturn(groupSourcepreferredNamesMap);
-
-
 	}
 
 	@Test
@@ -260,7 +244,8 @@ public class GermplasmQueryTest {
 
 		// Verify number of loaded items plus that key Middleware methods were called
 		Assert.assertEquals("Should return the correct number of items", NUMBER_OF_ITEMS_ON_PAGE, items.size());
-		Mockito.verify(this.pedigreeService, Mockito.times(1)).getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(),
+		Mockito.verify(this.pedigreeService, Mockito.times(1))
+			.getCrossExpansions(Matchers.anySetOf(Integer.class), ArgumentMatchers.isNull(Integer.class),
 				Matchers.any(CrossExpansionProperties.class));
 		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
 
@@ -299,7 +284,7 @@ public class GermplasmQueryTest {
 	@Test
 	public void testGetPropertyIdsOfAddableColumns() {
 
-		List<String> propertyIdsDefinition = new ArrayList<>();
+		final List<String> propertyIdsDefinition = new ArrayList<>();
 
 		// Add default table propertyIds
 		propertyIdsDefinition.add(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
@@ -335,7 +320,7 @@ public class GermplasmQueryTest {
 		// Add attribute type property Id
 		propertyIdsDefinition.add(ORI_COUN);
 		
-		List<String> result = query.getPropertyIdsOfAddedColumns(propertyIdsDefinition);
+		final List<String> result = this.query.getPropertyIdsOfAddedColumns(propertyIdsDefinition);
 
 		Assert.assertFalse(result.contains(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID));
 		Assert.assertFalse(result.contains(GermplasmSearchResultsComponent.NAMES));
@@ -368,22 +353,6 @@ public class GermplasmQueryTest {
 
 
 		Assert.assertTrue(result.contains(ORI_COUN));
-
-	}
-
-	private List<UserDefinedField> createAttributeTypes() {
-
-		List<UserDefinedField> attributeTypes = new ArrayList<>();
-
-		UserDefinedField userDefinedField1 = new UserDefinedField(100);
-		userDefinedField1.setFcode(ORI_COUN);
-		UserDefinedField userDefinedField2 = new UserDefinedField(101);
-		userDefinedField2.setFcode(NOTE);
-
-		attributeTypes.add(userDefinedField1);
-		attributeTypes.add(userDefinedField2);
-
-		return attributeTypes;
 
 	}
 }

@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.listimport.GermplasmFieldsComponent;
@@ -22,7 +21,6 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.ui.fields.BmsDateField;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.data.initializer.NameTestDataInitializer;
-import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.GermplasmNameType;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -36,9 +34,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Window;
 
@@ -54,9 +51,6 @@ public class ProcessImportedGermplasmActionTest {
 	private ContextUtil contextUtil;
 
 	@Mock
-	private SaveGermplasmListActionSource saveGermplasmListActionSource;
-
-	@Mock
 	private GermplasmDataManager germplasmDataManager;
 
 	private ProcessImportedGermplasmAction processImportedGermplasmAction;
@@ -66,12 +60,6 @@ public class ProcessImportedGermplasmActionTest {
 
 	@Mock
 	private SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
-
-	@Mock
-	private GermplasmDataManagerUtil germplasmDataManagerUtil;
-
-	@Mock
-	private CheckBox automaticallyAcceptSingleMatchesCheckbox;
 
 	@Mock
 	private Window parentWindow;
@@ -216,8 +204,6 @@ public class ProcessImportedGermplasmActionTest {
 	public void testCreateNewRecordsWithPedigreeConnectionsIfSingleDesignationMatchForAllGermplasm() {
 		final List<Germplasm> germplasm = new ArrayList<>();
 		germplasm.add(GermplasmTestDataInitializer.createGermplasm(1));
-		Mockito.when(this.germplasmDataManager.getGermplasmByName(Matchers.anyString(), Matchers.anyInt(),
-				Matchers.anyInt(), Matchers.isA(Operation.class))).thenReturn(germplasm);
 
 		this.processImportedGermplasmAction.performSecondPedigreeAction();
 
@@ -252,8 +238,6 @@ public class ProcessImportedGermplasmActionTest {
 		germplasmList.add(GermplasmTestDataInitializer.createGermplasm(3));
 		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasm())
 				.thenReturn(ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(3, false));
-		Mockito.when(this.germplasmDataManager.getGermplasmByName(Matchers.anyString(), Matchers.anyInt(),
-				Matchers.anyInt(), Matchers.isA(Operation.class))).thenReturn(germplasmList);
 
 		// Simulate 3 matches when searching by second germplasm's designation
 		Mockito.when(this.germplasmDataManager
@@ -720,14 +704,12 @@ public class ProcessImportedGermplasmActionTest {
 
 	@Test
 	public void testIsNeedToDisplayGermplasmSelectionWindowForNoMatchWithoutAutomaticMatching() {
-		Mockito.doReturn(false).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
 		Assert.assertFalse("Germplasm Selection Window should not be displayed",
 				this.processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(0));
 	}
 
 	@Test
 	public void testIsNeedToDisplayGermplasmSelectionWindowForNoMatchWithAutomaticMatching() {
-		Mockito.doReturn(true).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
 		Assert.assertFalse("Germplasm Selection Window should not be displayed",
 				this.processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(0));
 	}
@@ -748,14 +730,12 @@ public class ProcessImportedGermplasmActionTest {
 
 	@Test
 	public void testIsNeedToDisplayGermplasmSelectionWindowForMultipleMatchWithoutAutomaticMatching() {
-		Mockito.doReturn(false).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
 		Assert.assertTrue("Germplasm Selection Window should be displayed",
 				this.processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(2));
 	}
 
 	@Test
 	public void testIsNeedToDisplayGermplasmSelectionWindowForMultipleMatchWithAutomaticMatching() {
-		Mockito.doReturn(true).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
 		Assert.assertTrue("Germplasm Selection Window should be displayed",
 				this.processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(2));
 	}
@@ -1206,8 +1186,6 @@ public class ProcessImportedGermplasmActionTest {
 		final List<Germplasm> germplasms = new ArrayList<Germplasm>();
 		final Integer gidMatched = 10;
 		germplasms.add(GermplasmTestDataInitializer.createGermplasm(gidMatched));
-		Mockito.doReturn(germplasms).when(this.germplasmDataManager).getGermplasmByName(designation, 0, 1,
-				Operation.EQUAL);
 
 		final int oldGid = 1;
 		final GermplasmName germplasmToName = new GermplasmName(GermplasmTestDataInitializer.createGermplasm(oldGid),
