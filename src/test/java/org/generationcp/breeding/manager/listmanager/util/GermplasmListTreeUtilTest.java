@@ -367,7 +367,6 @@ public class GermplasmListTreeUtilTest {
 		Mockito.verify(this.germplasmListManager).updateGermplasmList(this.germplasmList);
 		// Verify UI updates
 		this.verifyUIChangesToTargetItem(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, ListSelectorComponent.PROGRAM_LISTS);
-		// setChildrenAllowed(ListSelectorComponent.PROGRAM_LISTS
 	}
 	
 	@Test
