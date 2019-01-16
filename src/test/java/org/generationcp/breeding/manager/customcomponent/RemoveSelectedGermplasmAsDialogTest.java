@@ -26,6 +26,7 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -256,7 +257,7 @@ public class RemoveSelectedGermplasmAsDialogTest {
 	@Test
 	public void testRemovedAllSelectedGermplasm() {
 		final List<Integer> SelectedDeletdGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-		doReturn(SelectedDeletdGids).when(this.dialog.getGermplasmListManager()).deleteGermplasms(Mockito.anyList(), Mockito.anyInt());
+		doReturn(SelectedDeletdGids).when(this.dialog.getGermplasmListManager()).deleteGermplasms(ArgumentMatchers.<List<Integer>>any(), Mockito.anyInt());
 		assertThat(this.dialog.getListDataTable().getItemIds(), hasSize(10));
 		this.dialog.deleteGermplasmsAction((Collection<? extends Integer>) this.dialog.getListDataTable().getItemIds());
 		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS);
@@ -267,7 +268,7 @@ public class RemoveSelectedGermplasmAsDialogTest {
 	@Test
 	public void testCouldNotRemovedAllSelectedGermplasms() {
 		final List<Integer> SelectedDeletdGids = Arrays.asList(1, 2);
-		doReturn(SelectedDeletdGids).when(this.dialog.getGermplasmListManager()).deleteGermplasms(Mockito.anyList(), Mockito.anyInt());
+		doReturn(SelectedDeletdGids).when(this.dialog.getGermplasmListManager()).deleteGermplasms(ArgumentMatchers.<List<Integer>>any(), Mockito.anyInt());
 		assertThat(this.dialog.getListDataTable().getItemIds(), hasSize(10));
 		this.dialog.deleteGermplasmsAction((Collection<? extends Integer>) this.dialog.getListDataTable().getItemIds());
 		Mockito.verify(this.messageSource).getMessage(Message.WARNING);
@@ -278,7 +279,7 @@ public class RemoveSelectedGermplasmAsDialogTest {
 	@Test
 	public void testCouldNotRemovedAnySelectedGermplasms() {
 		final List<Integer> SelectedDeletdGids = new ArrayList();
-		doReturn(SelectedDeletdGids).when(this.dialog.getGermplasmListManager()).deleteGermplasms(Mockito.anyList(), Mockito.anyInt());
+		doReturn(SelectedDeletdGids).when(this.dialog.getGermplasmListManager()).deleteGermplasms(ArgumentMatchers.<List<Integer>>any(), Mockito.anyInt());
 		assertThat(this.dialog.getListDataTable().getItemIds(), hasSize(10));
 		this.dialog.deleteGermplasmsAction((Collection<? extends Integer>) this.dialog.getListDataTable().getItemIds());
 		Mockito.verify(this.messageSource).getMessage(Message.ERROR);

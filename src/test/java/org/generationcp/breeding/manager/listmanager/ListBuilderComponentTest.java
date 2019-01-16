@@ -1,17 +1,13 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import com.beust.jcommander.internal.Lists;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.SortableButton;
@@ -45,28 +41,31 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.exceptions.verification.WantedButNotInvoked;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
-import com.beust.jcommander.internal.Lists;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListBuilderComponentTest {
 
-	private static final String SEED_RES = "SEED_RES";
 	private static final String AVAIL_INV = "AVAIL_INV";
 	private static final String TOTAL = "AVAILABLE";
 	private static final String HASH = "#";
@@ -77,11 +76,7 @@ public class ListBuilderComponentTest {
 	private static final String ENTRY_CODE = "ENTRY_CODE";
 	private static final String GID = "GID";
 	private static final String STOCKID = "STOCKID";
-	private static String DELETE_GERMPLASM_ENTRIES = "Delete Germplasm Entries";
-	private static String DELETE_SELECTED_ENTRIES_CONFIRM = "Delete selected germplasm entries?";
-	private static String YES = "YES";
-	private static String NO = "NO";
-	private static String CAPTION = "2";
+	private static final String CAPTION = "2";
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
@@ -114,9 +109,6 @@ public class ListBuilderComponentTest {
 	private UserDataManager userDataManager;
 
 	@Mock
-	private ReserveInventoryAction reserveInventoryAction;
-
-	@Mock
 	private InventoryTableDropHandler inventoryTableDropHandler;
 
 	@Mock
@@ -127,8 +119,6 @@ public class ListBuilderComponentTest {
 
 	@Mock
 	private GermplasmList currentlySavedGermplasmList;
-
-	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
 
 	@Mock
 	private ContextMenuItem menuDeleteSelectedEntries;
@@ -170,16 +160,8 @@ public class ListBuilderComponentTest {
 
 		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn(ListBuilderComponentTest.CHECK);
 		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn(ListBuilderComponentTest.HASH);
-		Mockito.when(this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES))
-				.thenReturn(ListBuilderComponentTest.DELETE_GERMPLASM_ENTRIES);
-		Mockito.when(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM))
-				.thenReturn(ListBuilderComponentTest.DELETE_SELECTED_ENTRIES_CONFIRM);
-		Mockito.when(this.messageSource.getMessage(Message.YES)).thenReturn(ListBuilderComponentTest.YES);
-		Mockito.when(this.messageSource.getMessage(Message.NO)).thenReturn(ListBuilderComponentTest.NO);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId()))
 				.thenReturn(new Term(1, ListBuilderComponentTest.AVAIL_INV, ""));
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_RESERVATION.getId()))
-				.thenReturn(new Term(1, ListBuilderComponentTest.SEED_RES, ""));
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.GID.getId()))
 				.thenReturn(new Term(1, ListBuilderComponentTest.GID, ""));
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_CODE.getId()))
@@ -271,7 +253,7 @@ public class ListBuilderComponentTest {
 		this.setUpCurrentlySavedGermplasmList();
 		final ReserveInventoryAction reserveInventoryAction = Mockito.mock(ReserveInventoryAction.class);
 		this.listBuilderComponent.setReserveInventoryAction(reserveInventoryAction);
-		Mockito.when(reserveInventoryAction.saveReserveTransactions(Matchers.anyMap(), Matchers.anyInt()))
+		Mockito.when(reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
 				.thenReturn(false);
 		this.listBuilderComponent.saveReservationsAction();
 		Mockito.verify(this.messageSource).getMessage(Message.INVENTORY_NOT_AVAILABLE_BALANCE);
@@ -293,9 +275,6 @@ public class ListBuilderComponentTest {
 
 		final List<GermplasmListData> germplasmListData = Lists
 				.newArrayList(ListInventoryDataInitializer.createGermplasmListData(1));
-
-		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Matchers.isA(Integer.class),
-				Matchers.isA(List.class))).thenReturn(germplasmListData);
 
 		Mockito.when(this.inventoryDataManager.getLotCountsForList(this.currentlySavedGermplasmList.getId(), 0, 1))
 				.thenReturn(germplasmListData);
@@ -325,9 +304,7 @@ public class ListBuilderComponentTest {
 		this.listBuilderComponent.setUnlockButton(this.button);
 		this.listBuilderComponent.setLockButton(this.button);
 		final Collection<? extends Integer> selectedItems = Arrays.asList(new Integer[] { 1 });
-		Mockito.when(this.breedingManagerTable.getValue()).thenReturn(selectedItems);
 
-		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 		this.listBuilderComponent
 				.setValidReservationsToSave(ImportedGermplasmListDataInitializer.createReservations(1));
 
@@ -410,7 +387,7 @@ public class ListBuilderComponentTest {
 		final Map<ListEntryLotDetails, Double> unsavedReservations = new HashMap<>();
 		unsavedReservations.put(new ListEntryLotDetails(), new Double(10));
 		this.listBuilderComponent.setValidReservationsToSave(unsavedReservations);
-		Mockito.when(reserveInventoryAction.saveReserveTransactions(Matchers.anyMap(), Matchers.anyInt()))
+		Mockito.when(reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
 				.thenReturn(true);
 
 		final Future<Void> threadOne = threadPool.submit(new Callable<Void>() {
@@ -564,10 +541,18 @@ public class ListBuilderComponentTest {
 
 	@Test
 	public void testInitializeAddColumnContextMenu() {
+
 		this.listBuilderComponent.setContextMenu(this.contextMenu);
 		final ContextMenuItem item = Mockito.mock(ContextMenuItem.class);
-		Mockito.when(this.contextMenu.addItem(Matchers.anyString())).thenReturn(item);
+		this.addColumnContextMenu.setAddColumnItem(item);
+
+		this.listBuilderComponent.setAddColumnContextMenu(this.addColumnContextMenu);
 		Mockito.when(item.addItem(Matchers.anyString())).thenReturn(item);
+		Mockito.when(this.contextMenu.addItem(ArgumentMatchers.isNull(String.class))).thenReturn(item);
+		Mockito.when(this.contextMenu.addItem(Matchers.any(String.class))).thenReturn(item);
+		Mockito.when(this.messageSource.getMessage(ArgumentMatchers.isNull(Message.class))).thenReturn("Bye");
+		Mockito.when(this.messageSource.getMessage(Matchers.any(Message.class))).thenReturn("Hi");
+
 		this.listBuilderComponent.initializeAddColumnContextMenu();
 		Mockito.verify(this.contextMenu).addListener(Matchers.any(ContextMenu.ClickListener.class));
 	}

@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
@@ -22,8 +22,6 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 
 	private static final String FILL_WITH_ATTRIBUTE = "Fill With Attribute";
 	
-	private static final String FILL_WITH_GERMPLASM_NAME = "Fill With Germplasm Name";
-
 	@Mock
 	private ClickEvent clickEvent;
 
@@ -80,8 +78,6 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 				.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_GID.getMessageKey());
 		Mockito.doReturn(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_IMMEDIATE_SOURCE_PREFERRED_NAME.getMessageKey());
-		Mockito.doReturn(AddColumnMenuItemClickListenerForGermplasmSearchTest.FILL_WITH_GERMPLASM_NAME).when(this.messageSource)
-				.getMessage(FillWithOption.FILL_WITH_GERMPLASM_NAME.getMessageKey());
 	}
 
 	@Test

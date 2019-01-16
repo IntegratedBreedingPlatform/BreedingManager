@@ -29,6 +29,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
@@ -273,10 +274,10 @@ public class AddEntryDialogTest {
 			newIds.add(100 + id);
 		}
 		if (AddEntryDialog.OPTION_2_ID.equals(this.optionGroup.getValue())) {
-			Mockito.doReturn(newIds).when(this.germplasmDataManager).addGermplasm(Matchers.anyMap());
+			Mockito.doReturn(newIds).when(this.germplasmDataManager).addGermplasm(ArgumentMatchers.<Map<Germplasm, Name>>any());
 		} else {
 			Mockito.doReturn(Collections.singletonList(AddEntryDialogTest.NEW_ID)).when(this.germplasmDataManager)
-					.addGermplasm(Matchers.anyMap());
+					.addGermplasm(ArgumentMatchers.<Map<Germplasm, Name>>any());
 		}
 
 	}

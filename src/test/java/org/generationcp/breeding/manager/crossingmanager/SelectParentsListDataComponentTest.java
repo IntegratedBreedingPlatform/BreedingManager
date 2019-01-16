@@ -5,7 +5,6 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.ControllableRefreshTable;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
@@ -26,25 +25,20 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class SelectParentsListDataComponentTest {
 
 	private static final String SELECTED = "Selected";
-	private static final String WARNING = "Warning";
-	private static final String LOTS = "Lots";
 	private static final int GERMPLASM_LIST_ID = 1;
 	private static final int NO_OF_ENTRIES = 5;
 	private static final int NO_OF_SELECTED = 2;
 	private static final String DUMMY_MESSAGE = "Dummy Message";
 	private static final String LIST_NAME = "Sample List";
-	private static final String TOTAL_LOTS = "Total Lots";
 	private static final String NO_LIST_DATA_RETURNED = "No list data retrieved";
 	private static final String TOTAL_ENTRIES = "Total Entries";
 
@@ -59,16 +53,7 @@ public class SelectParentsListDataComponentTest {
 	
 	@Mock
 	private GermplasmListManager germplasmListManager;
-	
-	@Mock
-	private CrossingManagerMakeCrossesComponent makeCrossesMain;
-	
-	@Mock
-	private ViewListHeaderWindow viewListHeaderWindow;
-	
-	@Mock
-	private SelectParentsComponent selectParentComponent;
-	
+
 	@Mock
 	private InventoryDataManager inventoryDataManager;
 	
@@ -100,26 +85,15 @@ public class SelectParentsListDataComponentTest {
 		Mockito.doReturn(this.listEntries).when(this.inventoryDataManager)
 				.getLotCountsForList(SelectParentsListDataComponentTest.GERMPLASM_LIST_ID, 0, Integer.MAX_VALUE);
 
-		Mockito.doReturn(this.makeCrossesMain).when(this.makeCrossesParentsComponent).getMakeCrossesMain();
-		Mockito.doReturn(this.selectParentComponent).when(this.makeCrossesMain).getSelectParentsComponent();
-
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.ADD_TO_MALE_LIST);
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.ADD_TO_FEMALE_LIST);
-		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.INVENTORY_VIEW);
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_ALL);
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_EVEN_ENTRIES);
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_ODD_ENTRIES);
-		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.COPY_TO_LIST);
-		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.RESERVE_INVENTORY);
-		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.RETURN_TO_LIST_VIEW);
-		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SAVE_CHANGES);
 
 		Mockito.doReturn(TOTAL_ENTRIES).when(this.messageSource).getMessage(Message.TOTAL_LIST_ENTRIES);
 		Mockito.doReturn(NO_LIST_DATA_RETURNED).when(this.messageSource).getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL);
-		Mockito.doReturn(TOTAL_LOTS).when(this.messageSource).getMessage(Message.TOTAL_LOTS);
 		Mockito.doReturn(SELECTED).when(this.messageSource).getMessage(Message.SELECTED);
-		Mockito.doReturn(WARNING).when(this.messageSource).getMessage(Message.WARNING);
-		Mockito.doReturn(LOTS).when(this.messageSource).getMessage(Message.INVENTORY);
 
 		this.selectParents.instantiateComponents();
 		this.listDataTable = this.initListDataTable();
@@ -127,11 +101,7 @@ public class SelectParentsListDataComponentTest {
 		this.selectParents.addListeners();
 		this.selectParents.layoutComponents();
 
-		final Window window = Mockito.mock(Window.class);
-		Mockito.doReturn(window).when(this.component).getWindow();
 		this.selectParents.setParent(this.component);
-
-		Mockito.doReturn(window).when(this.makeCrossesParentsComponent).getWindow();
 	}
 
 	@Test
@@ -166,7 +136,6 @@ public class SelectParentsListDataComponentTest {
 
 		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_NO.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.DESIG.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.TOTAL_INVENTORY.getId())).thenReturn(fromOntology);

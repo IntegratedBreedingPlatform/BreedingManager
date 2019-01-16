@@ -9,10 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
@@ -48,7 +47,6 @@ public class AdditionalDetailsCrossNameComponentTest {
 		this.additionalDetailCNComponent.setParent(this.parentWindow);
 		Mockito.when(this.parentWindow.getParent()).thenReturn(this.parentOfParentWindow);
 
-		Mockito.when(this.messageSource.getMessage(Matchers.anyString())).thenReturn("Please specify a prefix");
 		this.additionalDetailCNComponent.afterPropertiesSet();
 
 		Mockito.when(this.fillWithSource.getNumberOfEntries()).thenReturn(1);

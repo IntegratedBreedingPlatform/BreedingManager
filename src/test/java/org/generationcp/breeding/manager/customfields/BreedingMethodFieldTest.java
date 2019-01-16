@@ -22,7 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BreedingMethodFieldTest {
@@ -96,8 +96,6 @@ public class BreedingMethodFieldTest {
 
 		ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
 		favouriteMethods.add(Mockito.mock(ProgramFavorite.class));
-		Mockito.when(germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000, BreedingMethodFieldTest.PROGRAM_UUID))
-				.thenReturn(favouriteMethods);
 
 		breedingMethodField.setHasDefaultValue(true);
 
