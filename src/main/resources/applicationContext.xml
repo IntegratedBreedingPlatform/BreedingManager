@@ -158,11 +158,6 @@
 		<aop:scoped-proxy proxy-target-class="false" />
 	</bean>
 
-	<bean id="plantService" factory-bean="managerFactory"
-		  factory-method="getPlantService" scope="request">
-		<aop:scoped-proxy proxy-target-class="false" />
-	</bean>
-
 	<bean id="formulaService" factory-bean="managerFactory"
 		  factory-method="getFormulaService" scope="request">
 		<aop:scoped-proxy proxy-target-class="false" />
