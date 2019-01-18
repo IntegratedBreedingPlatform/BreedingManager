@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SelectTreeItemOnSaveListenerTest {
@@ -27,7 +27,7 @@ public class SelectTreeItemOnSaveListenerTest {
 	@Before
 	public void init() {
 
-		this.selectTreeItemOnSaveListener = new SelectTreeItemOnSaveListener(saveListAsDialog, listBuilderComponent);
+		this.selectTreeItemOnSaveListener = new SelectTreeItemOnSaveListener(this.saveListAsDialog, this.listBuilderComponent);
 
 	}
 
@@ -40,11 +40,11 @@ public class SelectTreeItemOnSaveListenerTest {
 		final SaveListButtonClickListener listener = Mockito.mock(SaveListButtonClickListener.class);
 		final BreedingManagerListDetailsComponent detailsComponent = Mockito.mock(BreedingManagerListDetailsComponent.class);
 
-		Mockito.when(listBuilderComponent.getSaveListButtonListener()).thenReturn(listener);
-		Mockito.when(this.saveListAsDialog.getSource()).thenReturn(listBuilderComponent);
-		Mockito.when(saveListAsDialog.getDetailsComponent()).thenReturn(detailsComponent);
+		Mockito.when(this.listBuilderComponent.getSaveListButtonListener()).thenReturn(listener);
+		Mockito.when(this.saveListAsDialog.getSource()).thenReturn(this.listBuilderComponent);
+		Mockito.when(this.saveListAsDialog.getDetailsComponent()).thenReturn(detailsComponent);
 
-		selectTreeItemOnSaveListener.studyClicked(germplasmList);
+		this.selectTreeItemOnSaveListener.studyClicked(germplasmList);
 
 		Mockito.verify(detailsComponent).populateGermplasmListDetails(germplasmList);
 		Mockito.verify(listener).setForceHasChanges(true);
@@ -60,10 +60,7 @@ public class SelectTreeItemOnSaveListenerTest {
 		final SaveListButtonClickListener listener = Mockito.mock(SaveListButtonClickListener.class);
 		final BreedingManagerListDetailsComponent detailsComponent = Mockito.mock(BreedingManagerListDetailsComponent.class);
 
-		Mockito.when(listBuilderComponent.getSaveListButtonListener()).thenReturn(listener);
-		Mockito.when(saveListAsDialog.getDetailsComponent()).thenReturn(detailsComponent);
-
-		selectTreeItemOnSaveListener.studyClicked(germplasmList);
+		this.selectTreeItemOnSaveListener.studyClicked(germplasmList);
 
 		Mockito.verify(detailsComponent, Mockito.never()).populateGermplasmListDetails(germplasmList);
 		Mockito.verify(listener, Mockito.never()).setForceHasChanges(true);

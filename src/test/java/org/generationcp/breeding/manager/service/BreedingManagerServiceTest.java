@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 9/26/2014 Time: 2:09 PM
@@ -119,7 +119,6 @@ public class BreedingManagerServiceTest {
 		try {
 
 			// the following is code used to set up the positive scenario
-			this.setUpGetCurrentUserLocalId();
 			Mockito.when(this.userDataManager.getUserById(BreedingManagerServiceTest.DUMMY_USER_ID)).thenReturn(sampleUser);
 			Mockito.when(sampleUser.getPersonid()).thenReturn(BreedingManagerServiceTest.DUMMY_PERSON_ID);
 
@@ -135,17 +134,6 @@ public class BreedingManagerServiceTest {
 		} catch (final MiddlewareQueryException e) {
 			Assert.fail(e.getMessage());
 		}
-	}
-
-	protected void setUpGetCurrentUserLocalId() {
-		final Long dummyProjectId = (long) 1;
-		final Project project = Mockito.mock(Project.class);
-
-		Mockito.when(this.workbenchDataManager.getLastOpenedProject(BreedingManagerServiceTest.DUMMY_USER_ID)).thenReturn(project);
-		Mockito.when(project.getProjectId()).thenReturn(dummyProjectId);
-
-		Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(BreedingManagerServiceTest.DUMMY_USER_ID, dummyProjectId)).thenReturn(
-				BreedingManagerServiceTest.DUMMY_USER_ID);
 	}
 
 	@Test
@@ -174,10 +162,6 @@ public class BreedingManagerServiceTest {
 		final List<GermplasmList> expectedResult = new ArrayList<>();
 		expectedResult.add(new GermplasmList());
 
-		Mockito.when(
-				this.germplasmListManager.searchForGermplasmList(BreedingManagerServiceTest.CONTAINS_SEARCH_STRING, "other program uuid",
-						BreedingManagerServiceTest.CONTAINS_MATCH)).thenReturn(expectedResult);
-
 		this.breedingManagerService.doGermplasmListSearch(BreedingManagerServiceTest.CONTAINS_SEARCH_STRING,
 				BreedingManagerServiceTest.CONTAINS_MATCH);
 	}
@@ -205,10 +189,6 @@ public class BreedingManagerServiceTest {
 	public void testDoGermplasmListSearchEqualUnderADifferentProgram() throws Exception {
 		final List<GermplasmList> expectedResult = new ArrayList<>();
 		expectedResult.add(new GermplasmList());
-
-		Mockito.when(
-				this.germplasmListManager.searchForGermplasmList(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING, "other program uuid",
-						BreedingManagerServiceTest.CONTAINS_MATCH)).thenReturn(expectedResult);
 
 		this.breedingManagerService.doGermplasmListSearch(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
 				BreedingManagerServiceTest.CONTAINS_MATCH);
@@ -239,10 +219,6 @@ public class BreedingManagerServiceTest {
 	public void testDoGermplasmListSearchStartsWithUnderADifferentProgram() throws Exception {
 		final List<GermplasmList> expectedResult = new ArrayList<>();
 		expectedResult.add(new GermplasmList());
-
-		Mockito.when(
-				this.germplasmListManager.searchForGermplasmList(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING, "other program uuid",
-						BreedingManagerServiceTest.CONTAINS_MATCH)).thenReturn(expectedResult);
 
 		this.breedingManagerService.doGermplasmListSearch(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
 				BreedingManagerServiceTest.CONTAINS_MATCH);

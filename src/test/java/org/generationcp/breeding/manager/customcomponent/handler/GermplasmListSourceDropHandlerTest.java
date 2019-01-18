@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
@@ -124,7 +124,6 @@ public class GermplasmListSourceDropHandlerTest {
 		sourceItem.setType(GermplasmList.FOLDER_TYPE);
 		final GermplasmList targetItem = new GermplasmList();
 		targetItem.setType(GermplasmList.FOLDER_TYPE);
-		Mockito.when(germplasmListManager.getGermplasmListById((Integer) sourceItemId)).thenReturn(sourceItem);
 		Mockito.when(germplasmListManager.getGermplasmListById((Integer) targetItemId)).thenReturn(targetItem);
 
 		this.germplasmListSourceDropHandler.drop(event);
@@ -158,7 +157,6 @@ public class GermplasmListSourceDropHandlerTest {
 		final GermplasmList targetItem = new GermplasmList();
 		targetItem.setId((Integer) targetItemId);
 		targetItem.setParent(new GermplasmList((Integer) targetParent));
-		Mockito.when(germplasmListManager.getGermplasmListById((Integer) sourceItemId)).thenReturn(sourceItem);
 		Mockito.when(germplasmListManager.getGermplasmListById((Integer) targetItemId)).thenReturn(targetItem);
 
 		this.germplasmListSourceDropHandler.drop(event);

@@ -48,6 +48,7 @@ public class GermplasmListTreeUtilTest {
 	private static final String ERROR_NO_SELECTION = "Please select a folder item";
 	private static final String ERROR_ITEM_DOES_NOT_EXISTS = "Item does not exists";
 	private static final String ERROR_UNABLE_TO_DELETE_LOCKED_LIST = "Unable to delete a locked list";
+
 	private static final String ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER = "You cannot delete a list that you do not own";
 	private static final String ERROR_HAS_CHILDREN = "Folder has child items";
 	private static final Integer FOLDER_ID = (int) (Math.random() * 100);
@@ -108,9 +109,12 @@ public class GermplasmListTreeUtilTest {
 		
 		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(),
 				RowColumnType.LIST_TYPE.getFtype())).thenReturn(
-						Arrays.asList(new UserDefinedField(1, "LISTNMS", "LISTTYPE", FOLDER, FOLDER, null, null, null, null, null, null)));
-		Mockito.when(this.source.generateCellInfo(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn(this.cells);
+				Arrays.asList(new UserDefinedField(1, "LISTNMS", "LISTTYPE", FOLDER, FOLDER, null, null, null, null, null, null)));
+		Mockito.when(this.source.generateCellInfo(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
+				Matchers.anyString())).thenReturn(this.cells);
 		Mockito.when(this.targetListSource.getItem(Matchers.anyInt())).thenReturn(Mockito.mock(Item.class));
+		Mockito.when(this.targetListSource.getItem(Matchers.anyString())).thenReturn(Mockito.mock(Item.class));
+
 		Mockito.when(this.folderTextfield.getValue()).thenReturn(NEW_FOLDER_NAME);
 	}
 
