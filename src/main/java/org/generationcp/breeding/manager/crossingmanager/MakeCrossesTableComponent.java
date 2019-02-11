@@ -240,7 +240,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	void addItemToMakeCrossesTable(
 		final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf,
 		final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent, final Set<CrossParents> existingCrosses,
-		final Map<Integer, Germplasm> germplasmWithPreferredName, final Map<Integer, String> pedigreeString) {
+		final Map<Integer, Germplasm> preferredNamesMap, final Map<Integer, String> parentPedigreeStringMap) {
 
 		final String femaleSeedSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
 		final String maleSeedSource = listnameMaleParent + ":" + maleParent.getEntryId();
@@ -254,10 +254,10 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)) {
 			final int entryCounter = this.tableCrossesMade.size() + 1;
-			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
-			final String maleParentPreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
-			final String femaleParentPedigreeString = pedigreeString.get(femaleParent.getGid());
-			final String maleParentPedigreeString = pedigreeString.get(maleParent.getGid());
+			final String femalePreferredName = getGermplasmPreferredName(preferredNamesMap.get(femaleParent.getGid()));
+			final String maleParentPreferredName = getGermplasmPreferredName(preferredNamesMap.get(maleParent.getGid()));
+			final String femaleParentPedigreeString = parentPedigreeStringMap.get(femaleParent.getGid());
+			final String maleParentPedigreeString = parentPedigreeStringMap.get(maleParent.getGid());
 
 			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleParent.getGid().toString(), true));
 			designationFemaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -327,65 +327,20 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.setMakeCrossesTableVisibleColumn();
 		this.separator = this.makeCrossesMain.getSeparatorString();
 		
-		final ImmutableMap<Integer, Germplasm> germplasmWithPreferredName = getGermplasmWithPreferredNameForBothParents(femaleParents, maleParents);
-		final Map<Integer, String> parentsPedigreeString = pedigreeService.getCrossExpansions(germplasmWithPreferredName.keySet(), null, crossExpansionProperties);
+		final ImmutableMap<Integer, Germplasm> preferredNamesMap = getGermplasmWithPreferredNameForBothParents(femaleParents, maleParents);
+		final Map<Integer, String> parentsPedigreeStringMap = pedigreeService.getCrossExpansions(preferredNamesMap.keySet(), null, crossExpansionProperties);
 
 		final Set<CrossParents> existingCrosses = new HashSet<>();
 		for (final GermplasmListEntry femaleParent : femaleParents) {
 
-			final String femaleSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
-			final GermplasmListEntry femaleParentCopy = femaleParent.copy();
-			femaleParentCopy.setSeedSource(femaleSource);
-
 			for (final GermplasmListEntry maleParent : maleParents) {
-				final String maleSource = listnameMaleParent + ":" + maleParent.getEntryId();
-				final GermplasmListEntry maleParentCopy = maleParent.copy();
-				maleParentCopy.setSeedSource(maleSource);
-
-				final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
-
-				this.addItemToMakeCrossesTable(excludeSelf, femaleParent, femaleSource, maleParent, maleSource, 
-						parents, existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+				this.addItemToMakeCrossesTable(listnameFemaleParent, listnameMaleParent, excludeSelf, femaleParent, maleParent,
+						existingCrosses, preferredNamesMap, parentsPedigreeStringMap);
 			}
 		}
 		this.updateCrossesMadeUI();
 	}
 
-	void addItemToMakeCrossesTable(
-		final boolean excludeSelf, final GermplasmListEntry femaleParent, final String femaleSource,
-		final GermplasmListEntry maleParent, final String maleSource, final CrossParents parents, final Set<CrossParents> existingCrosses,
-		final Map<Integer, Germplasm> germplasmWithPreferredName, final Map<Integer, String> parentsPedigreeString) {
-
-		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)
-			) {
-			int entryCounter = this.tableCrossesMade.size() + 1;
-			final String femaleParentPedigreeString = parentsPedigreeString.get(femaleParent.getGid());
-			final String maleParentPedigreeString = parentsPedigreeString.get(maleParent.getGid());
-			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
-			final String maleParentPreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
-			final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
-
-			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleParent.getGid().toString(), true));
-			designationFemaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
-			designationFemaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
-
-			final Button designationMaleParentMaleButton = new Button(maleParentPreferredName, new GidLinkClickListener(maleParent.getGid().toString(), true));
-			designationMaleParentMaleButton.setStyleName(BaseTheme.BUTTON_LINK);
-			designationMaleParentMaleButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
-
-			final CheckBox tag = new CheckBox();
-			tag.setDebugId(TAG_COLUMN_ID);
-			tag.addListener(new PreviewCrossesTabCheckBoxListener(this.tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
-			tag.setImmediate(true);
-
-			final Object[] item = new Object[] {
-				tag, entryCounter, designationFemaleParentButton,
-				designationMaleParentMaleButton, femaleParentPedigreeString, maleParentPedigreeString, seedSource};
-
-			this.tableCrossesMade.addItem(item, parents);
-			existingCrosses.add(parents);
-		}
-	}
 
 	private boolean shouldBeAddedToCrossesTable(CrossParents parents, Set<CrossParents> existingCrosses, boolean excludeSelf,
 		GermplasmListEntry femaleParent, GermplasmListEntry maleParent) {
