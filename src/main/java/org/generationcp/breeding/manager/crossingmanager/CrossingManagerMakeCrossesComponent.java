@@ -142,58 +142,57 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		final String listnameFemaleParent, final String listnameMaleParent, final CrossType type, final boolean makeReciprocalCrosses,
 		final boolean excludeSelf) {
 
-		if (!femaleList.isEmpty() && !maleList.isEmpty()) {
-			try {
-				final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+	
+		try {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-					@Override
-					protected void doInTransactionWithoutResult(final TransactionStatus status) {
-						// Female - Male Multiplication
-						if (CrossType.MULTIPLY.equals(type)) {
-							CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(femaleList, maleList,
-								listnameFemaleParent, listnameMaleParent, excludeSelf);
-							if (makeReciprocalCrosses) {
-								CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(maleList, femaleList,
-									listnameMaleParent, listnameFemaleParent, excludeSelf);
-							}
+				@Override
+				protected void doInTransactionWithoutResult(final TransactionStatus status) {
+					createAndAddCrossesToTable(femaleList, maleList, listnameFemaleParent, listnameMaleParent, type, makeReciprocalCrosses,
+							excludeSelf);
+				}
+				
+			});
 
-							// Top to Bottom Crossing
-						} else if (CrossType.TOP_TO_BOTTOM.equals(type)) {
-							if (femaleList.size() == maleList.size()) {
-								CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList,
-									listnameFemaleParent, listnameMaleParent, excludeSelf);
-								if (makeReciprocalCrosses) {
-									CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(maleList,
-										femaleList, listnameMaleParent, listnameFemaleParent, excludeSelf);
-								}
-							} else {
-								MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(),
-									"Error with selecting parents.", CrossingManagerMakeCrossesComponent.this.messageSource
-										.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL));
-							}
-						}
-					}
-				});
-
-			} catch (final Exception e) {
-				CrossingManagerMakeCrossesComponent.LOG.error(e.getMessage(), e);
-				MessageNotifier.showError(
-					CrossingManagerMakeCrossesComponent.this.getWindow(),
-					this.messageSource.getMessage(Message.ERROR),
-					CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.ERROR_WITH_CROSSES_RETRIEVAL));
-			}
-
-			CrossingManagerMakeCrossesComponent.this
-				.showNotificationAfterCrossing(CrossingManagerMakeCrossesComponent.this.crossesTableComponent.getTableCrossesMade()
-					.size());
-
-		} else {
-			MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(), "Error with selecting parents.",
-				CrossingManagerMakeCrossesComponent.this.messageSource
-					.getMessage(Message.AT_LEAST_ONE_FEMALE_AND_ONE_MALE_PARENT_MUST_BE_SELECTED));
+		} catch (final Exception e) {
+			CrossingManagerMakeCrossesComponent.LOG.error(e.getMessage(), e);
+			MessageNotifier.showError(
+				CrossingManagerMakeCrossesComponent.this.getWindow(),
+				this.messageSource.getMessage(Message.ERROR),
+				CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.ERROR_WITH_CROSSES_RETRIEVAL));
 		}
 
+		CrossingManagerMakeCrossesComponent.this
+			.showNotificationAfterCrossing(CrossingManagerMakeCrossesComponent.this.crossesTableComponent.getTableCrossesMade()
+				.size());
+	}
+
+	void createAndAddCrossesToTable(final List<GermplasmListEntry> femaleList, final List<GermplasmListEntry> maleList,
+			final String listnameFemaleParent, final String listnameMaleParent, final CrossType type,
+			final boolean makeReciprocalCrosses, final boolean excludeSelf) {
+		// Female - Male Multiplication
+		if (CrossType.MULTIPLY.equals(type)) {
+			CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(femaleList, maleList,
+				listnameFemaleParent, listnameMaleParent, excludeSelf);
+			if (makeReciprocalCrosses) {
+				CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(maleList, femaleList,
+					listnameMaleParent, listnameFemaleParent, excludeSelf);
+			}
+	
+		// Top to Bottom Crossing
+		} else if (CrossType.TOP_TO_BOTTOM.equals(type)) {
+			CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList,
+				listnameFemaleParent, listnameMaleParent, excludeSelf);
+			if (makeReciprocalCrosses) {
+				CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(maleList,
+					femaleList, listnameMaleParent, listnameFemaleParent, excludeSelf);
+			}
+			
+		// Crosses with Unknown Male Parent	
+		} else if (CrossType.UNKNOWN_MALE.equals(type)) {
+			CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeCrossesWithUnknownMaleParent(femaleList, listnameFemaleParent);
+		}
 	}
 
 	void showNotificationAfterCrossing(final int noOfCrosses) {

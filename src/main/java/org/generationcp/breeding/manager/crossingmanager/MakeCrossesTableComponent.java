@@ -145,7 +145,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	// Tables
 	private TableWithSelectAllLayout tableWithSelectAllLayout;
 	private Table tableCrossesMade;
-	@SuppressWarnings("unused")
 	private CheckBox selectAll;
 
 	private Button actionButton;
@@ -223,6 +222,32 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.updateCrossesMadeUI();
 
 	}
+	
+	/**
+	 * Crosses each item on first list with unknown male parent (GID=0). The generated crossings are then added to Crossings Table.
+	 *
+	 * @param femaleParents - list of GermplasmList entries as first parents
+	 * @param listnameFemaleParent
+	 */
+	public void makeCrossesWithUnknownMaleParent(final List<GermplasmListEntry> femaleParents, final String listnameFemaleParent) {
+		// make a copy first of the parents lists
+
+		final ImmutableMap<Integer, Germplasm> germplasmWithPreferredName = getGermplasmWithPreferredNameForBothParents(femaleParents, new ArrayList<GermplasmListEntry>());
+		 
+		final Map<Integer, String> parentsPedigreeString = pedigreeService.getCrossExpansions(germplasmWithPreferredName.keySet(), null, crossExpansionProperties);
+		
+
+		this.separator = this.makeCrossesMain.getSeparatorString();
+		final Set<CrossParents> existingCrosses = new HashSet<>();
+		final GermplasmListEntry maleParent = new GermplasmListEntry(0, 0, 0);
+		
+		for (final GermplasmListEntry femaleParent : femaleParents) {
+			this.addItemToMakeCrossesTable(listnameFemaleParent, "", true, femaleParent, maleParent,
+					existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+		}
+		this.updateCrossesMadeUI();
+
+	}
 
 	private ImmutableMap<Integer, Germplasm> getGermplasmWithPreferredNameForBothParents(final List<GermplasmListEntry> femaleParents,
 			final List<GermplasmListEntry> maleParents) {
@@ -250,20 +275,23 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		maleParentCopy.setSeedSource(maleSeedSource);
 
 		final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
-		final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
+		final Integer maleGid = maleParent.getGid();
+		final Integer femaleGid = femaleParent.getGid();
+		final String seedSource = this.generateSeedSource(femaleGid, femaleSeedSource, maleGid, maleSeedSource);
 
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)) {
+			final String unknownString = this.messageSource.getMessage(Message.UNKNOWN).toUpperCase();
 			final int entryCounter = this.tableCrossesMade.size() + 1;
-			final String femalePreferredName = getGermplasmPreferredName(preferredNamesMap.get(femaleParent.getGid()));
-			final String maleParentPreferredName = getGermplasmPreferredName(preferredNamesMap.get(maleParent.getGid()));
-			final String femaleParentPedigreeString = parentPedigreeStringMap.get(femaleParent.getGid());
-			final String maleParentPedigreeString = parentPedigreeStringMap.get(maleParent.getGid());
+			final String femalePreferredName = getGermplasmPreferredName(preferredNamesMap.get(femaleGid));
+			final String maleParentPreferredName = (maleGid == 0)? unknownString : getGermplasmPreferredName(preferredNamesMap.get(maleGid));
+			final String femaleParentPedigreeString = parentPedigreeStringMap.get(femaleGid);
+			final String maleParentPedigreeString = (maleGid == 0)? unknownString : parentPedigreeStringMap.get(maleGid);
 
-			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleParent.getGid().toString(), true));
+			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleGid.toString(), true));
 			designationFemaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
 			designationFemaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
-			final Button designationMaleParentMaleButton = new Button(maleParentPreferredName, new GidLinkClickListener(maleParent.getGid().toString(), true));
+			final Button designationMaleParentMaleButton = new Button(maleParentPreferredName, new GidLinkClickListener(maleGid.toString(), true));
 			designationMaleParentMaleButton.setStyleName(BaseTheme.BUTTON_LINK);
 			designationMaleParentMaleButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 

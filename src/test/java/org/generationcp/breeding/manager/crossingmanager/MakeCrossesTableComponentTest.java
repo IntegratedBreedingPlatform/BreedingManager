@@ -37,6 +37,8 @@ import java.util.Set;
 import static org.generationcp.breeding.manager.crossingmanager.ParentTabComponent.TAG_COLUMN_ID;
 
 public class MakeCrossesTableComponentTest {
+	private static final String FEMALE_LIST_NAME = "Female Lizt";
+	private static final String MALE_LIST_NAME = "Female Lizt";
 
 	private static final int PARENTS_TABLE_ROW_COUNT = 5;
 
@@ -159,8 +161,8 @@ public class MakeCrossesTableComponentTest {
 		final Map<Integer, String> parentsPedigreeString = new HashMap<>();
 
 		this.makeCrossesTableComponent
-			.addItemToMakeCrossesTable(true, this.femaleParent, this.femaleSource, this.maleParent, this.maleSource, this.parents,
-				existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+				.addItemToMakeCrossesTable(FEMALE_LIST_NAME, MALE_LIST_NAME, true, this.femaleParent, this.maleParent, existingCrosses,
+						germplasmWithPreferredName, parentsPedigreeString);
 
 		try {
 
@@ -178,8 +180,8 @@ public class MakeCrossesTableComponentTest {
 		final Map<Integer, String> parentsPedigreeString = new HashMap<>();
 
 		this.makeCrossesTableComponent
-			.addItemToMakeCrossesTable(true, this.femaleParent, this.femaleSource, this.maleParent, this.maleSource, this.parents,
-				existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+			.addItemToMakeCrossesTable(FEMALE_LIST_NAME, MALE_LIST_NAME, true, this.femaleParent, this.maleParent, existingCrosses,
+					germplasmWithPreferredName, parentsPedigreeString);
 
 		try {
 			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(
@@ -201,8 +203,8 @@ public class MakeCrossesTableComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES)).thenReturn("SELECT_EVEN_ENTRIES");
 		Mockito.when(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES)).thenReturn("SELECT_ODD_ENTRIES");
 		this.makeCrossesTableComponent
-			.addItemToMakeCrossesTable(false, this.femaleParent, this.femaleSource, this.maleParent, this.maleSource, this.parents,
-				existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+			.addItemToMakeCrossesTable(FEMALE_LIST_NAME, MALE_LIST_NAME, false, this.femaleParent, this.maleParent, existingCrosses,
+					germplasmWithPreferredName, parentsPedigreeString);
 
 		try {
 			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(
