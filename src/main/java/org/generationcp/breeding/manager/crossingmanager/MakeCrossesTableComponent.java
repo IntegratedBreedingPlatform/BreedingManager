@@ -75,6 +75,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.vaadin.data.Item;
@@ -233,7 +234,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		// make a copy first of the parents lists
 
 		final ImmutableMap<Integer, Germplasm> germplasmWithPreferredName = getGermplasmWithPreferredNameForBothParents(femaleParents, new ArrayList<GermplasmListEntry>());
-		 
 		final Map<Integer, String> parentsPedigreeString = pedigreeService.getCrossExpansions(germplasmWithPreferredName.keySet(), null, crossExpansionProperties);
 		
 
@@ -283,17 +283,21 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final String unknownString = this.messageSource.getMessage(Message.UNKNOWN).toUpperCase();
 			final int entryCounter = this.tableCrossesMade.size() + 1;
 			final String femalePreferredName = getGermplasmPreferredName(preferredNamesMap.get(femaleGid));
-			final String maleParentPreferredName = (maleGid == 0)? unknownString : getGermplasmPreferredName(preferredNamesMap.get(maleGid));
+			final boolean hasUnknownMaleParent = Objects.equal(maleGid, 0);
+			final String maleParentPreferredName = hasUnknownMaleParent? unknownString : getGermplasmPreferredName(preferredNamesMap.get(maleGid));
 			final String femaleParentPedigreeString = parentPedigreeStringMap.get(femaleGid);
-			final String maleParentPedigreeString = (maleGid == 0)? unknownString : parentPedigreeStringMap.get(maleGid);
+			final String maleParentPedigreeString = hasUnknownMaleParent? unknownString : parentPedigreeStringMap.get(maleGid);
 
 			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleGid.toString(), true));
 			designationFemaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
 			designationFemaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
-			final Button designationMaleParentMaleButton = new Button(maleParentPreferredName, new GidLinkClickListener(maleGid.toString(), true));
-			designationMaleParentMaleButton.setStyleName(BaseTheme.BUTTON_LINK);
-			designationMaleParentMaleButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+			final Button designationMaleParentButton = new Button(maleParentPreferredName, new GidLinkClickListener(maleGid.toString(), true));
+			designationMaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
+			designationMaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+			if (hasUnknownMaleParent) {
+				designationMaleParentButton.setEnabled(false);
+			}
 
 			final CheckBox tag = new CheckBox();
 			tag.setDebugId(TAG_COLUMN_ID);
@@ -302,7 +306,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 			Object[] item = new Object[] {
 				tag, entryCounter, designationFemaleParentButton,
-				designationMaleParentMaleButton, femaleParentPedigreeString, maleParentPedigreeString, seedSource};
+				designationMaleParentButton, femaleParentPedigreeString, maleParentPedigreeString, seedSource};
 
 			this.tableCrossesMade.addItem(item, parents);
 			existingCrosses.add(parents);
@@ -385,14 +389,14 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		// If crossing for a Nursery, use the seed source generation service.
 		final Workbook workbook = this.makeCrossesMain.getWorkbook();
 		if (workbook != null) {
-			String malePlotNo = "";
-			String femalePlotNo = "";
+			String malePlotNo = "0";
+			String femalePlotNo = "0";
 
 			// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
 			for (final MeasurementRow row : workbook.getObservations()) {
 				final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
 				final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
-
+				// FIXME femalePlotNo is the last plot no where GID occurs. Should it be the 1st?
 				if (gidData != null && gidData.getValue().equals(femaleParentGid.toString()) && plotNumberData != null) {
 					femalePlotNo = plotNumberData.getValue();
 				}
