@@ -65,7 +65,7 @@ public class CrossTypeValidator implements Validator {
 		}
 		// Show warning that male items will be ignored for Unknown Male crossing method option, but crosses will proceed
 		if (!maleList.isEmpty() && isUnknownMaleCrossing) {
-			maleParents.removeAllItems();
+			this.parentsComponent.getMaleParentTab().resetList();
 			MessageNotifier.showWarning(this.parentsComponent.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.MALE_PARENTS_WILL_BE_IGNORED));
 		}
