@@ -469,15 +469,13 @@ public class GermplasmColumnValuesGenerator {
 
 	private Map<Integer, Germplasm> getGermplasmMapByGid() {
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
-		final Map<Integer, Germplasm> germplasmMap =
-				Maps.uniqueIndex(this.germplasmDataManager.getGermplasms(gids), new Function<Germplasm, Integer>() {
+		return Maps.uniqueIndex(this.germplasmDataManager.getGermplasms(gids), new Function<Germplasm, Integer>() {
 
-					@Nullable
-					@Override
-					public Integer apply(@Nullable final Germplasm germplasm) {
-						return germplasm.getGid();
-					}
-				});
-		return germplasmMap;
+			@Nullable
+			@Override
+			public Integer apply(@Nullable final Germplasm germplasm) {
+				return germplasm.getGid();
+			}
+		});
 	}
 }
