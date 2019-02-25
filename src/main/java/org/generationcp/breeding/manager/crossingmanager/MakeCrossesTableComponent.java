@@ -295,9 +295,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final Button designationMaleParentButton = new Button(maleParentPreferredName, new GidLinkClickListener(maleGid.toString(), true));
 			designationMaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
 			designationMaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
-			if (hasUnknownMaleParent) {
-				designationMaleParentButton.setEnabled(false);
-			}
 
 			final CheckBox tag = new CheckBox();
 			tag.setDebugId(TAG_COLUMN_ID);
