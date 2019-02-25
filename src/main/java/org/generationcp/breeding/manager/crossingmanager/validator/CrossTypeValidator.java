@@ -73,6 +73,16 @@ public class CrossTypeValidator implements Validator {
 		return true;
 	}
 
+	
+	protected void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	
+	protected void setParentsComponent(MakeCrossesParentsComponent parentsComponent) {
+		this.parentsComponent = parentsComponent;
+	}
+
 
 
 }

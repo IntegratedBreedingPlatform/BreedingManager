@@ -280,7 +280,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final String seedSource = this.generateSeedSource(femaleGid, femaleSeedSource, maleGid, maleSeedSource);
 
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)) {
-			final String unknownString = this.messageSource.getMessage(Message.UNKNOWN).toUpperCase();
+			final String unknownString = Name.UNKNOWN;
 			final int entryCounter = this.tableCrossesMade.size() + 1;
 			final String femalePreferredName = getGermplasmPreferredName(preferredNamesMap.get(femaleGid));
 			final boolean hasUnknownMaleParent = Objects.equal(maleGid, 0);
@@ -321,7 +321,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			MALE_CROSS, ColumnLabels.SEED_SOURCE.getName()});
 	}
 
-	private void updateCrossesMadeUI() {
+	void updateCrossesMadeUI() {
 		final int crossesCount = this.tableCrossesMade.size();
 		this.generateTotalCrossesLabel(crossesCount);
 		this.updateCrossesMadeSaveButton();
@@ -833,6 +833,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.ontologyDataManager = ontologyDataManager;
 	}
 
+	
+	protected void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
@@ -870,5 +875,15 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	public void setTableWithSelectAllLayout(final TableWithSelectAllLayout tableWithSelectAllLayout) {
 		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
+	}
+
+	
+	protected void setPedigreeService(PedigreeService pedigreeService) {
+		this.pedigreeService = pedigreeService;
+	}
+
+	
+	protected void setCrossExpansionProperties(CrossExpansionProperties crossExpansionProperties) {
+		this.crossExpansionProperties = crossExpansionProperties;
 	}
 }

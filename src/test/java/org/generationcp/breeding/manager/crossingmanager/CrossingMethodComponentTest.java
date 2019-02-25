@@ -1,10 +1,15 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.generationcp.breeding.manager.application.Message;
+import java.util.Random;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.validator.CrossTypeValidator;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,11 +18,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.vaadin.data.Validator;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CrossingMethodComponentTest {
+	
+	private static final String MALE_LIST_NAME = RandomStringUtils.randomAlphabetic(20);
+	private static final String FEMALE_LIST_NAME = RandomStringUtils.randomAlphabetic(20);
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -27,6 +36,18 @@ public class CrossingMethodComponentTest {
 
 	@Mock
 	CrossingManagerMakeCrossesComponent makeCrossesMain;
+	
+	@Mock
+	private CrossTypeValidator crossTypeValidator;
+	
+	@Mock
+	private MakeCrossesParentsComponent parentsComponent;
+	
+	@Mock
+	private Table femaleTable;
+	
+	@Mock
+	private Table maleTable;
 
 	private CrossingMethodComponent component;
 
@@ -35,44 +56,83 @@ public class CrossingMethodComponentTest {
 		this.component = new CrossingMethodComponent(this.makeCrossesMain);
 		this.component.setMessageSource(this.messageSource);
 		this.component.setParent(this.makeCrossesMain);
+		this.component.setParentsComponent(this.parentsComponent);
 		Mockito.when(this.makeCrossesMain.getWindow()).thenReturn(this.window);
+		
 		this.component.instantiateComponents();
+		// It's important to set the mock CrossTypeValidator after instantiateComponents call to override the one created there
+		this.component.setCrossTypeValidator(this.crossTypeValidator);
 		this.component.initializeValues();
 		this.component.addListeners();
 	}
-
+	
 	@Test
-	public void testGenerateCrossWithNoSelectedCrossingMethod() {
-		Mockito.when(this.messageSource.getMessage(Message.WARNING)).thenReturn("Warning");
-		Mockito.when(this.messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD))
-				.thenReturn("Please choose crossing method.");
-
+	public void testInitialize() {
+		for (final CrossType crossType : CrossType.values()) {
+			Assert.assertTrue(this.component.getCrossingMethodComboBox().containsId(crossType));
+		}
+	}
+	
+	@Test
+	public void testCrossingMethodComboboxValueChange() {
+		Assert.assertTrue(this.component.getChkBoxExcludeSelfs().isEnabled());
+		Assert.assertTrue(this.component.getChkBoxMakeReciprocalCrosses().isEnabled());
+		
+		this.component.getCrossingMethodComboBox().setValue(CrossType.UNKNOWN_MALE);
+		Assert.assertFalse(this.component.getChkBoxExcludeSelfs().isEnabled());
+		Assert.assertFalse(this.component.getChkBoxMakeReciprocalCrosses().isEnabled());
+		
+		this.component.getCrossingMethodComboBox().setValue(CrossType.MULTIPLY);
+		Assert.assertTrue(this.component.getChkBoxExcludeSelfs().isEnabled());
+		Assert.assertTrue(this.component.getChkBoxMakeReciprocalCrosses().isEnabled());
+	}
+	
+	@Test
+	public void testGenerateCrossWithValidatorException() {
+		Mockito.doThrow(new Validator.InvalidValueException("SOME ERROR")).when(this.crossTypeValidator).isValid(ArgumentMatchers.any(CrossType.class));
 		this.component.getGenerateCrossButton().click();
-		Mockito.verify(this.makeCrossesMain).getWindow();
-		Mockito.verify(this.messageSource).getMessage(Message.WARNING);
-		Mockito.verify(this.messageSource).getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD);
+		Mockito.verify(this.parentsComponent, Mockito.never()).getFemaleTable();
+		Mockito.verify(this.parentsComponent, Mockito.never()).getMaleTable();
+	}
+	
+	@Test
+	public void testGenerateCrossValidatorError() {
+		Mockito.doReturn(false).when(this.crossTypeValidator).isValid(ArgumentMatchers.any(CrossType.class));
+		this.component.getGenerateCrossButton().click();
+		Mockito.verify(this.parentsComponent, Mockito.never()).getFemaleTable();
+		Mockito.verify(this.parentsComponent, Mockito.never()).getMaleTable();
 	}
 
 	@Test
-	public void testGenerateCrossWith() {
-		final MakeCrossesParentsComponent parentsComponent = Mockito.mock(MakeCrossesParentsComponent.class);
-		Mockito.when(this.makeCrossesMain.getParentsComponent()).thenReturn(parentsComponent);
-		final Table femaleTable = Mockito.mock(Table.class);
-		final Table maleTable = Mockito.mock(Table.class);
-		Mockito.when(parentsComponent.getFemaleTable()).thenReturn(femaleTable);
-		Mockito.when(parentsComponent.getMaleTable()).thenReturn(maleTable);
-		this.component.getCrossingMethodComboBox().setValue(CrossType.MULTIPLY);
+	public void testGenerateCross() {
+		Mockito.doReturn(true).when(this.crossTypeValidator).isValid(ArgumentMatchers.any(CrossType.class));
+		Mockito.when(parentsComponent.getFemaleTable()).thenReturn(this.femaleTable);
+		Mockito.when(parentsComponent.getMaleTable()).thenReturn(this.maleTable);
+		final List<GermplasmListEntry> femaleEntries = this.createListEntries(5);
+		final List<GermplasmListEntry> maleEntries = this.createListEntries(2);
+		Mockito.doReturn(femaleEntries).when(this.parentsComponent).getCorrectSortedValue(this.femaleTable);
+		Mockito.doReturn(maleEntries).when(this.parentsComponent).getCorrectSortedValue(this.maleTable);
+		Mockito.doReturn(FEMALE_LIST_NAME).when(this.parentsComponent).getFemaleListNameForCrosses();
+		Mockito.doReturn(MALE_LIST_NAME).when(this.parentsComponent).getMaleListNameForCrosses();
 
+		this.component.getCrossingMethodComboBox().setValue(CrossType.MULTIPLY);
+		this.component.getChkBoxMakeReciprocalCrosses().setValue(new Random().nextBoolean());
+		this.component.getChkBoxExcludeSelfs().setValue(new Random().nextBoolean());
 		this.component.getGenerateCrossButton().click();
-		Mockito.verify(this.makeCrossesMain).getParentsComponent();
-		Mockito.verify(parentsComponent).getFemaleTable();
-		Mockito.verify(parentsComponent).getMaleTable();
-		Mockito.verify(parentsComponent).getCorrectSortedValue(femaleTable);
-		Mockito.verify(parentsComponent).getCorrectSortedValue(maleTable);
+
 		Mockito.verify(parentsComponent).updateFemaleListNameForCrosses();
 		Mockito.verify(parentsComponent).updateMaleListNameForCrosses();
-		Mockito.verify(this.makeCrossesMain).makeCrossButtonAction(ArgumentMatchers.<List<GermplasmListEntry>>any(), ArgumentMatchers.<List<GermplasmListEntry>>any(),
-				ArgumentMatchers.<String>isNull(), ArgumentMatchers.<String>isNull(), ArgumentMatchers.eq(CrossType.MULTIPLY), ArgumentMatchers.anyBoolean(),
-				ArgumentMatchers.anyBoolean());
+		Mockito.verify(this.makeCrossesMain).makeCrossButtonAction(femaleEntries, maleEntries,
+				FEMALE_LIST_NAME, MALE_LIST_NAME, CrossType.MULTIPLY, (Boolean) this.component.getChkBoxMakeReciprocalCrosses().getValue(),
+				(Boolean) this.component.getChkBoxExcludeSelfs().getValue());
+	}
+	
+	private List<GermplasmListEntry> createListEntries(final int numOfEntries) {
+		final List<GermplasmListEntry> femaleEntries = new ArrayList<>();
+		final Random random = new Random();
+		for (int i = 1; i <= numOfEntries; i++){			
+			femaleEntries.add(new GermplasmListEntry(random.nextInt(), random.nextInt(), i));
+		}
+		return femaleEntries;
 	}
 }

@@ -214,7 +214,6 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 		List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
 		List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
-		//TODO check if the female list name and male list name code can be removed
 		this.parentsComponent.updateFemaleListNameForCrosses();
 		this.parentsComponent.updateMaleListNameForCrosses();
 
@@ -231,8 +230,28 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		return this.crossingMethodComboBox;
 	}
 	
+	
+	protected CheckBox getChkBoxMakeReciprocalCrosses() {
+		return chkBoxMakeReciprocalCrosses;
+	}
+
+	
+	protected CheckBox getChkBoxExcludeSelfs() {
+		return chkBoxExcludeSelfs;
+	}
+
 	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	
+	protected void setCrossTypeValidator(CrossTypeValidator crossTypeValidator) {
+		this.crossTypeValidator = crossTypeValidator;
+	}
+
+	
+	protected void setParentsComponent(MakeCrossesParentsComponent parentsComponent) {
+		this.parentsComponent = parentsComponent;
 	}
 	
 }
