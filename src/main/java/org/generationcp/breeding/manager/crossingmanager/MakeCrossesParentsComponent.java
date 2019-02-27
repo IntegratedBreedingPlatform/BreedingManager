@@ -331,7 +331,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	 * @return List of selected germplasm list entries
 	 */
 	@SuppressWarnings("unchecked")
-	protected List<GermplasmListEntry> getCorrectSortedValue(final Table table) {
+	public List<GermplasmListEntry> getCorrectSortedValue(final Table table) {
 		final List<GermplasmListEntry> allItemIds = new ArrayList<>();
 		final List<GermplasmListEntry> selectedItemIds = new ArrayList<>();
 		final List<GermplasmListEntry> sortedSelectedValues = new ArrayList<>();

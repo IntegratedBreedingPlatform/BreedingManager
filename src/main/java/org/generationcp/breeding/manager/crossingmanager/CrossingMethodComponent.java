@@ -8,14 +8,19 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.validator.CrossTypeValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
@@ -32,6 +37,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		InternationalizableComponent {
 
 	private static final long serialVersionUID = -8847158352169444182L;
+	private static final Logger LOG = LoggerFactory.getLogger(CrossingMethodComponent.class);
 
 	public static final String GENERATE_CROSS_BUTTON_ID = "Generate Cross Button";
 
@@ -50,10 +56,12 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	private final CrossingManagerMakeCrossesComponent makeCrossesMain;
 	private MakeCrossesParentsComponent parentsComponent;
+	private CrossTypeValidator crossTypeValidator;
 
 	public CrossingMethodComponent(CrossingManagerMakeCrossesComponent makeCrossesMain) {
 		super();
 		this.makeCrossesMain = makeCrossesMain;
+		this.parentsComponent = this.makeCrossesMain.getParentsComponent();
 	}
 
 	@Override
@@ -84,7 +92,8 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.crossingMethodComboBox.setDebugId("crossingMethodComboBox");
 		this.crossingMethodComboBox.setNewItemsAllowed(false);
 		this.crossingMethodComboBox.setNullSelectionAllowed(false);
-		this.crossingMethodComboBox.setWidth("280px");
+		this.crossingMethodComboBox.setWidth("380px");
+		this.crossingMethodComboBox.setImmediate(true);
 
 		this.chkBoxMakeReciprocalCrosses = new CheckBox(this.messageSource.getMessage(Message.MAKE_CROSSES_CHECKBOX_LABEL));
 		this.chkBoxMakeReciprocalCrosses.setDebugId("chkBoxMakeReciprocalCrosses");
@@ -96,6 +105,8 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.btnGenerateCross.setDebugId("btnGenerateCross");
 		this.btnGenerateCross.setData(CrossingMethodComponent.GENERATE_CROSS_BUTTON_ID);
 		this.btnGenerateCross.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		
+		this.crossTypeValidator = new CrossTypeValidator(this.parentsComponent);
 	}
 
 	@Override
@@ -103,12 +114,19 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.crossingMethodComboBox.addItem(CrossType.PLEASE_CHOOSE);
 		this.crossingMethodComboBox.setItemCaption(CrossType.PLEASE_CHOOSE,
 				this.messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_PLEASE_CHOOSE));
+		
 		this.crossingMethodComboBox.addItem(CrossType.MULTIPLY);
 		this.crossingMethodComboBox.setItemCaption(CrossType.MULTIPLY,
 				this.messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_ONE_LABEL));
+		
 		this.crossingMethodComboBox.addItem(CrossType.TOP_TO_BOTTOM);
 		this.crossingMethodComboBox.setItemCaption(CrossType.TOP_TO_BOTTOM,
 				this.messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_TWO_LABEL));
+	
+		this.crossingMethodComboBox.addItem(CrossType.UNKNOWN_MALE);
+		this.crossingMethodComboBox.setItemCaption(CrossType.UNKNOWN_MALE,
+				this.messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_THREE_LABEL));
+		
 		this.crossingMethodComboBox.select(CrossType.PLEASE_CHOOSE);
 	}
 
@@ -119,10 +137,36 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 			@Override
 			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-				CrossingMethodComponent.this.makeCrossButtonAction();
+				try {
+					if (CrossingMethodComponent.this.crossTypeValidator.isValid(CrossingMethodComponent.this.getSelectedCrossingMethod())) {
+						CrossingMethodComponent.this.makeCrossButtonAction();
+					}
+				} catch (final InvalidValueException e) {
+					LOG.error(e.getMessage(), e);
+					MessageNotifier.showError(CrossingMethodComponent.this.getWindow(), "Error with selecting parents.", e.getMessage());
+				}
 			}
 
 		});
+
+		this.crossingMethodComboBox.addListener(new ComboBox.ValueChangeListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(final ValueChangeEvent event) {
+				CrossType type = getSelectedCrossingMethod();
+				final boolean enabled = !CrossType.UNKNOWN_MALE.equals(type);
+				CrossingMethodComponent.this.chkBoxMakeReciprocalCrosses.setEnabled(enabled);
+				CrossingMethodComponent.this.chkBoxExcludeSelfs.setEnabled(enabled);
+			}
+
+			
+		});
+	}
+	
+	private CrossType getSelectedCrossingMethod() {
+		return (CrossType) CrossingMethodComponent.this.crossingMethodComboBox.getValue();
 	}
 
 	@Override
@@ -165,26 +209,17 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	}
 
 	public void makeCrossButtonAction() {
-		CrossType type = (CrossType) this.crossingMethodComboBox.getValue();
-		
-		if (CrossType.PLEASE_CHOOSE.equals(type)) {
-			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					this.messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
-		} else {
-			this.parentsComponent = this.makeCrossesMain.getParentsComponent();
+		Table femaleParents = this.parentsComponent.getFemaleTable();
+		Table maleParents = this.parentsComponent.getMaleTable();
 
-			Table femaleParents = this.parentsComponent.getFemaleTable();
-			Table maleParents = this.parentsComponent.getMaleTable();
+		List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
+		List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
+		this.parentsComponent.updateFemaleListNameForCrosses();
+		this.parentsComponent.updateMaleListNameForCrosses();
 
-			List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
-			List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
-			this.parentsComponent.updateFemaleListNameForCrosses();
-			this.parentsComponent.updateMaleListNameForCrosses();
-
-			this.makeCrossesMain.makeCrossButtonAction(femaleList, maleList, this.parentsComponent.getFemaleListNameForCrosses(),
-					this.parentsComponent.getMaleListNameForCrosses(), type, this.chkBoxMakeReciprocalCrosses.booleanValue(),
-					this.chkBoxExcludeSelfs.booleanValue());
-		}
+		this.makeCrossesMain.makeCrossButtonAction(femaleList, maleList, this.parentsComponent.getFemaleListNameForCrosses(),
+				this.parentsComponent.getMaleListNameForCrosses(), this.getSelectedCrossingMethod(), this.chkBoxMakeReciprocalCrosses.booleanValue(),
+				this.chkBoxExcludeSelfs.booleanValue());
 	}
 	
 	Button getGenerateCrossButton() {
@@ -195,8 +230,28 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		return this.crossingMethodComboBox;
 	}
 	
+	
+	protected CheckBox getChkBoxMakeReciprocalCrosses() {
+		return chkBoxMakeReciprocalCrosses;
+	}
+
+	
+	protected CheckBox getChkBoxExcludeSelfs() {
+		return chkBoxExcludeSelfs;
+	}
+
 	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	
+	protected void setCrossTypeValidator(CrossTypeValidator crossTypeValidator) {
+		this.crossTypeValidator = crossTypeValidator;
+	}
+
+	
+	protected void setParentsComponent(MakeCrossesParentsComponent parentsComponent) {
+		this.parentsComponent = parentsComponent;
 	}
 	
 }
