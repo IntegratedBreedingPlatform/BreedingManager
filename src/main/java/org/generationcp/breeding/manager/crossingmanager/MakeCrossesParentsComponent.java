@@ -337,7 +337,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		final List<GermplasmListEntry> sortedSelectedValues = new ArrayList<>();
 
 		allItemIds.addAll((Collection<GermplasmListEntry>) table.getItemIds());
-		selectedItemIds.addAll((Collection<GermplasmListEntry>) table.getValue());
 
 		for (final GermplasmListEntry entry : allItemIds) {
 			final CheckBox tag = (CheckBox) table.getItem(entry).getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).getValue();
