@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -18,6 +18,7 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.Progenitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,10 +64,10 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 				ApplyCrossingSettingAction.LOG.error(e.getMessage(), e);
 			}
 
-			final List<Pair<Germplasm, Name>> germplasmPairs =
+			final List<Triple<Germplasm, Name, List<Progenitor>>> germplasmTriples =
 					this.extractGermplasmPairList(this.container.getCrossesMade().getCrossesMap());
 
-			CrossingUtil.applyMethodNameType(this.germplasmDataManager, germplasmPairs, crossingNameTypeId);
+			CrossingUtil.applyMethodNameType(this.germplasmDataManager, germplasmTriples, crossingNameTypeId);
 			return true;
 
 		}
@@ -74,10 +75,10 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 		return false;
 	}
 
-	protected List<Pair<Germplasm, Name>> extractGermplasmPairList(final Map<Germplasm, Name> germplasmNameMap) {
-		final List<Pair<Germplasm, Name>> returnValue = new ArrayList<>();
+	protected List<Triple<Germplasm, Name, List<Progenitor>>> extractGermplasmPairList(final Map<Germplasm, Name> germplasmNameMap) {
+		final List<Triple<Germplasm, Name, List<Progenitor>>> returnValue = new ArrayList<>();
 		for (final Map.Entry<Germplasm, Name> germplasmNameEntry : germplasmNameMap.entrySet()) {
-			returnValue.add(new ImmutablePair<Germplasm, Name>(germplasmNameEntry.getKey(), germplasmNameEntry.getValue()));
+			returnValue.add(new ImmutableTriple<Germplasm, Name, List<Progenitor>>(germplasmNameEntry.getKey(), germplasmNameEntry.getValue(), null));
 		}
 
 		return returnValue;
