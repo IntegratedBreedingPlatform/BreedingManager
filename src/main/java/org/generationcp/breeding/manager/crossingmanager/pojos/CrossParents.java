@@ -1,17 +1,28 @@
 
 package org.generationcp.breeding.manager.crossingmanager.pojos;
 
+import java.util.List;
+
 public class CrossParents {
 
 	private final GermplasmListEntry femaleParent;
 
 	private final GermplasmListEntry maleParent;
 
+	private final List<GermplasmListEntry> maleParents;
+
 	private String seedSource;
 
 	public CrossParents(GermplasmListEntry femaleParent, GermplasmListEntry maleParent) {
 		this.femaleParent = femaleParent;
 		this.maleParent = maleParent;
+		this.maleParents = null;
+	}
+
+	public CrossParents(GermplasmListEntry femaleParent, List<GermplasmListEntry> maleParents) {
+		this.femaleParent = femaleParent;
+		this.maleParent = null;
+		this.maleParents = maleParents;
 	}
 
 	public GermplasmListEntry getFemaleParent() {
@@ -20,6 +31,10 @@ public class CrossParents {
 
 	public GermplasmListEntry getMaleParent() {
 		return this.maleParent;
+	}
+
+	public List<GermplasmListEntry> getMaleParents() {
+		return this.maleParents;
 	}
 
 	public String getSeedSource() {
@@ -36,6 +51,7 @@ public class CrossParents {
 		int result = 1;
 		result = prime * result + (this.femaleParent != null && this.femaleParent.getGid() != null ? this.femaleParent.getGid().hashCode() : 0);
 		result = prime * result + (this.maleParent != null && this.maleParent.getGid() != null ? this.maleParent.getGid().hashCode() : 0);
+		result = prime * result + (this.maleParents != null ? this.maleParents.hashCode() : 0);
 		return result;
 	}
 
@@ -62,7 +78,9 @@ public class CrossParents {
 			if (other.maleParent != null) {
 				return false;
 			}
-		} else if (!this.maleParent.hasEqualGidWith(other.maleParent)) {
+		} else if (this.maleParent != null && !this.maleParent.hasEqualGidWith(other.maleParent)) {
+			return false;
+		} else if (this.maleParents != null && !this.maleParents.equals(other.maleParents)) {
 			return false;
 		}
 		return true;

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
@@ -27,6 +28,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.Progenitor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -423,22 +425,23 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 	@Override
 	public boolean updateCrossesMadeContainer(final CrossesMadeContainer container) {
 
-		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null
+		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesList() != null
 				&& this.validateCrossNameFields() && this.validateGeneratedName()) {
 
 			int ctr = this.nextNumberInSequence;
 			final String suffix = (String) this.suffixTextField.getValue();
 
-			final Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
+
+			final List<Triple<Germplasm, Name, List<Progenitor>>> crossesList = this.container.getCrossesMade().getCrossesList();
 			final List<GermplasmListEntry> oldCrossNames = new ArrayList<GermplasmListEntry>();
 
 			// Store old cross name and generate new names based on prefix, suffix specifications
-			for (final Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()) {
-				final Name nameObject = entry.getValue();
+			for (final Triple<Germplasm, Name, List<Progenitor>> triple: crossesList) {
+				final Name nameObject = triple.getMiddle();
 				final String oldCrossName = nameObject.getNval();
 				nameObject.setNval(this.buildNextNameInSequence(this.lastPrefixUsed, suffix, ctr++));
 
-				final Germplasm germplasm = entry.getKey();
+				final Germplasm germplasm = triple.getLeft();
 				final Integer tempGid = germplasm.getGid();
 				final GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, tempGid, oldCrossName);
 

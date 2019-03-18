@@ -48,13 +48,12 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	 * @return
 	 */
 	private boolean applyBreedingMethodSetting() {
-		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null) {
+		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesList() != null) {
 
 			// Use same breeding method for all crosses
-			final Set<Germplasm> germplasms = this.container.getCrossesMade().getCrossesMap().keySet();
-			for (final Germplasm germplasm : germplasms) {
+			for (final Triple<Germplasm, Name, List<Progenitor>> triple: this.container.getCrossesMade().getCrossesList()) {
 				//Set the method id to Single Cross(101) for now, it will be overwritten in the nursery side
-				germplasm.setMethodId(101);
+				triple.getLeft().setMethodId(101);
 			}
 
 			Integer crossingNameTypeId = null;
@@ -64,24 +63,12 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 				ApplyCrossingSettingAction.LOG.error(e.getMessage(), e);
 			}
 
-			final List<Triple<Germplasm, Name, List<Progenitor>>> germplasmTriples =
-					this.extractGermplasmPairList(this.container.getCrossesMade().getCrossesMap());
-
-			CrossingUtil.applyMethodNameType(this.germplasmDataManager, germplasmTriples, crossingNameTypeId);
+			CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.container.getCrossesMade().getCrossesList(), crossingNameTypeId);
 			return true;
 
 		}
 
 		return false;
-	}
-
-	protected List<Triple<Germplasm, Name, List<Progenitor>>> extractGermplasmPairList(final Map<Germplasm, Name> germplasmNameMap) {
-		final List<Triple<Germplasm, Name, List<Progenitor>>> returnValue = new ArrayList<>();
-		for (final Map.Entry<Germplasm, Name> germplasmNameEntry : germplasmNameMap.entrySet()) {
-			returnValue.add(new ImmutableTriple<Germplasm, Name, List<Progenitor>>(germplasmNameEntry.getKey(), germplasmNameEntry.getValue(), null));
-		}
-
-		return returnValue;
 	}
 
 	/**
@@ -90,16 +77,17 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	 * @return
 	 */
 	private boolean applyNameSetting() {
-		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null) {
+		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesList() != null) {
 			int ctr = 1;
 
-			final Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
 			final List<GermplasmListEntry> oldCrossNames = new ArrayList<>();
 
+			final List<Triple<Germplasm, Name, List<Progenitor>>> crossesList = this.container.getCrossesMade().getCrossesList();
+
 			// Store old cross name and generate new names based on prefix, suffix specifications
-			for (final Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()) {
-				final Germplasm germplasm = entry.getKey();
-				final Name nameObject = entry.getValue();
+			for (final Triple<Germplasm, Name, List<Progenitor>> triple: crossesList) {
+				final Germplasm germplasm = triple.getLeft();
+				final Name nameObject = triple.getMiddle();
 				final String oldCrossName = nameObject.getNval();
 				nameObject.setNval(String.valueOf(ctr++));
 
@@ -128,18 +116,17 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	 * @return
 	 */
 	private boolean applyAdditionalDetailsSetting() {
-		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null) {
+		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesList() != null) {
 			//the date and harvest location will be overwritten in the nursery side.
 			Integer dateIntValue = 0;
 			Integer harvestLocationId = 0;
-
-			final Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
-			for (final Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()) {
-				final Germplasm germplasm = entry.getKey();
+			final List<Triple<Germplasm, Name, List<Progenitor>>> crossesList = this.container.getCrossesMade().getCrossesList();
+			for (final Triple<Germplasm, Name, List<Progenitor>> triple: crossesList) {
+				final Germplasm germplasm = triple.getLeft();
 				germplasm.setLocationId(harvestLocationId);
 				germplasm.setGdate(dateIntValue);
 
-				final Name name = entry.getValue();
+				final Name name = triple.getMiddle();
 				name.setLocationId(harvestLocationId);
 				name.setNdate(dateIntValue);
 			}

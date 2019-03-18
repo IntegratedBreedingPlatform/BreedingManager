@@ -192,6 +192,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		// Crosses with Unknown Male Parent	
 		} else if (CrossType.UNKNOWN_MALE.equals(type)) {
 			CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeCrossesWithUnknownMaleParent(femaleList, listnameFemaleParent);
+		} else if (CrossType.MULTIPLE_MALE.equals(type)) {
+			CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeCrossesWithMultipleMaleParents(femaleList, maleList,
+				listnameFemaleParent, listnameMaleParent, excludeSelf);
 		}
 	}
 
