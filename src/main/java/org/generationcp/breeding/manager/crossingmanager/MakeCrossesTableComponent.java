@@ -554,24 +554,10 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		// If crossing for a Nursery, use the seed source generation service.
 		final Workbook workbook = this.makeCrossesMain.getWorkbook();
 		if (workbook != null) {
-			String femalePlotNo = "0";
+			final String femalePlotNo = getParentPlotNo(workbook, femaleParentGid);
 			final List<String> malePlotNos = new ArrayList<>();
 			for(final GermplasmListEntry maleParent: maleParents) {
-				String malePlotNo = "0";
-
-				// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
-				for (final MeasurementRow row : workbook.getObservations()) {
-					final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
-					final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
-					// FIXME femalePlotNo is the last plot no where GID occurs. Should it be the 1st?
-					if (!femalePlotNo.equals("0") && gidData != null && gidData.getValue().equals(femaleParentGid.toString()) && plotNumberData != null) {
-						femalePlotNo = plotNumberData.getValue();
-					}
-
-					if (gidData != null && gidData.getValue().equals(maleParent.getGid().toString()) && plotNumberData != null) {
-						malePlotNo = plotNumberData.getValue();
-					}
-				}
+				final String malePlotNo = getParentPlotNo(workbook, maleParent.getGid());
 				malePlotNos.add(malePlotNo);
 			}
 
@@ -581,6 +567,19 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				workbook.getStudyName(), workbook.getStudyName());
 		}
 		return seedSource;
+	}
+
+	private String getParentPlotNo(final Workbook workbook, final Integer parentGid) {
+		String parentPlotNo = "0";
+		// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
+		for (final MeasurementRow row : workbook.getObservations()) {
+			final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
+			final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
+			if (gidData != null && gidData.getValue().equals(parentGid.toString()) && plotNumberData != null) {
+				parentPlotNo = plotNumberData.getValue();
+			}
+		}
+		return parentPlotNo;
 	}
 
 	String generateDefaultSeedSource(final String femaleSource, final List<GermplasmListEntry> maleParents) {
