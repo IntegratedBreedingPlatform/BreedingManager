@@ -613,7 +613,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			germplasm.setGpid2(gpId2);
 
 			final Name name = new Name();
-			name.setNval("," + crossSource);
+			name.setNval(crossSource);
 			name.setTypeId(crossingNameTypeId);
 
 			final ImportedGermplasmCross cross = new ImportedGermplasmCross();

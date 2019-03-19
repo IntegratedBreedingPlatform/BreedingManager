@@ -293,10 +293,10 @@ public class SaveCrossesMadeAction implements Serializable {
 			if (this.germplasmList == null) {
 				final Integer gid = germplasmIdIterator.next();
 				final String designation = name.getNval();
-				final String groupName = this.getFemaleMaleCrossName(crossesMade, designation, ctr);
+				final String seedsource = this.getFemaleMaleCrossName(crossesMade, designation, ctr);
 
 				final GermplasmListData germplasmListData =
-						this.buildGermplasmListData(list, gid, entryId, designation, groupName, pedigreeMap);
+						this.buildGermplasmListData(list, gid, entryId, designation, seedsource, pedigreeMap);
 
 				listToSave.add(germplasmListData);
 				entryId++;
@@ -324,16 +324,15 @@ public class SaveCrossesMadeAction implements Serializable {
 	}
 
 	private GermplasmListData buildGermplasmListData(final GermplasmList list, final Integer gid, final int entryId,
-			final String designation, final String groupName, final Map<Integer, String> pedigreeMap) {
-
-		final String[] groupNameSplit = groupName.split(",");
-		final String seedSource = groupNameSplit[1];
-
+			final String designation, String seedSource, final Map<Integer, String> pedigreeMap) {
 		final GermplasmListData germplasmListData = new GermplasmListData();
 		germplasmListData.setList(list);
 		germplasmListData.setGid(gid);
 		germplasmListData.setEntryId(entryId);
 		germplasmListData.setEntryCode(String.valueOf(entryId));
+		if(seedSource.length() > 255) {
+			seedSource = seedSource.substring(0, 255);
+		}
 		germplasmListData.setSeedSource(seedSource);
 		germplasmListData.setDesignation(designation);
 		germplasmListData.setStatus(SaveCrossesMadeAction.LIST_DATA_STATUS);
