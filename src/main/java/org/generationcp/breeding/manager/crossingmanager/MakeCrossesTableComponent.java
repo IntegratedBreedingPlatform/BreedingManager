@@ -408,7 +408,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
 		final Integer maleGid = maleParent.getGid();
 		final Integer femaleGid = femaleParent.getGid();
-		final String seedSource = this.generateSeedSource(femaleGid, femaleSeedSource, maleGid, maleSeedSource);
+		final String seedSource = this.generateSeedSource(femaleGid, femaleSeedSource, Arrays.asList(maleParent));
 
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)) {
 			final String unknownString = Name.UNKNOWN;
@@ -510,40 +510,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	private boolean shouldBeAddedToCrossesTable(CrossParents parents, Set<CrossParents> existingCrosses) {
 		return !existingCrosses.contains(parents) && (this.tableCrossesMade.size() == 0 || this.tableCrossesMade.getItem(parents) == null);
-	}
-
-	String generateSeedSource(final Integer femaleParentGid, final String femaleSource, final Integer maleParentGid,
-		final String maleSource) {
-
-		// Default as before
-		String seedSource = this.appendWithSeparator(femaleSource, maleSource);
-
-		// If crossing for a Nursery, use the seed source generation service.
-		final Workbook workbook = this.makeCrossesMain.getWorkbook();
-		if (workbook != null) {
-			String malePlotNo = "0";
-			String femalePlotNo = "0";
-
-			// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
-			for (final MeasurementRow row : workbook.getObservations()) {
-				final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
-				final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
-				// FIXME femalePlotNo is the last plot no where GID occurs. Should it be the 1st?
-				if (gidData != null && gidData.getValue().equals(femaleParentGid.toString()) && plotNumberData != null) {
-					femalePlotNo = plotNumberData.getValue();
-				}
-
-				if (gidData != null && gidData.getValue().equals(maleParentGid.toString()) && plotNumberData != null) {
-					malePlotNo = plotNumberData.getValue();
-				}
-			}
-
-			// Single nursery is in context here, so set the same study name as both male/female parts. For import crosses case, these
-			// could be different Nurseries.
-			seedSource = this.seedSourceGenerator.generateSeedSourceForCross(workbook, malePlotNo, femalePlotNo,
-				workbook.getStudyName(), workbook.getStudyName());
-		}
-		return seedSource;
 	}
 
 	String generateSeedSource(final Integer femaleParentGid, final String femaleSource, final List<GermplasmListEntry> maleParents) {
