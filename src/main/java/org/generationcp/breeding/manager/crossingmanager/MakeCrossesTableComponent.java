@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -108,7 +107,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
 	private static final int PARENTS_TABLE_ROW_COUNT = 5;
-	public static final String PARENTS_DELIMITER = ",";
 	private static final long serialVersionUID = 3702324761498666369L;
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
 	private static final String TAG_COLUMN_ID = "Tag";
@@ -321,21 +319,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final CrossParents parents = new CrossParents(femaleParentCopy, maleParentsCopy);
 		final Integer femaleGid = femaleParent.getGid();
 		final String seedSource = this.generateSeedSource(femaleGid, femaleSeedSource, maleParentsCopy);
-
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses)) {
 			final int entryCounter = this.tableCrossesMade.size() + 1;
 			final String femalePreferredName = getGermplasmPreferredName(preferredNamesMap.get(femaleGid));
-			final String maleParentPreferredName = this.generateGermplasmPreferredNames(maleParentsCopy, preferredNamesMap);
 			final String femaleParentPedigreeString = parentPedigreeStringMap.get(femaleGid);
 			final String maleParentPedigreeString = this.generateMalePedigreeString(maleParentsCopy, parentPedigreeStringMap);
 
 			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleGid.toString(), true));
 			designationFemaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
 			designationFemaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
-
-			final Button designationMaleParentButton = new Button(maleParentPreferredName, new GidLinkClickListener(maleParents.get(0).getGid().toString(), true));
-			designationMaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
-			designationMaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+			final HorizontalLayout maleParentsCell = this.getMaleParentCell(maleParents, preferredNamesMap);
 
 			final CheckBox tag = new CheckBox();
 			tag.setDebugId(TAG_COLUMN_ID);
@@ -344,24 +337,37 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 			Object[] item = new Object[] {
 				tag, entryCounter, designationFemaleParentButton,
-				designationMaleParentButton, femaleParentPedigreeString, maleParentPedigreeString, seedSource};
+				maleParentsCell, femaleParentPedigreeString, maleParentPedigreeString, seedSource};
 
 			this.tableCrossesMade.addItem(item, parents);
 			existingCrosses.add(parents);
 		}
 	}
 
-	String generateGermplasmPreferredNames(final List<GermplasmListEntry> maleParents, final Map<Integer, Germplasm> preferredNamesMap) {
-		final List<String> preferredNames = new ArrayList<>();
-		for(final GermplasmListEntry maleParent: maleParents) {
-			preferredNames.add(Objects.equal(maleParent.getGid(), 0)? Name.UNKNOWN : this.getGermplasmPreferredName(preferredNamesMap.get(maleParent.getGid())));
+	HorizontalLayout getMaleParentCell(final List<GermplasmListEntry> maleParents, final Map<Integer, Germplasm> preferredNamesMap) {
+		final HorizontalLayout maleParentCell = new HorizontalLayout();
+		for(int i=0; i<maleParents.size(); i++) {
+			GermplasmListEntry maleParent = maleParents.get(i);
+			final String maleParentPreferredName = Objects.equal(maleParent.getGid(), 0) ? Name.UNKNOWN :
+				this.getGermplasmPreferredName(preferredNamesMap.get(maleParent.getGid()));
+			final Button designationMaleParentButton =
+				new Button(maleParentPreferredName, new GidLinkClickListener(maleParent.getGid().toString(), true));
+			designationMaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
+			designationMaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+			maleParentCell.addComponent(designationMaleParentButton);
+			if(i + 1 != maleParents.size()) {
+				final Label separator = new Label(", ");
+				maleParentCell.addComponent(separator);
+			}
 		}
+		if(maleParents.size() > 1) {
+			final Label openSquareBracket = new Label("[");
+			maleParentCell.addComponent(openSquareBracket, 0);
 
-		if (maleParents.size() > 1) {
-			return "[" + StringUtils.join(preferredNames, ", ") + "]";
+			final Label closeSquareBracket = new Label("]");
+			maleParentCell.addComponent(closeSquareBracket);
 		}
-		return preferredNames.get(0);
-
+		return maleParentCell;
 	}
 
 	String generateMalePedigreeString(final List<GermplasmListEntry> maleParents, final Map<Integer, String> parentPedigreeStringMap) {
@@ -427,6 +433,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final Button designationMaleParentButton = new Button(maleParentPreferredName, new GidLinkClickListener(maleGid.toString(), true));
 			designationMaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
 			designationMaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+			HorizontalLayout maleParentCell = new HorizontalLayout();
+			maleParentCell.addComponent(designationMaleParentButton);
 
 			final CheckBox tag = new CheckBox();
 			tag.setDebugId(TAG_COLUMN_ID);
@@ -435,7 +443,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 			Object[] item = new Object[] {
 				tag, entryCounter, designationFemaleParentButton,
-				designationMaleParentButton, femaleParentPedigreeString, maleParentPedigreeString, seedSource};
+				maleParentCell, femaleParentPedigreeString, maleParentPedigreeString, seedSource};
 
 			this.tableCrossesMade.addItem(item, parents);
 			existingCrosses.add(parents);
@@ -701,7 +709,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.tableCrossesMade.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
 		this.tableCrossesMade.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
 		this.tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), Button.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), Button.class, null);
+		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), HorizontalLayout.class, null);
 		this.tableCrossesMade.addContainerProperty(FEMALE_CROSS, String.class, null);
 		this.tableCrossesMade.addContainerProperty(MALE_CROSS, String.class, null);
 		this.tableCrossesMade.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
