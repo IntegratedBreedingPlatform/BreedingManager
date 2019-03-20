@@ -85,6 +85,12 @@ public class CrossingMethodComponentTest {
 		this.component.getCrossingMethodComboBox().setValue(CrossType.MULTIPLY);
 		Assert.assertTrue(this.component.getChkBoxExcludeSelfs().isEnabled());
 		Assert.assertTrue(this.component.getChkBoxMakeReciprocalCrosses().isEnabled());
+		Assert.assertTrue((boolean)this.component.getChkBoxExcludeSelfs().getValue());
+
+		this.component.getCrossingMethodComboBox().setValue(CrossType.MULTIPLE_MALE);
+		Assert.assertTrue(this.component.getChkBoxExcludeSelfs().isEnabled());
+		Assert.assertFalse((boolean)this.component.getChkBoxExcludeSelfs().getValue());
+		Assert.assertFalse(this.component.getChkBoxMakeReciprocalCrosses().isEnabled());
 	}
 	
 	@Test

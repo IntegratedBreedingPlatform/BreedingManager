@@ -162,8 +162,12 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 				CrossType type = getSelectedCrossingMethod();
 				if(CrossType.MULTIPLE_MALE.equals(type)) {
 					CrossingMethodComponent.this.chkBoxMakeReciprocalCrosses.setEnabled(false);
+					CrossingMethodComponent.this.chkBoxExcludeSelfs.setEnabled(true);
 					CrossingMethodComponent.this.chkBoxExcludeSelfs.setValue(false);
-				} else if(!CrossType.UNKNOWN_MALE.equals(type)) {
+				} else if(CrossType.UNKNOWN_MALE.equals(type)) {
+					CrossingMethodComponent.this.chkBoxMakeReciprocalCrosses.setEnabled(false);
+					CrossingMethodComponent.this.chkBoxExcludeSelfs.setEnabled(false);
+				} else {
 					CrossingMethodComponent.this.chkBoxMakeReciprocalCrosses.setEnabled(true);
 					CrossingMethodComponent.this.chkBoxExcludeSelfs.setEnabled(true);
 					CrossingMethodComponent.this.chkBoxExcludeSelfs.setValue(true);
