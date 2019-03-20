@@ -114,6 +114,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	private static final String MALE_CROSS = "MALE CROSS";
 
 	private static final String CLICK_TO_VIEW_GERMPLASM_INFORMATION = "Click to view Germplasm information";
+	public static final String OPENING_SQUARE_BRACKET = "[";
+	public static final String CLOSING_SQUARE_BRACKET = "]";
+	public static final String SEPARATOR = ", ";
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
@@ -285,17 +288,17 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	}
 
-	private ImmutableMap<Integer, Germplasm> getGermplasmWithPreferredNameForBothParents(final List<GermplasmListEntry> femaleParents,
-			final List<GermplasmListEntry> maleParents) {
+	ImmutableMap<Integer, Germplasm> getGermplasmWithPreferredNameForBothParents(final List<GermplasmListEntry> femaleParents,
+		final List<GermplasmListEntry> maleParents) {
 		final Set<Integer> germplasmListEntries = getAllGidsFromParents(femaleParents, maleParents);
 		final List<Germplasm> germplasmWithAllNamesAndAncestry =
-				germplasmDataManager.getGermplasmWithAllNamesAndAncestry(germplasmListEntries, 0);
+			germplasmDataManager.getGermplasmWithAllNamesAndAncestry(germplasmListEntries, 0);
 		return CollectionTransformationUtil.getGermplasmMap(germplasmWithAllNamesAndAncestry);
 	}
 
 	private Set<Integer> getAllGidsFromParents(final List<GermplasmListEntry> femaleParents, final List<GermplasmListEntry> maleParents) {
 		return new ImmutableSet.Builder<Integer>().addAll(BreedingManagerTransformationUtil.getAllGidsFromGermplasmEntry(femaleParents))
-				.addAll(BreedingManagerTransformationUtil.getAllGidsFromGermplasmEntry(maleParents)).build();
+			.addAll(BreedingManagerTransformationUtil.getAllGidsFromGermplasmEntry(maleParents)).build();
 	}
 
 	void addItemToMakeCrossesTable(
@@ -307,6 +310,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final GermplasmListEntry femaleParentCopy = femaleParent.copy();
 		femaleParentCopy.setSeedSource(femaleSeedSource);
 
+		//Make a copy of the male parents so that the removal of the "self"(if necessary) won't affect the maleParents for other crosses.
 		final List<GermplasmListEntry> maleParentsCopy = new ArrayList<>();
 		maleParentsCopy.addAll(maleParents);
 		this.removeSelfIfNecessary(femaleParent, maleParentsCopy, excludeSelf);
@@ -355,15 +359,15 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			designationMaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 			maleParentCell.addComponent(designationMaleParentButton);
 			if(i + 1 != maleParents.size()) {
-				final Label separator = new Label(", ");
+				final Label separator = new Label(SEPARATOR);
 				maleParentCell.addComponent(separator);
 			}
 		}
 		if(maleParents.size() > 1) {
-			final Label openSquareBracket = new Label("[");
+			final Label openSquareBracket = new Label(OPENING_SQUARE_BRACKET);
 			maleParentCell.addComponent(openSquareBracket, 0);
 
-			final Label closeSquareBracket = new Label("]");
+			final Label closeSquareBracket = new Label(CLOSING_SQUARE_BRACKET);
 			maleParentCell.addComponent(closeSquareBracket);
 		}
 		return maleParentCell;
@@ -376,7 +380,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		}
 
 		if (maleParents.size() > 1) {
-			return "[" + StringUtils.join(maleParentsPedigree, ", ") + "]";
+			return OPENING_SQUARE_BRACKET + StringUtils.join(maleParentsPedigree, SEPARATOR) + CLOSING_SQUARE_BRACKET;
 		}
 		return maleParentsPedigree.get(0);
 	}
@@ -562,7 +566,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			generatedSeedSources.add(maleParent.getSeedSource());
 		}
 		if(generatedSeedSources.size() > 1) {
-			return this.appendWithSeparator(femaleSource, "[" + StringUtils.join(generatedSeedSources, ", ") + "]");
+			return this.appendWithSeparator(femaleSource, OPENING_SQUARE_BRACKET + StringUtils.join(generatedSeedSources, SEPARATOR) + CLOSING_SQUARE_BRACKET);
 		}
 		return this.appendWithSeparator(femaleSource, generatedSeedSources.get(0));
 	}

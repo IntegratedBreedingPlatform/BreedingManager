@@ -233,6 +233,18 @@ public class CrossingManagerMakeCrossesComponentTest {
 				excludeSelf);
 		Mockito.verify(this.crossesTableComponent).makeCrossesWithUnknownMaleParent(femaleEntries, listnameFemale);
 	}
+
+	@Test
+	public void testCreateAndAddCrossesToTableWhenMultipleMaleParent() {
+		final List<GermplasmListEntry> femaleEntries = createListEntries(5);
+		final List<GermplasmListEntry> maleEntries = createListEntries(5);
+		final String listnameFemale = RandomStringUtils.randomAlphabetic(20);
+		final String listnameMale = RandomStringUtils.randomAlphabetic(20);
+		final Boolean excludeSelf = new Random().nextBoolean();
+		this.makeCrosses.createAndAddCrossesToTable(femaleEntries, maleEntries, listnameFemale, listnameMale, CrossType.MULTIPLE_MALE, false,
+			excludeSelf);
+		Mockito.verify(this.crossesTableComponent).makeCrossesWithMultipleMaleParents(femaleEntries, maleEntries, listnameFemale, listnameMale, excludeSelf);
+	}
 	
 
 	private List<GermplasmListEntry> createListEntries(final int numOfEntries) {

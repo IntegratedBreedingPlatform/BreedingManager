@@ -7,14 +7,19 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -22,6 +27,10 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.commons.service.impl.SeedSourceGenerator;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.constant.ColumnLabels;
+import org.generationcp.middleware.data.initializer.MeasurementDataTestDataInitializer;
+import org.generationcp.middleware.domain.etl.MeasurementData;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -32,6 +41,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -50,7 +60,7 @@ public class MakeCrossesTableComponentTest {
 	private static final String PEDIGREE = "pedigree ";
 	private static final String PREFERRED_NAME = "PREFERRED NAME ";
 	private static final String FEMALE_LIST_NAME = "Female Lizt";
-	private static final String MALE_LIST_NAME = "Female Lizt";
+	private static final String MALE_LIST_NAME = "Male Lizt";
 
 	private static final int PARENTS_TABLE_ROW_COUNT = 5;
 
@@ -111,6 +121,12 @@ public class MakeCrossesTableComponentTest {
 		this.parents = new CrossParents(this.femaleParent, this.maleParent);
 		Mockito.when(this.tableCrossesMade.getItemIds()).thenReturn(new ArrayList());
 		Mockito.doNothing().when(this.makeCrossesTableComponent).updateCrossesMadeUI();
+
+		Mockito.when(this.messageSource.getMessage(Message.CLEAR_ALL)).thenReturn("CLEAR_ALL");
+		Mockito.when(this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES)).thenReturn("REMOVE_SELECTED_ENTRIES");
+		Mockito.when(this.messageSource.getMessage(Message.SELECT_ALL)).thenReturn("SELECT_ALL");
+		Mockito.when(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES)).thenReturn("SELECT_EVEN_ENTRIES");
+		Mockito.when(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES)).thenReturn("SELECT_ODD_ENTRIES");
 	}
 
 	@Test
@@ -202,7 +218,7 @@ public class MakeCrossesTableComponentTest {
 			assertEquals(false, ((CheckBox) newItemData[0]).booleanValue());
 			assertEquals(1, ((Integer) newItemData[1]).intValue());
 			assertEquals("Unknown", ((Button) newItemData[2]).getCaption());
-			assertEquals("Unknown", ((Button) newItemData[3]).getCaption());
+			assertEquals("Unknown", (((HorizontalLayout) newItemData[3]).getComponent(0)).getCaption());
 			assertEquals("pedigree 2", newItemData[4]);
 			assertEquals("pedigree 1", newItemData[5]);
 		} catch (final TooLittleActualInvocations e) {
@@ -233,11 +249,6 @@ public class MakeCrossesTableComponentTest {
 		final Set<CrossParents> existingCrosses = new HashSet<>();
 		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 		final Map<Integer, String> parentsPedigreeString = this.createPedigreeStringMap(2);
-		Mockito.when(this.messageSource.getMessage(Message.CLEAR_ALL)).thenReturn("CLEAR_ALL");
-		Mockito.when(this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES)).thenReturn("REMOVE_SELECTED_ENTRIES");
-		Mockito.when(this.messageSource.getMessage(Message.SELECT_ALL)).thenReturn("SELECT_ALL");
-		Mockito.when(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES)).thenReturn("SELECT_EVEN_ENTRIES");
-		Mockito.when(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES)).thenReturn("SELECT_ODD_ENTRIES");
 		this.makeCrossesTableComponent
 			.addItemToMakeCrossesTable(FEMALE_LIST_NAME, MALE_LIST_NAME, false, this.femaleParent, this.maleParent, existingCrosses,
 					germplasmWithPreferredName, parentsPedigreeString);
@@ -258,7 +269,7 @@ public class MakeCrossesTableComponentTest {
 			assertEquals(false, ((CheckBox) newItemData[0]).booleanValue());
 			assertEquals(1, ((Integer) newItemData[1]).intValue());
 			assertEquals("Unknown", ((Button) newItemData[2]).getCaption());
-			assertEquals("Unknown", ((Button) newItemData[3]).getCaption());
+			assertEquals("Unknown", (((HorizontalLayout) newItemData[3]).getComponent(0)).getCaption());
 			assertEquals("pedigree 1", newItemData[4]);
 			assertEquals("pedigree 1", newItemData[5]);
 
@@ -267,6 +278,151 @@ public class MakeCrossesTableComponentTest {
 		}
 	}
 
+	@Test
+	public void testAddItemToMakeCrossesTableForMultipleParentsWhenTheExcludeSelfIsFalse() {
+		final Set<CrossParents> existingCrosses = new HashSet<>();
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
+		final Map<Integer, String> parentsPedigreeString = this.createPedigreeStringMap(2);
+		this.makeCrossesTableComponent
+			.addItemToMakeCrossesTable(FEMALE_LIST_NAME, MALE_LIST_NAME, false, this.femaleParent, Arrays.asList(this.maleParent), existingCrosses,
+				germplasmWithPreferredName, parentsPedigreeString);
+
+		try {
+			final ArgumentCaptor<Object[]> argumentCaptor = ArgumentCaptor.forClass(Object[].class);
+			final ArgumentCaptor<Object> itemIdCaptor = ArgumentCaptor.forClass(Object.class);
+
+			Mockito.verify(tableCrossesMade, Mockito.times(1)).addItem(argumentCaptor.capture(), itemIdCaptor.capture());
+			final Object[] newItemData = argumentCaptor.getValue();
+			final CrossParents crossParents = (CrossParents) itemIdCaptor.getValue();
+
+			// Verify the create cross parents
+			assertEquals(maleParent.getGid(), crossParents.getMaleParents().get(0).getGid());
+			assertEquals(femaleParent.getGid(), crossParents.getFemaleParent().getGid());
+
+			// Verify the visible column data
+			assertEquals(false, ((CheckBox) newItemData[0]).booleanValue());
+			assertEquals(1, ((Integer) newItemData[1]).intValue());
+			assertEquals("Unknown", ((Button) newItemData[2]).getCaption());
+			assertEquals("Unknown", (((HorizontalLayout) newItemData[3]).getComponent(0)).getCaption());
+			assertEquals("pedigree 1", newItemData[4]);
+			assertEquals("pedigree 1", newItemData[5]);
+
+		} catch (final TooLittleActualInvocations e) {
+			fail("Expecting table crosses will have an added entry but didn't.");
+		}
+	}
+
+	@Test
+	public void testAddItemToMakeCrossesTableForMultipleParentsWhenTheExcludeSelfIsTrue() {
+		final Set<CrossParents> existingCrosses = new HashSet<>();
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
+		final Map<Integer, String> parentsPedigreeString = this.createPedigreeStringMap(2);
+		this.makeCrossesTableComponent
+			.addItemToMakeCrossesTable(FEMALE_LIST_NAME, MALE_LIST_NAME, true, this.femaleParent, Arrays.asList(this.maleParent), existingCrosses,
+				germplasmWithPreferredName, parentsPedigreeString);
+
+		try {
+			final ArgumentCaptor<Object[]> argumentCaptor = ArgumentCaptor.forClass(Object[].class);
+			final ArgumentCaptor<Object> itemIdCaptor = ArgumentCaptor.forClass(Object.class);
+
+			Mockito.verify(tableCrossesMade, Mockito.never()).addItem(argumentCaptor.capture(), itemIdCaptor.capture());
+		} catch (final TooLittleActualInvocations e) {
+			fail("Expecting table crosses will have an added entry but didn't.");
+		}
+	}
+
+	@Test
+	public void testGetMaleParentCell() {
+		List<GermplasmListEntry> maleEntries = this.createListEntries(1);
+		Mockito.doReturn(this.createGermplasmWithPreferredName(1)).when(this.germplasmDataManager).getGermplasmWithAllNamesAndAncestry(ArgumentMatchers.<Set<Integer>>any(), ArgumentMatchers.eq(0));
+		Map<Integer, Germplasm> preferredNamesMap = this.makeCrossesTableComponent.getGermplasmWithPreferredNameForBothParents(Arrays.asList(this.femaleParent), maleEntries);
+		HorizontalLayout maleParentsCell = this.makeCrossesTableComponent.getMaleParentCell(maleEntries, preferredNamesMap);
+		Assert.assertEquals(PREFERRED_NAME + 1, maleParentsCell.getComponent(0).getCaption());
+
+		maleEntries = this.createListEntries(2);
+		Mockito.doReturn(this.createGermplasmWithPreferredName(2)).when(this.germplasmDataManager).getGermplasmWithAllNamesAndAncestry(ArgumentMatchers.<Set<Integer>>any(), ArgumentMatchers.eq(0));
+		preferredNamesMap = this.makeCrossesTableComponent.getGermplasmWithPreferredNameForBothParents(Arrays.asList(this.femaleParent), maleEntries);
+		maleParentsCell = this.makeCrossesTableComponent.getMaleParentCell(maleEntries, preferredNamesMap);
+		Assert.assertEquals(MakeCrossesTableComponent.OPENING_SQUARE_BRACKET, ((Label)maleParentsCell.getComponent(0)).getValue());
+		Assert.assertEquals( PREFERRED_NAME + 1, maleParentsCell.getComponent(1).getCaption());
+		Assert.assertEquals(MakeCrossesTableComponent.SEPARATOR, ((Label)maleParentsCell.getComponent(2)).getValue());
+		Assert.assertEquals( PREFERRED_NAME + 2, maleParentsCell.getComponent(3).getCaption());
+		Assert.assertEquals(MakeCrossesTableComponent.CLOSING_SQUARE_BRACKET, ((Label)maleParentsCell.getComponent(4)).getValue());
+	}
+
+	@Test
+	public void testGenerateMalePedigreeString() {
+		List<GermplasmListEntry> maleEntries = this.createListEntries(1);
+		Map<Integer, String> parentPedigreeStringMap = this.createPedigreeStringMap(1);
+		String malePedigreeString = this.makeCrossesTableComponent.generateMalePedigreeString(maleEntries, parentPedigreeStringMap);
+		Assert.assertEquals(PEDIGREE + 1, malePedigreeString);
+
+		maleEntries = this.createListEntries(2);
+		parentPedigreeStringMap = this.createPedigreeStringMap(2);
+		malePedigreeString = this.makeCrossesTableComponent.generateMalePedigreeString(maleEntries, parentPedigreeStringMap);
+		Assert.assertEquals(MakeCrossesTableComponent.OPENING_SQUARE_BRACKET + PEDIGREE + 1 + MakeCrossesTableComponent.SEPARATOR + PEDIGREE + 2 + MakeCrossesTableComponent.CLOSING_SQUARE_BRACKET, malePedigreeString);
+	}
+
+	@Test
+	public void testRemoveSelfIfNecessary() {
+		final GermplasmListEntry femaleParent = this.createListEntries(1).get(0);
+		List<GermplasmListEntry> maleEntries = this.createListEntries(2);
+		maleEntries.add(femaleParent);
+		Assert.assertEquals(3, maleEntries.size());
+		this.makeCrossesTableComponent.removeSelfIfNecessary(femaleParent, maleEntries, false);
+		Assert.assertEquals(3, maleEntries.size());
+		this.makeCrossesTableComponent.removeSelfIfNecessary(femaleParent, maleEntries, true);
+		Assert.assertEquals(1, maleEntries.size());
+	}
+
+	@Test
+	public void testSetMaleParentsSeedSource() {
+		final List<GermplasmListEntry> maleEntries = this.createListEntries(1);
+		this.makeCrossesTableComponent.setMaleParentsSeedSource(maleEntries, MALE_LIST_NAME);
+		Assert.assertEquals(MALE_LIST_NAME + ":1", maleEntries.get(0).getSeedSource());
+	}
+
+	@Test
+	public void testGenerateSeedSource() {
+		final Workbook workbook =  Mockito.mock(Workbook.class);
+		Mockito.when(this.makeCrossesMain.getWorkbook()).thenReturn(workbook);
+		Mockito.when(workbook.getStudyName()).thenReturn("STUDY NAME");
+
+		final List<MeasurementData> dataList = new ArrayList<>();
+		dataList.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.GID.getId(), TermId.GID.name(), "1"));
+		dataList.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.PLOT_NO.getId(), TermId.PLOT_NO.name(), "1"));
+		final MeasurementRow row = new MeasurementRow(dataList);
+		Mockito.when(workbook.getObservations()).thenReturn(Arrays.asList(row));
+
+		final List<GermplasmListEntry> maleEntries = this.createListEntries(1);
+		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(workbook, Arrays.asList("1"), "1", "STUDY NAME", "STUDY NAME")).thenReturn("SEED SOURCE");
+		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(1, PREFERRED_NAME + 1, maleEntries);
+		Assert.assertEquals("SEED SOURCE", seedSource);
+	}
+
+	@Test
+	public  void testGenerateDefaultSeedSource() {
+		final String preferredName = PREFERRED_NAME + 1;
+		List<GermplasmListEntry> maleEntries = this.createListEntries(1);
+		maleEntries.get(0).setSeedSource(preferredName);
+		String defaultSeedSource = this.makeCrossesTableComponent.generateDefaultSeedSource(preferredName, maleEntries);
+		Assert.assertEquals(preferredName + "/" + preferredName, defaultSeedSource);
+
+		String expectedResult = preferredName + "/" + MakeCrossesTableComponent.OPENING_SQUARE_BRACKET;
+		maleEntries = this.createListEntries(2);
+		for(final GermplasmListEntry maleParent: maleEntries) {
+			maleParent.setSeedSource(PREFERRED_NAME + maleParent.getGid());
+			expectedResult += maleParent.getSeedSource();
+			if(maleParent.getGid()==1) {
+				expectedResult += MakeCrossesTableComponent.SEPARATOR;
+			}
+		}
+		expectedResult += MakeCrossesTableComponent.CLOSING_SQUARE_BRACKET;
+
+		defaultSeedSource = this.makeCrossesTableComponent.generateDefaultSeedSource(preferredName, maleEntries);
+		Assert.assertEquals(expectedResult, defaultSeedSource);
+
+	}
 
 	@Test
 	public void testAddItemToMakeCrossesTableParentsAreNotYetInExistingCrosses() {
@@ -303,7 +459,7 @@ public class MakeCrossesTableComponentTest {
 		assertEquals(false, ((CheckBox) newItemData[0]).booleanValue());
 		assertEquals(1, ((Integer) newItemData[1]).intValue());
 		assertEquals("Unknown", ((Button) newItemData[2]).getCaption());
-		assertEquals("Unknown", ((Button) newItemData[3]).getCaption());
+		assertEquals("Unknown", (((HorizontalLayout) newItemData[3]).getComponent(0)).getCaption());
 		assertEquals("pedigree 5", newItemData[4]);
 		assertEquals("pedigree 6", newItemData[5]);
 
@@ -362,12 +518,60 @@ public class MakeCrossesTableComponentTest {
 			// Verify the visible column data
 			assertEquals(false, ((CheckBox) item[0]).booleanValue());
 			assertEquals(PREFERRED_NAME + gid, ((Button) item[2]).getCaption());
-			assertEquals(Name.UNKNOWN, ((Button) item[3]).getCaption());
+			assertEquals(Name.UNKNOWN, (((HorizontalLayout) item[3]).getComponent(0)).getCaption());
 			assertEquals(PEDIGREE + gid, item[4]);
 			assertEquals(Name.UNKNOWN, item[5]);
 			
 		}
-	} 
+	}
+
+	@Test
+	public void testMakeCrossesWithMultipleMaleParents() {
+		final int numOfFemaleEntries = 2;
+		final List<GermplasmListEntry> femaleEntries = this.createListEntries(numOfFemaleEntries);
+		final List<GermplasmListEntry> maleEntries = this.createListEntries(numOfFemaleEntries);
+		final Map<Integer, String> parentPedigreeStringMap = this.createPedigreeStringMap(numOfFemaleEntries);
+		Mockito.doReturn(this.createGermplasmWithPreferredName(numOfFemaleEntries)).when(this.germplasmDataManager).getGermplasmWithAllNamesAndAncestry(ArgumentMatchers.<Set<Integer>>any(), ArgumentMatchers.eq(0));
+		Mockito.doReturn(parentPedigreeStringMap).when(this.pedigreeService).getCrossExpansions(ArgumentMatchers.<Set<Integer>>any(), ArgumentMatchers.<Integer>any(), ArgumentMatchers.eq(this.crossExpansionProps));
+
+		this.makeCrossesTableComponent.makeCrossesWithMultipleMaleParents(femaleEntries, maleEntries, FEMALE_LIST_NAME, MALE_LIST_NAME, false);
+
+		final ArgumentCaptor<Object[]> argumentCaptor = ArgumentCaptor.forClass(Object[].class);
+		final ArgumentCaptor<Object> itemIdCaptor = ArgumentCaptor.forClass(Object.class);
+		Mockito.verify(this.tableCrossesMade, Mockito.times(numOfFemaleEntries)).addItem(argumentCaptor.capture(), itemIdCaptor.capture());
+
+		final List<Object[]> items = argumentCaptor.getAllValues();
+		final ListIterator<Object[]> itemsIterator = items.listIterator();
+		final List<Object> itemIds = itemIdCaptor.getAllValues();
+		final ListIterator<Object> itemIdsIterator = itemIds.listIterator();
+		final String malePedigreeString = this.makeCrossesTableComponent.generateMalePedigreeString(maleEntries, parentPedigreeStringMap);
+		for (int i = 0; i < numOfFemaleEntries; i++) {
+			final CrossParents parents = (CrossParents) itemIdsIterator.next();
+			final Object[] item = itemsIterator.next();
+
+			final int gid = i+1;
+			assertEquals(gid, parents.getFemaleParent().getGid().intValue());
+			for(int j = 1; j<=numOfFemaleEntries; j++) {
+				assertEquals(j, parents.getMaleParents().get(j-1).getGid().intValue());
+			}
+
+			// Verify the visible column data
+			assertEquals(false, ((CheckBox) item[0]).booleanValue());
+			assertEquals(PREFERRED_NAME + gid, ((Button) item[2]).getCaption());
+			final HorizontalLayout maleParentsCell = ((HorizontalLayout) item[3]);
+			final Iterator<Component> componentIterator = maleParentsCell.getComponentIterator();
+			int componentCounter = 1;
+			while(componentIterator.hasNext()) {
+				Component component = componentIterator.next();
+				if(maleParentsCell.getComponentIndex(component)%2!=0) {
+					assertEquals(PREFERRED_NAME + componentCounter, component.getCaption());
+					componentCounter++;
+				}
+			};
+			assertEquals(PEDIGREE + gid, item[4]);
+			assertEquals(malePedigreeString, item[5]);
+		}
+	}
 
 	private Map<Integer, String> createPedigreeStringMap(int numOfGids) {
 
