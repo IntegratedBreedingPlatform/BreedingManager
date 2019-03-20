@@ -12,23 +12,15 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Triple;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.constant.ColumnLabels;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.Progenitor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -51,7 +43,7 @@ import com.vaadin.ui.Window;
  */
 @Configurable
 public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
-		implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener {
+		implements InitializingBean, InternationalizableComponent {
 
 	private final class OKButtonClickListener implements Button.ClickListener {
 
@@ -422,43 +414,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		return sb.toString();
 	}
 
-	@Override
-	public boolean updateCrossesMadeContainer(final CrossesMadeContainer container) {
 
-		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesList() != null
-				&& this.validateCrossNameFields() && this.validateGeneratedName()) {
-
-			int ctr = this.nextNumberInSequence;
-			final String suffix = (String) this.suffixTextField.getValue();
-
-
-			final List<Triple<Germplasm, Name, List<Progenitor>>> crossesList = this.container.getCrossesMade().getCrossesList();
-			final List<GermplasmListEntry> oldCrossNames = new ArrayList<GermplasmListEntry>();
-
-			// Store old cross name and generate new names based on prefix, suffix specifications
-			for (final Triple<Germplasm, Name, List<Progenitor>> triple: crossesList) {
-				final Name nameObject = triple.getMiddle();
-				final String oldCrossName = nameObject.getNval();
-				nameObject.setNval(this.buildNextNameInSequence(this.lastPrefixUsed, suffix, ctr++));
-
-				final Germplasm germplasm = triple.getLeft();
-				final Integer tempGid = germplasm.getGid();
-				final GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, tempGid, oldCrossName);
-
-				oldCrossNames.add(oldNameEntry);
-			}
-			// Only store the "original" cross names, would not store previous names on 2nd, 3rd, ... change
-			if (this.container.getCrossesMade().getOldCrossNames() == null
-					|| this.container.getCrossesMade().getOldCrossNames().isEmpty()) {
-				this.container.getCrossesMade().setOldCrossNames(oldCrossNames);
-			}
-
-			return true;
-
-		}
-
-		return false;
-	}
 
 	Button getOkButton() {
 		return this.okButton;
