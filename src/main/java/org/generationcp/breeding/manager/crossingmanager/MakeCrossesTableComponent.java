@@ -251,8 +251,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	}
 
 	/**
-	 * Crosses each item on first list with its counterpart (same index or position) on second list. Assumes that checking if list sizes are
-	 * equal was done beforehand. The generated crossings are then added to Crossings Table.
+	 * Crosses each item on first list with every item on second list. The generated crossings are then added to Crossings Table.
 	 *
 	 * @param parents1 - list of GermplasmList entries as first parents
 	 * @param parents2 - list of GermplasmList entries as second parents
@@ -328,7 +327,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleGid.toString(), true));
 			designationFemaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
 			designationFemaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
-			final HorizontalLayout maleParentsCell = this.getMaleParentCell(maleParents, preferredNamesMap);
+			final HorizontalLayout maleParentsCell = this.getMaleParentCell(maleParentsCopy, preferredNamesMap);
 
 			final CheckBox tag = new CheckBox();
 			tag.setDebugId(TAG_COLUMN_ID);
