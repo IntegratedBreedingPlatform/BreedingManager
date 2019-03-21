@@ -117,6 +117,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	static final String OPENING_SQUARE_BRACKET = "[";
 	static final String CLOSING_SQUARE_BRACKET = "]";
 	public static final String SEPARATOR = ", ";
+	public static final String SEEDSOURCE_SEPARATOR = ":";
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
@@ -306,7 +307,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final GermplasmListEntry femaleParent, final List<GermplasmListEntry> maleParents, final Set<CrossParents> existingCrosses,
 		final Map<Integer, Germplasm> preferredNamesMap, final Map<Integer, String> parentPedigreeStringMap) {
 
-		final String femaleSeedSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
+		final String femaleSeedSource = listnameFemaleParent + SEEDSOURCE_SEPARATOR + femaleParent.getEntryId();
 		final GermplasmListEntry femaleParentCopy = femaleParent.copy();
 		femaleParentCopy.setSeedSource(femaleSeedSource);
 
@@ -399,7 +400,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	void setMaleParentsSeedSource(final List<GermplasmListEntry> maleParents, final String listnameMaleParent) {
 		for(final GermplasmListEntry maleParent: maleParents) {
-			maleParent.setSeedSource(listnameMaleParent + ":" + maleParent.getEntryId());
+			maleParent.setSeedSource(listnameMaleParent + SEEDSOURCE_SEPARATOR + maleParent.getEntryId());
 		}
 	}
 
@@ -408,8 +409,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent, final Set<CrossParents> existingCrosses,
 		final Map<Integer, Germplasm> preferredNamesMap, final Map<Integer, String> parentPedigreeStringMap) {
 
-		final String femaleSeedSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
-		final String maleSeedSource = listnameMaleParent + ":" + maleParent.getEntryId();
+		final String femaleSeedSource = listnameFemaleParent + SEEDSOURCE_SEPARATOR + femaleParent.getEntryId();
+		final String maleSeedSource = listnameMaleParent + SEEDSOURCE_SEPARATOR + maleParent.getEntryId();
 		final GermplasmListEntry femaleParentCopy = femaleParent.copy();
 		femaleParentCopy.setSeedSource(femaleSeedSource);
 		final GermplasmListEntry maleParentCopy = maleParent.copy();
@@ -913,11 +914,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				String newFemaleSource = "";
 				String newMaleSource = "";
 				if (femaleParent.isFromFemaleTable()) {
-					newFemaleSource = femaleListName + ":" + femaleParent.getEntryId();
-					newMaleSource = maleListName + ":" + maleParent.getEntryId();
+					newFemaleSource = femaleListName + SEEDSOURCE_SEPARATOR + femaleParent.getEntryId();
+					newMaleSource = maleListName + SEEDSOURCE_SEPARATOR + maleParent.getEntryId();
 				} else {
-					newFemaleSource = maleListName + ":" + femaleParent.getEntryId();
-					newMaleSource = femaleListName + ":" + maleParent.getEntryId();
+					newFemaleSource = maleListName + SEEDSOURCE_SEPARATOR + femaleParent.getEntryId();
+					newMaleSource = femaleListName + SEEDSOURCE_SEPARATOR + maleParent.getEntryId();
 				}
 
 				femaleParent.setSeedSource(newFemaleSource);
