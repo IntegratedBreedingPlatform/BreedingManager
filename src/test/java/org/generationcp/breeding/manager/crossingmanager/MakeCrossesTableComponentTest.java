@@ -337,13 +337,13 @@ public class MakeCrossesTableComponentTest {
 		List<GermplasmListEntry> maleEntries = this.createListEntries(1);
 		Mockito.doReturn(this.createGermplasmWithPreferredName(1)).when(this.germplasmDataManager).getGermplasmWithAllNamesAndAncestry(ArgumentMatchers.<Set<Integer>>any(), ArgumentMatchers.eq(0));
 		Map<Integer, Germplasm> preferredNamesMap = this.makeCrossesTableComponent.getGermplasmWithPreferredNameForBothParents(Arrays.asList(this.femaleParent), maleEntries);
-		HorizontalLayout maleParentsCell = this.makeCrossesTableComponent.getMaleParentCell(maleEntries, preferredNamesMap);
+		HorizontalLayout maleParentsCell = this.makeCrossesTableComponent.getMaleParentCell(maleEntries, preferredNamesMap, false);
 		Assert.assertEquals(PREFERRED_NAME + 1, maleParentsCell.getComponent(0).getCaption());
 
 		maleEntries = this.createListEntries(2);
 		Mockito.doReturn(this.createGermplasmWithPreferredName(2)).when(this.germplasmDataManager).getGermplasmWithAllNamesAndAncestry(ArgumentMatchers.<Set<Integer>>any(), ArgumentMatchers.eq(0));
 		preferredNamesMap = this.makeCrossesTableComponent.getGermplasmWithPreferredNameForBothParents(Arrays.asList(this.femaleParent), maleEntries);
-		maleParentsCell = this.makeCrossesTableComponent.getMaleParentCell(maleEntries, preferredNamesMap);
+		maleParentsCell = this.makeCrossesTableComponent.getMaleParentCell(maleEntries, preferredNamesMap, false);
 		Assert.assertEquals(MakeCrossesTableComponent.OPENING_SQUARE_BRACKET, ((Label)maleParentsCell.getComponent(0)).getValue());
 		Assert.assertEquals( PREFERRED_NAME + 1, maleParentsCell.getComponent(1).getCaption());
 		Assert.assertEquals(MakeCrossesTableComponent.SEPARATOR, ((Label)maleParentsCell.getComponent(2)).getValue());
