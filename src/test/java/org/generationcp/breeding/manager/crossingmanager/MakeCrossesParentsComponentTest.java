@@ -289,29 +289,6 @@ public class MakeCrossesParentsComponentTest {
 	}
 
 	@Test
-	public void testUpdateCrossesSeedSource_FemaleParent() {
-		this.testUpdateCrossesSeedSource(this.femaleParentTab, "Female");
-	}
-
-	@Test
-	public void testUpdateCrossesSeedSource_MaleParent() {
-		this.testUpdateCrossesSeedSource(this.maleParentTab, "Male");
-	}
-
-	private void testUpdateCrossesSeedSource(final ParentTabComponent parentTab, final String parentType) {
-		Mockito.doReturn(parentType + " Parent List").when(parentTab).getListNameForCrosses();
-		Mockito.doReturn(this.germplasmList).when(parentTab).getGermplasmList();
-		this.makeCrossesParentsComponent.updateCrossesSeedSource(parentTab, this.germplasmList);
-
-		try {
-			Mockito.verify(parentTab, Mockito.times(1)).setListNameForCrosses(this.germplasmList.getName());
-		} catch (final TooLittleActualInvocations e) {
-			Assert.fail("Expecting that the list name for crosses " + parentType
-				+ "ParentTab is set to name of the germplasm list but didn't.");
-		}
-	}
-
-	@Test
 	public void testAddListToMaleTable() {
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
 			.getGermplasmListById(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);

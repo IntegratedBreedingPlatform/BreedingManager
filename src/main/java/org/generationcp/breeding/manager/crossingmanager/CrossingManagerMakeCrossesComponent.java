@@ -15,7 +15,6 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
-import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.settings.BreedingMethodSetting;
@@ -44,7 +43,7 @@ import java.util.List;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-	BreedingManagerLayout, StepChangeListener {
+	BreedingManagerLayout {
 
 	private static final int DEFAULT_BREEDING_METHOD_ID = 101;
 
@@ -315,22 +314,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	public Workbook getWorkbook() {
 		return this.workbook;
-	}
-
-	void updateCrossesSeedSource(final String femaleListName, final String maleListName) {
-		this.crossesTableComponent.updateSeedSource(femaleListName, maleListName);
-	}
-
-	private boolean doUpdateTable() {
-		return !this.getSeparatorString().equals(this.crossesTableComponent.getSeparator());
-	}
-
-	@Override
-	public void updatePage() {
-		// only make updates to the page if separator was changed
-		if (this.doUpdateTable() && this.crossesTableComponent.getCrossList() == null) {
-			this.crossesTableComponent.updateSeparatorForCrossesMade();
-		}
 	}
 
 	// SETTERS AND GETTERS

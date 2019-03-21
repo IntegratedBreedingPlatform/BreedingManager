@@ -119,7 +119,7 @@ public class MakeCrossesTableComponentTest {
 		this.femaleParent.setDesignation("female parent");
 		this.maleParent = new GermplasmListEntry(1, 1, 1);
 		this.maleParent.setDesignation("male parent");
-		this.parents = new CrossParents(this.femaleParent, this.maleParent);
+		this.parents = new CrossParents(this.femaleParent, Arrays.asList(this.maleParent));
 		Mockito.when(this.tableCrossesMade.getItemIds()).thenReturn(new ArrayList());
 		Mockito.doNothing().when(this.makeCrossesTableComponent).updateCrossesMadeUI();
 
@@ -212,7 +212,7 @@ public class MakeCrossesTableComponentTest {
 			final CrossParents crossParents = (CrossParents) itemIdCaptor.getValue();
 
 			// Verify the create cross parents
-			assertEquals(maleParent.getGid(), crossParents.getMaleParent().getGid());
+			assertEquals(maleParent.getGid(), crossParents.getMaleParents().get(0).getGid());
 			assertEquals(femaleParent.getGid(), crossParents.getFemaleParent().getGid());
 
 			// Verify the visible column data
@@ -263,7 +263,7 @@ public class MakeCrossesTableComponentTest {
 			final CrossParents crossParents = (CrossParents) itemIdCaptor.getValue();
 
 			// Verify the create cross parents
-			assertEquals(maleParent.getGid(), crossParents.getMaleParent().getGid());
+			assertEquals(maleParent.getGid(), crossParents.getMaleParents().get(0).getGid());
 			assertEquals(femaleParent.getGid(), crossParents.getFemaleParent().getGid());
 
 			// Verify the visible column data
@@ -408,7 +408,7 @@ public class MakeCrossesTableComponentTest {
 		maleEntries.get(0).setGid(Integer.valueOf(maleGid));
 		final String expectedSeedSource = RandomStringUtils.random(20);
 		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(workbook, Arrays.asList(malePlot), femalePlot, studyName, studyName)).thenReturn(expectedSeedSource);
-		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(Integer.valueOf(femaleGid), PREFERRED_NAME + 1, maleEntries);
+		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(Integer.valueOf(femaleGid), maleEntries);
 		Assert.assertEquals(expectedSeedSource, seedSource);
 	}
 	
@@ -434,7 +434,7 @@ public class MakeCrossesTableComponentTest {
 		final String expectedSeedSource = RandomStringUtils.random(20);
 		// Expecting blank string to be used for seed source generation if plot number is not in study
 		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(workbook, Arrays.asList(""), femalePlot, studyName, studyName)).thenReturn(expectedSeedSource);
-		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(Integer.valueOf(femaleGid), PREFERRED_NAME + 1, maleEntries);
+		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(Integer.valueOf(femaleGid), maleEntries);
 		Assert.assertEquals(expectedSeedSource, seedSource);
 	}
 	
@@ -460,7 +460,7 @@ public class MakeCrossesTableComponentTest {
 		final String expectedSeedSource = RandomStringUtils.random(20);
 		// Expecting "0" to be used for seed source generation if parent is unknown
 		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(workbook, Arrays.asList(maleGid), femalePlot, studyName, studyName)).thenReturn(expectedSeedSource);
-		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(Integer.valueOf(femaleGid), PREFERRED_NAME + 1, maleEntries);
+		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(Integer.valueOf(femaleGid), maleEntries);
 		Assert.assertEquals(expectedSeedSource, seedSource);
 	}
 
@@ -492,7 +492,7 @@ public class MakeCrossesTableComponentTest {
 		final CrossParents itemId = (CrossParents) itemIdCaptor.getValue();
 
 		// Verify the create cross parents
-		assertEquals(maleParent.getGid(), itemId.getMaleParent().getGid());
+		assertEquals(maleParent.getGid(), itemId.getMaleParents().get(0).getGid());
 		assertEquals(femaleParent.getGid(), itemId.getFemaleParent().getGid());
 
 		// Verify the visible column data
@@ -553,7 +553,7 @@ public class MakeCrossesTableComponentTest {
 			
 			final int gid = i+1;
 			assertEquals(gid, parents.getFemaleParent().getGid().intValue());
-			assertEquals(0, parents.getMaleParent().getGid().intValue());
+			assertEquals(0, parents.getMaleParents().get(0).getGid().intValue());
 			
 			// Verify the visible column data
 			assertEquals(false, ((CheckBox) item[0]).booleanValue());
@@ -642,7 +642,7 @@ public class MakeCrossesTableComponentTest {
 		final GermplasmListEntry femaleParent = new GermplasmListEntry(femaleListDataId, femaleGid, femaleEntryId);
 		final GermplasmListEntry maleParent = new GermplasmListEntry(maleListDataId, maleGid, maleEntryId);
 
-		final CrossParents crossParents = new CrossParents(femaleParent, maleParent);
+		final CrossParents crossParents = new CrossParents(femaleParent, Arrays.asList(maleParent));
 		return crossParents;
 
 	}
