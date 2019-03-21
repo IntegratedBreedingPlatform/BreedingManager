@@ -53,7 +53,6 @@ public class SaveCrossesMadeActionTest {
 		this.action.setCrossExpansionProperties(this.crossExpansionProperties);
 
 		this.crossesMade = new CrossesMade();
-		//this.crossesMade.setCrossesList(this.getCrossesMap());
 		this.crossesMade.setSetting(this.getCrossingSetting());
 	}
 

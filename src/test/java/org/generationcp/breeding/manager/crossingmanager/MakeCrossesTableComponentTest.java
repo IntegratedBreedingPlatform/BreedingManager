@@ -517,10 +517,13 @@ public class MakeCrossesTableComponentTest {
 		final Map<Integer, String> pedigreeString = this.createPedigreeStringMap(2);
 
 		final Set<CrossParents> existingCrosses = this.createCrossParentsList();
-
+		for(final CrossParents crossParents: existingCrosses) {
+			crossParents.getFemaleParent().setSeedSource(listnameFemaleParent + MakeCrossesTableComponent.SEEDSOURCE_SEPARATOR + crossParents.getFemaleParent().getEntryId());
+			crossParents.getMaleParents().get(0).setSeedSource(listnameMaleParent + MakeCrossesTableComponent.SEEDSOURCE_SEPARATOR + crossParents.getMaleParents().get(0).getEntryId());
+		}
 		// Create female and male germplasm which are already in existing crosses
-		final GermplasmListEntry femaleParent = new GermplasmListEntry(10001, 1, 50);
-		final GermplasmListEntry maleParent = new GermplasmListEntry(10002, 2, 51);
+		final GermplasmListEntry femaleParent = new GermplasmListEntry(100, 1, 50);
+		final GermplasmListEntry maleParent = new GermplasmListEntry(101, 2, 51);
 
 		this.makeCrossesTableComponent
 			.addItemToMakeCrossesTable(listnameFemaleParent, listnameMaleParent, excludeSelf, femaleParent, maleParent, existingCrosses,
@@ -558,7 +561,7 @@ public class MakeCrossesTableComponentTest {
 			// Verify the visible column data
 			assertEquals(false, ((CheckBox) item[0]).booleanValue());
 			assertEquals(PREFERRED_NAME + gid, ((Button) item[2]).getCaption());
-			assertEquals(Name.UNKNOWN, (((HorizontalLayout) item[3]).getComponent(0)).getCaption());
+			assertEquals(Name.UNKNOWN, ((Label)(((HorizontalLayout) item[3]).getComponent(0))).getValue());
 			assertEquals(PEDIGREE + gid, item[4]);
 			assertEquals(Name.UNKNOWN, item[5]);
 			
