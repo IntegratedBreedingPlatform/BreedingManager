@@ -547,9 +547,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		return seedSource;
 	}
 
+
+	// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
 	private String getParentPlotNo(final Workbook workbook, final Integer parentGid) {
-		String parentPlotNo = "0";
-		// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
+		// Use "0" for unknown parent. If the GID is not found in study observations, the plot # will just be blank
+		String parentPlotNo = parentGid.equals(0)? "0" : "";
 		for (final MeasurementRow row : workbook.getObservations()) {
 			final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
 			final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
