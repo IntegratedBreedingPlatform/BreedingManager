@@ -58,22 +58,21 @@ import com.google.common.collect.Iterables;
 public class SaveCrossesMadeAction implements Serializable {
 	// Save temp list as deleted
 	// TODO Refactor liststatus to bit array so a list can have multiple status
-	public static final Integer GERMPLASM_LIST_STATUS = 9;
+	private static final Integer GERMPLASM_LIST_STATUS = 9;
 
-	public static final Integer GERMPLASM_GNPGS = 2;
-	public static final Integer GERMPLASM_GRPLCE = 0;
-	public static final Integer GERMPLASM_LGID = 0;
-	public static final Integer GERMPLASM_MGID = 0;
-	public static final Integer GERMPLASM_REFID = 0;
+	private static final Integer GERMPLASM_GNPGS = 2;
+	private static final Integer GERMPLASM_GRPLCE = 0;
+	private static final Integer GERMPLASM_LGID = 0;
+	private static final Integer GERMPLASM_MGID = 0;
+	private static final Integer GERMPLASM_REFID = 0;
 
-	public static final Integer NAME_REFID = 0;
+	private static final Integer NAME_REFID = 0;
 
-	public static final String LIST_DATA_SOURCE = "Crossing Manager Tool";
-	public static final Integer LIST_DATA_STATUS = 0;
-	public static final Integer LIST_DATA_LRECID = 0;
+	private static final Integer LIST_DATA_STATUS = 0;
+	private static final Integer LIST_DATA_LRECID = 0;
 
-	public static final String WB_ACTIVITY_NAME = "Created a list of crosses";
-	public static final String WB_ACTIVITY_DESCRIPTION = "List cross id = ";
+	private static final String WB_ACTIVITY_NAME = "Created a list of crosses";
+	private static final String WB_ACTIVITY_DESCRIPTION = "List cross id = ";
 
 	private static final long serialVersionUID = -6273933938066390358L;
 
@@ -104,9 +103,8 @@ public class SaveCrossesMadeAction implements Serializable {
 		this.germplasmList = germplasmList;
 	}
 
-	public SaveCrossesMadeAction() {
+	SaveCrossesMadeAction() {
 		super();
-
 	}
 
 	/**

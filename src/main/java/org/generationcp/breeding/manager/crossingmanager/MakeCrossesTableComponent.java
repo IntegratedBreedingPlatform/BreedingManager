@@ -114,8 +114,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	private static final String MALE_CROSS = "MALE CROSS";
 
 	private static final String CLICK_TO_VIEW_GERMPLASM_INFORMATION = "Click to view Germplasm information";
-	public static final String OPENING_SQUARE_BRACKET = "[";
-	public static final String CLOSING_SQUARE_BRACKET = "]";
+	static final String OPENING_SQUARE_BRACKET = "[";
+	static final String CLOSING_SQUARE_BRACKET = "]";
 	public static final String SEPARATOR = ", ";
 
 	@Autowired
@@ -164,7 +164,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	private final CrossingManagerMakeCrossesComponent makeCrossesMain;
 
-	public MakeCrossesTableComponent(final CrossingManagerMakeCrossesComponent makeCrossesMain) {
+	MakeCrossesTableComponent(final CrossingManagerMakeCrossesComponent makeCrossesMain) {
 		this.makeCrossesMain = makeCrossesMain;
 	}
 
@@ -202,7 +202,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	 * @param listnameFemaleParent
 	 * @param excludeSelf
 	 */
-	public void makeTopToBottomCrosses(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
+	void makeTopToBottomCrosses(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
 			final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
 		// make a copy first of the parents lists
 		final List<GermplasmListEntry> femaleParents = new ArrayList<>();
@@ -236,7 +236,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	 * @param femaleParents - list of GermplasmList entries as first parents
 	 * @param listnameFemaleParent
 	 */
-	public void makeCrossesWithUnknownMaleParent(final List<GermplasmListEntry> femaleParents, final String listnameFemaleParent) {
+	void makeCrossesWithUnknownMaleParent(final List<GermplasmListEntry> femaleParents, final String listnameFemaleParent) {
 		final ImmutableMap<Integer, Germplasm> germplasmWithPreferredName = getGermplasmWithPreferredNameForBothParents(femaleParents, new ArrayList<GermplasmListEntry>());
 		final Map<Integer, String> parentsPedigreeString = pedigreeService.getCrossExpansions(germplasmWithPreferredName.keySet(), null, crossExpansionProperties);
 		
@@ -262,7 +262,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	 * @param listnameFemaleParent
 	 * @param excludeSelf
 	 */
-	public void makeCrossesWithMultipleMaleParents(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
+	void makeCrossesWithMultipleMaleParents(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
 		final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
 		// make a copy first of the parents lists
 		final List<GermplasmListEntry> femaleParents = new ArrayList<>();
@@ -471,7 +471,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.tableCrossesMade.requestRepaint();
 	}
 
-	public void updateCrossesMadeSaveButton() {
+	void updateCrossesMadeSaveButton() {
 		if (this.tableCrossesMade.getItemIds() == null) {
 			return;
 		}
@@ -487,7 +487,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	 * @param listnameFemaleParent
 	 * @param excludeSelf
 	 */
-	public void multiplyParents(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
+	void multiplyParents(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
 			final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
 
 		// make a copy first of the parents lists
@@ -661,13 +661,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		return crossesList;
 	}
 
-	// internal POJO for ad ID of each row in Crosses Made table (need both GID and entryid of parents)
-
-	public void clearCrossesTable() {
-		this.tableCrossesMade.removeAllItems();
-		this.tableCrossesMade.setPageLength(0);
-	}
-
 	@Override
 	public void instantiateComponents() {
 		this.selectAll = new CheckBox("Select All");
@@ -698,7 +691,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.initializeCrossesMadeTable(new TableWithSelectAllLayout(PARENTS_TABLE_ROW_COUNT, TAG_COLUMN_ID));
 	}
 
-	protected void initializeCrossesMadeTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
+	void initializeCrossesMadeTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
 		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
 		this.selectAll = tableWithSelectAllLayout.getCheckBox();
 
@@ -853,7 +846,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	/**
 	 * Save Temporary list
 	 */
-	public Integer saveTemporaryList() {
+	Integer saveTemporaryList() {
 		GermplasmList tempList = new GermplasmList();
 		tempList.setType(GermplasmListType.F1CRT.toString());
 		// use same pattern as deleted study
@@ -906,7 +899,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	 * @param maleListName
 	 */
 	@SuppressWarnings("unchecked")
-	public void updateSeedSource(final String femaleListName, final String maleListName) {
+	void updateSeedSource(final String femaleListName, final String maleListName) {
 		this.separator = this.makeCrossesMain.getSeparatorString();
 
 		if (!this.tableCrossesMade.getItemIds().isEmpty()) {
@@ -952,7 +945,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	}
 
-	public void updateSeparatorForCrossesMade() {
+	void updateSeparatorForCrossesMade() {
 		this.separator = this.makeCrossesMain.getSeparatorString();
 
 		for (final Object crossItem : this.tableCrossesMade.getItemIds()) {
@@ -972,7 +965,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		return string1 + this.separator + string2;
 	}
 
-	public GermplasmList getCrossList() {
+	GermplasmList getCrossList() {
 		return this.crossList;
 	}
 
@@ -994,11 +987,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		return this.makeCrossesMain.getSource();
 	}
 
-	public Table getTableCrossesMade() {
+	Table getTableCrossesMade() {
 		return this.tableCrossesMade;
 	}
 
-	public void setTableCrossesMade(final Table tableCrossesMade) {
+	void setTableCrossesMade(final Table tableCrossesMade) {
 		this.tableCrossesMade = tableCrossesMade;
 	}
 
@@ -1019,7 +1012,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.messageSource = messageSource;
 	}
 
-	public void setSeedSourceGenerator(final SeedSourceGenerator seedSourceGenerator) {
+	void setSeedSourceGenerator(final SeedSourceGenerator seedSourceGenerator) {
 		this.seedSourceGenerator = seedSourceGenerator;
 	}
 
