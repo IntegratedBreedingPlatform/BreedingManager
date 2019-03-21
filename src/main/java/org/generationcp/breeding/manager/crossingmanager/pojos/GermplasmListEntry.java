@@ -157,19 +157,23 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 			return false;
 		}
 		GermplasmListEntry other = (GermplasmListEntry) obj;
-		if (this.listDataId == null) {
-			if (other.listDataId != null) {
+		if (!this.compareAttributes(this.gid, other.getGid()) || !this.compareAttributes(this.listDataId, other.getListDataId())
+			|| !this.compareAttributes(this.seedSource, other.getSeedSource()) || !this.compareAttributes(this.designation, other.getDesignation())
+			|| !this.compareAttributes(this.entryId, other.getEntryId())) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private boolean compareAttributes(final Object firstAttribute, final Object secondAttribute) {
+		if (firstAttribute == null) {
+			if (secondAttribute != null) {
 				return false;
 			}
-		} else if (!this.listDataId.equals(other.listDataId) || !this.gid.equals(other.gid)) {
+		} else if (!firstAttribute.equals(secondAttribute)) {
 			return false;
 		}
-
-		if (other.listDataId != this.listDataId || other.seedSource != this.seedSource || other.gid != this.gid
-				|| other.entryId != this.entryId || other.designation != this.designation) {
-			return false;
-		}
-
 		return true;
 	}
 
