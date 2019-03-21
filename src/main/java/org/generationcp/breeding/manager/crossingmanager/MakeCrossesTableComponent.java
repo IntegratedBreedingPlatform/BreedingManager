@@ -314,7 +314,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final List<GermplasmListEntry> maleParentsCopy = new ArrayList<>();
 		maleParentsCopy.addAll(maleParents);
 		this.removeSelfIfNecessary(femaleParent, maleParentsCopy, excludeSelf);
-		if(maleParentsCopy.size() == 0) {
+		if(maleParentsCopy.isEmpty()) {
 			return;
 		}
 		setMaleParentsSeedSource(maleParentsCopy, listnameMaleParent);
