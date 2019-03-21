@@ -526,9 +526,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	}
 
 	String generateSeedSource(final Integer femaleParentGid, final String femaleSource, final List<GermplasmListEntry> maleParents) {
-
-		// Default as before
-		String seedSource = this.generateDefaultSeedSource(femaleSource, maleParents);
+		String seedSource = "";
 
 		// If crossing for a Nursery, use the seed source generation service.
 		final Workbook workbook = this.makeCrossesMain.getWorkbook();
@@ -561,17 +559,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			}
 		}
 		return parentPlotNo;
-	}
-
-	String generateDefaultSeedSource(final String femaleSource, final List<GermplasmListEntry> maleParents) {
-		final List<String> generatedSeedSources = new ArrayList<>();
-		for(final GermplasmListEntry maleParent: maleParents) {
-			generatedSeedSources.add(maleParent.getSeedSource());
-		}
-		if(generatedSeedSources.size() > 1) {
-			return this.appendWithSeparator(femaleSource, OPENING_SQUARE_BRACKET + StringUtils.join(generatedSeedSources, SEPARATOR) + CLOSING_SQUARE_BRACKET);
-		}
-		return this.appendWithSeparator(femaleSource, generatedSeedSources.get(0));
 	}
 
 	boolean hasSameParent(final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent) {

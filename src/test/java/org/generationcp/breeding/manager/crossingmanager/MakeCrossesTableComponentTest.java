@@ -465,30 +465,6 @@ public class MakeCrossesTableComponentTest {
 	}
 
 	@Test
-	public  void testGenerateDefaultSeedSource() {
-		final String preferredName = PREFERRED_NAME + 1;
-		List<GermplasmListEntry> maleEntries = this.createListEntries(1);
-		maleEntries.get(0).setSeedSource(preferredName);
-		String defaultSeedSource = this.makeCrossesTableComponent.generateDefaultSeedSource(preferredName, maleEntries);
-		Assert.assertEquals(preferredName + "/" + preferredName, defaultSeedSource);
-
-		String expectedResult = preferredName + "/" + MakeCrossesTableComponent.OPENING_SQUARE_BRACKET;
-		maleEntries = this.createListEntries(2);
-		for(final GermplasmListEntry maleParent: maleEntries) {
-			maleParent.setSeedSource(PREFERRED_NAME + maleParent.getGid());
-			expectedResult += maleParent.getSeedSource();
-			if(maleParent.getGid()==1) {
-				expectedResult += MakeCrossesTableComponent.SEPARATOR;
-			}
-		}
-		expectedResult += MakeCrossesTableComponent.CLOSING_SQUARE_BRACKET;
-
-		defaultSeedSource = this.makeCrossesTableComponent.generateDefaultSeedSource(preferredName, maleEntries);
-		Assert.assertEquals(expectedResult, defaultSeedSource);
-
-	}
-
-	@Test
 	public void testAddItemToMakeCrossesTableParentsAreNotYetInExistingCrosses() {
 
 		final String listnameFemaleParent = "FemaleList1";
