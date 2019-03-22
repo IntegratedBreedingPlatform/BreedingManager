@@ -569,8 +569,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.updateCrossesMadeUI();
 	}
 
-	private List<Triple<Germplasm, Name, List<Progenitor>>> generateCrossesList() {
-		List<Triple<Germplasm, Name, List<Progenitor>>> crossesList = new ArrayList<>();
+	List<Triple<Germplasm, Name, List<Progenitor>>> generateCrossesList() {
+		final List<Triple<Germplasm, Name, List<Progenitor>>> crossesList = new ArrayList<>();
 
 		// get ID of User Defined Field for Crossing Name
 		final Integer crossingNameTypeId =
@@ -938,8 +938,15 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.pedigreeService = pedigreeService;
 	}
 
-	
 	protected void setCrossExpansionProperties(CrossExpansionProperties crossExpansionProperties) {
 		this.crossExpansionProperties = crossExpansionProperties;
+	}
+
+	void initializeTotalCrossesLabel() {
+		this.totalCrossesLabel = new Label();
+	}
+
+	void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
 	}
 }
