@@ -587,8 +587,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final GermplasmListEntry maleParent = parents.getMaleParents().get(0);
 			final Integer gpId1 = parents.getFemaleParent().getGid();
 			final Integer gpId2 =	maleParent.getGid();
-			final Integer entryId1 = parents.getFemaleParent().getEntryId();
-			final Integer entryId2 = maleParent.getEntryId();
 
 			final Germplasm germplasm = new Germplasm();
 			germplasm.setGid(ctr);
@@ -598,15 +596,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final Name name = new Name();
 			name.setNval(crossSource);
 			name.setTypeId(crossingNameTypeId);
-
-			final ImportedGermplasmCross cross = new ImportedGermplasmCross();
-			cross.setCross(ctr);
-			cross.setFemaleGId(gpId1);
-			cross.setMaleGId(gpId2);
-			cross.setFemaleEntryId(entryId1);
-			cross.setMaleEntryId(entryId2);
-			cross.setMaleDesignation(maleParent.getDesignation());
-			cross.setFemaleDesignation(parents.getFemaleParent().getDesignation());
 
 			List<Progenitor> progenitors = new ArrayList<>();
 			if(parents.getMaleParents() != null && !parents.getMaleParents().isEmpty()) {
