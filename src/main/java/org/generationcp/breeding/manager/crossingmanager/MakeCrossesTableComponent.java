@@ -382,7 +382,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, false, null, null)) {
 			final Integer femaleGid = femaleParent.getGid();
 			final String seedSource = this.generateSeedSource(femaleGid, maleParentsCopy);
-			this.addToTable(existingCrosses, preferredNamesMap, parentPedigreeStringMap, maleParents, parents, femaleGid, seedSource);
+			this.addToTable(existingCrosses, preferredNamesMap, parentPedigreeStringMap, maleParentsCopy, parents, femaleGid, seedSource);
 		}
 	}
 
