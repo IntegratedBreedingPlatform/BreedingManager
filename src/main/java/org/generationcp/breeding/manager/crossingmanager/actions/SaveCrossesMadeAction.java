@@ -53,6 +53,7 @@ import com.google.common.collect.Iterables;
  */
 @Configurable
 public class SaveCrossesMadeAction implements Serializable {
+
 	// Save temp list as deleted
 	// TODO Refactor liststatus to bit array so a list can have multiple status
 	private static final Integer GERMPLASM_LIST_STATUS = 9;
@@ -72,6 +73,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	private static final String WB_ACTIVITY_DESCRIPTION = "List cross id = ";
 
 	private static final long serialVersionUID = -6273933938066390358L;
+	public static final int SEEDSOURCE_CHARACTER_LIMIT = 255;
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -241,8 +243,8 @@ public class SaveCrossesMadeAction implements Serializable {
 		germplasmListData.setGid(gid);
 		germplasmListData.setEntryId(entryId);
 		germplasmListData.setEntryCode(String.valueOf(entryId));
-		if(seedSource.length() > 255) {
-			seedSource = seedSource.substring(0, 255);
+		if(seedSource.length() > SEEDSOURCE_CHARACTER_LIMIT) {
+			seedSource = seedSource.substring(0, SEEDSOURCE_CHARACTER_LIMIT);
 		}
 		germplasmListData.setSeedSource(seedSource);
 		germplasmListData.setDesignation(designation);
