@@ -188,7 +188,7 @@ public class SeedInventoryListExporterTest {
 		listEntry.setStatus(0);
 		listEntry.setSeedSource("SeedSource");
 		listEntry.setGid(28);
-		listEntry.setMgid(0);
+		listEntry.setGroupId(0);
 
 		final List<ListEntryLotDetails> lots = new ArrayList<ListEntryLotDetails>();
 

@@ -278,26 +278,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		}
 	}
 
-	public void updateCrossesSeedSource(final ParentTabComponent parentTab, final GermplasmList savedList) {
-		if (parentTab.equals(this.femaleParentTab)) {
-			this.femaleParentTab.setGermplasmList(savedList);
-			if (this.femaleParentTab.getListNameForCrosses() != null && !this.femaleParentTab.getListNameForCrosses()
-				.equals(this.femaleParentTab.getGermplasmList().getName())) {
-				this.femaleParentTab.setListNameForCrosses(this.femaleParentTab.getGermplasmList().getName());
-				this.makeCrossesMain
-					.updateCrossesSeedSource(this.femaleParentTab.getListNameForCrosses(), this.maleParentTab.getListNameForCrosses());
-			}
-		} else {
-			this.maleParentTab.setGermplasmList(savedList);
-			if (this.maleParentTab.getListNameForCrosses() != null && !this.maleParentTab.getListNameForCrosses()
-				.equals(this.maleParentTab.getGermplasmList().getName())) {
-				this.maleParentTab.setListNameForCrosses(this.maleParentTab.getGermplasmList().getName());
-				this.makeCrossesMain
-					.updateCrossesSeedSource(this.femaleParentTab.getListNameForCrosses(), this.maleParentTab.getListNameForCrosses());
-			}
-		}
-	}
-
 	public void updateFemaleListNameForCrosses() {
 		String femaleListNameForCrosses = "";
 		femaleListNameForCrosses = this.getFemaleList() != null ? this.getFemaleList().getName() : "";
@@ -337,7 +317,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		final List<GermplasmListEntry> sortedSelectedValues = new ArrayList<>();
 
 		allItemIds.addAll((Collection<GermplasmListEntry>) table.getItemIds());
-		selectedItemIds.addAll((Collection<GermplasmListEntry>) table.getValue());
 
 		for (final GermplasmListEntry entry : allItemIds) {
 			final CheckBox tag = (CheckBox) table.getItem(entry).getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).getValue();
@@ -505,7 +484,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		if (this.maleParentTab.getGermplasmList() == null) {
 			this.maleParentTab.setGermplasmList(listFromTree);
 			this.maleParentTab.setListNameForCrosses(listFromTree.getName());
-			this.updateCrossesSeedSource(this.maleParentTab, listFromTree);
 		}
 
 		this.maleParentTab.updateNoOfEntries();
@@ -516,7 +494,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		if (this.femaleParentTab.getGermplasmList() == null) {
 			this.femaleParentTab.setGermplasmList(listFromTree);
 			this.femaleParentTab.setListNameForCrosses(listFromTree.getName());
-			this.updateCrossesSeedSource(this.femaleParentTab, listFromTree);
 		}
 		this.femaleParentTab.updateNoOfEntries();
 	}

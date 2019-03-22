@@ -39,7 +39,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	private static final long serialVersionUID = -8847158352169444182L;
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingMethodComponent.class);
 
-	public static final String GENERATE_CROSS_BUTTON_ID = "Generate Cross Button";
+	private static final String GENERATE_CROSS_BUTTON_ID = "Generate Cross Button";
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -126,6 +126,10 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.crossingMethodComboBox.addItem(CrossType.UNKNOWN_MALE);
 		this.crossingMethodComboBox.setItemCaption(CrossType.UNKNOWN_MALE,
 				this.messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_THREE_LABEL));
+
+		this.crossingMethodComboBox.addItem(CrossType.MULTIPLE_MALE);
+		this.crossingMethodComboBox.setItemCaption(CrossType.MULTIPLE_MALE,
+			this.messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_FOUR_LABEL));
 		
 		this.crossingMethodComboBox.select(CrossType.PLEASE_CHOOSE);
 	}
@@ -156,9 +160,18 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
 				CrossType type = getSelectedCrossingMethod();
-				final boolean enabled = !CrossType.UNKNOWN_MALE.equals(type);
-				CrossingMethodComponent.this.chkBoxMakeReciprocalCrosses.setEnabled(enabled);
-				CrossingMethodComponent.this.chkBoxExcludeSelfs.setEnabled(enabled);
+				if(CrossType.MULTIPLE_MALE.equals(type)) {
+					CrossingMethodComponent.this.chkBoxMakeReciprocalCrosses.setEnabled(false);
+					CrossingMethodComponent.this.chkBoxExcludeSelfs.setEnabled(true);
+					CrossingMethodComponent.this.chkBoxExcludeSelfs.setValue(false);
+				} else if(CrossType.UNKNOWN_MALE.equals(type)) {
+					CrossingMethodComponent.this.chkBoxMakeReciprocalCrosses.setEnabled(false);
+					CrossingMethodComponent.this.chkBoxExcludeSelfs.setEnabled(false);
+				} else {
+					CrossingMethodComponent.this.chkBoxMakeReciprocalCrosses.setEnabled(true);
+					CrossingMethodComponent.this.chkBoxExcludeSelfs.setEnabled(true);
+					CrossingMethodComponent.this.chkBoxExcludeSelfs.setValue(true);
+				}
 			}
 
 			
@@ -208,7 +221,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.addComponent(this.crossingMethodPanel);
 	}
 
-	public void makeCrossButtonAction() {
+	private	void makeCrossButtonAction() {
 		Table femaleParents = this.parentsComponent.getFemaleTable();
 		Table maleParents = this.parentsComponent.getMaleTable();
 
@@ -231,12 +244,12 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	}
 	
 	
-	protected CheckBox getChkBoxMakeReciprocalCrosses() {
+	CheckBox getChkBoxMakeReciprocalCrosses() {
 		return chkBoxMakeReciprocalCrosses;
 	}
 
 	
-	protected CheckBox getChkBoxExcludeSelfs() {
+	CheckBox getChkBoxExcludeSelfs() {
 		return chkBoxExcludeSelfs;
 	}
 
@@ -245,12 +258,12 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	}
 
 	
-	protected void setCrossTypeValidator(CrossTypeValidator crossTypeValidator) {
+	void setCrossTypeValidator(CrossTypeValidator crossTypeValidator) {
 		this.crossTypeValidator = crossTypeValidator;
 	}
 
 	
-	protected void setParentsComponent(MakeCrossesParentsComponent parentsComponent) {
+	void setParentsComponent(MakeCrossesParentsComponent parentsComponent) {
 		this.parentsComponent = parentsComponent;
 	}
 	

@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.crossingmanager.actions;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.commons.settings.AdditionalDetailsSetting;
 import org.generationcp.commons.settings.BreedingMethodSetting;
@@ -13,10 +14,14 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.middleware.util.Util;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -46,14 +51,13 @@ public class SaveCrossesMadeActionTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		this.action = Mockito.spy(new SaveCrossesMadeAction());
+		this.action = new SaveCrossesMadeAction();
 		this.action.setContextUtil(this.contextUtil);
 		this.action.setTransactionManager(this.transactionManager);
 		this.action.setGermplasmListManager(this.germplasmListManager);
 		this.action.setCrossExpansionProperties(this.crossExpansionProperties);
 
 		this.crossesMade = new CrossesMade();
-		this.crossesMade.setCrossesMap(this.getCrossesMap());
 		this.crossesMade.setSetting(this.getCrossingSetting());
 	}
 
@@ -82,22 +86,30 @@ public class SaveCrossesMadeActionTest {
 		return toreturn;
 	}
 
-	private Map<Germplasm, Name> getCrossesMap() {
-		Map<Germplasm, Name> crossesMap = new HashMap<Germplasm, Name>();
+	@Test
+	public void testBuildGermplasmListData() {
+		final GermplasmList list = new GermplasmList();
+		final Integer gid = 1;
+		final Integer entryId = 1;
+		final String desig = "desig";
+		String seedSource = "SeedSource";
+		final Map<Integer, String> pedigreeMap = new HashMap<>();
+		final String pedigree = "PEDIGREE";
+		pedigreeMap.put(gid, pedigree);
+		GermplasmListData data = this.action.buildGermplasmListData(list, gid, entryId, desig, seedSource, pedigreeMap);
+		Assert.assertEquals(list, data.getList());
+		Assert.assertEquals(gid, data.getGid());
+		Assert.assertEquals(entryId, data.getEntryId());
+		Assert.assertEquals(entryId.toString(), data.getEntryCode());
+		Assert.assertEquals(seedSource, data.getSeedSource());
+		Assert.assertEquals(desig, data.getDesignation());
+		Assert.assertEquals(pedigree, data.getGroupName());
+		Assert.assertEquals(SaveCrossesMadeAction.LIST_DATA_STATUS, data.getStatus());
+		Assert.assertEquals(SaveCrossesMadeAction.LIST_DATA_LRECID, data.getLocalRecordId());
 
-		for (int i = 1; i <= 5; i++) {
-			Germplasm germplasm = new Germplasm();
-			germplasm.setGid(i);
-			germplasm.setGpid1(1 + i);
-			germplasm.setGpid2(2 + i);
-
-			Name name = new Name();
-			name.setNval("Designation Name" + i + ", " + " List Name");
-			name.setTypeId(1);
-
-			crossesMap.put(germplasm, name);
-		}
-
-		return crossesMap;
+		seedSource = RandomStringUtils.random(266);
+		Assert.assertEquals(266, seedSource.length());
+		data = this.action.buildGermplasmListData(list, gid, entryId, desig, seedSource, pedigreeMap);
+		Assert.assertEquals(SaveCrossesMadeAction.SEEDSOURCE_CHARACTER_LIMIT, data.getSeedSource().length());
 	}
 }
