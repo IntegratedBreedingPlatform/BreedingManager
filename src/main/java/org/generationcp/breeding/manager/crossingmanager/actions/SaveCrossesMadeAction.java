@@ -66,14 +66,14 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	private static final Integer NAME_REFID = 0;
 
-	private static final Integer LIST_DATA_STATUS = 0;
-	private static final Integer LIST_DATA_LRECID = 0;
+	static final Integer LIST_DATA_STATUS = 0;
+	static final Integer LIST_DATA_LRECID = 0;
 
 	private static final String WB_ACTIVITY_NAME = "Created a list of crosses";
 	private static final String WB_ACTIVITY_DESCRIPTION = "List cross id = ";
 
 	private static final long serialVersionUID = -6273933938066390358L;
-	public static final int SEEDSOURCE_CHARACTER_LIMIT = 255;
+	static final int SEEDSOURCE_CHARACTER_LIMIT = 255;
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -236,7 +236,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		return designation;
 	}
 
-	private GermplasmListData buildGermplasmListData(final GermplasmList list, final Integer gid, final int entryId,
+	GermplasmListData buildGermplasmListData(final GermplasmList list, final Integer gid, final int entryId,
 			final String designation, String seedSource, final Map<Integer, String> pedigreeMap) {
 		final GermplasmListData germplasmListData = new GermplasmListData();
 		germplasmListData.setList(list);
