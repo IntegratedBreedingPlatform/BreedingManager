@@ -12,7 +12,7 @@
 
 	<!-- Declare property file locations -->
 	<context:property-placeholder
-		location="classpath:workbench.properties, classpath:crossing.properties, classpath:breedingmanager.properties" />
+		location="classpath:workbench.properties, classpath:naming.properties, classpath:breedingmanager.properties" />
 	<util:properties id="workbenchProperties" location="classpath:workbench.properties" />
 	<util:properties id="helpProperties" location="classpath:helplinks.properties" />
 	<!-- Enable Spring annotations -->
