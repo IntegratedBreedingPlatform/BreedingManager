@@ -275,7 +275,7 @@
 		<property name="germplasmOriginStudiesMaize" value="${germplasm.origin.studies.maize}"/>
 	</bean>
 	
-	<bean id="seedSourceGenerator" class="org.generationcp.commons.service.impl.SeedSourceGenerator">
+	<bean id="seedSourceGenerator" class="org.generationcp.commons.ruleengine.generator.SeedSourceGenerator">
 	</bean>
 	
 	<!-- Including all beans used for generating Code Sheet when exporting Germplasm List excel file -->
