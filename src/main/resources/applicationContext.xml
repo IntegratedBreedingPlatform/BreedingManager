@@ -163,6 +163,11 @@
 		<aop:scoped-proxy proxy-target-class="false" />
 	</bean>
 
+	<bean id="datasetService" factory-bean="managerFactory"
+		  factory-method="getDatasetMiddlewareService" scope="request">
+		<aop:scoped-proxy proxy-target-class="false" />
+	</bean>
+
 	<bean id="contextUtil" class="org.generationcp.commons.spring.util.ContextUtil"
 		scope="request">
 		<aop:scoped-proxy />
