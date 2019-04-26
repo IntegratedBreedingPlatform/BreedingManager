@@ -962,7 +962,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				(Collection<? extends Integer>) this.tableWithSelectAllLayout.getTable().getValue();
 		if (!selectedIdsToDelete.isEmpty()) {
 			ConfirmDialog.show(ListBuilderComponent.this.getWindow(), this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES),
-					this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
+					this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_FROM_THE_LIST_CONFIRM), this.messageSource.getMessage(Message.YES),
 					this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
 						private static final long serialVersionUID = 1L;
