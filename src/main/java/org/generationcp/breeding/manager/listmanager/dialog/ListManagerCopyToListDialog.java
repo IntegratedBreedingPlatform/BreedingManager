@@ -315,7 +315,7 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 						this.listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.PROGRAM_LISTS);
 						this.listManagerMain.getListSelectionComponent().getListDetailsLayout().removeTab(Integer.valueOf(listId));
 						this.listManagerMain.getListSelectionComponent().getListTreeComponent()
-								.treeItemClickAction(Integer.valueOf(listId));
+								.treeItemClickAction(Integer.valueOf(listId), true);
 
 					} catch (final MiddlewareQueryException e) {
 						ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
@@ -334,7 +334,7 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 			this.addGermplasmListData(germList, 1);
 			this.listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
 			this.listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.PROGRAM_LISTS);
-			this.listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(this.newListid);
+			this.listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(this.newListid, true);
 		} catch (final MiddlewareQueryException e) {
 			this.germplasmListManager.deleteGermplasmListByListId(this.newListid);
 			ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);

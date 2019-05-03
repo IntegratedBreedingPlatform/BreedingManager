@@ -1,16 +1,21 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listimport.GermplasmImportPopupSource;
+import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.commons.constant.ListTreeState;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.SaveTreeStateListener;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -120,18 +125,24 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	private Window launchListSelectionWindow(final Window window, final Component content, final String caption) {
 
-		final CssLayout layout = new CssLayout();
+		final VerticalLayout layout = new VerticalLayout();
 		layout.setDebugId("layout");
-		layout.setMargin(true);
-		layout.setWidth("100%");
-		layout.setHeight("490px");
-
+		layout.setMargin(false, true, true, true);
+		layout.setSizeFull();
+		layout.setHeight("500px");
 		layout.addComponent(content);
+
+		final Button okButton = new Button();
+		okButton.setCaption(this.messageSource.getMessage(Message.OK));
+		okButton.addListener(new CloseWindowAction());
+		okButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		layout.addComponent(okButton);
+		layout.setComponentAlignment(okButton, Alignment.MIDDLE_CENTER);
 
 		final BaseSubWindow popupWindow = new BaseSubWindow();
 		popupWindow.setDebugId("popupWindow");
 		popupWindow.setWidth("900px");
-		popupWindow.setHeight("550px");
+		popupWindow.setHeight("560px");
 		popupWindow.setModal(true);
 		popupWindow.setResizable(false);
 		popupWindow.center();

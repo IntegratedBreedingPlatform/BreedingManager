@@ -99,7 +99,7 @@ public class ListManagerCopyToListDialogTest {
 		Mockito.when(this.listSectionComponent.getListTreeComponent()).thenReturn(this.listManagerTreeComponent);
 		Mockito.doNothing().when(this.listManagerTreeComponent).createTree();
 		Mockito.doNothing().when(this.listManagerTreeComponent).expandNode(ArgumentMatchers.anyString());
-		Mockito.doNothing().when(this.listManagerTreeComponent).treeItemClickAction(ArgumentMatchers.anyInt());
+		Mockito.doNothing().when(this.listManagerTreeComponent).treeItemClickAction(ArgumentMatchers.anyInt(), ArgumentMatchers.anyBoolean());
 		Mockito.when(this.listSectionComponent.getListDetailsLayout()).thenReturn(this.listSectionLayout);
 		Mockito.doNothing().when(this.listSectionLayout).removeTab(ArgumentMatchers.anyInt());
 	}

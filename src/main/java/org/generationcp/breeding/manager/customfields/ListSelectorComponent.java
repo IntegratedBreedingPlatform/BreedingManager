@@ -708,7 +708,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.updateButtons(this.selectedListId);
 	}
 
-	public void treeItemClickAction(final int germplasmListId) {
+	public void treeItemClickAction(final int germplasmListId, final boolean loadGermplasmList) {
 
 		try {
 
@@ -719,7 +719,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			if (!isEmptyFolder) {
 				final boolean hasChildList = this.hasChildList(germplasmListId);
 
-				if (!hasChildList) {
+				if (!hasChildList && loadGermplasmList) {
 					this.studyClickedAction(this.germplasmList);
 					// toggle folder
 				} else if (hasChildList) {
@@ -1111,9 +1111,9 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				listSelectorComponent.toggleFolderSectionForItemSelected();
 
 				if (!item.equals(ListSelectorComponent.PROGRAM_LISTS) && !item.equals(ListSelectorComponent.CROP_LISTS)) {
-					final int germplasmListId = Integer.valueOf(event.getItemId().toString());
+					final int germplasmListId = Integer.parseInt(event.getItemId().toString());
 					try {
-						listSelectorComponent.treeItemClickAction(germplasmListId);
+						listSelectorComponent.treeItemClickAction(germplasmListId, event.isDoubleClick());
 					} catch (final InternationalizableException e) {
 						LOG.error(e.getMessage(), e);
 						MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
