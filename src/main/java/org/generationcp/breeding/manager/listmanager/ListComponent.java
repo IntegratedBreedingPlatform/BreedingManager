@@ -1348,7 +1348,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		if (!selectedIdsToDelete.isEmpty()) {
 			ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES),
-					this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
+					this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_FROM_THE_LIST_CONFIRM), this.messageSource.getMessage(Message.YES),
 					this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
 						private static final long serialVersionUID = 1L;
