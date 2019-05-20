@@ -42,7 +42,7 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.commons.service.impl.SeedSourceGenerator;
+import org.generationcp.commons.ruleengine.generator.SeedSourceGenerator;
 import org.generationcp.commons.util.CollectionTransformationUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;

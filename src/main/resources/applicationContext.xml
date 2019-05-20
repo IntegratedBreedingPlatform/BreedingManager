@@ -163,6 +163,21 @@
 		<aop:scoped-proxy proxy-target-class="false" />
 	</bean>
 
+	<bean id="datasetService" factory-bean="managerFactory"
+		  factory-method="getDatasetMiddlewareService" scope="request">
+		<aop:scoped-proxy proxy-target-class="false" />
+	</bean>
+
+	<bean id="measurementVariableService" factory-bean="managerFactory"
+		  factory-method="getMeasurementVariableService" scope="request">
+		<aop:scoped-proxy proxy-target-class="false" />
+	</bean>
+
+    <bean id="studyService" factory-bean="managerFactory"
+		  factory-method="getStudyService" scope="request">
+        <aop:scoped-proxy />
+    </bean>
+
 	<bean id="contextUtil" class="org.generationcp.commons.spring.util.ContextUtil"
 		scope="request">
 		<aop:scoped-proxy />
@@ -275,7 +290,7 @@
 		<property name="germplasmOriginStudiesMaize" value="${germplasm.origin.studies.maize}"/>
 	</bean>
 	
-	<bean id="seedSourceGenerator" class="org.generationcp.commons.service.impl.SeedSourceGenerator">
+	<bean id="seedSourceGenerator" class="org.generationcp.commons.ruleengine.generator.SeedSourceGenerator">
 	</bean>
 	
 	<!-- Including all beans used for generating Code Sheet when exporting Germplasm List excel file -->
