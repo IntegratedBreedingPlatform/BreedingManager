@@ -8,19 +8,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.generationcp.breeding.manager.listmanager.api.FillColumnSource;
 import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -410,6 +411,29 @@ public class GermplasmColumnValuesGeneratorTest {
 		}
 		Mockito.verify(this.fillColumnSource).propagateUIChanges();
 	}
+	
+	@Test
+	public void testSetCrossMaleGIDColumnValuesForUnknownMaleParent() {
+		final List<Germplasm> germplasmList = this.generateListofGermplasm(false);
+		// Set unknown male parent for the first germplasm
+		germplasmList.get(0).setGpid2(0);
+		Mockito.doReturn(germplasmList).when(this.germplasmDataManager)
+				.getGermplasms(GermplasmColumnValuesGeneratorTest.GID_LIST);
+
+		final String columnName = ColumnLabels.PARENTAGE.getName();
+		this.valuesGenerator.setCrossMaleGIDColumnValues(columnName);
+		// For first germplasm, expect "UNKNOWN" to be set
+		Mockito.verify(this.fillColumnSource).setColumnValueForItem(
+				GermplasmColumnValuesGeneratorTest.ITEMS_LIST.get(0), columnName,
+				Name.UNKNOWN);
+		// Expecting gpid2 to be set as all germplasm have gnpgs = 2
+		for (int i = 1; i < GermplasmColumnValuesGeneratorTest.ITEMS_LIST.size(); i++) {
+			Mockito.verify(this.fillColumnSource).setColumnValueForItem(
+					GermplasmColumnValuesGeneratorTest.ITEMS_LIST.get(i), columnName,
+					germplasmList.get(i).getGpid2().toString());
+		}
+		Mockito.verify(this.fillColumnSource).propagateUIChanges();
+	}
 
 	@Test
 	public void testSetCrossMalePrefNameColumnValuesForDerivativeGermplasm() {
@@ -446,6 +470,40 @@ public class GermplasmColumnValuesGeneratorTest {
 		// Expecting preferred names of gpid2 to be set as all germplasm have
 		// gnpgs = 2
 		for (int i = 0; i < GermplasmColumnValuesGeneratorTest.ITEMS_LIST.size(); i++) {
+			final Integer gid = GermplasmColumnValuesGeneratorTest.GID_LIST.get(i);
+			final Integer maleParentId2 = maleParentsMap.get(gid);
+			Mockito.verify(this.fillColumnSource).setColumnValueForItem(
+					GermplasmColumnValuesGeneratorTest.ITEMS_LIST.get(i), columnName, namesMap.get(maleParentId2));
+		}
+		Mockito.verify(this.germplasmDataManager).getPreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class));
+		Mockito.verify(this.fillColumnSource).propagateUIChanges();
+	}
+	
+	@Test
+	public void testSetCrossMalePrefNameColumnValuesForUnknownMaleParent() {
+		final List<Germplasm> germplasmList = this.generateListofGermplasm(false);
+		// Set unknown male parent for the first germplasm
+		germplasmList.get(0).setGpid2(0);
+		Mockito.doReturn(germplasmList).when(this.germplasmDataManager)
+				.getGermplasms(GermplasmColumnValuesGeneratorTest.GID_LIST);
+		final Map<Integer, Integer> maleParentsMap = new HashMap<>();
+		for (final Germplasm germplasm : germplasmList) {
+			maleParentsMap.put(germplasm.getGid(), germplasm.getGpid2());
+		}
+		final Map<Integer, String> namesMap = this.generateGIDStringMap("ABCDEFG",
+				new ArrayList<>(maleParentsMap.values()));
+		final String unknownStringFromMiddleware = RandomStringUtils.randomAlphabetic(20);
+		namesMap.put(0, unknownStringFromMiddleware);
+		Mockito.doReturn(namesMap).when(this.germplasmDataManager)
+				.getPreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class));
+
+		final String columnName = ColumnLabels.PARENTAGE.getName();
+		this.valuesGenerator.setCrossMalePrefNameColumnValues(columnName);
+
+		// For first germplasm, expect "UNKNOWN" string from Middleware to be set
+		Mockito.verify(this.fillColumnSource).setColumnValueForItem(
+				GermplasmColumnValuesGeneratorTest.ITEMS_LIST.get(0), columnName, unknownStringFromMiddleware);
+		for (int i = 1; i < GermplasmColumnValuesGeneratorTest.ITEMS_LIST.size(); i++) {
 			final Integer gid = GermplasmColumnValuesGeneratorTest.GID_LIST.get(i);
 			final Integer maleParentId2 = maleParentsMap.get(gid);
 			Mockito.verify(this.fillColumnSource).setColumnValueForItem(
@@ -512,7 +570,7 @@ public class GermplasmColumnValuesGeneratorTest {
 		final Map<Integer, String> namesMap = this.generateGIDStringMap("ABCDEFG",
 				new ArrayList<>(femaleParentsMap.values()));
 		Mockito.doReturn(namesMap).when(this.germplasmDataManager)
-				.getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
+				.getPreferredNamesByGids(Mockito.anyListOf(Integer.class));
 
 		final String columnName = ColumnLabels.PARENTAGE.getName();
 		this.valuesGenerator.setCrossFemaleInfoColumnValues(columnName, FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);

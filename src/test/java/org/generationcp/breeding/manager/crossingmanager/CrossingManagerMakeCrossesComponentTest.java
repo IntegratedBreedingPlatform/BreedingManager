@@ -4,8 +4,12 @@ package org.generationcp.breeding.manager.crossingmanager;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.commons.context.ContextInfo;
@@ -17,12 +21,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,6 +59,9 @@ public class CrossingManagerMakeCrossesComponentTest {
 
 	@Mock
 	private FieldbookService fieldbookMiddlewareService;
+	
+	@Mock
+	private MakeCrossesTableComponent crossesTableComponent;
 
 	private CrossingManagerMakeCrossesComponent makeCrosses;
 	private HttpServletRequest mockRequest;
@@ -64,6 +75,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 		Mockito.doReturn("Return to Study").when(this.messageSource).getMessage(Message.BACK_TO_STUDY);
 		this.makeCrosses.setMessageSource(this.messageSource);
 		this.makeCrosses.setFieldbookMiddlewareService(this.fieldbookMiddlewareService);
+		this.makeCrosses.setCrossesTableComponent(this.crossesTableComponent);
 		Mockito.doReturn(this.window).when(this.makeCrosses).getWindow();
 
 		this.mockRequest = Mockito.mock(HttpServletRequest.class);
@@ -78,7 +90,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 
 	}
 
-	@Test
+	@Test 
 	public void testShowNotificationAfterCrossing_WhenMakeCrossesTableHasNoEntry() {
 		this.makeCrosses.showNotificationAfterCrossing(0);
 		try {
@@ -149,6 +161,100 @@ public class CrossingManagerMakeCrossesComponentTest {
 		Assert.assertNotNull("Expect StudyWorkbook to be initialized.", this.makeCrosses.getWorkbook());
 		Assert.assertTrue("Expected isNavigatedFromStudy flag to be set to true.", this.makeCrosses.isNavigatedFromStudy());
 	}
+	
+	@Test
+	public void testCreateAndAddCrossesToTableWhenMultiplyParent() {
+		final int numOfFemaleEntries = 5;
+		final int numOfMaleEntries = 2;
+		final List<GermplasmListEntry> femaleEntries = createListEntries(numOfFemaleEntries);
+		final List<GermplasmListEntry> maleEntries = createListEntries(numOfMaleEntries);
+		final String listnameFemale = RandomStringUtils.randomAlphabetic(20);
+		final String listnameMale = RandomStringUtils.randomAlphabetic(20);
+		final Boolean excludeSelf = new Random().nextBoolean();
+		this.makeCrosses.createAndAddCrossesToTable(femaleEntries, maleEntries, listnameFemale, listnameMale, CrossType.MULTIPLY, false,
+				excludeSelf);
+		Mockito.verify(this.crossesTableComponent).multiplyParents(femaleEntries, maleEntries, listnameFemale, listnameMale, excludeSelf);
+	}
+	
+	@Test
+	public void testCreateAndAddCrossesToTableWhenMultiplyParentsReciprocal() {
+		final int numOfFemaleEntries = 5;
+		final int numOfMaleEntries = 2;
+		final List<GermplasmListEntry> femaleEntries = createListEntries(numOfFemaleEntries);
+		final List<GermplasmListEntry> maleEntries = createListEntries(numOfMaleEntries);
+		final String listnameFemale = RandomStringUtils.randomAlphabetic(20);
+		final String listnameMale = RandomStringUtils.randomAlphabetic(20);
+		final Boolean excludeSelf = new Random().nextBoolean();
+		final boolean makeReciprocalCrosses = true;
+		this.makeCrosses.createAndAddCrossesToTable(femaleEntries, maleEntries, listnameFemale, listnameMale, CrossType.MULTIPLY, makeReciprocalCrosses,
+				excludeSelf);
+		Mockito.verify(this.crossesTableComponent).multiplyParents(femaleEntries, maleEntries, listnameFemale, listnameMale, excludeSelf);
+		Mockito.verify(this.crossesTableComponent).multiplyParents(maleEntries, femaleEntries, listnameMale, listnameFemale, excludeSelf);
+	}
+	
+	@Test
+	public void testCreateAndAddCrossesToTableWhenTopToBottom() {
+		final int numOfFemaleEntries = 5;
+		final int numOfMaleEntries = 5;
+		final List<GermplasmListEntry> femaleEntries = createListEntries(numOfFemaleEntries);
+		final List<GermplasmListEntry> maleEntries = createListEntries(numOfMaleEntries);
+		final String listnameFemale = RandomStringUtils.randomAlphabetic(20);
+		final String listnameMale = RandomStringUtils.randomAlphabetic(20);
+		final Boolean excludeSelf = new Random().nextBoolean();
+		this.makeCrosses.createAndAddCrossesToTable(femaleEntries, maleEntries, listnameFemale, listnameMale, CrossType.TOP_TO_BOTTOM, false,
+				excludeSelf);
+		Mockito.verify(this.crossesTableComponent).makeTopToBottomCrosses(femaleEntries, maleEntries, listnameFemale, listnameMale, excludeSelf);
+	}
+	
+	@Test
+	public void testCreateAndAddCrossesToTableWhenTopToBottomReciprocal() {
+		final int numOfFemaleEntries = 5;
+		final int numOfMaleEntries = 5;
+		final List<GermplasmListEntry> femaleEntries = createListEntries(numOfFemaleEntries);
+		final List<GermplasmListEntry> maleEntries = createListEntries(numOfMaleEntries);
+		final String listnameFemale = RandomStringUtils.randomAlphabetic(20);
+		final String listnameMale = RandomStringUtils.randomAlphabetic(20);
+		final Boolean excludeSelf = new Random().nextBoolean();
+		final boolean makeReciprocalCrosses = true;
+		this.makeCrosses.createAndAddCrossesToTable(femaleEntries, maleEntries, listnameFemale, listnameMale, CrossType.TOP_TO_BOTTOM, makeReciprocalCrosses,
+				excludeSelf);
+		Mockito.verify(this.crossesTableComponent).makeTopToBottomCrosses(femaleEntries, maleEntries, listnameFemale, listnameMale, excludeSelf);
+		Mockito.verify(this.crossesTableComponent).makeTopToBottomCrosses(maleEntries, femaleEntries, listnameMale, listnameFemale, excludeSelf);
+	}
+	
+	@Test
+	public void testCreateAndAddCrossesToTableWhenUnknownMaleParent() {
+		final int numOfFemaleEntries = 5;
+		final List<GermplasmListEntry> femaleEntries = createListEntries(numOfFemaleEntries);
+		final String listnameFemale = RandomStringUtils.randomAlphabetic(20);
+		final String listnameMale = RandomStringUtils.randomAlphabetic(20);
+		final Boolean excludeSelf = new Random().nextBoolean();
+		this.makeCrosses.createAndAddCrossesToTable(femaleEntries, new ArrayList<GermplasmListEntry>(), listnameFemale, listnameMale, CrossType.UNKNOWN_MALE, false,
+				excludeSelf);
+		Mockito.verify(this.crossesTableComponent).makeCrossesWithUnknownMaleParent(femaleEntries, listnameFemale);
+	}
+
+	@Test
+	public void testCreateAndAddCrossesToTableWhenMultipleMaleParent() {
+		final List<GermplasmListEntry> femaleEntries = createListEntries(5);
+		final List<GermplasmListEntry> maleEntries = createListEntries(5);
+		final String listnameFemale = RandomStringUtils.randomAlphabetic(20);
+		final String listnameMale = RandomStringUtils.randomAlphabetic(20);
+		final Boolean excludeSelf = new Random().nextBoolean();
+		this.makeCrosses.createAndAddCrossesToTable(femaleEntries, maleEntries, listnameFemale, listnameMale, CrossType.MULTIPLE_MALE, false,
+			excludeSelf);
+		Mockito.verify(this.crossesTableComponent).makeCrossesWithMultipleMaleParents(femaleEntries, maleEntries, listnameFemale, listnameMale, excludeSelf);
+	}
+	
+
+	private List<GermplasmListEntry> createListEntries(final int numOfEntries) {
+		final List<GermplasmListEntry> femaleEntries = new ArrayList<>();
+		final Random random = new Random();
+		for (int i = 1; i <= numOfEntries; i++){			
+			femaleEntries.add(new GermplasmListEntry(random.nextInt(), random.nextInt(), i));
+		}
+		return femaleEntries;
+	}
 
 	@Test
 	@Ignore("Fix this Test")
@@ -161,6 +267,6 @@ public class CrossingManagerMakeCrossesComponentTest {
 		this.makeCrosses.sendToStudyAction(1);
 		Mockito.verify(studyCancelButton).getResource();
 		Mockito.verify(externalResource).getURL();
-		Mockito.verify(this.window).open(Matchers.any(ExternalResource.class), Matchers.anyString());
+		Mockito.verify(this.window).open(ArgumentMatchers.any(ExternalResource.class), ArgumentMatchers.anyString());
 	}
 }

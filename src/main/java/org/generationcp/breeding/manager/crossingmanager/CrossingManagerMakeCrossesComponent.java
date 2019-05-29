@@ -15,7 +15,6 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
-import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.settings.BreedingMethodSetting;
@@ -44,14 +43,13 @@ import java.util.List;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-	BreedingManagerLayout, StepChangeListener {
+	BreedingManagerLayout {
 
 	private static final int DEFAULT_BREEDING_METHOD_ID = 101;
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
 
 	private static final long serialVersionUID = 9097810121003895303L;
-	public static final int BASED_ON_PARENTAGE = 0;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -137,63 +135,65 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	/*
 	 * Action handler for Make Cross button
 	 */
-	public void makeCrossButtonAction(
+	void makeCrossButtonAction(
 		final List<GermplasmListEntry> femaleList, final List<GermplasmListEntry> maleList,
 		final String listnameFemaleParent, final String listnameMaleParent, final CrossType type, final boolean makeReciprocalCrosses,
 		final boolean excludeSelf) {
 
-		if (!femaleList.isEmpty() && !maleList.isEmpty()) {
-			try {
-				final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+	
+		try {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-					@Override
-					protected void doInTransactionWithoutResult(final TransactionStatus status) {
-						// Female - Male Multiplication
-						if (CrossType.MULTIPLY.equals(type)) {
-							CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(femaleList, maleList,
-								listnameFemaleParent, listnameMaleParent, excludeSelf);
-							if (makeReciprocalCrosses) {
-								CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(maleList, femaleList,
-									listnameMaleParent, listnameFemaleParent, excludeSelf);
-							}
+				@Override
+				protected void doInTransactionWithoutResult(final TransactionStatus status) {
+					createAndAddCrossesToTable(femaleList, maleList, listnameFemaleParent, listnameMaleParent, type, makeReciprocalCrosses,
+							excludeSelf);
+				}
+				
+			});
 
-							// Top to Bottom Crossing
-						} else if (CrossType.TOP_TO_BOTTOM.equals(type)) {
-							if (femaleList.size() == maleList.size()) {
-								CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList,
-									listnameFemaleParent, listnameMaleParent, excludeSelf);
-								if (makeReciprocalCrosses) {
-									CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(maleList,
-										femaleList, listnameMaleParent, listnameFemaleParent, excludeSelf);
-								}
-							} else {
-								MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(),
-									"Error with selecting parents.", CrossingManagerMakeCrossesComponent.this.messageSource
-										.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL));
-							}
-						}
-					}
-				});
-
-			} catch (final Exception e) {
-				CrossingManagerMakeCrossesComponent.LOG.error(e.getMessage(), e);
-				MessageNotifier.showError(
-					CrossingManagerMakeCrossesComponent.this.getWindow(),
-					this.messageSource.getMessage(Message.ERROR),
-					CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.ERROR_WITH_CROSSES_RETRIEVAL));
-			}
-
-			CrossingManagerMakeCrossesComponent.this
-				.showNotificationAfterCrossing(CrossingManagerMakeCrossesComponent.this.crossesTableComponent.getTableCrossesMade()
-					.size());
-
-		} else {
-			MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(), "Error with selecting parents.",
-				CrossingManagerMakeCrossesComponent.this.messageSource
-					.getMessage(Message.AT_LEAST_ONE_FEMALE_AND_ONE_MALE_PARENT_MUST_BE_SELECTED));
+		} catch (final Exception e) {
+			CrossingManagerMakeCrossesComponent.LOG.error(e.getMessage(), e);
+			MessageNotifier.showError(
+				CrossingManagerMakeCrossesComponent.this.getWindow(),
+				this.messageSource.getMessage(Message.ERROR),
+				CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.ERROR_WITH_CROSSES_RETRIEVAL));
 		}
 
+		CrossingManagerMakeCrossesComponent.this
+			.showNotificationAfterCrossing(CrossingManagerMakeCrossesComponent.this.crossesTableComponent.getTableCrossesMade()
+				.size());
+	}
+
+	void createAndAddCrossesToTable(final List<GermplasmListEntry> femaleList, final List<GermplasmListEntry> maleList,
+			final String listnameFemaleParent, final String listnameMaleParent, final CrossType type,
+			final boolean makeReciprocalCrosses, final boolean excludeSelf) {
+		// Female - Male Multiplication
+		if (CrossType.MULTIPLY.equals(type)) {
+			CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(femaleList, maleList,
+				listnameFemaleParent, listnameMaleParent, excludeSelf);
+			if (makeReciprocalCrosses) {
+				CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(maleList, femaleList,
+					listnameMaleParent, listnameFemaleParent, excludeSelf);
+			}
+	
+		// Top to Bottom Crossing
+		} else if (CrossType.TOP_TO_BOTTOM.equals(type)) {
+			CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList,
+				listnameFemaleParent, listnameMaleParent, excludeSelf);
+			if (makeReciprocalCrosses) {
+				CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(maleList,
+					femaleList, listnameMaleParent, listnameFemaleParent, excludeSelf);
+			}
+			
+		// Crosses with Unknown Male Parent	
+		} else if (CrossType.UNKNOWN_MALE.equals(type)) {
+			CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeCrossesWithUnknownMaleParent(femaleList, listnameFemaleParent);
+		} else if (CrossType.MULTIPLE_MALE.equals(type)) {
+			CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeCrossesWithMultipleMaleParents(femaleList, maleList,
+				listnameFemaleParent, listnameMaleParent, excludeSelf);
+		}
 	}
 
 	void showNotificationAfterCrossing(final int noOfCrosses) {
@@ -203,11 +203,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		}
 	}
 
-	public void toggleStudyBackButton() {
+	void toggleStudyBackButton() {
 		this.studyBackButton.setEnabled(this.isCrossListMade());
 	}
 
-	public void sendToStudyAction(final Integer id) {
+	void sendToStudyAction(final Integer id) {
 		final String aditionalParameters =
 			"?restartApplication&loggedInUserId=" + contextUtil.getContextInfoFromSession().getLoggedInUserId() + "&selectedProjectId="
 				+ contextUtil.getContextInfoFromSession().getSelectedProjectId() + "&authToken=" + contextUtil.getContextInfoFromSession()
@@ -220,14 +220,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private boolean isCrossListMade() {
 		final Table tableCrossesMade = this.crossesTableComponent.getTableCrossesMade();
 		return tableCrossesMade != null && tableCrossesMade.size() > 0;
-	}
-
-	public void backButtonClickAction() {
-		if (this.crossesTableComponent.getCrossList() != null) {
-			MessageNotifier.showWarning(this.getWindow(), "Invalid Action", "Cannot change settings once crosses have been saved");
-			return;
-		}
-
 	}
 
 	@Override
@@ -284,7 +276,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.setStyleName("crosses-select-parents-tab");
 	}
 
-	protected Button constructStudyBackButton() {
+	Button constructStudyBackButton() {
 		final Button studyBackButton = new Button();
 		studyBackButton.setDebugId("studyBackButton");
 		studyBackButton.setCaption(this.messageSource.getMessage(Message.BACK_TO_STUDY));
@@ -311,7 +303,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return this.isNavigatedFromStudy;
 	}
 
-	public String getStudyId() {
+	String getStudyId() {
 		return this.studyId;
 	}
 
@@ -324,33 +316,17 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return this.workbook;
 	}
 
-	public void updateCrossesSeedSource(final String femaleListName, final String maleListName) {
-		this.crossesTableComponent.updateSeedSource(femaleListName, maleListName);
-	}
-
-	private boolean doUpdateTable() {
-		return !this.getSeparatorString().equals(this.crossesTableComponent.getSeparator());
-	}
-
-	@Override
-	public void updatePage() {
-		// only make updates to the page if separator was changed
-		if (this.doUpdateTable() && this.crossesTableComponent.getCrossList() == null) {
-			this.crossesTableComponent.updateSeparatorForCrossesMade();
-		}
-	}
-
 	// SETTERS AND GETTERS
-	public String getSeparatorString() {
+	String getSeparatorString() {
 		final CrossNameSetting crossNameSetting = this.getCurrentCrossingSetting().getCrossNameSetting();
 		return crossNameSetting.getSeparator();
 	}
 
-	public CrossSetting getCurrentCrossingSetting() {
+	CrossSetting getCurrentCrossingSetting() {
 		return this.source.compileCurrentSetting();
 	}
 
-	public CrossesMadeContainer getCrossesMadeContainer() {
+	CrossesMadeContainer getCrossesMadeContainer() {
 		return this.source;
 	}
 
@@ -358,7 +334,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return this.selectParentsComponent;
 	}
 
-	public void setSelectParentsComponent(final SelectParentsComponent selectParentsComponent) {
+	void setSelectParentsComponent(final SelectParentsComponent selectParentsComponent) {
 		this.selectParentsComponent = selectParentsComponent;
 	}
 
@@ -366,19 +342,15 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return this.parentsComponent;
 	}
 
-	public void setParentsComponent(final MakeCrossesParentsComponent parentsComponent) {
+	void setParentsComponent(final MakeCrossesParentsComponent parentsComponent) {
 		this.parentsComponent = parentsComponent;
 	}
 
-	public CrossingMethodComponent getCrossingMethodComponent() {
-		return this.crossingMethodComponent;
-	}
-
-	public MakeCrossesTableComponent getCrossesTableComponent() {
+	MakeCrossesTableComponent getCrossesTableComponent() {
 		return this.crossesTableComponent;
 	}
 
-	public void setCrossesTableComponent(final MakeCrossesTableComponent crossesTableComponent) {
+	void setCrossesTableComponent(final MakeCrossesTableComponent crossesTableComponent) {
 		this.crossesTableComponent = crossesTableComponent;
 	}
 
@@ -405,24 +377,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return new BreedingMethodSetting(DEFAULT_BREEDING_METHOD_ID, true, false);
 	}
 
-	void setNavigatedFromStudy(final boolean isNavigatedFromStudy) {
-		this.isNavigatedFromStudy = isNavigatedFromStudy;
-	}
-
-	Button getStudyBackButton() {
-		return this.studyBackButton;
-	}
-
-	LinkButton getStudyCancelButton() {
-		return this.studyCancelButton;
-	}
-	
 	void setStudyCancelButton(final LinkButton studyCancelButton) {
 		this.studyCancelButton = studyCancelButton;
-	}
-
-	void setCrossingMethodComponent(final CrossingMethodComponent crossingMethodComponent) {
-		this.crossingMethodComponent = crossingMethodComponent;
 	}
 
 	public ContextUtil getContextUtil() {

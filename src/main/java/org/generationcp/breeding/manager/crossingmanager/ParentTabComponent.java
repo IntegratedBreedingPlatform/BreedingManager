@@ -159,7 +159,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 									tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject,
 										ParentTabComponent.this.getSelectAllCheckBox()));
 									ParentTabComponent.this.listNameForCrosses = draggedListFromTree.getName();
-									ParentTabComponent.this.updateCrossesSeedSource(draggedListFromTree);
 								}
 
 								tag.setImmediate(true);
@@ -654,19 +653,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void setGermplasmList(final GermplasmList germplasmList) {
 		this.germplasmList = germplasmList;
-	}
-
-	private void updateCrossesSeedSource(final GermplasmList germplasmList) {
-		this.source.updateCrossesSeedSource(this, germplasmList);
-	}
-
-	public Message getSuccessMessage() {
-		if (this.parentLabel.equals(ParentTabComponent.FEMALE_PARENTS)) {
-			return Message.SUCCESS_SAVE_FOR_FEMALE_LIST;
-		} else if (this.parentLabel.equals(ParentTabComponent.MALE_PARENTS)) {
-			return Message.SUCCESS_SAVE_FOR_MALE_LIST;
-		}
-		return null;
 	}
 
 	public CheckBox getSelectAllCheckBox() {
