@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+			http://www.springframework.org/schema/mvc
+			http://www.springframework.org/schema/mvc/spring-mvc.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<!-- Enable Spring annotations -->
+	<context:annotation-config />
+
+	<!-- **************************************************************** -->
+	<!--  RESOURCE FOLDERS CONFIGURATION                                  -->
+	<!--  Dispatcher configuration for serving static resources           -->
+	<!-- **************************************************************** -->
+	<mvc:resources mapping="/static/**" location="/WEB-INF/static/"/>
+
+	<!-- **************************************************************** -->
+	<!--  SPRING ANNOTATION PROCESSING                                    -->
+	<!-- **************************************************************** -->
+	<mvc:annotation-driven />
+	<context:component-scan base-package="org.generationcp.breeding.manager.controller" />
+
+	<!-- **************************************************************** -->
+	<!-- THYMELEAF-SPECIFIC ARTIFACTS -->
+	<!-- TemplateResolver <- TemplateEngine <- ViewResolver -->
+	<!-- **************************************************************** -->
+	<bean id="nonCachableMessageResolver"
+		  class="org.thymeleaf.spring3.messageresolver.SpringNonCacheableMessageResolver"/>
+
+	<bean id="webTemplateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+		<property name="prefix" value="/WEB-INF/pages/" />
+		<property name="suffix" value=".html" />
+		<property name="templateMode" value="LEGACYHTML5" />
+		<property name="cacheable" value="false" />
+		<property name="order" value="2" />
+	</bean>
+
+	<bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
+		<property name="templateResolvers" >
+			<set>
+				<ref bean="webTemplateResolver"/>
+			</set>
+		</property>
+		<property name="additionalDialects">
+			<set>
+				<bean class="org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect" />
+				<bean class="org.thymeleaf.extras.conditionalcomments.dialect.ConditionalCommentsDialect" />
+			</set>
+		</property>
+		<property name="messageResolver" ref="nonCachableMessageResolver" />
+
+	</bean>
+	<bean class="org.thymeleaf.spring3.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+	</bean>
+
+</beans>

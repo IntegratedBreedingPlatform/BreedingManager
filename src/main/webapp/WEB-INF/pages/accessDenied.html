@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta name="viewport" content="initial-scale=1.0, width=device-width"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	<meta charset="utf-8"/>
+
+	<title>Access Denied</title>
+	<link th:href="@{/controller/static/css/access-denied.css}" rel="stylesheet"/>
+	<link th:href="@{/controller/static/css/lib/font-awesome-4.2.0/css/font-awesome.css}" rel="stylesheet"/>
+</head>
+<body>
+	<div class="access-notifcation-container">
+		<h1 class="access-notification-title">
+			<span class="fa access-denied-icon">&#xf023;</span> Access Denied
+		</h1>
+		<p>This functionality is restricted. See your administrator for additional permissions.</p>
+	</div>
+	<script type="text/javascript" th:src="@{/controller/static/js/lib/jquery-1.11.1.min.js}"></script>
+	<script type="text/javascript" th:src="@{/controller/static/js/lib/modernizr-custom.js}"></script>
+	<script type="text/javascript" th:src="@{/controller/static/js/access-denied.js}"></script>
+</body>
+</html>
