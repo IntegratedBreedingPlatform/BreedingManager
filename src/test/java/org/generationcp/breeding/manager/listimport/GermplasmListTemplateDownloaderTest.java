@@ -1,36 +1,23 @@
 package org.generationcp.breeding.manager.listimport;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-
-import java.io.File;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.vaadin.ui.Component;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.util.FileDownloaderUtility;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.InstallationDirectoryUtil;
-import org.generationcp.commons.util.VaadinFileDownloadResource;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.io.ClassPathResource;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListTemplateDownloaderTest {
@@ -58,7 +45,7 @@ public class GermplasmListTemplateDownloaderTest {
 	@Mock
 	private GermplasmListTemplateDownloader.WorkbookFileWriter workbookFileWriter;
 
-	private HSSFWorkbook workbook = new HSSFWorkbook();
+	private final HSSFWorkbook workbook = new HSSFWorkbook();
 
 	private GermplasmListTemplateDownloader germplasmListTemplateDownloader;
 
@@ -74,7 +61,7 @@ public class GermplasmListTemplateDownloaderTest {
 		this.germplasmListTemplateDownloader.setWorkbookFileWriter(this.workbookFileWriter);
 
 		final Project project = new Project();
-		when(contextUtil.getProjectInContext()).thenReturn(project);
+		when(this.contextUtil.getProjectInContext()).thenReturn(project);
 		when(this.installationDirectoryUtil
 				.getFileInTemporaryDirectoryForProjectAndTool(GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE, project,
 						ToolName.BM_LIST_MANAGER_MAIN)).thenReturn(TEMPORARY_FILE_PATH_XLS);
@@ -88,9 +75,9 @@ public class GermplasmListTemplateDownloaderTest {
 
 		this.germplasmListTemplateDownloader.exportGermplasmTemplate(this.component);
 
-		verify(workbookFileWriter, times(1)).write(this.workbook, TEMPORARY_FILE_PATH_XLS);
-		verify(codesSheetGenerator, times(1)).generateCodesSheet(this.workbook);
-		verify(fileDownloaderUtility, times(1))
+		verify(this.workbookFileWriter, times(1)).write(this.workbook, TEMPORARY_FILE_PATH_XLS);
+		verify(this.codesSheetGenerator, times(1)).generateCodesSheet(this.workbook, "maize");
+		verify(this.fileDownloaderUtility, times(1))
 				.initiateFileDownload(TEMPORARY_FILE_PATH_XLS, GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE, this.component);
 
 	}
