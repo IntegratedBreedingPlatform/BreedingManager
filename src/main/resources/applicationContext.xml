@@ -168,6 +168,11 @@
 		<aop:scoped-proxy proxy-target-class="false" />
 	</bean>
 
+	<bean id="derivedVariableService" factory-bean="managerFactory"
+		  factory-method="getDerivedVariableService" scope="request">
+		<aop:scoped-proxy proxy-target-class="false" />
+	</bean>
+
 	<bean id="measurementVariableService" factory-bean="managerFactory"
 		  factory-method="getMeasurementVariableService" scope="request">
 		<aop:scoped-proxy proxy-target-class="false" />
@@ -242,6 +247,8 @@
 			</map>
 		</property>
 	</bean>
+
+	<bean id="germplasmNamingService" class="org.generationcp.commons.service.impl.GermplasmNamingServiceImpl" />
 
 	<bean id="ruleService"
 		class="org.generationcp.commons.ruleengine.impl.RulesServiceImpl" />
