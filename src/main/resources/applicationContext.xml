@@ -137,12 +137,6 @@
 	<bean id="breedingManagerService"
 		class="org.generationcp.breeding.manager.service.BreedingManagerServiceImpl" />
 
-
-	<bean id="userDataManager" factory-bean="managerFactory"
-		factory-method="getUserDataManager" scope="request">
-		<aop:scoped-proxy />
-	</bean>
-
 	<bean id="listDataProjectSaver" factory-bean="managerFactory"
 		  factory-method="getListDataProjectSaver" scope="request">
 		<aop:scoped-proxy />
@@ -200,6 +194,11 @@
 	<bean id="workbenchDataManager"
 		class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl"
 		destroy-method="close">
+		<constructor-arg ref="workbenchHibernateSessionProvider" />
+	</bean>
+
+	<bean id="userService"
+		  class="org.generationcp.middleware.service.impl.user.UserServiceImpl">
 		<constructor-arg ref="workbenchHibernateSessionProvider" />
 	</bean>
 

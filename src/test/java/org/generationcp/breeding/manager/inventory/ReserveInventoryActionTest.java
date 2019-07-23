@@ -11,10 +11,11 @@ import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,13 +34,13 @@ public class ReserveInventoryActionTest {
 	private InventoryDataManager inventoryDataManager;
 
 	@Mock
-	private UserDataManager userDataManager;
-
-	@Mock
 	private ContextUtil contextUtil;
 
 	@Mock
 	private ReserveInventorySource reserveInventorySource;
+
+	@Mock
+	private UserService userService;
 
 	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
 
@@ -52,12 +53,13 @@ public class ReserveInventoryActionTest {
 	public void testSetUp() {
 		importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 
-		final User user = new User();
+		final WorkbenchUser user = new WorkbenchUser();
+		final Person person = new Person();
 		user.setUserid(12);
-		user.setPersonid(123);
+		person.setId(123);
+		user.setPerson(person);
 
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
-		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(1);
+		Mockito.doReturn(user).when(this.userService).getUserById(Matchers.anyInt());
 
 	}
 

@@ -11,10 +11,12 @@ import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
@@ -23,18 +25,20 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public class BreedingManagerListDetailsComponentTest {
 
 	public static final String PROGRAM_UUID = "8238423847-7hdksjhd-47328947";
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponentTest.class);
-
-	private BreedingManagerListDetailsComponent listDetailsComponent;
-	private BreedingManagerService breedingManagerService;
-
 	private static final Integer OTHER_USER = new Integer(2);
 	private static final String OTHER_USER_NAME = "Other User Name";
+	private static final Integer CURRENT_USER_ID = 1;
 	private static final String CURRENT_USER_NAME = "Current User Name";
+
+	@Mock
+	private BreedingManagerService breedingManagerService;
 
 	@Mock
 	private ListNameField listNameField;
@@ -54,29 +58,25 @@ public class BreedingManagerListDetailsComponentTest {
 	@Mock
 	private ContextUtil contextUtil;
 
+	@Mock
+	private UserService userService;
+
+	@InjectMocks
+	private BreedingManagerListDetailsComponent listDetailsComponent = new BreedingManagerListDetailsComponent();
+
 	private GermplasmList germplasmList;
 
 	@Before
 	public void setUp() {
 
-		listDetailsComponent = new BreedingManagerListDetailsComponent();
-		listDetailsComponent.setListNameField(listNameField);
-		listDetailsComponent.setListDescriptionField(listDescriptionField);
-		listDetailsComponent.setListTypeField(listTypeField);
-		listDetailsComponent.setListDateField(listDateField);
-		listDetailsComponent.setListNotesField(listNotesField);
-		listDetailsComponent.setContextUtil(contextUtil);
+		when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(CURRENT_USER_ID);
 
-		breedingManagerService = Mockito.mock(BreedingManagerService.class);
-		listDetailsComponent.setBreedingManagerService(breedingManagerService);
-
-
-		Mockito.when(breedingManagerService.getDefaultOwnerListName()).thenReturn(
+		Mockito.when(userService.getPersonName(CURRENT_USER_ID)).thenReturn(
 				BreedingManagerListDetailsComponentTest.CURRENT_USER_NAME);
-		Mockito.when(breedingManagerService
-						.getOwnerListName(BreedingManagerListDetailsComponentTest.OTHER_USER)).thenReturn(
+		when(userService
+						.getPersonName(BreedingManagerListDetailsComponentTest.OTHER_USER)).thenReturn(
 				BreedingManagerListDetailsComponentTest.OTHER_USER_NAME);
-		Mockito.when(contextUtil.getCurrentProgramUUID()).thenReturn(PROGRAM_UUID);
+		when(contextUtil.getCurrentProgramUUID()).thenReturn(PROGRAM_UUID);
 
 	}
 
@@ -180,11 +180,11 @@ public class BreedingManagerListDetailsComponentTest {
 		final String sampleType = "Germplasm List";
 		final String sampleNotes = "Sample Notes";
 
-		Mockito.when(listNameField.getValue()).thenReturn(sampleName);
-		Mockito.when(listDescriptionField.getValue()).thenReturn(sampleDescription);
-		Mockito.when(listTypeField.getValue()).thenReturn(sampleType);
-		Mockito.when(listDateField.getValue()).thenReturn(null);
-		Mockito.when(listNotesField.getValue()).thenReturn(sampleNotes);
+		when(listNameField.getValue()).thenReturn(sampleName);
+		when(listDescriptionField.getValue()).thenReturn(sampleDescription);
+		when(listTypeField.getValue()).thenReturn(sampleType);
+		when(listDateField.getValue()).thenReturn(null);
+		when(listNotesField.getValue()).thenReturn(sampleNotes);
 
 		GermplasmList germplasmList = listDetailsComponent.createGermplasmListFromListDetails(false);
 
@@ -208,11 +208,11 @@ public class BreedingManagerListDetailsComponentTest {
 		final String sampleType = "Germplasm List";
 		final String sampleNotes = "Sample Notes";
 
-		Mockito.when(listNameField.getValue()).thenReturn(sampleName);
-		Mockito.when(listDescriptionField.getValue()).thenReturn(sampleDescription);
-		Mockito.when(listTypeField.getValue()).thenReturn(sampleType);
-		Mockito.when(listDateField.getValue()).thenReturn(null);
-		Mockito.when(listNotesField.getValue()).thenReturn(sampleNotes);
+		when(listNameField.getValue()).thenReturn(sampleName);
+		when(listDescriptionField.getValue()).thenReturn(sampleDescription);
+		when(listTypeField.getValue()).thenReturn(sampleType);
+		when(listDateField.getValue()).thenReturn(null);
+		when(listNotesField.getValue()).thenReturn(sampleNotes);
 
 		GermplasmList germplasmList = listDetailsComponent.createGermplasmListFromListDetails(true);
 

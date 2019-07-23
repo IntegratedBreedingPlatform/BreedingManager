@@ -15,9 +15,9 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,12 +56,12 @@ public class SelectParentsListDataComponentTest {
 
 	@Mock
 	private InventoryDataManager inventoryDataManager;
+
+	@Mock
+	private UserService userService;
 	
 	@Mock
 	private Component component;
-
-	@Mock
-	private UserDataManager userDataManager;
 
 	@InjectMocks
 	private final SelectParentsListDataComponent selectParents =

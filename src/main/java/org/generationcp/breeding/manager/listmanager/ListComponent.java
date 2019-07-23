@@ -2480,7 +2480,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			closeLotTransaction.setSourceId(listId);
 			closeLotTransaction.setSourceRecordId(lrecId);
 			closeLotTransaction.setPreviousAmount(prevAmount);
-			closeLotTransaction.setPersonId(workbenchUser.getPerson().getId());
 
 			closeLotTransactions.add(closeLotTransaction);
 		}

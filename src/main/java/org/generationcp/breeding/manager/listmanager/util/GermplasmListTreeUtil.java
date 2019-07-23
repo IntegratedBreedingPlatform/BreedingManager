@@ -160,13 +160,13 @@ public class GermplasmListTreeUtil implements Serializable {
 			folderTextField.validate();
 			final String folderName = folderTextField.getValue().toString().trim();
 
-			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+			final Integer workbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
 
 			newFolder.setName(folderName);
 			newFolder.setDescription(folderName);
 			newFolder.setType(GermplasmListTreeUtil.FOLDER_TYPE);
 			newFolder.setStatus(0);
-			newFolder.setUserId(ibdbUserId);
+			newFolder.setUserId(workbenchUserId);
 			newFolder.setDate(DateUtil.getCurrentDateAsLongValue());
 			newFolder.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 
@@ -321,8 +321,8 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	private boolean isListOwnedByTheUser(final GermplasmList gpList) {
 		try {
-			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
-			if (!gpList.getUserId().equals(ibdbUserId)) {
+			final Integer workbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
+			if (!gpList.getUserId().equals(workbenchUserId)) {
 				return false;
 			}
 		} catch (final MiddlewareQueryException e) {

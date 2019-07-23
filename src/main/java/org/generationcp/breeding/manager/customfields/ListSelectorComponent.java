@@ -766,7 +766,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			final List<UserDefinedField> listTypes = this.germplasmDataManager
 					.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(), RowColumnType.LIST_TYPE.getFtype());
 			final Map<Integer, GermplasmListMetadata> allListMetaData =
-					germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
+					this.germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
 
 			final Collection<?> existingItems = this.germplasmListSource.getItemIds();
 

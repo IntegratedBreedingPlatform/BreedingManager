@@ -1998,6 +1998,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		return columnLabel.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
+	protected void setUserService(final UserService userService) {
+		this.userService = userService;
+	}
+
 	/*
 	 * For test purposes
 	 */

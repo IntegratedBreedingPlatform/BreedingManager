@@ -185,7 +185,6 @@ public class ReserveInventoryAction implements Serializable {
 			reserveTransaction.setSourceId(listId);
 			reserveTransaction.setSourceRecordId(lrecId);
 			reserveTransaction.setPreviousAmount(prevAmount);
-			reserveTransaction.setPersonId(workbenchUser.getPerson().getId());
 
 			reserveTransactionList.add(reserveTransaction);
 		}
@@ -248,6 +247,10 @@ public class ReserveInventoryAction implements Serializable {
 
 	public void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
 		this.inventoryDataManager = inventoryDataManager;
+	}
+
+	public void setUserService(final UserService userService) {
+		this.userService = userService;
 	}
 
 }
