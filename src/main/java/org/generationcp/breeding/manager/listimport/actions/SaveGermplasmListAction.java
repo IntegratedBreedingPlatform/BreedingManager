@@ -23,7 +23,6 @@ import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.dms.StandardVariable;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -40,7 +39,6 @@ import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.ims.TransactionStatus;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.util.Util;
-import org.jfree.util.Log;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -250,7 +248,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 			// process inventory
 			if (this.seedAmountScaleId != null) {
-				final Lot lot = new Lot(null, this.contextUtil.getCurrentUserLocalId(), EntityType.GERMPLSM.name(), finalGid,
+				final Lot lot = new Lot(null, this.contextUtil.getCurrentWorkbenchUserId(), EntityType.GERMPLSM.name(), finalGid,
 						seedStorageLocation, this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
 				this.gidLotMap.put(finalGid, lot);
 			}
@@ -327,7 +325,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		newUserDefinedField.setFfmt(fieldFormat);
 		newUserDefinedField.setFdesc("-");
 		newUserDefinedField.setLfldno(0);
-		newUserDefinedField.setFuid(this.contextUtil.getCurrentUserLocalId());
+		newUserDefinedField.setFuid(this.contextUtil.getCurrentWorkbenchUserId());
 		newUserDefinedField.setFdate(Util.getCurrentDateAsIntegerValue());
 		newUserDefinedField.setScaleid(0);
 
@@ -373,7 +371,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	private GermplasmList saveGermplasmListRecord(final GermplasmList germplasmList) {
-		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
+		germplasmList.setUserId(this.contextUtil.getCurrentWorkbenchUserId());
 
 		final int newListId = this.germplasmListManager.addGermplasmList(germplasmList);
 		return this.germplasmListManager.getGermplasmListById(newListId);
@@ -526,7 +524,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			final Transaction transaction =
 					new Transaction(null, workbenchUser.getUserid(), this.gidLotMap.get(gid), intDate, TransactionStatus.DEPOSITED.getIntValue(),
 							importedGermplasm.getSeedAmount(), SaveGermplasmListAction.INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId,
-							Double.valueOf(0), importedGermplasm.getInventoryId());
+							Double.valueOf(0), workbenchUser.getPerson().getId(), importedGermplasm.getInventoryId());
 			if (importedGermplasm.getSeedAmount() != null) {
 				this.gidTransactionSetMap.get(gid).add(transaction);
 			}
@@ -548,7 +546,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					final Attribute newAttribute = new Attribute();
 					newAttribute.setGermplasmId(germplasm.getGid());
 					newAttribute.setTypeId(this.getUserDefinedFieldId(existingUserDefinedFields, code));
-					newAttribute.setUserId(this.contextUtil.getCurrentUserLocalId());
+					newAttribute.setUserId(this.contextUtil.getCurrentWorkbenchUserId());
 					newAttribute.setAval(value);
 					newAttribute.setLocationId(germplasm.getLocationId());
 					newAttribute.setReferenceId(0);
@@ -586,7 +584,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					final Name newName = new Name();
 					newName.setGermplasmId(germplasm.getGid());
 					newName.setTypeId(this.getUserDefinedFieldId(existingUdflds, code));
-					newName.setUserId(this.contextUtil.getCurrentUserLocalId());
+					newName.setUserId(this.contextUtil.getCurrentWorkbenchUserId());
 					newName.setNstat(0);
 					newName.setNval(value);
 					newName.setLocationId(germplasm.getLocationId());

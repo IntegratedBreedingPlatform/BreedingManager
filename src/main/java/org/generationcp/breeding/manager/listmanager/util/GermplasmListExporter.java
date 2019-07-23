@@ -34,7 +34,6 @@ import org.generationcp.middleware.manager.ontology.api.OntologyPropertyDataMana
 import org.generationcp.middleware.manager.ontology.api.OntologyScaleDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.*;
-import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.reports.BuildReportException;
 import org.generationcp.middleware.reports.Reporter;
 import org.generationcp.middleware.service.api.ReportService;
@@ -434,7 +433,7 @@ public class GermplasmListExporter {
 
 		exportColumnHeaders.add(new ExportColumnHeader(5, this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns.get(String
 				.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()))));
-				
+
 		this.addAttributeAndNameTypeHeaders(currentColumnsInfo, exportColumnHeaders);
 
 		return exportColumnHeaders;
@@ -473,7 +472,7 @@ public class GermplasmListExporter {
 			final String parentageValue = listDataTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue().toString();
 			final String seedSourceValue =
 					listDataTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue().toString();
-			
+
 			row.addColumnValue(0, entryIdValue);
 			row.addColumnValue(1, gidValue);
 			row.addColumnValue(2, entryCodeValue);
@@ -514,7 +513,7 @@ public class GermplasmListExporter {
 		Integer currentLocalIbdbUserId = 0;
 
 		try {
-			currentLocalIbdbUserId = this.contextUtil.getCurrentUserLocalId();
+			currentLocalIbdbUserId = this.contextUtil.getCurrentWorkbenchUserId();
 		} catch (final MiddlewareQueryException e) {
 			LOG.error(e.getMessage(), e);
 		}

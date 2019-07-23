@@ -351,7 +351,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		List<String> parsedState = null;
 
 		try {
-			final Integer userID = this.util.getCurrentUserLocalId();
+			final Integer userID = this.util.getCurrentWorkbenchUserId();
 			final String programUUID = this.util.getCurrentProgramUUID();
 
 			if (isSaveList) {

@@ -1360,7 +1360,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				try {
 					this.listManagerCopyToListDialog.addComponent(new ListManagerCopyToListDialog(this.source.getWindow(),
 							this.listManagerCopyToListDialog, this.currentlySavedGermplasmList.getName(),
-							this.tableWithSelectAllLayout.getTable(), this.contextUtil.getCurrentUserLocalId(), this.source));
+							this.tableWithSelectAllLayout.getTable(), this.contextUtil.getCurrentWorkbenchUserId(), this.source));
 					this.source.getWindow().addWindow(this.listManagerCopyToListDialog);
 					this.listManagerCopyToListDialog.center();
 				} catch (final MiddlewareQueryException e) {
@@ -1967,7 +1967,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	private boolean userIsListOwner() {
 		try {
-			return this.currentlySavedGermplasmList.getUserId().equals(this.contextUtil.getCurrentUserLocalId());
+			return this.currentlySavedGermplasmList.getUserId().equals(this.contextUtil.getCurrentWorkbenchUserId());
 		} catch (final MiddlewareQueryException e) {
 			ListBuilderComponent.LOG.error(e.getMessage(), e);
 			return false;

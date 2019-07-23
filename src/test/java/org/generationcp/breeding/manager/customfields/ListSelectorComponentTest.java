@@ -360,7 +360,7 @@ public class ListSelectorComponentTest {
 		Mockito.when(this.userTreeStateService
 				.getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, PROGRAM_UUID, ListTreeState.GERMPLASM_LIST.name()))
 				.thenReturn(navigationState);
-		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(TEST_USER_ID);
+		Mockito.when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(TEST_USER_ID);
 		final GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
 		this.listSelectorComponent.setGermplasmListSource(source);
 
@@ -378,7 +378,7 @@ public class ListSelectorComponentTest {
 	public void testTreeInitializationSaveDialog() {
 		final List<String> saveHierarchy = Arrays.asList(ListSelectorComponent.PROGRAM_LISTS, "1", "2");
 		Mockito.when(this.userTreeStateService.getUserProgramTreeStateForSaveList(TEST_USER_ID, PROGRAM_UUID)).thenReturn(saveHierarchy);
-		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(TEST_USER_ID);
+		Mockito.when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(TEST_USER_ID);
 		final GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
 		this.listSelectorComponent.setGermplasmListSource(source);
 

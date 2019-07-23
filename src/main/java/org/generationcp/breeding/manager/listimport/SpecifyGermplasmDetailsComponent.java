@@ -164,7 +164,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		this.messageSource.setCaption(this.backButton, Message.BACK);
 		this.messageSource.setCaption(this.nextButton, Message.FINISH);
 	}
-	
+
 	@Override
 	public void updateListUI() {
 		// no implementation for this method
@@ -199,7 +199,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		this.germplasmList.setStatus(1);
 		this.germplasmList.setUserId(this.germplasmListUploader.getImportedGermplasmList().getUserId());
 		try {
-			this.germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
+			this.germplasmList.setUserId(this.contextUtil.getCurrentWorkbenchUserId());
 			this.germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 		} catch (final MiddlewareQueryException e) {
 			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
@@ -347,7 +347,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		this.reviewImportDetailsLabel = new Label(this.messageSource.getMessage(Message.GERMPLASM_DETAILS_LABEL).toUpperCase());
 		this.reviewImportDetailsLabel.setDebugId("reviewImportDetailsLabel");
 		this.reviewImportDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
-		
+
 		this.reviewImportDetailsMessage = new Label(this.messageSource.getMessage(Message.REVIEW_IMPORT_DETAILS_MESSAGE));
 		this.reviewImportDetailsMessage.setDebugId("reviewImportDetailsMessage");
 

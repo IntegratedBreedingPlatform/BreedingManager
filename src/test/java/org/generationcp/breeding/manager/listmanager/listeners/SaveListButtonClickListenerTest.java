@@ -61,7 +61,7 @@ public class SaveListButtonClickListenerTest {
 
 	@Mock
 	private ContextUtil contextUtil;
-	
+
 	@Mock
 	private AddColumnContextMenu addColumnContextMenu;
 
@@ -80,7 +80,7 @@ public class SaveListButtonClickListenerTest {
 		this.initializeGermplasmList();
 		this.initializeProject();
 
-		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(SaveListButtonClickListenerTest.DUMMY_ID);
+		Mockito.when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(SaveListButtonClickListenerTest.DUMMY_ID);
 
 		final SaveListButtonClickListener _listener = new SaveListButtonClickListener(this.source, this.listDataTable, this.messageSource);
 
@@ -92,7 +92,7 @@ public class SaveListButtonClickListenerTest {
 
 		Mockito.when(this.messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK)).thenReturn(SaveListButtonClickListenerTest.DUMMY_OPTION);
 		Mockito.when(this.source.getAddColumnContextMenu()).thenReturn(this.addColumnContextMenu);
-		
+
 		this.saveListener.setDataManager(this.dataManager);
 		this.saveListener.setMessageSource(this.messageSource);
 		this.saveListener.setInventoryDataManager(this.inventoryDataManager);
@@ -220,22 +220,22 @@ public class SaveListButtonClickListenerTest {
 		Assert.assertEquals(101, currentlySavedGermplasmList.getStatus().intValue());
 
 	}
-	
+
 	@Test
 	public void testSaveListDataColumns() {
 		final List<String> addedColumns = Arrays.asList("NOTES");
 		Mockito.doReturn(addedColumns).when(this.source).getAttributeAndNameTypeColumns();
 		final List<ListDataInfo> listDataInfo = Arrays.asList(new ListDataInfo(1, Arrays.asList(new ListDataColumn(ColumnLabels.PREFERRED_NAME.getName(), "IBP-001"))));
 		Mockito.doReturn(listDataInfo).when(this.addColumnContextMenu).getListDataCollectionFromTable(this.listDataTable, addedColumns);
-		
+
 		this.saveListener.saveListDataColumns(new GermplasmList());
 		Mockito.verify(this.dataManager).saveListDataColumns(listDataInfo);
 	}
-	
+
 	@Test
 	public void testCloneAddedColumnsToTemp() {
 		final Table sourceTable = Mockito.mock(Table.class);
-		
+
 		final String noteAttributeField = "NOTE_ATTRIBUTE";
 		final String notesPrefix = "NOTES ";
 		final String preferredNamePrefix = "PREFERRED NAME ";
@@ -243,10 +243,10 @@ public class SaveListButtonClickListenerTest {
 		final List<String> attributeAndNameTypes = Arrays.asList(noteAttributeField);
 		Mockito.doReturn(attributeAndNameTypes).when(this.source).getAttributeAndNameTypeColumns();
 		Mockito.doReturn(addedColumns).when(this.addColumnContextMenu).getAddedColumns(sourceTable, attributeAndNameTypes);
-		
+
 		final List<Integer> tableEntryIds = Arrays.asList(1, 2, 3);
 		Mockito.doReturn(tableEntryIds).when(sourceTable).getItemIds();
-		
+
 		for (final Integer id: tableEntryIds) {
 			final Item item = Mockito.mock(Item.class);
 			Mockito.doReturn(item).when(sourceTable).getItem(id);
@@ -266,6 +266,6 @@ public class SaveListButtonClickListenerTest {
 			Assert.assertEquals(new String(notesPrefix + id),
 					tempTable.getItem(id).getItemProperty(noteAttributeField).getValue());
 		}
-		
+
 	}
 }

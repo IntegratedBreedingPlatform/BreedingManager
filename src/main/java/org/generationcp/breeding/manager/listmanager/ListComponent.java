@@ -494,7 +494,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void initializeValues() {
 
 		try {
-			this.localUserId = this.contextUtil.getCurrentUserLocalId();
+			this.localUserId = this.contextUtil.getCurrentWorkbenchUserId();
 		} catch (final MiddlewareQueryException e) {
 			ListComponent.LOG.error("Error with retrieving local user ID", e);
 			ListComponent.LOG.error("\n" + e.getStackTrace());
@@ -1630,7 +1630,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			try {
 				this.listManagerCopyToListDialog.addComponent(
 						new ListManagerCopyToListDialog(this.parentListDetailsComponent.getWindow(), this.listManagerCopyToListDialog,
-								this.germplasmList.getName(), this.listDataTable, this.contextUtil.getCurrentUserLocalId(), this.source));
+								this.germplasmList.getName(), this.listDataTable, this.contextUtil.getCurrentWorkbenchUserId(), this.source));
 				this.parentListDetailsComponent.getWindow().addWindow(this.listManagerCopyToListDialog);
 				this.listManagerCopyToListDialog.center();
 			} catch (final MiddlewareQueryException e) {

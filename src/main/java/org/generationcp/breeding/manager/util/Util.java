@@ -154,7 +154,7 @@ public class Util {
 
 	/**
 	 * Validates if an existing path is a directory
-	 * 
+	 *
 	 * @param path
 	 * @return true if the given path is a directory
 	 */
@@ -175,7 +175,7 @@ public class Util {
 	 *
 	 * @param application
 	 * @return file pointing to desktop or application path
-	 * 
+	 *
 	 */
 	public static File getDefaultBrowseDirectory(Application application) throws BreedingManagerException {
 
@@ -198,7 +198,7 @@ public class Util {
 
 	/**
 	 * Gets the directory based on the given path string
-	 * 
+	 *
 	 * @param path
 	 * @return file pointing to the path
 	 * @throws BreedingManagerException
@@ -216,7 +216,7 @@ public class Util {
 
 	/**
 	 * Gets one directory up the tree
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -308,7 +308,7 @@ public class Util {
 
 		try {
 			Long projectId = ContextUtil.getProjectInContext(workbenchDataManager, ContextApplication.currentRequest()).getProjectId();
-			Integer userId = ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, ContextApplication.currentRequest());
+			Integer userId = ContextUtil.getCurrentWorkbenchUserId(ContextApplication.currentRequest());
 			String authenticationTokenString =
 				ContextUtil.addQueryParameter(ContextConstants.PARAM_AUTH_TOKEN, SecurityUtil.getEncodedToken());
 
