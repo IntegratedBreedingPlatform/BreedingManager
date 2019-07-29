@@ -370,6 +370,31 @@
 
 	<bean id="breedingManagerWindowGenerator" class="org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator" />
 
+	<bean id="trialEnvironmentBuilder" factory-bean="managerFactory"
+		  factory-method="getTrialEnvironmentBuilder" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="dataSetBuilder" factory-bean="managerFactory"
+		  factory-method="getDataSetBuilder" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="stockBuilder" factory-bean="managerFactory"
+		  factory-method="getStockBuilder" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="workbookBuilder" factory-bean="managerFactory"
+		  factory-method="getWorkbookBuilder" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="workbookSaver" factory-bean="managerFactory"
+		  factory-method="getWorkbookSaver" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
 	<context:component-scan base-package="org.generationcp.breeding.manager.validator"/>
 
 	<!-- Required bean declarations for Germplasm Coding Service -->
