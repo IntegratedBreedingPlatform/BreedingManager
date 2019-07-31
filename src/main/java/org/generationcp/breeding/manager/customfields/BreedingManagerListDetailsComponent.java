@@ -249,9 +249,9 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		String listOwner = "";
 		try {
 			if (germplasmList != null) {
-				listOwner = this.userService.getPersonName(germplasmList.getUserId());
+				listOwner = this.userService.getPersonNameForUserId(germplasmList.getUserId());
 			} else {
-				listOwner = this.userService.getPersonName(this.contextUtil.getCurrentWorkbenchUserId());
+				listOwner = this.userService.getPersonNameForUserId(this.contextUtil.getCurrentWorkbenchUserId());
 			}
 		} catch (final MiddlewareQueryException e) {
 			BreedingManagerListDetailsComponent.LOG.error(e.getMessage(), e);

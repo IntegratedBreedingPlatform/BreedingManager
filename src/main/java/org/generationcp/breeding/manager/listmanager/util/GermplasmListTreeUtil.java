@@ -395,7 +395,7 @@ public class GermplasmListTreeUtil implements Serializable {
 			final List<UserDefinedField> listTypes = this.germplasmDataManager
 					.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(), RowColumnType.LIST_TYPE.getFtype());
 			this.targetListSource.addItem(this.source.generateCellInfo(folderName,
-					this.userService.getPersonName(newFolder.getUserId()),
+					this.userService.getPersonNameForUserId(newFolder.getUserId()),
 					BreedingManagerUtil.getDescriptionForDisplay(newFolder),
 					BreedingManagerUtil.getTypeString(newFolder.getType(), listTypes), ""), newFolderId);
 			this.source.setNodeItemIcon(newFolderId, true);

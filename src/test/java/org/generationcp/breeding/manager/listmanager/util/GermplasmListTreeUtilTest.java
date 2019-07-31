@@ -64,10 +64,10 @@ public class GermplasmListTreeUtilTest {
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
-	
+
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
-	
+
 	@Mock
 	private WorkbenchDataManager workbenchDataManager;
 
@@ -76,19 +76,19 @@ public class GermplasmListTreeUtilTest {
 
 	@Mock
 	private ContextUtil contextUtil;
-	
+
 	@Mock
 	private ListSelectorComponent source;
-	
+
 	@Mock
 	private GermplasmListSource targetListSource;
-	
+
 	@Mock
 	private Window window;
-	
+
 	@Mock
 	private TextField folderTextfield;
-	
+
 	@Mock
 	private ListTreeActionsListener treeListener;
 
@@ -110,13 +110,13 @@ public class GermplasmListTreeUtilTest {
 		dummyProject.setProjectId(5L);
 		when(this.workbenchDataManager.getLastOpenedProject(USER_ID)).thenReturn(dummyProject);
 		when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(USER_ID);
-		when(this.userService.getPersonName(USER_ID)).thenReturn(USER_FULL_NAME);
+		when(this.userService.getPersonNameForUserId(USER_ID)).thenReturn(USER_FULL_NAME);
 
 		this.setUpMessageSource();
 
 		when(this.contextUtil.getCurrentProgramUUID()).thenReturn(GermplasmListTreeUtilTest.PROGRAM_UUID);
 		when(this.source.getWindow()).thenReturn(this.window);
-		
+
 		when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(),
 				RowColumnType.LIST_TYPE.getFtype())).thenReturn(
 				Arrays.asList(new UserDefinedField(1, "LISTNMS", "LISTTYPE", FOLDER, FOLDER, null, null, null, null, null, null)));
@@ -159,7 +159,7 @@ public class GermplasmListTreeUtilTest {
 			this.mockFolderItem();
 		}
 	}
-	
+
 	private void setUpTestFolder(final Integer itemId) {
 		this.testFolder = this.getSampleGermplasmList(itemId);
 		this.testFolder.setType(FOLDER);
@@ -284,7 +284,7 @@ public class GermplasmListTreeUtilTest {
 		Assert.assertFalse("Expecting false is returned when checking an item with no children but didn't.",
 				this.germplasmListTreeUtil.isSourceItemHasChildren(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID));
 	}
-	
+
 	@Test
 	public void testIsSourceItemHasChildrenWhenMiddlewareExceptionIsThrown() {
 		Mockito.doThrow(new MiddlewareQueryException("Middleware error")).when(this.germplasmListManager)
@@ -299,7 +299,7 @@ public class GermplasmListTreeUtilTest {
 		Mockito.verify(this.germplasmListManager, Mockito.never()).updateGermplasmList(Matchers.anyListOf(GermplasmList.class));
 		Assert.assertFalse(isSourceMoved);
 	}
-	
+
 	@Test
 	public void testSetParentWhenItemToMoveIsRootCropList() {
 		final boolean isSourceMoved = this.germplasmListTreeUtil.setParent(ListSelectorComponent.CROP_LISTS, GermplasmListTreeUtilTest.FOLDER_ID);
@@ -307,12 +307,12 @@ public class GermplasmListTreeUtilTest {
 		Mockito.verify(this.germplasmListManager, Mockito.never()).updateGermplasmList(Matchers.anyListOf(GermplasmList.class));
 		Assert.assertFalse(isSourceMoved);
 	}
-	
+
 	@Test
 	public void testSetParentWhenItemToMoveHasChildren() {
 		// Setup an item with child item - should not be allowed to update
 		this.setupTreeItemWithChild();
-		
+
 		final boolean isSourceMoved = this.germplasmListTreeUtil
 			.setParent(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, GermplasmListTreeUtilTest.FOLDER_ID);
 		Mockito.verify(this.germplasmListManager, Mockito.never()).getGermplasmListById(Matchers.anyInt());
@@ -325,7 +325,7 @@ public class GermplasmListTreeUtilTest {
 		this.setupTreeItemWithNoChild();
 		final boolean isSourceMoved = this.germplasmListTreeUtil.setParent(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, null);
 		Assert.assertTrue(isSourceMoved);
-		
+
 		// Verify Middleware Interactions
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		Assert.assertNull(this.germplasmList.getParent());
@@ -334,14 +334,14 @@ public class GermplasmListTreeUtilTest {
 		// Verify UI updates
 		this.verifyUIChangesToTargetItem(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, null);
 	}
-	
+
 	@Test
 	public void testSetParentWhenTargetItemIsRootCropList() {
 		this.setupTreeItemWithNoChild();
 		final boolean isSourceMoved = this.germplasmListTreeUtil
 			.setParent(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, ListSelectorComponent.CROP_LISTS);
 		Assert.assertTrue(isSourceMoved);
-		
+
 		// Verify Middleware interactions
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		Assert.assertNull(this.germplasmList.getParent());
@@ -358,7 +358,7 @@ public class GermplasmListTreeUtilTest {
 		final boolean isSourceMoved = this.germplasmListTreeUtil
 			.setParent(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, ListSelectorComponent.PROGRAM_LISTS);
 		Assert.assertTrue(isSourceMoved);
-		
+
 		// Verify Middleware interactions
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		Assert.assertNull(this.germplasmList.getParent());
@@ -367,7 +367,7 @@ public class GermplasmListTreeUtilTest {
 		// Verify UI updates
 		this.verifyUIChangesToTargetItem(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, ListSelectorComponent.PROGRAM_LISTS);
 	}
-	
+
 	@Test
 	public void testSetParentWhenTargetItemIsValidFolder() {
 		this.setupTreeItemWithNoChild();
@@ -375,7 +375,7 @@ public class GermplasmListTreeUtilTest {
 		final boolean isSourceMoved = this.germplasmListTreeUtil
 			.setParent(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, GermplasmListTreeUtilTest.FOLDER_ID);
 		Assert.assertTrue(isSourceMoved);
-		
+
 		// Verify Middleware interactions
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(GermplasmListTreeUtilTest.FOLDER_ID);
@@ -385,17 +385,17 @@ public class GermplasmListTreeUtilTest {
 		// Verify UI updates
 		this.verifyUIChangesToTargetItem(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID,  GermplasmListTreeUtilTest.FOLDER_ID);
 	}
-	
+
 	@Test
 	public void testSetParentWhenTargetItemIsValidFolderButSourceListIsNull() {
 		this.setupTreeItemWithNoChild();
 		this.setUpTestFolder(GermplasmListTreeUtilTest.FOLDER_ID);
 		when(this.targetListSource.getItem(Matchers.anyInt())).thenReturn(null);
-		
+
 		final boolean isSourceMoved = this.germplasmListTreeUtil
 			.setParent(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, GermplasmListTreeUtilTest.FOLDER_ID);
 		Assert.assertTrue(isSourceMoved);
-		
+
 		// Verify Middleware interactions
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(GermplasmListTreeUtilTest.FOLDER_ID);
@@ -405,7 +405,7 @@ public class GermplasmListTreeUtilTest {
 		// Verify UI updates
 		this.verifyUIChangesToTargetItem(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID,  null);
 	}
-	
+
 	@Test
 	public void testAddFolderToTreeWhenFolderIdIsNull() {
 		this.germplasmListTreeUtil.addFolderToTree(FOLDER_ID, NEW_FOLDER_NAME, null, null, this.testFolder);
@@ -413,43 +413,43 @@ public class GermplasmListTreeUtilTest {
 		Mockito.verifyZeroInteractions(this.targetListSource);
 		Mockito.verifyZeroInteractions(this.source);
 	}
-	
+
 	@Test
 	public void testAddFolderToTreeWhenTargetFolderIsRootProgramFolder() {
 		this.setUpTestFolder(FOLDER_ID);
 		Mockito.doReturn(true).when(this.source).isFolder(ListSelectorComponent.PROGRAM_LISTS);
 		this.germplasmListTreeUtil.addFolderToTree(ListSelectorComponent.PROGRAM_LISTS, NEW_FOLDER_NAME, FOLDER_ID, this.testFolder, null);
-		
+
 		this.verifyNewFolderIsAddedToTree();
-		
+
 		Mockito.verify(this.targetListSource).setChildrenAllowed(ListSelectorComponent.PROGRAM_LISTS, true);
 		Mockito.verify(this.targetListSource).setParent(FOLDER_ID, ListSelectorComponent.PROGRAM_LISTS);
 		Mockito.verify(this.targetListSource).expandItem(ListSelectorComponent.PROGRAM_LISTS);
-	
+
 		Mockito.verify(this.targetListSource).select(FOLDER_ID);
 		Mockito.verify(this.source).updateButtons(FOLDER_ID);
 		Mockito.verify(this.source).showAddRenameFolderSection(false);
 		Mockito.verify(this.source).refreshRemoteTree();
 	}
-	
+
 	@Test
 	public void testAddFolderToTreeWhenParentListIsNull() {
 		this.setUpTestFolder(FOLDER_ID);
 		this.germplasmListTreeUtil
 			.addFolderToTree(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, NEW_FOLDER_NAME, FOLDER_ID, this.testFolder, null);
-		
+
 		this.verifyNewFolderIsAddedToTree();
-		
+
 		Mockito.verify(this.targetListSource).setChildrenAllowed(ListSelectorComponent.PROGRAM_LISTS, true);
 		Mockito.verify(this.targetListSource).setParent(FOLDER_ID, ListSelectorComponent.PROGRAM_LISTS);
 		Mockito.verify(this.targetListSource).expandItem(ListSelectorComponent.PROGRAM_LISTS);
-	
+
 		Mockito.verify(this.targetListSource).select(FOLDER_ID);
 		Mockito.verify(this.source).updateButtons(FOLDER_ID);
 		Mockito.verify(this.source).showAddRenameFolderSection(false);
 		Mockito.verify(this.source).refreshRemoteTree();
 	}
-	
+
 	@Test
 	public void testAddFolderToTreeWhenParentListIsUnderRootProgramList() {
 		this.setUpTestFolder(FOLDER_ID);
@@ -457,19 +457,19 @@ public class GermplasmListTreeUtilTest {
 		Mockito.doReturn(false).when(this.source).isFolder(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN);
 		this.germplasmListTreeUtil
 			.addFolderToTree(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, NEW_FOLDER_NAME, FOLDER_ID, this.testFolder, this.germplasmList);
-		
+
 		this.verifyNewFolderIsAddedToTree();
-		
+
 		Mockito.verify(this.targetListSource).setChildrenAllowed(ListSelectorComponent.PROGRAM_LISTS, true);
 		Mockito.verify(this.targetListSource).setParent(FOLDER_ID, ListSelectorComponent.PROGRAM_LISTS);
 		Mockito.verify(this.targetListSource).expandItem(ListSelectorComponent.PROGRAM_LISTS);
-	
+
 		Mockito.verify(this.targetListSource).select(FOLDER_ID);
 		Mockito.verify(this.source).updateButtons(FOLDER_ID);
 		Mockito.verify(this.source).showAddRenameFolderSection(false);
 		Mockito.verify(this.source).refreshRemoteTree();
 	}
-	
+
 	@Test
 	public void testAddFolderToTreeWhenParentListIsValidFolder() {
 		this.setUpTestFolder(FOLDER_ID);
@@ -479,19 +479,19 @@ public class GermplasmListTreeUtilTest {
 		Mockito.doReturn(true).when(this.source).isFolder(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN);
 		this.germplasmListTreeUtil
 			.addFolderToTree(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, NEW_FOLDER_NAME, FOLDER_ID, this.testFolder, this.germplasmList);
-		
+
 		this.verifyNewFolderIsAddedToTree();
-		
+
 		Mockito.verify(this.targetListSource).setChildrenAllowed(GERMPLASM_LIST_ID_WITH_CHILDREN, true);
 		Mockito.verify(this.targetListSource).setParent(FOLDER_ID, GERMPLASM_LIST_ID_WITH_CHILDREN);
 		Mockito.verify(this.targetListSource).expandItem(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN);
-	
+
 		Mockito.verify(this.targetListSource).select(FOLDER_ID);
 		Mockito.verify(this.source).updateButtons(FOLDER_ID);
 		Mockito.verify(this.source).showAddRenameFolderSection(false);
 		Mockito.verify(this.source).refreshRemoteTree();
 	}
-	
+
 	@Test
 	public void testAddFolderToTreeWhenParentListIsUnderAnotherFolder() {
 		this.setUpTestFolder(FOLDER_ID);
@@ -504,26 +504,26 @@ public class GermplasmListTreeUtilTest {
 		Mockito.doReturn(false).when(this.source).isFolder(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		this.germplasmListTreeUtil
 			.addFolderToTree(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, NEW_FOLDER_NAME, FOLDER_ID, this.testFolder, this.germplasmList);
-		
+
 		this.verifyNewFolderIsAddedToTree();
-		
+
 		Mockito.verify(this.targetListSource).setChildrenAllowed(grandParentListId, true);
 		Mockito.verify(this.targetListSource).setParent(FOLDER_ID, grandParentListId);
 		Mockito.verify(this.targetListSource, Mockito.never()).expandItem(Matchers.any());
-	
+
 		Mockito.verify(this.targetListSource).select(FOLDER_ID);
 		Mockito.verify(this.source).updateButtons(FOLDER_ID);
 		Mockito.verify(this.source).showAddRenameFolderSection(false);
 		Mockito.verify(this.source).refreshRemoteTree();
 	}
-	
+
 	@Test
 	public void testAddFolderWhenMiddlewareExceptionIsThrown() {
 		Mockito.doThrow(new MiddlewareQueryException("Middleware Exception")).when(this.germplasmListManager).getGermplasmListById(Matchers.anyInt());
 		this.germplasmListTreeUtil.addFolder(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, this.folderTextfield);
 		Mockito.verify(this.germplasmListManager, Mockito.never()).addGermplasmList(Matchers.any(GermplasmList.class));
 	}
-	
+
 	@Test
 	public void testAddFolderWhenParentIsRootProgramList() {
 		this.germplasmListTreeUtil.addFolder(ListSelectorComponent.PROGRAM_LISTS, this.folderTextfield);
@@ -538,13 +538,13 @@ public class GermplasmListTreeUtilTest {
 		Assert.assertEquals(USER_ID, list.getUserId());
 		Assert.assertNull(list.getParent());
 	}
-	
+
 	@Test
 	public void testAddFolderWhenParentIsValidProgramFolder() {
 		this.setupTreeItemWithChild();
 		Mockito.doReturn(true).when(this.source).isFolder(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN);
 		this.germplasmListTreeUtil.addFolder(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, this.folderTextfield);
-		
+
 		final ArgumentCaptor<GermplasmList> listCaptor = ArgumentCaptor.forClass(GermplasmList.class);
 		Mockito.verify(this.germplasmListManager).addGermplasmList(listCaptor.capture());
 		final GermplasmList list = listCaptor.getValue();
@@ -556,7 +556,7 @@ public class GermplasmListTreeUtilTest {
 		Assert.assertEquals(USER_ID, list.getUserId());
 		Assert.assertEquals(this.germplasmList, list.getParent());
 	}
-	
+
 	@Test
 	public void testRenameFolderOrListWhenOldNameEqualsNewName() {
 		Assert.assertEquals("", this.germplasmListTreeUtil
@@ -567,7 +567,7 @@ public class GermplasmListTreeUtilTest {
 		Mockito.verifyNoMoreInteractions(this.source);
 		Mockito.verifyZeroInteractions(this.targetListSource);
 	}
-	
+
 	@Test
 	public void testRenameFolderOrList() {
 		final String oldName = "Old Name";
@@ -575,7 +575,7 @@ public class GermplasmListTreeUtilTest {
 		this.germplasmList.setName(oldName);
 		this.germplasmListTreeUtil
 			.renameFolderOrList(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, this.treeListener, this.folderTextfield, oldName);
-		
+
 		Mockito.verify(this.germplasmListManager).getGermplasmListById(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		Assert.assertEquals(this.germplasmList.getName(), NEW_FOLDER_NAME);
 		Mockito.verify(this.germplasmListManager).updateGermplasmList(this.germplasmList);
@@ -595,7 +595,7 @@ public class GermplasmListTreeUtilTest {
 		Mockito.verify(this.targetListSource).setChildrenAllowed(FOLDER_ID, true);
 		Mockito.verify(this.source).setSelectedListId(FOLDER_ID);
 	}
-	
+
 	private void setupTreeItemWithChild() {
 		Integer sourceId = GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN;
 		this.setUpTestGermplasmList(sourceId, true, false);
@@ -606,7 +606,7 @@ public class GermplasmListTreeUtilTest {
 		when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, GermplasmListTreeUtilTest.PROGRAM_UUID))
 				.thenReturn(Arrays.asList(child1));
 	}
-	
+
 	private void setupTreeItemWithNoChild() {
 		final Integer sourceId = GermplasmListTreeUtilTest.GERMPLASM_LIST_ID;
 		this.setUpTestGermplasmList(sourceId, true, false);
@@ -614,7 +614,7 @@ public class GermplasmListTreeUtilTest {
 		when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, GermplasmListTreeUtilTest.PROGRAM_UUID))
 				.thenReturn(new ArrayList<GermplasmList>());
 	}
-	
+
 	private void verifyUIChangesToTargetItem(final Object source, final Object target) {
 		if (target != null) {
 			Mockito.verify(this.targetListSource).setChildrenAllowed(target, true);
@@ -629,6 +629,6 @@ public class GermplasmListTreeUtilTest {
 		Mockito.verify(this.targetListSource).select(source);
 		Mockito.verify(this.targetListSource).setValue(source);
 	}
-	
-	
+
+
 }

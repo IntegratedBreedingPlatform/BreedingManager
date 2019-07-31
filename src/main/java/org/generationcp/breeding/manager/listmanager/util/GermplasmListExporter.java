@@ -203,11 +203,11 @@ public class GermplasmListExporter {
 
 		input.setListData(germplasmList.getListData());
 
-		input.setOwnerName(this.userService.getPersonName(germplasmList.getUserId()));
+		input.setOwnerName(this.userService.getPersonNameForUserId(germplasmList.getUserId()));
 
 		input.setCurrentLocalIbdbUserId(currentWorkbenchUserId);
 
-		input.setExporterName(this.userService.getPersonName(currentWorkbenchUserId));
+		input.setExporterName(this.userService.getPersonNameForUserId(currentWorkbenchUserId));
 
 		input.setVisibleColumnMap(this.getVisibleColumnMap(listDataTable));
 

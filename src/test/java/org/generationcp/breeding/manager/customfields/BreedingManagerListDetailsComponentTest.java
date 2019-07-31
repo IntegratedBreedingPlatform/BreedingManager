@@ -9,11 +9,9 @@ import junit.framework.Assert;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -71,10 +69,10 @@ public class BreedingManagerListDetailsComponentTest {
 
 		when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(CURRENT_USER_ID);
 
-		Mockito.when(userService.getPersonName(CURRENT_USER_ID)).thenReturn(
+		Mockito.when(userService.getPersonNameForUserId(CURRENT_USER_ID)).thenReturn(
 				BreedingManagerListDetailsComponentTest.CURRENT_USER_NAME);
 		when(userService
-						.getPersonName(BreedingManagerListDetailsComponentTest.OTHER_USER)).thenReturn(
+						.getPersonNameForUserId(BreedingManagerListDetailsComponentTest.OTHER_USER)).thenReturn(
 				BreedingManagerListDetailsComponentTest.OTHER_USER_NAME);
 		when(contextUtil.getCurrentProgramUUID()).thenReturn(PROGRAM_UUID);
 
