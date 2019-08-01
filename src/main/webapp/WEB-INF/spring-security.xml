@@ -14,12 +14,12 @@
 
 		<!--BREEDING_ACTIVITIES-->
 		<!--MANAGE_GERMPLASM-->
-		<intercept-url pattern="/main/list-manager/*" access="hasAnyAuthority('ROLE_SUPERADMIN', 'ROLE_ADMIN', 'ROLE_BREEDING_ACTIVITIES', 'ROLE_MANAGE_GERMPLASM')"/>
-		<intercept-url pattern="/main/list-manager/**" access="hasAnyAuthority('ROLE_SUPERADMIN', 'ROLE_ADMIN', 'ROLE_BREEDING_ACTIVITIES', 'ROLE_MANAGE_GERMPLASM')"/>
+		<intercept-url pattern="/main/list-manager/*" access="hasAnyAuthority('ROLE_ADMIN', 'ROLE_BREEDING_ACTIVITIES', 'ROLE_MANAGE_GERMPLASM')"/>
+		<intercept-url pattern="/main/list-manager/**" access="hasAnyAuthority('ROLE_ADMIN', 'ROLE_BREEDING_ACTIVITIES', 'ROLE_MANAGE_GERMPLASM')"/>
 
 		<!--CROP_MANAGEMENT-->
 		<!--IMPORT_GERMPLASM-->
-		<intercept-url pattern="/main/germplasm-import/**" access="hasAnyAuthority('ROLE_SUPERADMIN', 'ROLE_ADMIN', 'ROLE_CROP_MANAGEMENT', 'ROLE_IMPORT_GERMPLASM')"/>
+		<intercept-url pattern="/main/germplasm-import/**" access="hasAnyAuthority('ROLE_ADMIN', 'ROLE_CROP_MANAGEMENT', 'ROLE_IMPORT_GERMPLASM')"/>
 
 		<custom-filter position="PRE_AUTH_FILTER" ref="bmsPreAuthenticationFilter" />
 		<access-denied-handler error-page="/controller/accessDenied"/>
