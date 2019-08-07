@@ -76,7 +76,7 @@ public class GermplasmListTemplateDownloaderTest {
 		this.germplasmListTemplateDownloader.exportGermplasmTemplate(this.component);
 
 		verify(this.workbookFileWriter, times(1)).write(this.workbook, TEMPORARY_FILE_PATH_XLS);
-		verify(this.codesSheetGenerator, times(1)).generateCodesSheet(this.workbook, "maize");
+		verify(this.codesSheetGenerator, times(1)).generateCodesSheet(this.workbook);
 		verify(this.fileDownloaderUtility, times(1))
 				.initiateFileDownload(TEMPORARY_FILE_PATH_XLS, GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE, this.component);
 

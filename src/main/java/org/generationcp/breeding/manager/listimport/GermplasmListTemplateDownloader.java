@@ -54,7 +54,7 @@ public class GermplasmListTemplateDownloader {
 			final HSSFWorkbook wb = (HSSFWorkbook) this.fileService
 					.retrieveWorkbookTemplate("templates/" + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE);
 
-			this.codesSheetGenerator.generateCodesSheet(wb, this.contextUtil.getProjectInContext().getCropType().getCropName());
+			this.codesSheetGenerator.generateCodesSheet(wb);
 			this.workbookFileWriter.write(wb, temporaryFilePath);
 
 			this.fileDownloaderUtility.initiateFileDownload(temporaryFilePath, EXPANDED_TEMPLATE_FILE, component);
