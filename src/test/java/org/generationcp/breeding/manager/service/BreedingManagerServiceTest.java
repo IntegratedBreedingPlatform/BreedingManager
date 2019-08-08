@@ -10,12 +10,11 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Person;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +47,7 @@ public class BreedingManagerServiceTest {
 	private WorkbenchDataManager workbenchDataManager;
 
 	@Mock
-	private UserDataManager userDataManager;
+	private UserService userService;
 
 	@Mock
 	private ContextUtil contextUtil;
@@ -59,81 +58,6 @@ public class BreedingManagerServiceTest {
 	@Before
 	public void setUp() {
 		Mockito.when(this.contextUtil.getCurrentProgramUUID()).thenReturn(DUMMY_PROGRAM_UUID);
-	}
-
-	@Test
-	public void testGetOwnerListNamePositiveScenario() {
-
-		final User sampleUser = Mockito.mock(User.class);
-		final Person p = this.createDummyPerson();
-
-		try {
-
-			// the following is code used to set up the positive scenario
-			Mockito.when(this.userDataManager.getUserById(BreedingManagerServiceTest.DUMMY_USER_ID)).thenReturn(sampleUser);
-			Mockito.when(sampleUser.getPersonid()).thenReturn(BreedingManagerServiceTest.DUMMY_PERSON_ID);
-
-			// we set up the test so that the dummy person object we created will be the one used by the service
-			Mockito.when(this.userDataManager.getPersonById(BreedingManagerServiceTest.DUMMY_PERSON_ID)).thenReturn(p);
-
-			// actual verification portion
-			final String name = this.breedingManagerService.getOwnerListName(BreedingManagerServiceTest.DUMMY_USER_ID);
-
-			Assert.assertEquals("Generated owner name is not correct", p.getFirstName() + " " + p.getMiddleName() + " " + p.getLastName(),
-					name);
-
-		} catch (final MiddlewareQueryException e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
-	public void testGetOwnerListNameNoPerson() {
-		final User sampleUser = Mockito.mock(User.class);
-		final String dummyUserName = "USER NAME";
-		try {
-
-			// the following is code used to set up the positive scenario
-			Mockito.when(this.userDataManager.getUserById(BreedingManagerServiceTest.DUMMY_USER_ID)).thenReturn(sampleUser);
-			Mockito.when(sampleUser.getPersonid()).thenReturn(BreedingManagerServiceTest.DUMMY_PERSON_ID);
-
-			// we set up the test so that the dummy person object we created will be the one used by the service
-			Mockito.when(this.userDataManager.getPersonById(BreedingManagerServiceTest.DUMMY_PERSON_ID)).thenReturn(null);
-			Mockito.when(sampleUser.getName()).thenReturn(dummyUserName);
-
-			// actual verification portion
-			final String name = this.breedingManagerService.getOwnerListName(BreedingManagerServiceTest.DUMMY_USER_ID);
-
-			Assert.assertEquals("Generated owner name is not correct", dummyUserName, name);
-
-		} catch (final MiddlewareQueryException e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	@Test
-	public void testGetDefaultOwnerList() {
-		final User sampleUser = Mockito.mock(User.class);
-		final Person p = this.createDummyPerson();
-
-		try {
-
-			// the following is code used to set up the positive scenario
-			Mockito.when(this.userDataManager.getUserById(BreedingManagerServiceTest.DUMMY_USER_ID)).thenReturn(sampleUser);
-			Mockito.when(sampleUser.getPersonid()).thenReturn(BreedingManagerServiceTest.DUMMY_PERSON_ID);
-
-			// we set up the test so that the dummy person object we created will be the one used by the service
-			Mockito.when(this.userDataManager.getPersonById(BreedingManagerServiceTest.DUMMY_PERSON_ID)).thenReturn(p);
-
-			// actual verification portion
-			final String name = this.breedingManagerService.getOwnerListName(BreedingManagerServiceTest.DUMMY_USER_ID);
-
-			Assert.assertEquals("Generated owner name is not correct", p.getFirstName() + " " + p.getMiddleName() + " " + p.getLastName(),
-					name);
-
-		} catch (final MiddlewareQueryException e) {
-			Assert.fail(e.getMessage());
-		}
 	}
 
 	@Test

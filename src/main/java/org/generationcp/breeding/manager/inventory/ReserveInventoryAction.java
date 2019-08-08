@@ -15,12 +15,12 @@ import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.ReservedInventoryKey;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.util.CollectionUtils;
@@ -33,11 +33,11 @@ public class ReserveInventoryAction implements Serializable {
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
 
-	@Autowired
-	private UserDataManager userDataManager;
-
 	@Resource
 	private ContextUtil contextUtil;
+
+	@Resource
+	private UserService userService;
 
 	private final ReserveInventorySource source;
 
@@ -160,8 +160,7 @@ public class ReserveInventoryAction implements Serializable {
 			Integer lrecId = lotDetail.getId();
 
 			Double prevAmount = 0D;
-			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
-			final User userById = this.userDataManager.getUserById(ibdbUserId);
+			final WorkbenchUser workbenchUser = this.userService.getUserById(this.contextUtil.getCurrentWorkbenchUserId());
 
 			Double availableBalance = availableBalanceMap.get(lotId);
 			Double reservationAmount = entry.getValue();
@@ -172,7 +171,7 @@ public class ReserveInventoryAction implements Serializable {
 
 			Transaction reserveTransaction = new Transaction();
 
-			reserveTransaction.setUserId(ibdbUserId);
+			reserveTransaction.setUserId(workbenchUser.getUserid());
 
 			Lot lot = new Lot(lotId);
 			reserveTransaction.setLot(lot);
@@ -186,7 +185,6 @@ public class ReserveInventoryAction implements Serializable {
 			reserveTransaction.setSourceId(listId);
 			reserveTransaction.setSourceRecordId(lrecId);
 			reserveTransaction.setPreviousAmount(prevAmount);
-			reserveTransaction.setPersonId(userById.getPersonid());
 
 			reserveTransactionList.add(reserveTransaction);
 		}
@@ -251,7 +249,8 @@ public class ReserveInventoryAction implements Serializable {
 		this.inventoryDataManager = inventoryDataManager;
 	}
 
-	public void setUserDataManager(final UserDataManager userDataManager) {
-		this.userDataManager = userDataManager;
+	public void setUserService(final UserService userService) {
+		this.userService = userService;
 	}
+
 }

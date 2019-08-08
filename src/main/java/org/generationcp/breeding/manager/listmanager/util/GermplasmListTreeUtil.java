@@ -20,9 +20,9 @@ import org.generationcp.commons.workbook.generator.RowColumnType;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +53,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	private GermplasmDataManager germplasmDataManager;
 
 	@Autowired
-	private UserDataManager userDataManager;
+	private UserService userService;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -160,13 +160,13 @@ public class GermplasmListTreeUtil implements Serializable {
 			folderTextField.validate();
 			final String folderName = folderTextField.getValue().toString().trim();
 
-			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+			final Integer workbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
 
 			newFolder.setName(folderName);
 			newFolder.setDescription(folderName);
 			newFolder.setType(GermplasmListTreeUtil.FOLDER_TYPE);
 			newFolder.setStatus(0);
-			newFolder.setUserId(ibdbUserId);
+			newFolder.setUserId(workbenchUserId);
 			newFolder.setDate(DateUtil.getCurrentDateAsLongValue());
 			newFolder.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 
@@ -321,8 +321,8 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	private boolean isListOwnedByTheUser(final GermplasmList gpList) {
 		try {
-			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
-			if (!gpList.getUserId().equals(ibdbUserId)) {
+			final Integer workbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
+			if (!gpList.getUserId().equals(workbenchUserId)) {
 				return false;
 			}
 		} catch (final MiddlewareQueryException e) {
@@ -395,7 +395,7 @@ public class GermplasmListTreeUtil implements Serializable {
 			final List<UserDefinedField> listTypes = this.germplasmDataManager
 					.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(), RowColumnType.LIST_TYPE.getFtype());
 			this.targetListSource.addItem(this.source.generateCellInfo(folderName,
-					BreedingManagerUtil.getOwnerListName(newFolder.getUserId(), this.userDataManager),
+					this.userService.getPersonNameForUserId(newFolder.getUserId()),
 					BreedingManagerUtil.getDescriptionForDisplay(newFolder),
 					BreedingManagerUtil.getTypeString(newFolder.getType(), listTypes), ""), newFolderId);
 			this.source.setNodeItemIcon(newFolderId, true);

@@ -31,12 +31,12 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Person;
-import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -80,9 +80,6 @@ public class GermplasmListExporterTest {
 	private GermplasmListManager germplasmListManager;
 
 	@Mock
-	private UserDataManager userDataManager;
-
-	@Mock
 	private OntologyDataManager ontologyDataManager;
 
 	@Mock
@@ -99,6 +96,9 @@ public class GermplasmListExporterTest {
 
 	@Mock
 	private GermplasmExportServiceImpl germplasmExportService;
+
+	@Mock
+	private UserService userService;
 
 	@InjectMocks
 	private final GermplasmListExporter _germplasmListExporter = new GermplasmListExporter();
@@ -128,7 +128,6 @@ public class GermplasmListExporterTest {
 
 		this._germplasmListExporter.setGermplasmExportService(this.germplasmExportService);
 		this._germplasmListExporter.setGermplasmListManager(this.germplasmListManager);
-		this._germplasmListExporter.setUserDataManager(this.userDataManager);
 		this._germplasmListExporter.setInventoryDataManager(this.inventoryDataManager);
 		this._germplasmListExporter.setOntologyVariableDataManager(this.ontologyVariableDataManager);
 		this.germplasmListExporter = Mockito.spy(this._germplasmListExporter);
@@ -205,46 +204,6 @@ public class GermplasmListExporterTest {
 		Assert.assertNotNull("Expected the listData of the returned germplasmList object is not null.", germplasmList.getListData());
 	}
 
-	@Test
-	public void testGetOwnerNamePersonExists() throws GermplasmListExporterException {
-		final Person person = this.getPerson();
-		Mockito.doReturn(this.getUser()).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
-		Mockito.doReturn(person).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
-		Assert.assertEquals("Expected to return the person's name",
-				this.germplasmListExporter.getOwnerName(GermplasmListExporterTest.USER_ID),
-				person.getFirstName() + " " + person.getLastName());
-	}
-
-	@Test
-	public void testGetOwnerNameNoPerson() throws GermplasmListExporterException {
-		final User user = this.getUser();
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
-		Mockito.doReturn(null).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
-
-		// when person does not exist
-		Assert.assertEquals("Expected to return the user's name when the person is null.",
-				this.germplasmListExporter.getOwnerName(GermplasmListExporterTest.USER_ID), user.getName());
-	}
-
-	@Test(expected = GermplasmListExporterException.class)
-	public void testGetOwnerNameNoUserId() throws GermplasmListExporterException {
-		// Expected to return a GermplasmListExporterException when the userID does not exist.
-		Mockito.doReturn(null).when(this.userDataManager).getUserById(Matchers.any(Integer.class));
-		this.germplasmListExporter.getOwnerName(Matchers.any(Integer.class));
-	}
-
-	@Test(expected = GermplasmListExporterException.class)
-	public void testGetOwnerNameDBError() throws GermplasmListExporterException {
-		// Exception from DB
-		Mockito.doThrow(MiddlewareQueryException.class).when(this.userDataManager).getUserById(Matchers.any(Integer.class));
-		this.germplasmListExporter.getOwnerName(Matchers.any(Integer.class));
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testGetOwnerNameNullUserId() throws GermplasmListExporterException {
-		this.germplasmListExporter.getOwnerName(null);
-	}
-
 	private Person getPerson() {
 		final Person person = new Person();
 		person.setId(GermplasmListExporterTest.PERSON_ID);
@@ -253,12 +212,11 @@ public class GermplasmListExporterTest {
 		return person;
 	}
 
-	private User getUser() {
-		final User user = new User();
+	private WorkbenchUser getUser() {
+		final WorkbenchUser user = new WorkbenchUser();
 		user.setUserid(GermplasmListExporterTest.USER_ID);
 		user.setName(GermplasmListExporterTest.OWNER_NAME);
-		user.setPersonid(GermplasmListExporterTest.PERSON_ID);
-
+		user.setPerson(this.getPerson());
 		return user;
 	}
 
@@ -301,46 +259,10 @@ public class GermplasmListExporterTest {
 	}
 
 	@Test
-	public void testGetExporterName() throws GermplasmListExporterException {
-		final Person person = this.getPerson();
-		Mockito.doReturn(this.getUser()).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
-		Mockito.doReturn(person).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
-		Assert.assertEquals("Expected that the returned exporter name equal to the person's firstname and lastname.",
-				this.germplasmListExporter.getExporterName(GermplasmListExporterTest.USER_ID),
-				person.getFirstName() + " " + person.getLastName());
-	}
-
-	@Test(expected = GermplasmListExporterException.class)
-	public void testGetExporterNameNoUserId() throws GermplasmListExporterException {
-		Mockito.doReturn(null).when(this.userDataManager).getUserById(Matchers.any(Integer.class));
-		this.germplasmListExporter.getExporterName(Matchers.any(Integer.class));
-	}
-
-	@Test(expected = GermplasmListExporterException.class)
-	public void testGetExporterNameNoPerson() throws GermplasmListExporterException {
-		Mockito.doReturn(this.getUser()).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
-		Mockito.doReturn(null).when(this.userDataManager).getPersonById(Matchers.any(Integer.class));
-		this.germplasmListExporter.getExporterName(GermplasmListExporterTest.USER_ID);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testGetExporterNameNullUserId() throws GermplasmListExporterException {
-		this.germplasmListExporter.getExporterName(null);
-	}
-
-	@Test(expected = GermplasmListExporterException.class)
-	public void testGetExporterNameDBError() throws GermplasmListExporterException {
-		// Exception from DB
-		Mockito.doThrow(MiddlewareQueryException.class).when(this.userDataManager).getUserById(Matchers.any(Integer.class));
-		this.germplasmListExporter.getExporterName(Matchers.any(Integer.class));
-	}
-
-	@Test
 	public void testExportGermplasmListXLS()
 			throws MiddlewareQueryException, GermplasmListExporterException, IOException, InvalidFormatException {
 		this.configureTermNamesFromDefault();
-		Mockito.doReturn(this.getUser()).when(this.userDataManager).getUserById(Matchers.anyInt());
-		Mockito.doReturn(this.getPerson()).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
+		Mockito.doReturn(this.getUser()).when(this.userService).getUserById(Matchers.anyInt());
 
 		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
@@ -367,13 +289,11 @@ public class GermplasmListExporterTest {
 	@Test(expected = GermplasmListExporterException.class)
 	public void testExportGermplasmListXLSWithException() throws GermplasmListExporterException, MiddlewareQueryException {
 
-		final User user = this.getUser();
-		final Person person = this.getPerson();
+		final WorkbenchUser user = this.getUser();
 
 		Mockito.doReturn(Mockito.mock(Variable.class)).when(this.ontologyVariableDataManager).getVariable(Matchers.anyString(),
 				Matchers.anyInt(), Matchers.eq(false));
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
-		Mockito.doReturn(person).when(this.userDataManager).getPersonById(Matchers.anyInt());
+		Mockito.doReturn(user).when(this.userService).getUserById(Matchers.anyInt());
 
 		Mockito.doThrow(new GermplasmListExporterException()).when(this.germplasmExportService)
 				.generateGermplasmListExcelFile(Matchers.any(GermplasmListExportInputValues.class));

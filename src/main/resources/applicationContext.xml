@@ -137,12 +137,6 @@
 	<bean id="breedingManagerService"
 		class="org.generationcp.breeding.manager.service.BreedingManagerServiceImpl" />
 
-
-	<bean id="userDataManager" factory-bean="managerFactory"
-		factory-method="getUserDataManager" scope="request">
-		<aop:scoped-proxy />
-	</bean>
-
 	<bean id="listDataProjectSaver" factory-bean="managerFactory"
 		  factory-method="getListDataProjectSaver" scope="request">
 		<aop:scoped-proxy />
@@ -200,6 +194,11 @@
 	<bean id="workbenchDataManager"
 		class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl"
 		destroy-method="close">
+		<constructor-arg ref="workbenchHibernateSessionProvider" />
+	</bean>
+
+	<bean id="userService"
+		  class="org.generationcp.middleware.service.impl.user.UserServiceImpl">
 		<constructor-arg ref="workbenchHibernateSessionProvider" />
 	</bean>
 
@@ -376,6 +375,31 @@
 	</bean>
 
 	<bean id="breedingManagerWindowGenerator" class="org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator" />
+
+	<bean id="trialEnvironmentBuilder" factory-bean="managerFactory"
+		  factory-method="getTrialEnvironmentBuilder" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="dataSetBuilder" factory-bean="managerFactory"
+		  factory-method="getDataSetBuilder" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="stockBuilder" factory-bean="managerFactory"
+		  factory-method="getStockBuilder" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="workbookBuilder" factory-bean="managerFactory"
+		  factory-method="getWorkbookBuilder" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="workbookSaver" factory-bean="managerFactory"
+		  factory-method="getWorkbookSaver" scope="request">
+		<aop:scoped-proxy />
+	</bean>
 
 	<context:component-scan base-package="org.generationcp.breeding.manager.validator"/>
 

@@ -50,7 +50,7 @@
 	</bean:bean>
 	
 	<bean:bean id="workbenchUserDetailsService" class="org.generationcp.commons.security.WorkbenchUserDetailsService">
-		<bean:property name="workbenchDataManager" ref="workbenchDataManager" />
+		<bean:property name="userService" ref="userService" />
 	</bean:bean>
 	
 	<authentication-manager alias="bmsAuthenticationManager">

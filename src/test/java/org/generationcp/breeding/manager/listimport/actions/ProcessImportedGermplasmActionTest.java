@@ -75,7 +75,7 @@ public class ProcessImportedGermplasmActionTest {
 
 		Mockito.doReturn(this.germplasmFieldsComponent).when(this.germplasmDetailsComponent)
 				.getGermplasmFieldsComponent();
-		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(123);
+		Mockito.when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(123);
 		Mockito.when(this.germplasmDetailsComponent.getGermplasmFieldsComponent())
 				.thenReturn(this.germplasmFieldsComponent);
 		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasm())
@@ -190,7 +190,7 @@ public class ProcessImportedGermplasmActionTest {
 	public void testCreateNewRecordsWithPedigreeConnectionsIfGidSpecified() {
 		this.processImportedGermplasmAction.performSecondPedigreeAction();
 
-		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
+		Mockito.verify(this.contextUtil).getCurrentWorkbenchUserId();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getGermplasmFieldsComponent();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getImportedGermplasm();
@@ -207,7 +207,7 @@ public class ProcessImportedGermplasmActionTest {
 
 		this.processImportedGermplasmAction.performSecondPedigreeAction();
 
-		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
+		Mockito.verify(this.contextUtil).getCurrentWorkbenchUserId();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getGermplasmFieldsComponent();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getImportedGermplasm();
@@ -290,7 +290,7 @@ public class ProcessImportedGermplasmActionTest {
 		// Method to test
 		this.processImportedGermplasmAction.performThirdPedigreeAction();
 
-		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
+		Mockito.verify(this.contextUtil).getCurrentWorkbenchUserId();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getImportedGermplasm();
 		Mockito.verify(this.germplasmFieldsComponent).getNameTypeComboBox();
@@ -529,7 +529,7 @@ public class ProcessImportedGermplasmActionTest {
 		// Method to test
 		this.processImportedGermplasmAction.performThirdPedigreeAction();
 
-		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
+		Mockito.verify(this.contextUtil).getCurrentWorkbenchUserId();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
 		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(noOfEntries)).getNameTypeComboBox();
 		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(noOfEntries * 2)).getLocationComboBox();

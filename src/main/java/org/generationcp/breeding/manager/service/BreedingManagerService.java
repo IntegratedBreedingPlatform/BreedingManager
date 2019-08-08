@@ -12,10 +12,6 @@ import org.generationcp.middleware.pojos.workbench.Project;
  */
 public interface BreedingManagerService {
 
-	public String getOwnerListName(Integer userId);
-
-	public String getDefaultOwnerListName();
-
 	public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException;
 
 	public Project getCurrentProject();

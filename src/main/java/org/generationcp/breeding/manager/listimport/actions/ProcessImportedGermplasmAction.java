@@ -112,7 +112,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	 */
 	protected void performFirstPedigreeAction() {
 
-		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+		final Integer ibdbUserId = this.contextUtil.getCurrentWorkbenchUserId();
 		final Integer dateIntValue = this.getGermplasmDateValue();
 
 		for (int i = 0; i < this.getImportedGermplasm().size(); i++) {
@@ -131,7 +131,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	 * which one to link to.
 	 */
 	protected void performSecondPedigreeAction() {
-		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+		final Integer ibdbUserId = this.contextUtil.getCurrentWorkbenchUserId();
 		final Integer dateIntValue = this.getGermplasmDateValue();
 
 		final Map<String, Integer> germplasmMatchesMap = this.mapGermplasmNameCount(this.getImportedGermplasm());
@@ -194,7 +194,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	 * found, user will be asked to select which one to use.
 	 */
 	protected void performThirdPedigreeAction() {
-		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+		final Integer ibdbUserId = this.contextUtil.getCurrentWorkbenchUserId();
 		final Integer dateIntValue = this.getGermplasmDateValue();
 
 		final Map<String, Integer> germplasmMatchesMap = this.mapGermplasmNameCount(this.getImportedGermplasm());

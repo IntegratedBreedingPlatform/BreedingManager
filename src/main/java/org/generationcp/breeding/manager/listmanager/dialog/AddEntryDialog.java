@@ -551,7 +551,7 @@ public class AddEntryDialog extends BaseSubWindow
 	private Integer getCurrentUserLocalId() {
 		Integer currentUserLocalId = -1;
 		try {
-			currentUserLocalId = this.contextUtil.getCurrentUserLocalId();
+			currentUserLocalId = this.contextUtil.getCurrentWorkbenchUserId();
 		} catch (final MiddlewareQueryException e) {
 			AddEntryDialog.LOG.error(e.getMessage(), e);
 		}

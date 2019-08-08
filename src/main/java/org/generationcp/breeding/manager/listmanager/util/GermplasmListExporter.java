@@ -29,7 +29,6 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyPropertyDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyScaleDataManager;
@@ -38,6 +37,7 @@ import org.generationcp.middleware.pojos.*;
 import org.generationcp.middleware.reports.BuildReportException;
 import org.generationcp.middleware.reports.Reporter;
 import org.generationcp.middleware.service.api.ReportService;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +57,6 @@ public class GermplasmListExporter {
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-
-	@Autowired
-	private UserDataManager userDataManager;
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
@@ -87,6 +84,9 @@ public class GermplasmListExporter {
 
 	@Resource
 	private GermplasmExportService germplasmExportService;
+
+	@Resource
+	private UserService userService;
 
     public GermplasmListExporter() {
     }
@@ -192,7 +192,7 @@ public class GermplasmListExporter {
 
 	public FileOutputStream exportGermplasmListXLS(final int germplasmListID, final String fileName, final Table listDataTable) throws GermplasmListExporterException {
 		final GermplasmListNewColumnsInfo currentColumnsInfo = this.germplasmListManager.getAdditionalColumnsForList(germplasmListID);
-		final Integer currentLocalIbdbUserId = this.getCurrentLocalIbdbUserId();
+		final Integer currentWorkbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
 
 		final GermplasmListExportInputValues input = new GermplasmListExportInputValues();
 		input.setFileName(fileName);
@@ -203,11 +203,11 @@ public class GermplasmListExporter {
 
 		input.setListData(germplasmList.getListData());
 
-		input.setOwnerName(this.getOwnerName(germplasmList.getUserId()));
+		input.setOwnerName(this.userService.getPersonNameForUserId(germplasmList.getUserId()));
 
-		input.setCurrentLocalIbdbUserId(currentLocalIbdbUserId);
+		input.setCurrentLocalIbdbUserId(currentWorkbenchUserId);
 
-		input.setExporterName(this.getExporterName(currentLocalIbdbUserId));
+		input.setExporterName(this.userService.getPersonNameForUserId(currentWorkbenchUserId));
 
 		input.setVisibleColumnMap(this.getVisibleColumnMap(listDataTable));
 
@@ -267,50 +267,6 @@ public class GermplasmListExporter {
         }
 
 		return false;
-	}
-
-	protected String getExporterName(final Integer currentLocalIbdbUserId) throws GermplasmListExporterException {
-		if (currentLocalIbdbUserId == null) {
-			throw new IllegalArgumentException("User id could not be null");
-		}
-		final String exporterName;
-		try {
-			final User exporterUser = this.userDataManager.getUserById(currentLocalIbdbUserId);
-			if (exporterUser == null) {
-				throw new GermplasmListExporterException("Could not retrieve the exporter name from the database");
-			}
-			final Person exporterPerson = this.userDataManager.getPersonById(exporterUser.getPersonid());
-			if (exporterPerson == null) {
-				throw new GermplasmListExporterException("Could not retrieve the exporter name from the database");
-			}
-			exporterName = exporterPerson.getFirstName() + " " + exporterPerson.getLastName();
-		} catch (final MiddlewareQueryException e) {
-			throw new GermplasmListExporterException("Error with getting current workbench user information.", e);
-		}
-		return exporterName;
-	}
-
-	protected String getOwnerName(final Integer userId) throws GermplasmListExporterException {
-		// retrieve user details
-		if (userId == null) {
-			throw new IllegalArgumentException("User id could not be null");
-		}
-		final String ownerName;
-		try {
-			final User ownerUser = this.userDataManager.getUserById(userId);
-			if (ownerUser == null) {
-				throw new GermplasmListExporterException("Could not retrieve the owner name from the database");
-			}
-			final Person ownerPerson = this.userDataManager.getPersonById(ownerUser.getPersonid());
-			if (ownerPerson != null) {
-				ownerName = ownerPerson.getFirstName() + " " + ownerPerson.getLastName();
-			} else {
-				ownerName = ownerUser.getName();
-			}
-		} catch (final MiddlewareQueryException e) {
-			throw new GermplasmListExporterException("Error with getting user information.", e);
-		}
-		return ownerName;
 	}
 
 	protected GermplasmList getGermplasmListAndListData(final Integer listId) throws GermplasmListExporterException {
@@ -477,7 +433,7 @@ public class GermplasmListExporter {
 
 		exportColumnHeaders.add(new ExportColumnHeader(5, this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns.get(String
 				.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()))));
-				
+
 		this.addAttributeAndNameTypeHeaders(currentColumnsInfo, exportColumnHeaders);
 
 		return exportColumnHeaders;
@@ -516,7 +472,7 @@ public class GermplasmListExporter {
 			final String parentageValue = listDataTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue().toString();
 			final String seedSourceValue =
 					listDataTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue().toString();
-			
+
 			row.addColumnValue(0, entryIdValue);
 			row.addColumnValue(1, gidValue);
 			row.addColumnValue(2, entryCodeValue);
@@ -557,7 +513,7 @@ public class GermplasmListExporter {
 		Integer currentLocalIbdbUserId = 0;
 
 		try {
-			currentLocalIbdbUserId = this.contextUtil.getCurrentUserLocalId();
+			currentLocalIbdbUserId = this.contextUtil.getCurrentWorkbenchUserId();
 		} catch (final MiddlewareQueryException e) {
 			LOG.error(e.getMessage(), e);
 		}
@@ -570,10 +526,6 @@ public class GermplasmListExporter {
 
 	protected void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
-	}
-
-	protected void setUserDataManager(final UserDataManager userDataManager) {
-		this.userDataManager = userDataManager;
 	}
 
 	protected void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {

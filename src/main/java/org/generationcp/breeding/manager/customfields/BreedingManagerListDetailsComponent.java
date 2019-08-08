@@ -19,6 +19,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -55,6 +56,9 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 
 	@Autowired
 	private BreedingManagerService breedingManagerService;
+
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	private ContextUtil contextUtil;
@@ -245,9 +249,9 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		String listOwner = "";
 		try {
 			if (germplasmList != null) {
-				listOwner = this.breedingManagerService.getOwnerListName(germplasmList.getUserId());
+				listOwner = this.userService.getPersonNameForUserId(germplasmList.getUserId());
 			} else {
-				listOwner = this.breedingManagerService.getDefaultOwnerListName();
+				listOwner = this.userService.getPersonNameForUserId(this.contextUtil.getCurrentWorkbenchUserId());
 			}
 		} catch (final MiddlewareQueryException e) {
 			BreedingManagerListDetailsComponent.LOG.error(e.getMessage(), e);

@@ -55,7 +55,7 @@ public class SaveGermplasmListAction implements Serializable {
 	public GermplasmList saveRecords() {
 
 		// set the listnms.listuid to the current user
-		final Integer userId = this.contextUtil.getCurrentUserLocalId();
+		final Integer userId = this.contextUtil.getCurrentWorkbenchUserId();
 		this.germplasmList.setUserId(userId);
 		this.germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 		this.germplasmList = this.saveGermplasmListRecord(this.germplasmList);
