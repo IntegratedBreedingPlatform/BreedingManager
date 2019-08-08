@@ -46,16 +46,16 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -148,7 +148,7 @@ public class ListComponentTest {
 	private PlatformTransactionManager transactionManager;
 
 	@Mock
-	private UserDataManager userDataManager;
+	private UserService userService;
 
 	@Mock
 	private CloseLotDiscardInventoryAction closeLotDiscardInventoryAction;
@@ -410,15 +410,14 @@ public class ListComponentTest {
 		this.listComponent.setPersistedReservationToCancel(lotDetailsGid);
 		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
 		this.listComponent.getReserveInventoryAction().setContextUtil(contextUtil);
-		this.listComponent.getReserveInventoryAction().setUserDataManager(this.userDataManager);
+		this.listComponent.getReserveInventoryAction().setUserService(userService);
 		this.listComponent.getReserveInventoryAction().setInventoryDataManager(this.inventoryDataManager);
 		this.listComponent.getListInventoryTable().setInventoryDataManager(this.inventoryDataManager);
 		this.listComponent.setListInventoryTable(this.listManagerInventoryTable);
 		this.listComponent.setInventoryViewMenu(this.inventoryViewMenu);
-		final User user = new User();
+		final WorkbenchUser user = new WorkbenchUser();
 		user.setUserid(12);
-		user.setPersonid(123);
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
+		Mockito.doReturn(user).when(this.userService).getUserById(Matchers.anyInt());
 
 		final List<GermplasmListData> germplasmListData = ListInventoryDataInitializer
 			.createGermplasmListDataWithInventoryDetails();
@@ -797,12 +796,10 @@ public class ListComponentTest {
 
 		Mockito.when(this.inventoryDataManager.getLotsByIdList(Matchers.isA(List.class)))
 			.thenReturn(Lists.newArrayList(activeLot));
-		final User user = new User();
+		final WorkbenchUser user = new WorkbenchUser();
 		user.setUserid(12);
-		user.setPersonid(123);
 
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
-		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(1);
+		Mockito.doReturn(user).when(this.userService).getUserById(Matchers.anyInt());
 
 		Mockito.doReturn(userSelectedLotEntriesToClose).when(this.listManagerInventoryTable).getSelectedLots();
 
@@ -827,10 +824,6 @@ public class ListComponentTest {
 
 		final Lot activeLot = new Lot();
 		activeLot.setStatus(LotStatus.ACTIVE.getIntValue());
-
-		final User user = new User();
-		user.setUserid(12);
-		user.setPersonid(123);
 
 		Mockito.doReturn(userSelectedLotEntriesToClose).when(this.listManagerInventoryTable).getSelectedLots();
 

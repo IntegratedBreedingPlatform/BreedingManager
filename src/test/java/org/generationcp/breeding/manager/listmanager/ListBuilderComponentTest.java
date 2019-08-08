@@ -24,6 +24,7 @@ import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.WorkbenchTestDataUtil;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
@@ -33,10 +34,10 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +64,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public class ListBuilderComponentTest {
 
@@ -77,6 +80,7 @@ public class ListBuilderComponentTest {
 	private static final String GID = "GID";
 	private static final String STOCKID = "STOCKID";
 	private static final String CAPTION = "2";
+	public static final int CURRENT_USER_ID = 1;
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
@@ -104,9 +108,6 @@ public class ListBuilderComponentTest {
 
 	@Mock
 	private ListManagerInventoryTable listInventoryTable;
-
-	@Mock
-	private UserDataManager userDataManager;
 
 	@Mock
 	private InventoryTableDropHandler inventoryTableDropHandler;
@@ -147,6 +148,13 @@ public class ListBuilderComponentTest {
 	@Mock
 	private ContextMenu contextMenu;
 
+	@Mock
+	private UserService userService;
+
+	@Mock
+	private ContextUtil contextUtil;
+
+
 	private static final Integer TEST_GERMPLASM_LIST_ID = 111;
 	private static final Integer TEST_GERMPLASM_NO_OF_ENTRIES = 5;
 	private static final long LIST_ENTRIES_COUNT = 1;
@@ -157,24 +165,31 @@ public class ListBuilderComponentTest {
 		this.listBuilderComponent.setMessageSource(this.messageSource);
 		this.listBuilderComponent.setTransactionManager(this.transactionManager);
 		this.listBuilderComponent.setGermplasmListManager(this.germplasmListManager);
+		this.listBuilderComponent.setGermplasmListManager(this.germplasmListManager);
+		this.listBuilderComponent.setUserService(this.userService);
+		this.listBuilderComponent.setContextUtil(this.contextUtil);
 
-		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn(ListBuilderComponentTest.CHECK);
-		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn(ListBuilderComponentTest.HASH);
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId()))
+		when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn(ListBuilderComponentTest.CHECK);
+		when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn(ListBuilderComponentTest.HASH);
+		when(this.ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId()))
 				.thenReturn(new Term(1, ListBuilderComponentTest.AVAIL_INV, ""));
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.GID.getId()))
+		when(this.ontologyDataManager.getTermById(TermId.GID.getId()))
 				.thenReturn(new Term(1, ListBuilderComponentTest.GID, ""));
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_CODE.getId()))
+		when(this.ontologyDataManager.getTermById(TermId.ENTRY_CODE.getId()))
 				.thenReturn(new Term(1, ListBuilderComponentTest.ENTRY_CODE, ""));
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.DESIG.getId()))
+		when(this.ontologyDataManager.getTermById(TermId.DESIG.getId()))
 				.thenReturn(new Term(1, ListBuilderComponentTest.DESIG, ""));
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.CROSS.getId()))
+		when(this.ontologyDataManager.getTermById(TermId.CROSS.getId()))
 				.thenReturn(new Term(1, ListBuilderComponentTest.CROSS, ""));
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_SOURCE.getId()))
+		when(this.ontologyDataManager.getTermById(TermId.SEED_SOURCE.getId()))
 				.thenReturn(new Term(1, ListBuilderComponentTest.SEED_SOURCE, ""));
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.STOCKID.getId()))
+		when(this.ontologyDataManager.getTermById(TermId.STOCKID.getId()))
 				.thenReturn(new Term(1, ListBuilderComponentTest.STOCKID, ""));
 		this.listBuilderComponent.setTableWithSelectAllLayout(this.tableWithSelectAllLayout);
+
+		final WorkbenchUser workbenchUser = new WorkbenchTestDataUtil().createTestUserData();
+		when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(CURRENT_USER_ID);
+		when(this.userService.getUserById(CURRENT_USER_ID)).thenReturn(workbenchUser);
 	}
 
 	@Test
@@ -202,12 +217,12 @@ public class ListBuilderComponentTest {
 	@Test
 	public void testDeleteSelectedEntriesWithNoSelectedEntries() {
 		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
-		Mockito.when(source.getWindow()).thenReturn(new Window());
+		when(source.getWindow()).thenReturn(new Window());
 		this.listBuilderComponent.setSource(source);
 
-		Mockito.when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
+		when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
 		final Collection<? extends Integer> selectedItems = Arrays.asList(new Integer[] {});
-		Mockito.when(this.breedingManagerTable.getValue()).thenReturn(selectedItems);
+		when(this.breedingManagerTable.getValue()).thenReturn(selectedItems);
 
 		this.listBuilderComponent.deleteSelectedEntries();
 		try {
@@ -219,22 +234,22 @@ public class ListBuilderComponentTest {
 
 	@Test
 	public void testDeleteSelectedEntriesWithSelectedEntries() {
-		Mockito.when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
+		when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
 
 		final Container container = Mockito.mock(Container.class);
-		Mockito.when(this.breedingManagerTable.getContainerDataSource()).thenReturn(container);
+		when(this.breedingManagerTable.getContainerDataSource()).thenReturn(container);
 
 		final Collection<? extends Integer> selectedItems = Arrays.asList(new Integer[] { 1 });
-		Mockito.when(this.breedingManagerTable.getValue()).thenReturn(selectedItems);
+		when(this.breedingManagerTable.getValue()).thenReturn(selectedItems);
 
 		final Table listDataTable = Mockito.mock(Table.class);
 		listDataTable.addItem(1);
 		listDataTable.addItem(2);
-		Mockito.when(listDataTable.getValue()).thenReturn(selectedItems);
+		when(listDataTable.getValue()).thenReturn(selectedItems);
 		this.listBuilderComponent.setListDataTable(listDataTable);
 
 		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
-		Mockito.when(source.getModeView()).thenReturn(ModeView.LIST_VIEW);
+		when(source.getModeView()).thenReturn(ModeView.LIST_VIEW);
 		this.listBuilderComponent.setSource(source);
 
 		this.listBuilderComponent.setTotalListEntriesLabel(Mockito.mock(Label.class));
@@ -253,7 +268,7 @@ public class ListBuilderComponentTest {
 		this.setUpCurrentlySavedGermplasmList();
 		final ReserveInventoryAction reserveInventoryAction = Mockito.mock(ReserveInventoryAction.class);
 		this.listBuilderComponent.setReserveInventoryAction(reserveInventoryAction);
-		Mockito.when(reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
+		when(reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
 				.thenReturn(false);
 		this.listBuilderComponent.saveReservationsAction();
 		Mockito.verify(this.messageSource).getMessage(Message.INVENTORY_NOT_AVAILABLE_BALANCE);
@@ -263,26 +278,20 @@ public class ListBuilderComponentTest {
 	public void testSaveReservationsAction() {
 		this.setUpCurrentlySavedGermplasmList();
 		this.listBuilderComponent.setReserveInventoryAction(new ReserveInventoryAction(this.listBuilderComponent));
-		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
-		this.listBuilderComponent.getReserveInventoryAction().setContextUtil(contextUtil);
-		this.listBuilderComponent.getReserveInventoryAction().setUserDataManager(this.userDataManager);
 		this.listBuilderComponent.getReserveInventoryAction().setInventoryDataManager(this.inventoryDataManager);
-		final User user = new User();
-		user.setUserid(12);
-		user.setPersonid(123);
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
-		Mockito.when(contextUtil.getCurrentUserLocalId()).thenReturn(1);
+		this.listBuilderComponent.getReserveInventoryAction().setContextUtil(this.contextUtil);
+		this.listBuilderComponent.getReserveInventoryAction().setUserService(this.userService);
 
 		final List<GermplasmListData> germplasmListData = Lists
 				.newArrayList(ListInventoryDataInitializer.createGermplasmListData(1));
 
-		Mockito.when(this.inventoryDataManager.getLotCountsForList(this.currentlySavedGermplasmList.getId(), 0, 1))
+		when(this.inventoryDataManager.getLotCountsForList(this.currentlySavedGermplasmList.getId(), 0, 1))
 				.thenReturn(germplasmListData);
 
-		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Matchers.isA(Integer.class), Matchers.anyInt(),
+		when(this.inventoryDataManager.getLotDetailsForList(Matchers.isA(Integer.class), Matchers.anyInt(),
 				Matchers.anyInt())).thenReturn(germplasmListData);
 
-		Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(Matchers.isA(Integer.class)))
+		when(this.germplasmListManager.countGermplasmListDataByListId(Matchers.isA(Integer.class)))
 				.thenReturn(ListBuilderComponentTest.LIST_ENTRIES_COUNT);
 
 		this.listBuilderComponent.saveReservationsAction();
@@ -311,18 +320,18 @@ public class ListBuilderComponentTest {
 		final Table listDataTable = Mockito.mock(Table.class);
 		listDataTable.addItem(1);
 		listDataTable.addItem(2);
-		Mockito.when(listDataTable.getValue()).thenReturn(selectedItems);
+		when(listDataTable.getValue()).thenReturn(selectedItems);
 		this.listBuilderComponent.setListDataTable(listDataTable);
 
-		Mockito.when(this.listBuilderComponent.getListDataTable().getItem(Matchers.anyInt())).thenReturn(this.item);
+		when(this.listBuilderComponent.getListDataTable().getItem(Matchers.anyInt())).thenReturn(this.item);
 		final Property property = Mockito.mock(Property.class);
-		Mockito.when(this.item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName())).thenReturn(property);
-		Mockito.when(this.item.getItemProperty(ColumnLabels.GID.getName())).thenReturn(property);
-		Mockito.when(this.item.getItemProperty(ColumnLabels.GID.getName()).getValue()).thenReturn(this.button);
-		Mockito.when(this.button.getCaption()).thenReturn(ListBuilderComponentTest.CAPTION);
-		Mockito.when(this.item.getItemProperty(ColumnLabels.TOTAL.getName())).thenReturn(property);
+		when(this.item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName())).thenReturn(property);
+		when(this.item.getItemProperty(ColumnLabels.GID.getName())).thenReturn(property);
+		when(this.item.getItemProperty(ColumnLabels.GID.getName()).getValue()).thenReturn(this.button);
+		when(this.button.getCaption()).thenReturn(ListBuilderComponentTest.CAPTION);
+		when(this.item.getItemProperty(ColumnLabels.TOTAL.getName())).thenReturn(property);
 
-		Mockito.when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
+		when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
 		this.listBuilderComponent.setDropHandler(this.dropHandler);
 
 		this.listBuilderComponent.setMenuDeleteSelectedEntries(this.menuDeleteSelectedEntries);
@@ -335,8 +344,8 @@ public class ListBuilderComponentTest {
 		this.listBuilderComponent.setCurrentlySavedGermplasmList(this.currentlySavedGermplasmList);
 
 		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
-		Mockito.when(source.getWindow()).thenReturn(new Window());
-		Mockito.when(source.getModeView()).thenReturn(ModeView.LIST_VIEW);
+		when(source.getWindow()).thenReturn(new Window());
+		when(source.getModeView()).thenReturn(ModeView.LIST_VIEW);
 		this.listBuilderComponent.setSource(source);
 
 		this.listBuilderComponent.setHasUnsavedChanges(true);
@@ -357,7 +366,7 @@ public class ListBuilderComponentTest {
 		this.listBuilderComponent.setMenuCopyToList(this.contextMenuItem);
 		this.listBuilderComponent.setBuildNewListTitle(this.listEntriesLabel);
 
-		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler())
+		when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler())
 				.thenReturn(this.inventoryTableDropHandler);
 
 	}
@@ -370,11 +379,11 @@ public class ListBuilderComponentTest {
 		final ReserveInventoryAction reserveInventoryAction = Mockito.mock(ReserveInventoryAction.class);
 
 		final ContextMenu.ContextMenuItem contextMenuItem = Mockito.mock(ContextMenu.ContextMenuItem.class);
-		Mockito.when(contextMenuItem.getName()).thenReturn("Save Changes");
+		when(contextMenuItem.getName()).thenReturn("Save Changes");
 
-		Mockito.when(clickEventMock.getClickedItem()).thenReturn(contextMenuItem);
+		when(clickEventMock.getClickedItem()).thenReturn(contextMenuItem);
 
-		Mockito.when(this.messageSource.getMessage(Message.SAVE_RESERVATIONS)).thenReturn("Save Changes");
+		when(this.messageSource.getMessage(Message.SAVE_RESERVATIONS)).thenReturn("Save Changes");
 
 		final int threads = 2;
 
@@ -387,7 +396,7 @@ public class ListBuilderComponentTest {
 		final Map<ListEntryLotDetails, Double> unsavedReservations = new HashMap<>();
 		unsavedReservations.put(new ListEntryLotDetails(), new Double(10));
 		this.listBuilderComponent.setValidReservationsToSave(unsavedReservations);
-		Mockito.when(reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
+		when(reserveInventoryAction.saveReserveTransactions(ArgumentMatchers.<Map<ListEntryLotDetails, Double>>any(), Matchers.anyInt()))
 				.thenReturn(true);
 
 		final Future<Void> threadOne = threadPool.submit(new Callable<Void>() {
@@ -500,14 +509,14 @@ public class ListBuilderComponentTest {
 		this.listBuilderComponent.setInventoryViewMenu(inventoryViewMenu);
 		this.listBuilderComponent.setListInventoryTable(this.listInventoryTable);
 
-		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler())
+		when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler())
 				.thenReturn(this.inventoryTableDropHandler);
 		Mockito.doReturn(true).when(this.listBuilderComponent.getInventoryViewMenu()).isVisible();
-		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler().isChanged())
+		when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler().isChanged())
 				.thenReturn(true);
 
 		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
-		Mockito.when(source.getWindow()).thenReturn(new Window());
+		when(source.getWindow()).thenReturn(new Window());
 		this.listBuilderComponent.setSource(source);
 
 		this.listBuilderComponent.reserveInventoryAction();
@@ -521,13 +530,13 @@ public class ListBuilderComponentTest {
 	@Test
 	public void testCancelReservationsActionForUnsavedList() {
 		this.listBuilderComponent.setListInventoryTable(this.listInventoryTable);
-		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler())
+		when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler())
 				.thenReturn(this.inventoryTableDropHandler);
-		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler().isChanged())
+		when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler().isChanged())
 				.thenReturn(true);
 
 		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
-		Mockito.when(source.getWindow()).thenReturn(new Window());
+		when(source.getWindow()).thenReturn(new Window());
 		this.listBuilderComponent.setSource(source);
 
 		this.listBuilderComponent.cancelReservationsAction();
@@ -547,11 +556,11 @@ public class ListBuilderComponentTest {
 		this.addColumnContextMenu.setAddColumnItem(item);
 
 		this.listBuilderComponent.setAddColumnContextMenu(this.addColumnContextMenu);
-		Mockito.when(item.addItem(Matchers.anyString())).thenReturn(item);
-		Mockito.when(this.contextMenu.addItem(ArgumentMatchers.isNull(String.class))).thenReturn(item);
-		Mockito.when(this.contextMenu.addItem(Matchers.any(String.class))).thenReturn(item);
-		Mockito.when(this.messageSource.getMessage(ArgumentMatchers.isNull(Message.class))).thenReturn("Bye");
-		Mockito.when(this.messageSource.getMessage(Matchers.any(Message.class))).thenReturn("Hi");
+		when(item.addItem(Matchers.anyString())).thenReturn(item);
+		when(this.contextMenu.addItem(ArgumentMatchers.isNull(String.class))).thenReturn(item);
+		when(this.contextMenu.addItem(Matchers.any(String.class))).thenReturn(item);
+		when(this.messageSource.getMessage(ArgumentMatchers.isNull(Message.class))).thenReturn("Bye");
+		when(this.messageSource.getMessage(Matchers.any(Message.class))).thenReturn("Hi");
 
 		this.listBuilderComponent.initializeAddColumnContextMenu();
 		Mockito.verify(this.contextMenu).addListener(Matchers.any(ContextMenu.ClickListener.class));

@@ -15,7 +15,6 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -26,9 +25,9 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -67,6 +66,9 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
+
+	@Autowired
+	private UserService userService;
 
 	private final class ListDataTableActionHandler implements Action.Handler {
 
@@ -208,9 +210,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
-	
-	@Autowired
-	private UserDataManager userDataManager;
 
 	public SelectParentsListDataComponent(Integer germplasmListId, String listName,
 			MakeCrossesParentsComponent makeCrossesParentsComponent) {
@@ -254,8 +253,8 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.totalSelectedListEntriesLabel.setWidth("95px");
 		this.updateNoOfSelectedEntries(0);
 
-		this.viewListHeaderWindow = new ViewListHeaderWindow(this.germplasmList, 
-				BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
+		this.viewListHeaderWindow = new ViewListHeaderWindow(this.germplasmList,
+			this.userService.getAllUserIDFullNameMap(), germplasmListManager.getGermplasmListTypes());
 
 		this.viewListHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
 		this.viewListHeaderButton.setDebugId("viewListHeaderButton");

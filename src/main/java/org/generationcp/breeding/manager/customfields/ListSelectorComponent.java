@@ -43,10 +43,10 @@ import org.generationcp.commons.workbook.generator.RowColumnType;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListMetadata;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -98,7 +98,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	protected SimpleResourceBundleMessageSource messageSource;
 
 	@Autowired
-	private UserDataManager userDataManager;
+	protected UserService userService;
 
 	protected HorizontalLayout controlButtonsLayout;
 	protected HorizontalLayout ctrlBtnsLeftSubLayout;
@@ -351,7 +351,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		List<String> parsedState = null;
 
 		try {
-			final Integer userID = this.util.getCurrentUserLocalId();
+			final Integer userID = this.util.getCurrentWorkbenchUserId();
 			final String programUUID = this.util.getCurrentProgramUUID();
 
 			if (isSaveList) {
@@ -766,7 +766,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			final List<UserDefinedField> listTypes = this.germplasmDataManager
 					.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(), RowColumnType.LIST_TYPE.getFtype());
 			final Map<Integer, GermplasmListMetadata> allListMetaData =
-					germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
+					this.germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
 
 			final Collection<?> existingItems = this.germplasmListSource.getItemIds();
 
@@ -807,7 +807,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	 */
 	private void addToolTipHook(final List<GermplasmList> germplasmListChildren, final Collection<?> existingItems) {
 		final Set<GermplasmList> existingGermplasmList = this.getCompleteListOfOpenItems(germplasmListChildren, existingItems);
-		final ToolTipGenerator tooltipGenerator = new ToolTipGenerator(BreedingManagerUtil.getAllNamesAsMap(this.userDataManager),
+		final ToolTipGenerator tooltipGenerator = new ToolTipGenerator(this.userService.getAllUserIDFullNameMap(),
 				this.germplasmListManager.getGermplasmListTypes());
 		this.getGermplasmListSource().setItemDescriptionGenerator(tooltipGenerator.getItemDescriptionGenerator(existingGermplasmList));
 	}
@@ -1081,15 +1081,6 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	public void setUtil(final ContextUtil util) {
 		this.util = util;
-	}
-
-	/**
-	 * Only for testing.
-	 *
-	 * @param userDataManager mock userdata manager
-	 */
-	public void setUserDataManager(final UserDataManager userDataManager) {
-		this.userDataManager = userDataManager;
 	}
 
 	protected class GermplasmListItemClickListener implements ItemClickEvent.ItemClickListener {

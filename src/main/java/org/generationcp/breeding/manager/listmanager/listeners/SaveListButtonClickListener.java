@@ -117,7 +117,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 				if (currentlySavedList == null || listToSave.getId() == null) {
 
-					listToSave.setUserId(SaveListButtonClickListener.this.contextUtil.getCurrentUserLocalId());
+					listToSave.setUserId(SaveListButtonClickListener.this.contextUtil.getCurrentWorkbenchUserId());
 
 					final Integer listId = SaveListButtonClickListener.this.germplasmListManager.addGermplasmList(listToSave);
 

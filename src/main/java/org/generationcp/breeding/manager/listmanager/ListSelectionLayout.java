@@ -33,8 +33,8 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -70,10 +70,10 @@ public class ListSelectionLayout extends VerticalLayout
 	private GermplasmListManager germplasmListManager;
 
 	@Autowired
-	private SimpleResourceBundleMessageSource messageSource;
+	private UserService userService;
 
 	@Autowired
-	private UserDataManager userDataManager;
+	private SimpleResourceBundleMessageSource messageSource;
 
 	private final ListManagerMain source;
 
@@ -407,7 +407,7 @@ public class ListSelectionLayout extends VerticalLayout
 				germplasmList.setName(newName);
 				((ListTabComponent) tab.getComponent()).getListComponent()
 						.setViewListHeaderWindow(new ViewListHeaderWindow(germplasmList,
-								BreedingManagerUtil.getAllNamesAsMap(this.userDataManager),
+							userService.getAllUserIDFullNameMap(),
 								this.germplasmListManager.getGermplasmListTypes()));
 			}
 		}

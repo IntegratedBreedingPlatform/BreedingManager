@@ -256,7 +256,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	}
 
 	private void updateConstantFields(final CrossesMade crossesMade) {
-		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+		final Integer ibdbUserId = this.contextUtil.getCurrentWorkbenchUserId();
 
 		for (final Triple<Germplasm, Name, List<Progenitor>> triple : crossesMade.getCrossesList()) {
 			final Germplasm g = triple.getLeft();
@@ -279,7 +279,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		}
 
 	}
-	
+
 	/**
 	 * For Test Only
 	 *

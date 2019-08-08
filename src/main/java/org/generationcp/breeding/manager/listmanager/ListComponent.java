@@ -57,7 +57,6 @@ import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClic
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
@@ -75,16 +74,16 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,6 +257,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Autowired
 	private GermplasmGroupingService germplasmGroupingService;
 
+	@Autowired
+	private UserService userService;
+
 	@Resource
 	private ContextUtil contextUtil;
 
@@ -275,9 +277,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
-
-	@Autowired
-	private UserDataManager userDataManager;
 
 	public ListComponent() {
 		super();
@@ -326,7 +325,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.topLabel.setWidth("120px");
 		this.topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 
-		this.viewListHeaderWindow = new ViewListHeaderWindow(this.germplasmList, BreedingManagerUtil.getAllNamesAsMap(this.userDataManager),
+		this.viewListHeaderWindow = new ViewListHeaderWindow(this.germplasmList, this.userService.getAllUserIDFullNameMap(),
 				this.germplasmListManager.getGermplasmListTypes());
 
 		this.viewHeaderButton = new IconButton(
@@ -495,7 +494,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void initializeValues() {
 
 		try {
-			this.localUserId = this.contextUtil.getCurrentUserLocalId();
+			this.localUserId = this.contextUtil.getCurrentWorkbenchUserId();
 		} catch (final MiddlewareQueryException e) {
 			ListComponent.LOG.error("Error with retrieving local user ID", e);
 			ListComponent.LOG.error("\n" + e.getStackTrace());
@@ -1631,7 +1630,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			try {
 				this.listManagerCopyToListDialog.addComponent(
 						new ListManagerCopyToListDialog(this.parentListDetailsComponent.getWindow(), this.listManagerCopyToListDialog,
-								this.germplasmList.getName(), this.listDataTable, this.contextUtil.getCurrentUserLocalId(), this.source));
+								this.germplasmList.getName(), this.listDataTable, this.contextUtil.getCurrentWorkbenchUserId(), this.source));
 				this.parentListDetailsComponent.getWindow().addWindow(this.listManagerCopyToListDialog);
 				this.listManagerCopyToListDialog.center();
 			} catch (final MiddlewareQueryException e) {
@@ -1925,7 +1924,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.source.closeList(savedList);
 			} else {
 				this.germplasmList = savedList;
-				this.viewListHeaderWindow = new ViewListHeaderWindow(savedList, BreedingManagerUtil.getAllNamesAsMap(this.userDataManager),
+				this.viewListHeaderWindow = new ViewListHeaderWindow(savedList, this.userService.getAllUserIDFullNameMap(),
 						this.germplasmListManager.getGermplasmListTypes());
 				if (this.viewHeaderButton != null) {
 					this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
@@ -2436,8 +2435,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		}
 
-		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
-		final User userById = this.userDataManager.getUserById(ibdbUserId);
+		final WorkbenchUser workbenchUser = this.userService.getUserById(this.contextUtil.getCurrentWorkbenchUserId());
 
 		for (final ListEntryLotDetails lotDetail : selectedCloseLotEntryDetails) {
 
@@ -2467,7 +2465,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			final Transaction closeLotTransaction = new Transaction();
 
-			closeLotTransaction.setUserId(ibdbUserId);
+			closeLotTransaction.setUserId(workbenchUser.getUserid());
 
 			final Lot lot = new Lot(lotId);
 			lot.setStatus(LotStatus.CLOSED.getIntValue());
@@ -2482,7 +2480,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			closeLotTransaction.setSourceId(listId);
 			closeLotTransaction.setSourceRecordId(lrecId);
 			closeLotTransaction.setPreviousAmount(prevAmount);
-			closeLotTransaction.setPersonId(userById.getPersonid());
 
 			closeLotTransactions.add(closeLotTransaction);
 		}

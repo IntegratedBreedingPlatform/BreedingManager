@@ -49,7 +49,6 @@ import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.Lis
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.VaadinFileDownloadResource;
@@ -64,9 +63,9 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -310,10 +309,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private ContextUtil contextUtil;
 
 	@Resource
-	private PlatformTransactionManager transactionManager;
+	private UserService userService;
 
-	@Autowired
-	private UserDataManager userDataManager;
+	@Resource
+	private PlatformTransactionManager transactionManager;
 
 	public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -489,7 +488,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		if (this.currentlySavedGermplasmList != null) {
 			this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
-					BreedingManagerUtil.getAllNamesAsMap(this.userDataManager), this.germplasmListManager.getGermplasmListTypes());
+				this.userService.getAllUserIDFullNameMap(), this.germplasmListManager.getGermplasmListTypes());
 			this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 		}
 
@@ -661,7 +660,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 				ListBuilderComponent.this.viewListHeaderWindow =
 						new ViewListHeaderWindow(ListBuilderComponent.this.currentlySavedGermplasmList,
-								BreedingManagerUtil.getAllNamesAsMap(ListBuilderComponent.this.userDataManager),
+								userService.getAllUserIDFullNameMap(),
 								ListBuilderComponent.this.germplasmListManager.getGermplasmListTypes());
 				ListBuilderComponent.this.getWindow().addWindow(ListBuilderComponent.this.viewListHeaderWindow);
 			}
@@ -761,7 +760,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.viewHeaderButton.setVisible(true);
 
 		this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
-				BreedingManagerUtil.getAllNamesAsMap(this.userDataManager), this.germplasmListManager.getGermplasmListTypes());
+				userService.getAllUserIDFullNameMap(), this.germplasmListManager.getGermplasmListTypes());
 		this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 
 		this.saveButton.setEnabled(false);
@@ -1361,7 +1360,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				try {
 					this.listManagerCopyToListDialog.addComponent(new ListManagerCopyToListDialog(this.source.getWindow(),
 							this.listManagerCopyToListDialog, this.currentlySavedGermplasmList.getName(),
-							this.tableWithSelectAllLayout.getTable(), this.contextUtil.getCurrentUserLocalId(), this.source));
+							this.tableWithSelectAllLayout.getTable(), this.contextUtil.getCurrentWorkbenchUserId(), this.source));
 					this.source.getWindow().addWindow(this.listManagerCopyToListDialog);
 					this.listManagerCopyToListDialog.center();
 				} catch (final MiddlewareQueryException e) {
@@ -1968,7 +1967,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	private boolean userIsListOwner() {
 		try {
-			return this.currentlySavedGermplasmList.getUserId().equals(this.contextUtil.getCurrentUserLocalId());
+			return this.currentlySavedGermplasmList.getUserId().equals(this.contextUtil.getCurrentWorkbenchUserId());
 		} catch (final MiddlewareQueryException e) {
 			ListBuilderComponent.LOG.error(e.getMessage(), e);
 			return false;
@@ -1997,6 +1996,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	protected String getTermNameFromOntology(final ColumnLabels columnLabel) {
 		return columnLabel.getTermNameFromOntology(this.ontologyDataManager);
+	}
+
+	protected void setUserService(final UserService userService) {
+		this.userService = userService;
 	}
 
 	/*

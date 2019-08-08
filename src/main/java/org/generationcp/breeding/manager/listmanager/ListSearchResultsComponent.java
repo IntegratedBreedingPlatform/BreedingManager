@@ -13,12 +13,11 @@ import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.util.ToolTipGenerator;
 import org.generationcp.breeding.manager.listmanager.listeners.ListSearchResultsItemClickListener;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -92,9 +91,9 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
-	
+
 	@Autowired
-	private UserDataManager userDataManager;
+	private UserService userService;
 
 	public ListSearchResultsComponent(ListManagerMain source, final ListSelectionLayout displayDetailsLayout) {
 		this.source = source;
@@ -344,7 +343,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		}
 		
 		this.matchingListsTable.setItemDescriptionGenerator(
-				new ToolTipGenerator(BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes())
+				new ToolTipGenerator(this.userService.getAllUserIDFullNameMap(), germplasmListManager.getGermplasmListTypes())
 						.getItemDescriptionGenerator(new HashSet<GermplasmList>(germplasmLists)));
 	
 		if (!this.matchingListsTable.getItemIds().isEmpty()) {
