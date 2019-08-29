@@ -1,0 +1,53 @@
+body {
+	font-family: 'Open Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+	font-size: 100%;
+}
+
+.access-notifcation-container {
+	width: 90%;
+	min-width: 200px;
+	min-width: 12.5rem;
+	margin: 48px auto 0;
+	margin: 3rem auto 0;
+	box-sizing: border-box;
+	padding: 24px;
+	padding: 1.5rem;
+	border: 2px solid #225591;
+	border-radius: 5px;
+	background-color: white;
+}
+
+.access-notifcation-container .access-notification-title {
+	margin-top: 0;
+	color: #225591;
+}
+
+.access-denied-icon {
+	padding-right: 8px;
+	padding-right: 0.5rem;
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width: 768px) {
+	.access-notifcation-container {
+		width: 66%;
+		margin-top: 48px;
+		margin-top: 3rem;
+	}
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width: 992px) {
+	.access-notifcation-container {
+		width: 40%;
+		margin-top: 96px;
+		margin-top: 6rem;
+	}
+}
+
+/* Give anything that doesn't support MQs the desktop view */
+.no-mq .access-notifcation-container {
+	width: 33%;
+	margin-top: 96px;
+	margin-top: 6rem;
+}

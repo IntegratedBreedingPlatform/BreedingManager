@@ -1,10 +1,6 @@
 package org.generationcp.breeding.manager.listimport;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.annotation.Resource;
-
+import com.vaadin.ui.Component;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -19,7 +15,9 @@ import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Component;
+import javax.annotation.Resource;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 @Configurable
 public class GermplasmListTemplateDownloader {
@@ -46,10 +44,10 @@ public class GermplasmListTemplateDownloader {
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	public void exportGermplasmTemplate(Component component) throws FileDownloadException {
+	public void exportGermplasmTemplate(final Component component) throws FileDownloadException {
 		try {
 
-			final String temporaryFilePath = installationDirectoryUtil
+			final String temporaryFilePath = this.installationDirectoryUtil
 					.getFileInTemporaryDirectoryForProjectAndTool(EXPANDED_TEMPLATE_FILE, this.contextUtil.getProjectInContext(),
 							ToolName.BM_LIST_MANAGER_MAIN);
 
@@ -61,7 +59,7 @@ public class GermplasmListTemplateDownloader {
 
 			this.fileDownloaderUtility.initiateFileDownload(temporaryFilePath, EXPANDED_TEMPLATE_FILE, component);
 
-		} catch (IOException | InvalidFormatException e) {
+		} catch (final IOException | InvalidFormatException e) {
 			throw new FileDownloadException(this.messageSource.getMessage(Message.ERROR_IN_GERMPLASMLIST_TEMPLATE_DOWNLOAD), e);
 		}
 	}
@@ -92,7 +90,7 @@ public class GermplasmListTemplateDownloader {
 
 	class FileDownloadException extends Exception {
 
-		public FileDownloadException(String message, Exception e) {
+		public FileDownloadException(final String message, final Exception e) {
 			super(message, e);
 		}
 
