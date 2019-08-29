@@ -23,6 +23,7 @@ import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -470,6 +471,7 @@ public class GermplasmListTreeUtilTest {
 		Mockito.verify(this.source).refreshRemoteTree();
 	}
 
+	@Ignore // FIXME IBP-2634
 	@Test
 	public void testAddFolderToTreeWhenParentListIsValidFolder() {
 		this.setUpTestFolder(FOLDER_ID);
