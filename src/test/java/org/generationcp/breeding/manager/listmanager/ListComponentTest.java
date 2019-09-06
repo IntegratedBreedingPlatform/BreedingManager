@@ -346,7 +346,7 @@ public class ListComponentTest {
 		Assert.assertEquals(
 			"Locked List",
 			this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getStatusValueLabel().toString());
-		Mockito.verify(fillWith).setContextMenuEnabled(listComponent.getListDataTable(), false);
+		Mockito.verify(fillWith).setContextMenuEnabled(this.listComponent.getListDataTable(), false);
 	}
 
 	@Test
@@ -376,7 +376,7 @@ public class ListComponentTest {
 		Assert.assertEquals(
 			"Unlocked List",
 			this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getStatusValueLabel().toString());
-		Mockito.verify(fillWith).setContextMenuEnabled(listComponent.getListDataTable(), true);
+		Mockito.verify(fillWith).setContextMenuEnabled(this.listComponent.getListDataTable(), true);
 	}
 
 	@Test
@@ -414,7 +414,7 @@ public class ListComponentTest {
 		this.listComponent.setPersistedReservationToCancel(lotDetailsGid);
 		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
 		this.listComponent.getReserveInventoryAction().setContextUtil(contextUtil);
-		this.listComponent.getReserveInventoryAction().setUserService(userService);
+		this.listComponent.getReserveInventoryAction().setUserService(this.userService);
 		this.listComponent.getReserveInventoryAction().setInventoryDataManager(this.inventoryDataManager);
 		this.listComponent.getListInventoryTable().setInventoryDataManager(this.inventoryDataManager);
 		this.listComponent.setListInventoryTable(this.listManagerInventoryTable);
@@ -1047,7 +1047,7 @@ public class ListComponentTest {
 		Assert.assertFalse(this.listComponent.getLockButton().isVisible());
 		Assert.assertTrue(this.listComponent.getUnlockButton().isVisible());
 		Assert.assertFalse(this.listComponent.getEditHeaderButton().isVisible());
-		Mockito.verify(fillWith).setContextMenuEnabled(listComponent.getListDataTable(), false);
+		Mockito.verify(fillWith).setContextMenuEnabled(this.listComponent.getListDataTable(), false);
 	}
 
 	@Test
@@ -1068,7 +1068,7 @@ public class ListComponentTest {
 		Assert.assertTrue(this.listComponent.getLockButton().isVisible());
 		Assert.assertFalse(this.listComponent.getUnlockButton().isVisible());
 		Assert.assertTrue(this.listComponent.getEditHeaderButton().isVisible());
-		Mockito.verify(fillWith).setContextMenuEnabled(listComponent.getListDataTable(), true);
+		Mockito.verify(fillWith).setContextMenuEnabled(this.listComponent.getListDataTable(), true);
 	}
 
 	@Test

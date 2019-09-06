@@ -660,7 +660,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 				ListBuilderComponent.this.viewListHeaderWindow =
 						new ViewListHeaderWindow(ListBuilderComponent.this.currentlySavedGermplasmList,
-								userService.getAllUserIDFullNameMap(),
+							ListBuilderComponent.this.userService.getAllUserIDFullNameMap(),
 								ListBuilderComponent.this.germplasmListManager.getGermplasmListTypes());
 				ListBuilderComponent.this.getWindow().addWindow(ListBuilderComponent.this.viewListHeaderWindow);
 			}
@@ -760,7 +760,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.viewHeaderButton.setVisible(true);
 
 		this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
-				userService.getAllUserIDFullNameMap(), this.germplasmListManager.getGermplasmListTypes());
+			this.userService.getAllUserIDFullNameMap(), this.germplasmListManager.getGermplasmListTypes());
 		this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 
 		this.saveButton.setEnabled(false);
@@ -960,7 +960,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		final Collection<? extends Integer> selectedIdsToDelete =
 				(Collection<? extends Integer>) this.tableWithSelectAllLayout.getTable().getValue();
 		if (!selectedIdsToDelete.isEmpty()) {
-			ConfirmDialog.show(ListBuilderComponent.this.getWindow(), this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES),
+			ConfirmDialog.show(
+				this.getWindow(), this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES),
 					this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_FROM_THE_LIST_CONFIRM), this.messageSource.getMessage(Message.YES),
 					this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
