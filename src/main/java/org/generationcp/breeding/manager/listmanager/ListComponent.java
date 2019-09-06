@@ -2016,8 +2016,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}
 
-	public void changeToListView() {
-		if (this.listInventoryTable.isVisible()) {
+	void changeToListView() {
+		final String inventoryLabel = this.messageSource.getMessage(Message.INVENTORY);
+		if (inventoryLabel.equals(this.topLabel.getValue().toString())) {
 			this.getListDataTableWithSelectAll().setVisible(true);
 			this.listInventoryTable.setVisible(false);
 			this.toolsMenuContainer.addComponent(this.actionsButton);
@@ -2030,8 +2031,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}
 
-	public void changeToInventoryView() {
-		if (this.getListDataTableWithSelectAll().isVisible()) {
+	void changeToInventoryView() {
+		final String listEntriesLabel = this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL);
+		if (listEntriesLabel.equals(this.topLabel.getValue().toString())) {
 			this.getListDataTableWithSelectAll().setVisible(false);
 			this.listInventoryTable.setVisible(true);
 			this.toolsMenuContainer.removeComponent(this.actionsButton);
@@ -2665,5 +2667,21 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 	public Boolean listHasAddedColumns() {
 		return this.addColumnContextMenu.hasAddedColumn(this.listDataTable, this.attributeAndNameTypeColumns);
+	}
+
+	void setTopLabel(final Label topLabel) {
+		this.topLabel = topLabel;
+	}
+
+	void setToolsMenuContainer(final HorizontalLayout toolsMenuContainer) {
+		this.toolsMenuContainer = toolsMenuContainer;
+	}
+
+	void setTotalListEntriesLabel(final Label totalListEntriesLabel) {
+		this.totalListEntriesLabel = totalListEntriesLabel;
+	}
+
+	void setTotalSelectedListEntriesLabel(final Label totalSelectedListEntriesLabel) {
+		this.totalSelectedListEntriesLabel = totalSelectedListEntriesLabel;
 	}
 }

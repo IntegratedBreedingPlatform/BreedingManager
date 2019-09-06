@@ -1496,8 +1496,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
-	public void changeToListView() {
-		if (this.listInventoryTable.isVisible()) {
+	void changeToListView() {
+		final String inventoryLabel = this.messageSource.getMessage(Message.INVENTORY);
+		if (inventoryLabel.equals(this.topLabel.getValue().toString())) {
 			this.tableWithSelectAllLayout.setVisible(true);
 			this.listInventoryTable.setVisible(false);
 
@@ -1511,8 +1512,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
-	public void changeToInventoryView() {
-		if (this.tableWithSelectAllLayout.isVisible()) {
+	void changeToInventoryView() {
+		final String listEntriesLabel = this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL);
+		if (listEntriesLabel.equals(this.topLabel.getValue().toString())) {
 			this.tableWithSelectAllLayout.setVisible(false);
 			this.listInventoryTable.setVisible(true);
 			this.toolsButtonContainer.removeComponent(this.toolsButton);
@@ -2163,6 +2165,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public Boolean listHasAddedColumns() {
 		return this.addColumnContextMenu.hasAddedColumn(this.listDataTable, this.attributeAndNameTypeColumns);
+	}
+
+	void setTopLabel(final Label topLabel) {
+		this.topLabel = topLabel;
+	}
+
+	void setToolsButtonContainer(final AbsoluteLayout toolsButtonContainer) {
+		this.toolsButtonContainer = toolsButtonContainer;
 	}
 
 }

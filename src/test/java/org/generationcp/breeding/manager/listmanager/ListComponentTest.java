@@ -14,9 +14,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.ControllableRefreshTable;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
@@ -56,6 +59,7 @@ import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.service.api.user.UserService;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,8 +78,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
-
-import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListComponentTest {
@@ -98,6 +100,8 @@ public class ListComponentTest {
 	private static final String UPDATED_GERMPLASM_LIST_TYPE = "F1 LST";
 	private static final Integer TEST_GERMPLASM_LIST_ID = 111;
 	private static final Integer TEST_GERMPLASM_NO_OF_ENTRIES = 5;
+	private static final String INVENTORY_VIEW = "Inventory View";
+	private static final String LIST_ENTRIES_VIEW = "List Entries View";
 
 	@Mock
 	private ListManagerMain source;
@@ -666,6 +670,16 @@ public class ListComponentTest {
 		this.listComponent.setParent(this.parentComponent);
 		this.listComponent.setCloseLotDiscardInventoryAction(this.closeLotDiscardInventoryAction);
 
+		final TableWithSelectAllLayout tableWithSelectAllLayout = Mockito.mock(TableWithSelectAllLayout.class);
+		final ControllableRefreshTable table = Mockito.mock(ControllableRefreshTable.class);
+		Mockito.when(tableWithSelectAllLayout.getTable()).thenReturn(table);
+		Mockito.when(table.getValue()).thenReturn(new ArrayList<>());
+		this.listComponent.setListDataTableWithSelectAll(tableWithSelectAllLayout);
+		this.listComponent.setToolsMenuContainer(Mockito.mock(HorizontalLayout.class));
+		this.listComponent.setListDataTable(new Table());
+		this.listComponent.setTotalListEntriesLabel(new Label());
+		this.listComponent.setTotalSelectedListEntriesLabel(new Label());
+
 		Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(ListComponentTest.TEST_GERMPLASM_LIST_ID))
 			.thenReturn(Long.valueOf(ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES));
 		Mockito.when(this.germplasmListManager.getGermplasmListById(ListComponentTest.TEST_GERMPLASM_LIST_ID))
@@ -680,6 +694,9 @@ public class ListComponentTest {
 		Mockito.when(this.messageSource.getMessage(Matchers.any(Message.class))).thenReturn("");
 		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn(ListComponentTest.CHECK);
 		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn(ListComponentTest.HASH);
+		Mockito.doReturn(INVENTORY_VIEW).when(this.messageSource).getMessage(Message.INVENTORY);
+		Mockito.doReturn(LIST_ENTRIES_VIEW).when(this.messageSource).getMessage(Message.LIST_ENTRIES_LABEL);
+
 
 		Mockito.doNothing().when(this.contextUtil).logProgramActivity(Matchers.anyString(), Matchers.anyString());
 
@@ -978,6 +995,24 @@ public class ListComponentTest {
 
 		Mockito.verify(this.messageSource).getMessage(Message.CONFIRM_UNFIX_LINES);
 
+	}
+
+	@Test
+	public void testChangeToListView() {
+		final Label topLabel = new Label(INVENTORY_VIEW);
+		this.listComponent.setTopLabel(topLabel);
+		this.listComponent.changeToListView();
+
+		Assert.assertEquals(LIST_ENTRIES_VIEW, topLabel.getValue().toString());
+	}
+
+	@Test
+	public void testChangeToInventoryView() {
+		final Label topLabel = new Label(LIST_ENTRIES_VIEW);
+		this.listComponent.setTopLabel(topLabel);
+		this.listComponent.changeToInventoryView();
+
+		Assert.assertEquals(INVENTORY_VIEW, topLabel.getValue().toString());
 	}
 
 	@Test

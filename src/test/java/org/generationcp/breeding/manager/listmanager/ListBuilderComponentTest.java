@@ -5,11 +5,13 @@ import com.beust.jcommander.internal.Lists;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.ControllableRefreshTable;
 import org.generationcp.breeding.manager.customcomponent.SortableButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
@@ -81,6 +83,8 @@ public class ListBuilderComponentTest {
 	private static final String STOCKID = "STOCKID";
 	private static final String CAPTION = "2";
 	public static final int CURRENT_USER_ID = 1;
+	public static final String INVENTORY_VIEW = "Inventory View";
+	public static final String LIST_ENTRIES_VIEW = "List Entries View";
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
@@ -190,6 +194,20 @@ public class ListBuilderComponentTest {
 		final WorkbenchUser workbenchUser = new WorkbenchTestDataUtil().createTestUserData();
 		when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(CURRENT_USER_ID);
 		when(this.userService.getUserById(CURRENT_USER_ID)).thenReturn(workbenchUser);
+
+		Mockito.when(this.messageSource.getMessage(Message.INVENTORY)).thenReturn(INVENTORY_VIEW);
+		Mockito.when(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL)).thenReturn(LIST_ENTRIES_VIEW);
+
+		this.listBuilderComponent.setToolsButtonContainer(Mockito.mock(AbsoluteLayout.class));
+		final Table listDataTable = Mockito.mock(Table.class);
+		Mockito.when(listDataTable.getValue()).thenReturn(new ArrayList<>());
+		this.listBuilderComponent.setListDataTable(listDataTable);
+		this.listBuilderComponent.setTotalListEntriesLabel(Mockito.mock(Label.class));
+
+		this.listBuilderComponent.setTotalSelectedListEntriesLabel(Mockito.mock(Label.class));
+		this.listBuilderComponent.setBreedingManagerListDetailsComponent(Mockito.mock(BreedingManagerListDetailsComponent.class));
+		this.listBuilderComponent.setDropHandler(Mockito.mock(BuildNewListDropHandler.class));
+		this.listBuilderComponent.setTopLabel(new Label());
 	}
 
 	@Test
@@ -565,7 +583,7 @@ public class ListBuilderComponentTest {
 		this.listBuilderComponent.initializeAddColumnContextMenu();
 		Mockito.verify(this.contextMenu).addListener(Matchers.any(ContextMenu.ClickListener.class));
 	}
-	
+
 	@Test
 	public void testAddAttributeAndNameTypeColumn() {
 		final List<String> attributeAndNameTypes = new ArrayList<>();
@@ -575,7 +593,7 @@ public class ListBuilderComponentTest {
 		Assert.assertFalse(this.listBuilderComponent.getAttributeAndNameTypeColumns().isEmpty());
 		Assert.assertTrue(this.listBuilderComponent.getAttributeAndNameTypeColumns().contains(column));
 	}
-	
+
 	@Test
 	public void testListHasAddedColumns() {
 		final Table table = new Table();
@@ -583,12 +601,48 @@ public class ListBuilderComponentTest {
 		this.listBuilderComponent.setListDataTable(table);
 		this.listBuilderComponent.setAttributeAndNameTypeColumns(attributeAndNameTypes);
 		this.listBuilderComponent.setAddColumnContextMenu(this.addColumnContextMenu);
-		
+
 		Mockito.doReturn(true).when(this.addColumnContextMenu).hasAddedColumn(table, attributeAndNameTypes);
 		Assert.assertTrue(this.listBuilderComponent.listHasAddedColumns());
-		
+
 		Mockito.doReturn(false).when(this.addColumnContextMenu).hasAddedColumn(table, attributeAndNameTypes);
 		Assert.assertFalse(this.listBuilderComponent.listHasAddedColumns());
-		
+
+	}
+
+	@Test
+	public void testChangeToListView() {
+		final Label topLabel = new Label(INVENTORY_VIEW);
+		this.listBuilderComponent.setTopLabel(topLabel);
+		final ListManagerInventoryTable listInventoryTable = Mockito.mock(ListManagerInventoryTable.class);
+		Mockito.when(listInventoryTable.getInventoryTableDropHandler()).thenReturn(Mockito.mock(InventoryTableDropHandler.class));
+		this.listBuilderComponent.setListInventoryTable(listInventoryTable);
+
+		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
+		Mockito.when(source.getModeView()).thenReturn(ModeView.LIST_VIEW);
+		this.listBuilderComponent.setSource(source);
+		this.listBuilderComponent.changeToListView();
+
+		Assert.assertEquals(LIST_ENTRIES_VIEW, topLabel.getValue().toString());
+	}
+
+	@Test
+	public void testChangeToInventoryView() {
+
+		final Label topLabel = new Label(LIST_ENTRIES_VIEW);
+		this.listBuilderComponent.setTopLabel(topLabel);
+		final ListManagerInventoryTable listInventoryTable = Mockito.mock(ListManagerInventoryTable.class);
+		Mockito.when(listInventoryTable.getInventoryTableDropHandler()).thenReturn(Mockito.mock(InventoryTableDropHandler.class));
+		final ControllableRefreshTable refreshTable = Mockito.mock(ControllableRefreshTable.class);
+		Mockito.when(refreshTable.getValue()).thenReturn(new ArrayList<>());
+		Mockito.when(listInventoryTable.getTable()).thenReturn(refreshTable);
+		this.listBuilderComponent.setListInventoryTable(listInventoryTable);
+
+		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
+		Mockito.when(source.getModeView()).thenReturn(ModeView.INVENTORY_VIEW);
+		this.listBuilderComponent.setSource(source);
+		this.listBuilderComponent.changeToInventoryView();
+
+		Assert.assertEquals(INVENTORY_VIEW, topLabel.getValue().toString());
 	}
 }
