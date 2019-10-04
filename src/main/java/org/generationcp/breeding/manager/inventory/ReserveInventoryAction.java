@@ -1,14 +1,5 @@
 package org.generationcp.breeding.manager.inventory;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.Resource;
-
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
@@ -24,6 +15,16 @@ import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.util.CollectionUtils;
+
+import javax.annotation.Resource;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Configurable
 public class ReserveInventoryAction implements Serializable {
@@ -46,33 +47,33 @@ public class ReserveInventoryAction implements Serializable {
 		this.source = source;
 	}
 
-	public void validateReservations(Map<ReservationRowKey, List<ListEntryLotDetails>> reservations, String notes, Boolean commitStatus) {
+	public void validateReservations(final Map<ReservationRowKey, List<ListEntryLotDetails>> reservations, final String notes, final Boolean commitStatus) {
 
 		// reset allocation
-		Map<ListEntryLotDetails, Double> validLotReservations = new HashMap<>();
-		Map<ListEntryLotDetails, Double> invalidLotReservations = new HashMap<>();
+		final Map<ListEntryLotDetails, Double> validLotReservations = new HashMap<>();
+		final Map<ListEntryLotDetails, Double> invalidLotReservations = new HashMap<>();
 
-		Map<Integer, Double> duplicatedLots = this.getTotalReserveAmountPerLot(reservations);
+		final Map<Integer, Double> duplicatedLots = this.getTotalReserveAmountPerLot(reservations);
 
-		List<Integer> checkedLots = new ArrayList<>();
+		final List<Integer> checkedLots = new ArrayList<>();
 
-		for (Map.Entry<ReservationRowKey, List<ListEntryLotDetails>> entry : reservations.entrySet()) {
+		for (final Map.Entry<ReservationRowKey, List<ListEntryLotDetails>> entry : reservations.entrySet()) {
 
-			List<ListEntryLotDetails> lotList = entry.getValue();
-			ReservationRowKey key = entry.getKey();
-			Boolean isPrepareAllSeeds = key.getIsPreapareAllSeeds();
+			final List<ListEntryLotDetails> lotList = entry.getValue();
+			final ReservationRowKey key = entry.getKey();
+			final Boolean isPrepareAllSeeds = key.getIsPreapareAllSeeds();
 
-			for (ListEntryLotDetails lot : lotList) {
+			for (final ListEntryLotDetails lot : lotList) {
 
-				Double availBalance = lot.getAvailableLotBalance();
-				Double amountReserved = isPrepareAllSeeds ? availBalance : key.getAmountToReserve();
+				final Double availBalance = lot.getAvailableLotBalance();
+				final Double amountReserved = isPrepareAllSeeds ? availBalance : key.getAmountToReserve();
 				lot.setCommentOfLot(notes);
 				lot.setTransactionStatus(commitStatus);
 				if (GermplasmInventory.RESERVED.equals(lot.getWithdrawalStatus())) {
 					invalidLotReservations.put(lot, amountReserved);
 				} else if (checkedLots.contains(lot.getLotId())) {
 					// duplicated lots mapped to GID that has multiple entries in list entries
-					Double totalAmountReserved = duplicatedLots.get(lot.getLotId());
+					final Double totalAmountReserved = duplicatedLots.get(lot.getLotId());
 					if (availBalance < totalAmountReserved) {
 						this.removeAllLotfromReservationLists(validLotReservations, invalidLotReservations, lot.getLotId());
 						invalidLotReservations.put(lot, totalAmountReserved);
@@ -92,7 +93,7 @@ public class ReserveInventoryAction implements Serializable {
 		boolean withInvalidReservations = false;
 		if (!invalidLotReservations.isEmpty()) {
 			// if there is an invalid reservation
-			ReservationStatusWindow reservationStatus = new ReservationStatusWindow(invalidLotReservations);
+			final ReservationStatusWindow reservationStatus = new ReservationStatusWindow(invalidLotReservations);
 			reservationStatus.setDebugId("reservationStatus");
 			this.source.addReservationStatusWindow(reservationStatus);
 			withInvalidReservations = true;
@@ -101,13 +102,14 @@ public class ReserveInventoryAction implements Serializable {
 		this.source.updateListInventoryTable(validLotReservations, withInvalidReservations);
 	}
 
-	private void removeAllLotfromReservationLists(Map<ListEntryLotDetails, Double> validLotReservations,
-			Map<ListEntryLotDetails, Double> invalidLotReservations, Integer lotId) {
-		List<ListEntryLotDetails> lotDetails = new ArrayList<>();
+	private void removeAllLotfromReservationLists(
+		final Map<ListEntryLotDetails, Double> validLotReservations,
+			final Map<ListEntryLotDetails, Double> invalidLotReservations, final Integer lotId) {
+		final List<ListEntryLotDetails> lotDetails = new ArrayList<>();
 		lotDetails.addAll(validLotReservations.keySet());
 		lotDetails.addAll(invalidLotReservations.keySet());
 
-		for (ListEntryLotDetails lot : lotDetails) {
+		for (final ListEntryLotDetails lot : lotDetails) {
 			if (Objects.equals(lot.getLotId(), lotId)) {
 				validLotReservations.remove(lot);
 				invalidLotReservations.remove(lot);
@@ -115,19 +117,19 @@ public class ReserveInventoryAction implements Serializable {
 		}
 	}
 
-	private Map<Integer, Double> getTotalReserveAmountPerLot(Map<ReservationRowKey, List<ListEntryLotDetails>> reservations) {
-		Map<Integer, Double> duplicatedLots = new HashMap<>();
+	private Map<Integer, Double> getTotalReserveAmountPerLot(final Map<ReservationRowKey, List<ListEntryLotDetails>> reservations) {
+		final Map<Integer, Double> duplicatedLots = new HashMap<>();
 
-		for (Map.Entry<ReservationRowKey, List<ListEntryLotDetails>> entry : reservations.entrySet()) {
-			List<ListEntryLotDetails> lotList = entry.getValue();
-			ReservationRowKey key = entry.getKey();
-			Double amountReserved = key.getAmountToReserve();
+		for (final Map.Entry<ReservationRowKey, List<ListEntryLotDetails>> entry : reservations.entrySet()) {
+			final List<ListEntryLotDetails> lotList = entry.getValue();
+			final ReservationRowKey key = entry.getKey();
+			final Double amountReserved = key.getAmountToReserve();
 
-			for (ListEntryLotDetails lot : lotList) {
-				Integer lotId = lot.getLotId();
+			for (final ListEntryLotDetails lot : lotList) {
+				final Integer lotId = lot.getLotId();
 				if (duplicatedLots.containsKey(lotId)) {
 					// sum up the reservations
-					Double totalAmount = duplicatedLots.get(lotId) + amountReserved;
+					final Double totalAmount = duplicatedLots.get(lotId) + amountReserved;
 
 					duplicatedLots.remove(lotId);
 					duplicatedLots.put(lotId, totalAmount);
@@ -140,47 +142,55 @@ public class ReserveInventoryAction implements Serializable {
 		return duplicatedLots;
 	}
 
-	public boolean saveReserveTransactions(Map<ListEntryLotDetails, Double> validReservationsToSave, Integer listId) {
-		Map<Integer, Double> availableBalanceMap = this.retrieveLatestAvailableBalance(validReservationsToSave, listId);
-		List<Transaction> reserveTransactionList = new ArrayList<Transaction>();
-		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservationsToSave.entrySet()) {
-			ListEntryLotDetails lotDetail = entry.getKey();
+	public boolean saveReserveTransactions(final Map<ListEntryLotDetails, Double> validReservationsToSave, final Integer listId) {
+		final Map<Integer, Double> availableBalanceMap = this.retrieveLatestAvailableBalance(validReservationsToSave, listId);
+		final List<Transaction> reserveTransactionList = new ArrayList<Transaction>();
+		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservationsToSave.entrySet()) {
+			final ListEntryLotDetails lotDetail = entry.getKey();
 
-			Integer lotId = lotDetail.getLotId();
-			Integer transactionDate = DateUtil.getCurrentDateAsIntegerValue();
+			final Integer lotId = lotDetail.getLotId();
+			final Date transactionDate = DateUtil.getCurrentDate();
 			Integer transacStatus = 0;
 			if (lotDetail.getTransactionStatus()) {
 				transacStatus = 1;
 			}
 
 			// since this is a reserve transaction
-			Double amountToReserve = -1 * entry.getValue();
-			String comments = lotDetail.getCommentOfLot();
-			String sourceType = "LIST";
-			Integer lrecId = lotDetail.getId();
+			final Double amountToReserve = -1 * entry.getValue();
+			final String comments = lotDetail.getCommentOfLot();
+			final String sourceType = "LIST";
+			final Integer lrecId = lotDetail.getId();
 
-			Double prevAmount = 0D;
+			final Double prevAmount = 0D;
 			final WorkbenchUser workbenchUser = this.userService.getUserById(this.contextUtil.getCurrentWorkbenchUserId());
 
-			Double availableBalance = availableBalanceMap.get(lotId);
-			Double reservationAmount = entry.getValue();
+			final Double availableBalance = availableBalanceMap.get(lotId);
+			final Double reservationAmount = entry.getValue();
 
 			if (availableBalance <= 0.0 || reservationAmount > availableBalance) {
 				return false;
 			}
 
-			Transaction reserveTransaction = new Transaction();
+			final Transaction reserveTransaction = new Transaction();
 
 			reserveTransaction.setUserId(workbenchUser.getUserid());
 
-			Lot lot = new Lot(lotId);
+			final Lot lot = new Lot(lotId);
 			reserveTransaction.setLot(lot);
 
 			reserveTransaction.setTransactionDate(transactionDate);
 			reserveTransaction.setStatus(transacStatus);
 			reserveTransaction.setQuantity(amountToReserve);
 			reserveTransaction.setComments(comments);
-			reserveTransaction.setCommitmentDate(transactionDate);
+
+			final Calendar calendar = Calendar.getInstance();
+			calendar.setTime(transactionDate);
+			final Integer year = calendar.get(Calendar.YEAR);
+			final Integer month = calendar.get(Calendar.MONTH) + 1;
+			final Integer day = calendar.get(Calendar.DAY_OF_MONTH);
+			final String dateString = year.toString() + month.toString() + day.toString();
+
+			reserveTransaction.setCommitmentDate(Integer.valueOf(dateString));
 			reserveTransaction.setSourceType(sourceType);
 			reserveTransaction.setSourceId(listId);
 			reserveTransaction.setSourceRecordId(lrecId);
@@ -193,15 +203,16 @@ public class ReserveInventoryAction implements Serializable {
 		return true;
 	}
 
-	private Map<Integer, Double> retrieveLatestAvailableBalance(Map<ListEntryLotDetails, Double> validReservationsToSave, Integer listId) {
-		Map<Integer, Double> availableBalanceMap = new HashMap<>();
+	private Map<Integer, Double> retrieveLatestAvailableBalance(
+		final Map<ListEntryLotDetails, Double> validReservationsToSave, final Integer listId) {
+		final Map<Integer, Double> availableBalanceMap = new HashMap<>();
 
 		if(!CollectionUtils.isEmpty(validReservationsToSave)) {
 
 			final List<GermplasmListData> inventoryData = this.inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
 
 			if (!CollectionUtils.isEmpty(inventoryData)) {
-				for (GermplasmListData germplasmListData : inventoryData) {
+				for (final GermplasmListData germplasmListData : inventoryData) {
 
 					final ListDataInventory listDataInventory = germplasmListData.getInventoryInfo();
 					final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
@@ -211,7 +222,7 @@ public class ReserveInventoryAction implements Serializable {
 							if(ListDataInventory.RESERVED.equals(lotDetail.getWithdrawalStatus())){
 								availableBalanceMap.put(lotDetail.getLotId(), 0.0);
 							} else {
-								Double totalAvailableBalance = lotDetail.getAvailableLotBalance();
+								final Double totalAvailableBalance = lotDetail.getAvailableLotBalance();
 								availableBalanceMap.put(lotDetail.getLotId(), totalAvailableBalance);
 							}
 
@@ -224,11 +235,11 @@ public class ReserveInventoryAction implements Serializable {
 		return availableBalanceMap;
 	}
 
-	private List<ReservedInventoryKey> getLotIdAndLrecId(List<ListEntryLotDetails> listEntries) {
-		List<ReservedInventoryKey> lrecIds = new ArrayList<ReservedInventoryKey>();
+	private List<ReservedInventoryKey> getLotIdAndLrecId(final List<ListEntryLotDetails> listEntries) {
+		final List<ReservedInventoryKey> lrecIds = new ArrayList<ReservedInventoryKey>();
 		int id = 1;
-		for (ListEntryLotDetails lotDetail : listEntries) {
-			ReservedInventoryKey key = new ReservedInventoryKey(id, lotDetail.getId(), lotDetail.getLotId());
+		for (final ListEntryLotDetails lotDetail : listEntries) {
+			final ReservedInventoryKey key = new ReservedInventoryKey(id, lotDetail.getId(), lotDetail.getLotId());
 			if (!lrecIds.contains(key)) {
 				lrecIds.add(key);
 				id++;

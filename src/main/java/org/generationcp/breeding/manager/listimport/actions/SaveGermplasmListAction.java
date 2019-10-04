@@ -1,18 +1,6 @@
 
 package org.generationcp.breeding.manager.listimport.actions;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
@@ -45,6 +33,17 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.annotation.Resource;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 @Configurable
 public class SaveGermplasmListAction implements Serializable, InitializingBean {
@@ -517,12 +516,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				this.gidTransactionSetMap.put(gid, new ArrayList<Transaction>());
 			}
 
-			final Integer intDate = DateUtil.getCurrentDateAsIntegerValue();
+			final Date currentDate = DateUtil.getCurrentDate();
 
 			final WorkbenchUser workbenchUser = this.contextUtil.getCurrentWorkbenchUser();
 
 			final Transaction transaction =
-					new Transaction(null, workbenchUser.getUserid(), this.gidLotMap.get(gid), intDate, TransactionStatus.DEPOSITED.getIntValue(),
+					new Transaction(null, workbenchUser.getUserid(), this.gidLotMap.get(gid), currentDate, TransactionStatus.DEPOSITED.getIntValue(),
 							importedGermplasm.getSeedAmount(), SaveGermplasmListAction.INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId,
 							Double.valueOf(0), workbenchUser.getPerson().getId(), importedGermplasm.getInventoryId());
 			if (importedGermplasm.getSeedAmount() != null) {
