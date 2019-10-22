@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
@@ -86,11 +87,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	// Lot related variables
 	private Integer seedAmountScaleId;
 
-	private final Map<Integer, Lot> gidLotMap;
+	private final Map<Integer, List<Lot>> gidLotMap;
+	private final Map<Integer, List<Lot>> gidLotMapClone;
 	private final Map<Integer, List<Transaction>> gidTransactionSetMap;
 
 	public SaveGermplasmListAction() {
 		this.gidLotMap = new HashMap<>();
+		this.gidLotMapClone = new HashMap<>();
 		this.gidTransactionSetMap = new HashMap<>();
 	}
 
@@ -175,15 +178,16 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 			@Override
 			protected void doInTransactionWithoutResult(final org.springframework.transaction.TransactionStatus status) {
-				for (final Map.Entry<Integer, Lot> item : SaveGermplasmListAction.this.gidLotMap.entrySet()) {
+				for (final Map.Entry<Integer, List<Lot>> item : SaveGermplasmListAction.this.gidLotMapClone.entrySet()) {
 					final Integer gid = item.getKey();
 					final List<Transaction> listOfTransactions = SaveGermplasmListAction.this.gidTransactionSetMap.get(gid);
 					if (listOfTransactions == null || listOfTransactions.isEmpty()) {
 						continue;
 					}
-					final Lot lot = item.getValue();
 
-					SaveGermplasmListAction.this.inventoryDataManager.addLot(lot);
+					for (final Lot lot : item.getValue()) {
+						SaveGermplasmListAction.this.inventoryDataManager.addLot(lot);
+					}
 
 					SaveGermplasmListAction.this.inventoryDataManager.addTransactions(listOfTransactions);
 				}
@@ -249,7 +253,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			if (this.seedAmountScaleId != null) {
 				final Lot lot = new Lot(null, this.contextUtil.getCurrentWorkbenchUserId(), EntityType.GERMPLSM.name(), finalGid,
 						seedStorageLocation, this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
-				this.gidLotMap.put(finalGid, lot);
+				if (this.gidLotMap.get(finalGid) == null) {
+					this.gidLotMap.put(finalGid, new ArrayList<Lot>());
+					this.gidLotMapClone.put(finalGid, new ArrayList<Lot>());
+				}
+
+				this.gidLotMap.get(finalGid).add(lot);
+				this.gidLotMapClone.get(finalGid).add(lot);
 			}
 		}
 	}
@@ -520,12 +530,17 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 			final WorkbenchUser workbenchUser = this.contextUtil.getCurrentWorkbenchUser();
 
-			final Transaction transaction =
-					new Transaction(null, workbenchUser.getUserid(), this.gidLotMap.get(gid), currentDate, TransactionStatus.DEPOSITED.getIntValue(),
-							importedGermplasm.getSeedAmount(), SaveGermplasmListAction.INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId,
-							Double.valueOf(0), workbenchUser.getPerson().getId(), importedGermplasm.getInventoryId());
-			if (importedGermplasm.getSeedAmount() != null) {
-				this.gidTransactionSetMap.get(gid).add(transaction);
+			final List<Lot> lots = this.gidLotMap.get(gid);
+			if(!CollectionUtils.isEmpty(lots)) {
+				final Lot lot = lots.remove(0);
+
+				final Transaction transaction =
+					new Transaction(null, workbenchUser.getUserid(), lot, currentDate, TransactionStatus.DEPOSITED.getIntValue(),
+						importedGermplasm.getSeedAmount(), SaveGermplasmListAction.INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId,
+						Double.valueOf(0), workbenchUser.getPerson().getId(), importedGermplasm.getInventoryId());
+				if (importedGermplasm.getSeedAmount() != null) {
+					this.gidTransactionSetMap.get(gid).add(transaction);
+				}
 			}
 		}
 	}
@@ -632,7 +647,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return germplasmListData;
 	}
 
-	public Map<Integer, Lot> getGidLotMap() {
+	public Map<Integer, List<Lot>> getGidLotMap() {
 		return this.gidLotMap;
 	}
 
@@ -644,4 +659,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.seedAmountScaleId = seedAmountScaleId;
 	}
 
+	public Map<Integer, List<Lot>> getGidLotMapClone() {
+		return this.gidLotMapClone;
+	}
 }
