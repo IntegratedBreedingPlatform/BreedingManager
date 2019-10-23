@@ -185,8 +185,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 						continue;
 					}
 
-					for (final Lot lot : item.getValue()) {
-						SaveGermplasmListAction.this.inventoryDataManager.addLot(lot);
+					for (final Transaction trx: listOfTransactions ) {
+						SaveGermplasmListAction.this.inventoryDataManager.addLot(trx.getLot());
 					}
 
 					SaveGermplasmListAction.this.inventoryDataManager.addTransactions(listOfTransactions);
@@ -518,8 +518,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return namesMap;
 	}
 
-	protected void createDepositInventoryTransaction(final GermplasmList list, final ImportedGermplasm importedGermplasm, final Integer gid,
-			final Integer lrecId) {
+	protected void createDepositInventoryTransaction(
+		final GermplasmList list, final ImportedGermplasm importedGermplasm, final Integer gid,
+		final Integer lrecId) {
 		if (importedGermplasm != null && importedGermplasm.getSeedAmount() != null && importedGermplasm.getSeedAmount() > 0) {
 
 			if (this.gidTransactionSetMap.get(gid) == null) {
@@ -531,7 +532,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			final WorkbenchUser workbenchUser = this.contextUtil.getCurrentWorkbenchUser();
 
 			final List<Lot> lots = this.gidLotMap.get(gid);
-			if(!CollectionUtils.isEmpty(lots)) {
+			if (!CollectionUtils.isEmpty(lots)) {
 				final Lot lot = lots.remove(0);
 
 				final Transaction transaction =
@@ -543,6 +544,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				}
 			}
 		}
+
 	}
 
 	private List<Attribute> prepareAllAttributesToAdd(final ImportedGermplasm importedGermplasm,
