@@ -196,7 +196,10 @@ public class SaveGermplasmListActionTest {
 		this.action.getGidLotMapClone().put(SaveGermplasmListActionTest.TEST_GID, Lists.newArrayList(testLot));
 
 		final List<Transaction> testGidTransactions = new ArrayList<>();
-		testGidTransactions.add(new Transaction());
+
+		final Transaction trx = new Transaction();
+		trx.setLot(testLot);
+		testGidTransactions.add(trx);
 		this.action.getGidTransactionSetMap().put(SaveGermplasmListActionTest.TEST_GID, testGidTransactions);
 
 		this.action.saveInventory();
