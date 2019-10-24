@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.listimport.actions;
 
+import com.google.common.collect.Lists;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
@@ -191,10 +192,14 @@ public class SaveGermplasmListActionTest {
 	public void testSaveInventory() {
 
 		final Lot testLot = new Lot();
-		this.action.getGidLotMap().put(SaveGermplasmListActionTest.TEST_GID, testLot);
+		this.action.getGidLotMap().put(SaveGermplasmListActionTest.TEST_GID, Lists.newArrayList(testLot));
+		this.action.getGidLotMapClone().put(SaveGermplasmListActionTest.TEST_GID, Lists.newArrayList(testLot));
 
 		final List<Transaction> testGidTransactions = new ArrayList<>();
-		testGidTransactions.add(new Transaction());
+
+		final Transaction trx = new Transaction();
+		trx.setLot(testLot);
+		testGidTransactions.add(trx);
 		this.action.getGidTransactionSetMap().put(SaveGermplasmListActionTest.TEST_GID, testGidTransactions);
 
 		this.action.saveInventory();
@@ -209,7 +214,7 @@ public class SaveGermplasmListActionTest {
 	public void testSaveInventoryWithEmptyTransaction() {
 
 		final Lot testLot = new Lot();
-		this.action.getGidLotMap().put(SaveGermplasmListActionTest.TEST_GID, testLot);
+		this.action.getGidLotMap().put(SaveGermplasmListActionTest.TEST_GID, Lists.newArrayList(testLot));
 
 		// Create an empty Transaction list
 		final List<Transaction> testGidTransactions = new ArrayList<>();
@@ -397,13 +402,14 @@ public class SaveGermplasmListActionTest {
 		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, new ArrayList<Integer>(),
 				SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
 
-		final Map<Integer, Lot> gidLotMap = this.action.getGidLotMap();
+		final Map<Integer, List<Lot>> gidLotMap = this.action.getGidLotMap();
 		Assert.assertNotNull(gidLotMap);
 		Assert.assertEquals(SaveGermplasmListActionTest.NO_OF_ENTRIES, gidLotMap.size());
-		for (final Entry<Integer, Lot> entry : gidLotMap.entrySet()) {
+		for (final Entry<Integer, List<Lot>> entry : gidLotMap.entrySet()) {
 			// check that the entity IDS of the lots created are for dummy GIDS of created germplasm
 			final Integer gid = entry.getKey();
-			final Lot lot = entry.getValue();
+			final List<Lot> lots = entry.getValue();
+			final Lot lot = lots.get(0);
 			Assert.assertEquals(gid, lot.getEntityId());
 			// Check that GID used for lots is the one generated from Middleware mock when germplasm was added
 			Assert.assertTrue(gid > 100);
@@ -423,12 +429,13 @@ public class SaveGermplasmListActionTest {
 		// Method to test
 		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, matchedGids, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
 
-		final Map<Integer, Lot> gidLotMap = this.action.getGidLotMap();
+		final Map<Integer, List<Lot>> gidLotMap = this.action.getGidLotMap();
 		Assert.assertNotNull(gidLotMap);
 		Assert.assertEquals(SaveGermplasmListActionTest.NO_OF_ENTRIES, gidLotMap.size());
-		for (final Entry<Integer, Lot> entry : gidLotMap.entrySet()) {
+		for (final Entry<Integer, List<Lot>> entry : gidLotMap.entrySet()) {
 			final Integer gid = entry.getKey();
-			final Lot lot = entry.getValue();
+			final List<Lot> lots = entry.getValue();
+			final Lot lot = lots.get(0);
 			Assert.assertEquals(gid, lot.getEntityId());
 			Assert.assertEquals(SaveGermplasmListActionTest.SEED_AMOUNT_SCALE_ID, lot.getScaleId());
 			Assert.assertEquals(EntityType.GERMPLSM.name(), lot.getEntityType());
