@@ -10,6 +10,7 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.ReservedInventoryKey;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.pojos.ims.TransactionStatus;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,9 +151,9 @@ public class ReserveInventoryAction implements Serializable {
 
 			final Integer lotId = lotDetail.getLotId();
 			final Date transactionDate = DateUtil.getCurrentDate();
-			Integer transacStatus = 0;
+			Integer transacStatus = TransactionStatus.ANTICIPATED.getIntValue();
 			if (lotDetail.getTransactionStatus()) {
-				transacStatus = 1;
+				transacStatus =  TransactionStatus.COMMITTED.getIntValue();
 			}
 
 			// since this is a reserve transaction
