@@ -1,24 +1,24 @@
 package org.generationcp.breeding.manager.inventory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import com.beust.jcommander.internal.Lists;
+import com.vaadin.data.Item;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventory;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.InventoryDetailsTestDataInitializer;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.pojos.ims.TransactionType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,13 +28,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
-
-import com.beust.jcommander.internal.Lists;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SeedInventoryImportStatusWindowTest {
@@ -54,7 +53,7 @@ public class SeedInventoryImportStatusWindowTest {
 	@Before
 	public void setUp() {
 		Mockito.when(messageSource.getMessage(Message.TRANSACTION_ID)).thenReturn("TransactionId");
-		Mockito.when(messageSource.getMessage(Message.WITHDRAWAL)).thenReturn("Withdrawal");
+		Mockito.when(messageSource.getMessage(Message.WITHDRAWAL)).thenReturn(TransactionType.WITHDRAWAL.getValue());
 		Mockito.when(messageSource.getMessage(Message.BALANCE)).thenReturn("Balance");
 		Mockito.when(messageSource.getMessage(Message.IMPORT_PROCESSING_STATUS)).thenReturn("ProcessingStatus");
 		Mockito.when(messageSource.getMessage(Message.HASHTAG)).thenReturn("#");
@@ -87,7 +86,7 @@ public class SeedInventoryImportStatusWindowTest {
 		Assert.assertEquals("Gid", statusTable.getColumnHeader(ColumnLabels.GID.getName()));
 		Assert.assertEquals("LotID", statusTable.getColumnHeader(ColumnLabels.LOT_ID.getName()));
 		Assert.assertEquals("TransactionId", statusTable.getColumnHeader("TransactionId"));
-		Assert.assertEquals("Withdrawal", statusTable.getColumnHeader("Withdrawal"));
+		Assert.assertEquals(TransactionType.WITHDRAWAL.getValue(), statusTable.getColumnHeader(TransactionType.WITHDRAWAL.getValue()));
 		Assert.assertEquals("Balance", statusTable.getColumnHeader("Balance"));
 		Assert.assertEquals("ProcessingStatus", statusTable.getColumnHeader("ProcessingStatus"));
 	}
@@ -116,7 +115,7 @@ public class SeedInventoryImportStatusWindowTest {
 		Assert.assertEquals(28, item.getItemProperty(ColumnLabels.GID.getName()).getValue());
 		Assert.assertEquals(1, item.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
 		Assert.assertEquals("110", item.getItemProperty("TransactionId").getValue());
-		Assert.assertEquals("2.0", item.getItemProperty("Withdrawal").getValue());
+		Assert.assertEquals("2.0", item.getItemProperty(TransactionType.WITHDRAWAL.getValue()).getValue());
 		Assert.assertNull(item.getItemProperty("Balance").getValue());
 		Label label = (Label) item.getItemProperty("ProcessingStatus").getValue();
 		Assert.assertEquals("Processing", label.getValue());
