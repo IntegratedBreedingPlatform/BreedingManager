@@ -27,8 +27,6 @@ import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.ims.TransactionStatus;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
-import org.generationcp.middleware.service.api.LotIDGenerator;
-import org.generationcp.middleware.service.impl.inventory.LotIDGeneratorImpl;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,8 +81,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
-
-	private LotIDGenerator lotIDGenerator;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -258,8 +254,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			if (this.seedAmountScaleId != null) {
 				final Lot lot = new Lot(null, this.contextUtil.getCurrentWorkbenchUserId(), EntityType.GERMPLSM.name(), finalGid,
 						seedStorageLocation, this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
-				this.lotIDGenerator = new LotIDGeneratorImpl();
-				this.lotIDGenerator.generateLotIds(this.contextUtil.getProjectInContext().getCropType(), Lists.newArrayList(lot));
+				this.inventoryDataManager.generateLotIds(this.contextUtil.getProjectInContext().getCropType(), Lists.newArrayList(lot));
 				if (this.gidLotMap.get(finalGid) == null) {
 					this.gidLotMap.put(finalGid, new ArrayList<Lot>());
 					this.gidLotMapClone.put(finalGid, new ArrayList<Lot>());
