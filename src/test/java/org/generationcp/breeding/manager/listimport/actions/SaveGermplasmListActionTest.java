@@ -22,6 +22,8 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.ims.EntityType;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.pojos.workbench.CropType;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.service.api.user.UserService;
 import org.generationcp.middleware.util.Util;
 import org.junit.Assert;
@@ -83,6 +85,12 @@ public class SaveGermplasmListActionTest {
 	@Mock
 	private UserService userService;
 
+	@Mock
+	private CropType cropType;
+
+	@Mock
+	private Project project;
+
 	@Captor
 	private ArgumentCaptor<List<UserDefinedField>> userDefinedFieldsCaptor;
 
@@ -117,7 +125,6 @@ public class SaveGermplasmListActionTest {
 		for (int i = 1; i <= SaveGermplasmListActionTest.NO_OF_ENTRIES; i++) {
 			Mockito.doReturn(GermplasmTestDataInitializer.createGermplasm(i)).when(this.germplasmManager).getGermplasmByGID(i);
 		}
-
 	}
 
 	@Test
@@ -397,7 +404,8 @@ public class SaveGermplasmListActionTest {
 
 		Mockito.when(this.germplasmManager.addGermplasm(Matchers.any(Germplasm.class), Matchers.any(Name.class))).thenReturn(101, 102, 103,
 				104, 105, 106, 107, 108, 109, 110);
-
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(this.project);
+		Mockito.when(this.contextUtil.getProjectInContext().getCropType()).thenReturn(this.cropType);
 		// Method to test
 		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, new ArrayList<Integer>(),
 				SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
@@ -418,6 +426,8 @@ public class SaveGermplasmListActionTest {
 
 	@Test
 	public void testProcessGermplasmNamesAndLotsForExistingGermplasmAddingInventory() {
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(this.project);
+		Mockito.when(this.contextUtil.getProjectInContext().getCropType()).thenReturn(this.cropType);
 		// Indicate that inventory is present
 		this.action.setSeedAmountScaleId(SaveGermplasmListActionTest.SEED_AMOUNT_SCALE_ID);
 		// Set existing GIDs as "finalized" (or flagged as real GIDs in DB versus just a temporary GID)

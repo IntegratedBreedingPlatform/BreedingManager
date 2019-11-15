@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.listimport.actions;
 
+import com.google.common.collect.Lists;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
@@ -253,6 +254,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			if (this.seedAmountScaleId != null) {
 				final Lot lot = new Lot(null, this.contextUtil.getCurrentWorkbenchUserId(), EntityType.GERMPLSM.name(), finalGid,
 						seedStorageLocation, this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
+				this.inventoryDataManager.generateLotIds(this.contextUtil.getProjectInContext().getCropType(), Lists.newArrayList(lot));
 				if (this.gidLotMap.get(finalGid) == null) {
 					this.gidLotMap.put(finalGid, new ArrayList<Lot>());
 					this.gidLotMapClone.put(finalGid, new ArrayList<Lot>());
