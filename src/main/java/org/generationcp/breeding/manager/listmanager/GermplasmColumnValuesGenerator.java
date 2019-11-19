@@ -164,9 +164,8 @@ public class GermplasmColumnValuesGenerator {
 			for (final Object itemId : itemIds) {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 				final Germplasm germplasm = germplasmMap.get(gid);
-
-				if (germplasm != null && germplasm.getGnpgs() >= 2 && germplasm.getGpid2() != null) {
-					final String maleParent = germplasm.getGpid2().equals(0)? Name.UNKNOWN : germplasm.getGpid2().toString(); 
+				if (germplasm != null && (germplasm.getGnpgs() >= 2 || germplasm.getGnpgs()== -1) && germplasm.getGpid2() != null) {
+					final String maleParent = germplasm.getGpid2().equals(0)? Name.UNKNOWN : germplasm.getGpid2().toString();
 					this.fillColumnSource.setColumnValueForItem(itemId, columnName, maleParent);
 				} else {
 					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
@@ -204,8 +203,7 @@ public class GermplasmColumnValuesGenerator {
 			for (final Object itemId : itemIds) {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 				final Germplasm germplasm = germplasmMap.get(gid);
-
-				if (germplasm != null && germplasm.getGnpgs() >= 2 && germplasm.getGpid2() != null) {
+				if (germplasm != null && (germplasm.getGnpgs() >= 2 || germplasm.getGnpgs() == -1) && germplasm.getGpid2() != null) {
 					gidsToUseForQuery.add(germplasm.getGpid2());
 					List<Object> itemIdsInMap = gidToItemIdMap.get(germplasm.getGpid2());
 					if (itemIdsInMap == null) {
@@ -247,9 +245,9 @@ public class GermplasmColumnValuesGenerator {
 			for (final Object itemId : itemIds) {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 				final Germplasm germplasm = germplasmMap.get(gid);
-				// get female only if germplasm is created via generative process
+				// get female only if germplasm is created via generative process or derivative process
 				final Integer femaleParentId = germplasm.getGpid1();
-				if (germplasm.getGnpgs() >= 2 && femaleParentId != null && femaleParentId != 0) {
+				if ((germplasm.getGnpgs() >= 2 || germplasm.getGnpgs() == -1 ) && femaleParentId != null && femaleParentId != 0) {
 					String value = "-";
 					if (FillWithOption.FILL_WITH_CROSS_FEMALE_GID.equals(option)) {
 						value = femaleParentId.toString();
@@ -332,7 +330,7 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	public void fillWithSequence(final String columnName, final String prefix, final String suffix, final int startNumber,
-			final int numOfZeros, final boolean spaceBetweenPrefixAndCode, final boolean spaceBetweenSuffixAndCode) {
+								 final int numOfZeros, final boolean spaceBetweenPrefixAndCode, final boolean spaceBetweenSuffixAndCode) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		if (!itemIds.isEmpty()) {
 			int number = startNumber;
@@ -457,7 +455,7 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	private void fillColumnsWithPreferredName(final List<Object> itemIds, final Map<Integer, String> gidAndPreferredNameMap,
-			final String columnName) {
+											  final String columnName) {
 		for (final Object itemId : itemIds) {
 
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
