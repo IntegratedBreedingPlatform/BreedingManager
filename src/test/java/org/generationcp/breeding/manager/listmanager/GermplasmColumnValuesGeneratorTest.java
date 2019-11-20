@@ -26,8 +26,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.persistence.Column;
-
 public class GermplasmColumnValuesGeneratorTest {
 
 	private static final List<Integer> ITEMS_LIST = Arrays.asList(1, 2, 3, 4, 5);
@@ -39,9 +37,6 @@ public class GermplasmColumnValuesGeneratorTest {
 
 	@Mock
 	private PedigreeService pedigreeService;
-
-	@Mock
-	private CrossExpansionProperties crossExpansionProperties;
 
 	@Mock
 	private FillColumnSource fillColumnSource;
@@ -641,10 +636,6 @@ public class GermplasmColumnValuesGeneratorTest {
 				.getGermplasms(GermplasmColumnValuesGeneratorTest.GID_LIST);
 		final String columnName = ColumnLabels.PARENTAGE.getName();
 		this.valuesGenerator.setCrossMalePrefNameColumnValues(columnName);
-//		for (final Object itemId : GermplasmColumnValuesGeneratorTest.ITEMS_LIST) {
-//			Mockito.verify(this.fillColumnSource).setColumnValueForItem(itemId, columnName, "-");
-//		}
-
 		for(final Object itemId : parent)  {
 			this.fillColumnSource.setColumnValueForItem(itemId, columnName, "ABCDEFG 1");
 		}
