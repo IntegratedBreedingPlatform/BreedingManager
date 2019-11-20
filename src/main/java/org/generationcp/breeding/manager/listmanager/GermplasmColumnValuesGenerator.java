@@ -4,7 +4,6 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -370,9 +369,9 @@ public class GermplasmColumnValuesGenerator {
 
 			final Map<Integer, String> crossExpansions = this.bulkGeneratePedigreeString(crossExpansionLevel);
 
-			for (final Iterator<Object> i = this.fillColumnSource.getItemIdsToProcess().iterator(); i.hasNext();) {
+			for (Object o : this.fillColumnSource.getItemIdsToProcess()) {
 				// iterate through the table elements' IDs
-				final Integer listDataId = (Integer) i.next();
+				final Integer listDataId = (Integer) o;
 				final Integer gid = this.fillColumnSource.getGidForItemId(listDataId);
 				final String crossExpansion = crossExpansions.get(gid);
 				this.fillColumnSource.setColumnValueForItem(listDataId, columnName, crossExpansion);
@@ -392,7 +391,7 @@ public class GermplasmColumnValuesGenerator {
 
 		for (final List<Integer> partitionedGidList : partition) {
 			final Set<Integer> partitionedGidSet = new HashSet<>(partitionedGidList);
-			crossExpansions.putAll(this.pedigreeService.getCrossExpansions(partitionedGidSet, crossExpansionLevel.intValue(),
+			crossExpansions.putAll(this.pedigreeService.getCrossExpansions(partitionedGidSet, crossExpansionLevel,
 					this.crossExpansionProperties));
 		}
 		return crossExpansions;
@@ -469,10 +468,10 @@ public class GermplasmColumnValuesGenerator {
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		return Maps.uniqueIndex(this.germplasmDataManager.getGermplasms(gids), new Function<Germplasm, Integer>() {
 
-			@Nullable
 			@Override
 			public Integer apply(@Nullable final Germplasm germplasm) {
-				return germplasm.getGid();
+				return germplasm != null ? germplasm.getGid() : 0;
+
 			}
 		});
 	}
