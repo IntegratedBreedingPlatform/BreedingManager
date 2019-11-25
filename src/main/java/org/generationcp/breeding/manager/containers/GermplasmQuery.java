@@ -198,9 +198,9 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), new ObjectProperty<>(germplasm.getMethodCode()));
 		propertyMap.put(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), new ObjectProperty<>(germplasm.getMethodId()));
 		propertyMap.put(ColumnLabels.BREEDING_METHOD_GROUP.getName(), new ObjectProperty<>(germplasm.getMethodGroup()));
-		propertyMap.put(ColumnLabels.CROSS_FEMALE_GID.getName(), new ObjectProperty<>(germplasm.getFemaleParentPreferredID()));
+		propertyMap.put(ColumnLabels.FGID.getName(), new ObjectProperty<>(germplasm.getFemaleParentPreferredID()));
 		propertyMap.put(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getFemaleParentPreferredName()));
-		propertyMap.put(ColumnLabels.CROSS_MALE_GID.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredID()));
+		propertyMap.put(ColumnLabels.MGID.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredID()));
 		propertyMap.put(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getMaleParentPreferredName()));
 		propertyMap.put(ColumnLabels.GROUP_SOURCE_GID.getName(), new ObjectProperty<>(germplasm.getGroupSourceGID()));
 		propertyMap.put(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName(), new ObjectProperty<>(germplasm.getGroupSourcePreferredName()));
