@@ -99,10 +99,6 @@ public class GermplasmSearchLoadedItemsAddColumnSource implements AddColumnSourc
 
 				@Override
 				public Object generateCell(final Table table, final Object o, final Object o1) {
-					System.out.println("table " + table);
-					System.out.println("object " + o);
-					System.out.println("object 1" + o1);
-					System.out.println("value " + table.getItem(o).getItemProperty(o1).getValue());
 					return table.getItem(o).getItemProperty(o1).getValue();
 				}
 			});

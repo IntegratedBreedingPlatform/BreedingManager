@@ -95,11 +95,11 @@ public class AddedColumnsMapperTest {
 				FillWithOption.FILL_WITH_BREEDING_METHOD_NUMBER);
 		Mockito.verify(this.valuesGenerator).setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_GROUP.getName(),
 				FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
-		Mockito.verify(this.valuesGenerator).setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(),
+		Mockito.verify(this.valuesGenerator).setCrossFemaleInfoColumnValues(ColumnLabels.FGID.getName(),
 				FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
 		Mockito.verify(this.valuesGenerator).setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
 				FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
-		Mockito.verify(this.valuesGenerator).setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
+		Mockito.verify(this.valuesGenerator).setCrossMaleGIDColumnValues(ColumnLabels.MGID.getName());
 		Mockito.verify(this.valuesGenerator).setCrossMalePrefNameColumnValues(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
 		Mockito.verify(this.valuesGenerator).setGroupSourceGidColumnValues(ColumnLabels.GROUP_SOURCE_GID.getName());
 		Mockito.verify(this.valuesGenerator).setGroupSourcePreferredNameColumnValues(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName());

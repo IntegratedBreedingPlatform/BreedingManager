@@ -217,9 +217,9 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.BREEDING_METHOD_ABBREVIATION, this.menuFillWithMethodAbbrev);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.BREEDING_METHOD_NUMBER, this.menuFillWithMethodNumber);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.BREEDING_METHOD_GROUP, this.menuFillWithMethodGroup);
-		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.CROSS_FEMALE_GID, this.menuFillWithCrossFemaleGID);
+		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.FGID, this.menuFillWithCrossFemaleGID);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME, this.menuFillWithCrossFemalePrefName);
-		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.CROSS_MALE_GID, this.menuFillWithCrossMaleGID);
+		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.MGID, this.menuFillWithCrossMaleGID);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.CROSS_MALE_PREFERRED_NAME, this.menuFillWithCrossMalePrefName);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.GROUP_SOURCE_GID, this.menuFillWithGroupSourceGID);
 		this.disableMenuItemIfColumnAlreadyExists(table, ColumnLabels.GROUP_SOURCE_PREFERRED_NAME,
@@ -239,7 +239,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		}
 
 		// Disable main "Cross Female Information" menu item if columns were added for all sub-menu items
-		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_FEMALE_GID.getName(), table)
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.FGID.getName(), table)
 				&& AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), table)) {
 			this.menuFillWithCrossFemaleInfo.setEnabled(false);
 		} else {
@@ -247,7 +247,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		}
 
 		// Disable main "Cross Male Information" menu item if columns were added for all sub-menu items
-		if (AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_MALE_GID.getName(), table)
+		if (AddColumnContextMenu.propertyExists(ColumnLabels.MGID.getName(), table)
 				&& AddColumnContextMenu.propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), table)) {
 			this.menuFillWithCrossMaleInfo.setEnabled(false);
 		} else {
