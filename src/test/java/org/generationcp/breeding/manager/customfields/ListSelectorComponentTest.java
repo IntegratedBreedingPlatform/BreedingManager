@@ -19,7 +19,7 @@ import org.generationcp.commons.vaadin.ui.fields.SanitizedTextField;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.GermplasmListMetadata;
+import org.generationcp.middleware.pojos.ListMetadata;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Before;
@@ -160,9 +160,9 @@ public class ListSelectorComponentTest {
 						ListSelectorComponent.BATCH_SIZE)).thenReturn(germplasmListChildren);
 
 		final Integer expectedNoOfEntries = 10;
-		final Map<Integer, GermplasmListMetadata> allListMetaData = new HashMap<>();
+		final Map<Integer, ListMetadata> allListMetaData = new HashMap<>();
 		allListMetaData
-				.put(childGermplasmListId, new GermplasmListMetadata(childGermplasmListId, expectedNoOfEntries, 1));
+				.put(childGermplasmListId, new ListMetadata(childGermplasmListId, 0, expectedNoOfEntries));
 
 		Mockito.when(this.germplasmListManager.getGermplasmListMetadata(germplasmListChildren)).thenReturn(allListMetaData);
 
@@ -342,9 +342,9 @@ public class ListSelectorComponentTest {
 		Mockito.when(this.germplasmListManager.getAllTopLevelLists(ListSelectorComponentTest.PROGRAM_UUID))
 				.thenReturn(germplasmListChildren);
 		final Integer expectedNoOfEntries = 10;
-		final Map<Integer, GermplasmListMetadata> allListMetaData = new HashMap<>();
+		final Map<Integer, ListMetadata> allListMetaData = new HashMap<>();
 		allListMetaData
-				.put(childGermplasmListId, new GermplasmListMetadata(childGermplasmListId, expectedNoOfEntries, 1));
+				.put(childGermplasmListId, new ListMetadata(childGermplasmListId, 0, expectedNoOfEntries));
 		Mockito.when(this.germplasmListManager.getGermplasmListMetadata(germplasmListChildren)).thenReturn(allListMetaData);
 
 		listManagerTreeComponent.createGermplasmList();
@@ -480,7 +480,7 @@ public class ListSelectorComponentTest {
 		final List<GermplasmList> germplasmLists = new ArrayList<>();
 		germplasmLists.add(germplasmList);
 
-		final Map<Integer, GermplasmListMetadata> germplasmListMetaData = this.createGermplasmListMetaData(germplasmList, numberOfEntries);
+		final Map<Integer, ListMetadata> germplasmListMetaData = this.createGermplasmListMetaData(germplasmList, numberOfEntries);
 		this.listSelectorComponent
 			.addGermplasmList(ListSelectorComponent.CROP_LISTS, germplasmList, germplasmListMetaData, this.germplasmListSource,
 				new ArrayList<UserDefinedField>());
@@ -512,7 +512,7 @@ public class ListSelectorComponentTest {
 		final String description = "Test Description";
 		final int numberOfEntries = 999;
 		final GermplasmList germplasmList = this.createGermplasmList(germplasmListId, name, description);
-		final Map<Integer, GermplasmListMetadata> metadataMap = this.createGermplasmListMetaData(germplasmList, numberOfEntries);
+		final Map<Integer, ListMetadata> metadataMap = this.createGermplasmListMetaData(germplasmList, numberOfEntries);
 
 		this.listSelectorComponent
 				.addGermplasmList(parentId, germplasmList, metadataMap, this.germplasmListSource, new ArrayList<UserDefinedField>());
@@ -656,10 +656,10 @@ public class ListSelectorComponentTest {
 		return germplasmList;
 	}
 
-	private Map<Integer, GermplasmListMetadata> createGermplasmListMetaData(final GermplasmList germplasmList,
+	private Map<Integer, ListMetadata> createGermplasmListMetaData(final GermplasmList germplasmList,
 			final Integer numberOfEntries) {
-		final Map<Integer, GermplasmListMetadata> metadataMap = new HashMap<>();
-		final GermplasmListMetadata metadata = new GermplasmListMetadata();
+		final Map<Integer, ListMetadata> metadataMap = new HashMap<>();
+		final ListMetadata metadata = new ListMetadata();
 		metadata.setNumberOfEntries(numberOfEntries);
 		metadataMap.put(germplasmList.getId(), metadata);
 		return metadataMap;
