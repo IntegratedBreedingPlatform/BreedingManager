@@ -667,19 +667,11 @@ public class GermplasmColumnValuesGeneratorTest {
 		for (final Integer gid : GermplasmColumnValuesGeneratorTest.GID_LIST) {
 			final Germplasm germplasm = new Germplasm();
 			germplasm.setGid(gid);
-			if (isDerivative) {
-				germplasm.setGnpgs(-1);
-				germplasm.setGpid1(femaleParent);
-				germplasm.setGpid2(maleParent);
-				germplasm.setFemaleParentPreferredName(String.valueOf(femaleParent));
-				germplasm.setMaleParentPreferredName(String.valueOf(maleParent));
-			} else {
-				germplasm.setGnpgs(2);
-				germplasm.setGpid1(femaleParent);
-				germplasm.setGpid2(maleParent);
-				germplasm.setFemaleParentPreferredName(String.valueOf(femaleParent));
-				germplasm.setMaleParentPreferredName(String.valueOf(maleParent));
-			}
+			germplasm.setGnpgs(isDerivative ? -1 : 2);
+			germplasm.setGpid1(femaleParent);
+			germplasm.setGpid2(maleParent);
+			germplasm.setFemaleParentPreferredName(String.valueOf(femaleParent));
+			germplasm.setMaleParentPreferredName(String.valueOf(maleParent));
 			list.add(germplasm);
 		}
 		return list;
