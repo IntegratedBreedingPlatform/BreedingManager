@@ -286,11 +286,13 @@ public class GermplasmListExporter {
 
 		final Collection<?> columnHeaders = listDataTable.getContainerPropertyIds();
 		final Object[] visibleColumns = listDataTable.getVisibleColumns();
+		final List<String> excludedColumns = this.getExcludedColumn();
 
 		// change the visibleColumns array to list
 		final List<String> visibleColumnList = new ArrayList<>();
 		for (final Object column : visibleColumns) {
-			if (!listDataTable.isColumnCollapsed(column)) {
+			//exclude FGID / MGID from export
+			if (!listDataTable.isColumnCollapsed(column) && !excludedColumns.contains(column)) {
 				visibleColumnList.add(column.toString());
 			}
 		}
@@ -338,6 +340,13 @@ public class GermplasmListExporter {
 		this.addVariableToMap(variableMap, TermId.SEED_AMOUNT_G.getId());
 		this.addVariableToMap(variableMap, TermId.STOCKID.getId());
 		return variableMap;
+	}
+
+	private List<String> getExcludedColumn() {
+    	ArrayList<String> columns = new ArrayList<>();
+		columns.add(ColumnLabels.MGID.getName());
+		columns.add(ColumnLabels.FGID.getName());
+		return columns;
 	}
 
 	protected Map<Integer, Variable> getVariateVariables() {
