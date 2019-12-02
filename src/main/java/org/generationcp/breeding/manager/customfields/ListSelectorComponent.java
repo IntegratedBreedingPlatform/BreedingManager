@@ -941,6 +941,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	void addProgramLevelLists(final GermplasmListSource germplasmListSource, final List<UserDefinedField> listTypes) {
 
 		final List<GermplasmList> programLevelGermplasmLists = this.germplasmListManager.getAllTopLevelLists(this.getCurrentProgramUUID());
+		this.germplasmListManager.populateGermplasmListCreatedByName(programLevelGermplasmLists);
 
 		// Add "Program lists" root folder and its children
 		addGermplasmLists(ListSelectorComponent.PROGRAM_LISTS, programLevelGermplasmLists, listTypes, germplasmListSource);
@@ -950,6 +951,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	void addCropLevelLists(final GermplasmListSource germplasmListSource, final List<UserDefinedField> listTypes) {
 
 		final List<GermplasmList> cropLevelGermplasmLists = this.germplasmListManager.getAllTopLevelLists(null);
+		this.germplasmListManager.populateGermplasmListCreatedByName(cropLevelGermplasmLists);
 
 		// Add "Crop lists" root folder and its children
 		addGermplasmLists(ListSelectorComponent.CROP_LISTS, cropLevelGermplasmLists, listTypes, germplasmListSource);
@@ -984,7 +986,10 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			final Map<Integer, ListMetadata> germplasmListMetadata, final GermplasmListSource germplasmListSource,
 			final List<UserDefinedField> listTypes) {
 
-		final ListMetadata listMetadata = germplasmListMetadata.get(germplasmList.getId());
+		ListMetadata listMetadata = null;
+		if (!germplasmList.isFolder()){
+			listMetadata = germplasmListMetadata.get(germplasmList.getId());
+		}
 		final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
 		final String listOwner = (germplasmList.getCreatedBy() == null) ? "" : germplasmList.getCreatedBy();
 		germplasmListSource.addItem(

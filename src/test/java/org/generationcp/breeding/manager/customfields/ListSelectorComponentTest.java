@@ -425,11 +425,11 @@ public class ListSelectorComponentTest {
 
 		// Verify germplasm lists are added to their respective folder
 		Mockito.verify(this.germplasmListSource).addItem(
-			this.listSelectorComponent.generateCellInfo("Test Crop List", "", "Test Crop List Description", "Germplasm List", "100"), 123);
+			this.listSelectorComponent.generateCellInfo("Test Crop List", "", "Test Crop List Description", "Germplasm List", ""), 123);
 		Mockito.verify(this.germplasmListSource).setParent(Mockito.eq(123), Mockito.eq(ListSelectorComponent.CROP_LISTS));
 
 		Mockito.verify(this.germplasmListSource).addItem(
-			this.listSelectorComponent.generateCellInfo("Test Program List", "", "Test Program List Descripti...", "Germplasm List", "200"),
+			this.listSelectorComponent.generateCellInfo("Test Program List", "", "Test Program List Descripti...", "Germplasm List", ""),
 				456);
 		Mockito.verify(this.germplasmListSource).setParent(Mockito.eq(456), Mockito.eq(ListSelectorComponent.PROGRAM_LISTS));
 
@@ -463,7 +463,7 @@ public class ListSelectorComponentTest {
 		// Verify that the germplasm lists are added to the 'Program lists' folder
 		Mockito.verify(this.germplasmListSource)
 				.addItem(
-					this.listSelectorComponent.generateCellInfo(name, "", description, "Germplasm List", numberOfEntries.toString()),
+					this.listSelectorComponent.generateCellInfo(name, "", description, "Germplasm List", ""),
 						germplasmList.getId());
 		Mockito.verify(this.germplasmListSource).setParent(Mockito.eq(germplasmListId), Mockito.eq(ListSelectorComponent.PROGRAM_LISTS));
 
@@ -480,7 +480,7 @@ public class ListSelectorComponentTest {
 		final List<GermplasmList> germplasmLists = new ArrayList<>();
 		germplasmLists.add(germplasmList);
 
-		final Map<Integer, ListMetadata> germplasmListMetaData = this.createGermplasmListMetaData(germplasmList, numberOfEntries);
+		final Map<Integer, ListMetadata> germplasmListMetaData = this.createGermplasmListMetaData(germplasmList, null);
 		this.listSelectorComponent
 			.addGermplasmList(ListSelectorComponent.CROP_LISTS, germplasmList, germplasmListMetaData, this.germplasmListSource,
 				new ArrayList<UserDefinedField>());
@@ -497,7 +497,7 @@ public class ListSelectorComponentTest {
 		// Verify that the germplasm lists are added to the 'Crop lists' folder
 		Mockito.verify(this.germplasmListSource)
 				.addItem(
-					this.listSelectorComponent.generateCellInfo(name, "", description, "Germplasm List", Integer.toString(numberOfEntries)),
+					this.listSelectorComponent.generateCellInfo(name, "", description, "Germplasm List", ""),
 						germplasmList.getId());
 		Mockito.verify(this.germplasmListSource).setParent(Mockito.eq(germplasmListId), Mockito.eq(ListSelectorComponent.CROP_LISTS));
 
@@ -527,7 +527,6 @@ public class ListSelectorComponentTest {
 		Assert.assertEquals("", cellInfo[1]);
 		Assert.assertEquals(description, cellInfo[2]);
 		Assert.assertEquals("Germplasm List", cellInfo[3]);
-		Assert.assertEquals(Integer.toString(numberOfEntries), cellInfo[4]);
 
 		Mockito.verify(this.germplasmListSource).setItemCaption(Mockito.eq(germplasmListId), Mockito.eq(name));
 		Mockito.verify(this.germplasmListSource).setChildrenAllowed(Mockito.eq(germplasmListId), Mockito.eq(germplasmList.isFolder()));
