@@ -691,7 +691,7 @@ public class GermplasmListExporterTest {
 
 		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
 		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
-		Assert.assertEquals(10, visibleColumnCount);
+		Assert.assertFalse("MGID is not visible", visibleColumnsMap.containsKey(ColumnLabels.MGID.getName()));
 		Assert.assertTrue("Expected to have exactly 10 visible columns.", visibleColumnCount == 10);
 
 		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable();
@@ -705,7 +705,7 @@ public class GermplasmListExporterTest {
 
 		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
 		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
-		Assert.assertEquals(10, visibleColumnCount);
+		Assert.assertFalse("FGID is not visible ", visibleColumnsMap.containsKey(ColumnLabels.FGID.getName()));
 		Assert.assertTrue("Expected to have exactly 10 visible columns.", visibleColumnCount == 10);
 
 		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable();
@@ -719,8 +719,8 @@ public class GermplasmListExporterTest {
 
 		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
 		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
-		Assert.assertEquals(11, visibleColumnCount);
-		Assert.assertTrue("Expected to have exactly 10 visible columns.", visibleColumnCount == 11);
+		Assert.assertTrue("CROSS-FEMALE PREFERRED NAME is visible ", visibleColumnsMap.containsKey(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()));
+		Assert.assertTrue("Expected to have exactly 11 visible columns.", visibleColumnCount == 11);
 
 		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable();
 	}

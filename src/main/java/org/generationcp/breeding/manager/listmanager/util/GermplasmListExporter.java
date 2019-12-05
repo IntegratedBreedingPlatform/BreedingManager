@@ -289,7 +289,7 @@ public class GermplasmListExporter {
 
 		//FGID and MGID are addable columns in BreedingManager but standard in CrossList.
 		//We exclude them so as not to cause conflict in GermplasmExportedWorkbook code handling for these columns
-		final List<String> excludedColumns = new ArrayList<>(Arrays.asList(ColumnLabels.FGID.getName(), ColumnLabels.MGID.getName()));
+		final List<String> excludedColumns = Arrays.asList(ColumnLabels.FGID.getName(), ColumnLabels.MGID.getName());
 
 		// change the visibleColumns array to list
 		final List<String> visibleColumnList = new ArrayList<>();
