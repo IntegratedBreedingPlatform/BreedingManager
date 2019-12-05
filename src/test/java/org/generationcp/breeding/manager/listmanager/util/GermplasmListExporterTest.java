@@ -691,7 +691,7 @@ public class GermplasmListExporterTest {
 
 		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
 		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
-		Assert.assertFalse("MGID is not visible", visibleColumnsMap.containsKey(ColumnLabels.MGID.getName()));
+		Assert.assertFalse("MGID is not visible", this.isColumnVisible(visibleColumnsMap, String.valueOf(ColumnLabels.MGID.getTermId().getId())));
 		Assert.assertTrue("Expected to have exactly 10 visible columns.", visibleColumnCount == 10);
 	}
 
@@ -703,7 +703,7 @@ public class GermplasmListExporterTest {
 
 		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
 		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
-		Assert.assertFalse("FGID is not visible ", visibleColumnsMap.containsKey(ColumnLabels.FGID.getName()));
+		Assert.assertFalse("FGID is not visible ", this.isColumnVisible(visibleColumnsMap,String.valueOf( ColumnLabels.FGID.getTermId().getId())));
 		Assert.assertTrue("Expected to have exactly 10 visible columns.", visibleColumnCount == 10);
 	}
 
@@ -711,12 +711,18 @@ public class GermplasmListExporterTest {
 	public void testGetVisibleColumnMapWithAddedColumn() {
 		Map<String, Boolean> visibleColumnsMap;
 		int visibleColumnCount;
-		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable(new ArrayList<>(Arrays.asList(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())));
-
+		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable(new ArrayList<String>(Arrays.asList(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())));
 		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
 		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
-		Assert.assertTrue("CROSS-FEMALE PREFERRED NAME is visible ", visibleColumnsMap.containsKey(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()));
+		Assert.assertTrue("CROSS-FEMALE PREFERRED NAME is visible ", visibleColumnsMap.containsKey(String.valueOf(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getTermId().getId())));
 		Assert.assertTrue("Expected to have exactly 11 visible columns.", visibleColumnCount == 11);
+	}
+
+	private boolean isColumnVisible(final Map<String, Boolean> visibleColumnsMap, final String column) {
+			if(visibleColumnsMap.containsKey(column)) {
+				return visibleColumnsMap.get(column);
+			}
+			return false;
 	}
 
 }
