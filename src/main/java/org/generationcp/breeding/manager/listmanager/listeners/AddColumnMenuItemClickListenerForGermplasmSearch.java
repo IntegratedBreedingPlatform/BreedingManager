@@ -105,8 +105,8 @@ public class AddColumnMenuItemClickListenerForGermplasmSearch extends AddColumnM
 
 	@Override
 	void addCrossMaleGIDColumn() {
-		if (!this.addColumnSource.columnExists(ColumnLabels.CROSS_MALE_GID.getName())) {
-			this.addColumnSource.addColumn(ColumnLabels.CROSS_MALE_GID);
+		if (!this.addColumnSource.columnExists(ColumnLabels.MGID.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.MGID);
 		}
 	}
 
@@ -119,8 +119,8 @@ public class AddColumnMenuItemClickListenerForGermplasmSearch extends AddColumnM
 
 	@Override
 	void addCrossFemaleGidColumn() {
-		if (!this.addColumnSource.columnExists(ColumnLabels.CROSS_FEMALE_GID.getName())) {
-			this.addColumnSource.addColumn(ColumnLabels.CROSS_FEMALE_GID);
+		if (!this.addColumnSource.columnExists(ColumnLabels.FGID.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.FGID);
 		}
 	}
 

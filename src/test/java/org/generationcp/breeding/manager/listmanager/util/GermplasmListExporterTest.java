@@ -263,7 +263,6 @@ public class GermplasmListExporterTest {
 			throws MiddlewareQueryException, GermplasmListExporterException, IOException, InvalidFormatException {
 		this.configureTermNamesFromDefault();
 		Mockito.doReturn(this.getUser()).when(this.userService).getUserById(Matchers.anyInt());
-
 		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_NO.getId())).thenReturn(fromOntology);
@@ -278,7 +277,7 @@ public class GermplasmListExporterTest {
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.STOCKID.getId())).thenReturn(fromOntology);
 
 		Mockito.doReturn(this.createWorkbook()).when(this.fileService).retrieveWorkbookTemplate(GermplasmListExporterTest.FILE_NAME);
-
+		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable();
 		this.germplasmListExporter.exportGermplasmListXLS(GermplasmListExporterTest.GERMPLASM_LIST_ID, GermplasmListExporterTest.FILE_NAME,
 				GermplasmListExporterTest.listDataTable);
 		// make sure that generateGermplasmListExcelFile is called and without errors
@@ -505,6 +504,30 @@ public class GermplasmListExporterTest {
 		return listDataTable;
 	}
 
+	private static Table generateTestTable(ArrayList<String> addedColumns) {
+		final Table listDataTable = new Table();
+
+		listDataTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), String.class, null);
+		listDataTable.setColumnCollapsingAllowed(true);
+
+		for(String column : addedColumns) {
+			listDataTable.addContainerProperty(column, String.class, null);
+		}
+
+		GermplasmListExporterTest.loadEntriesToListDataTable(listDataTable);
+
+		return listDataTable;
+	}
+
 	private static List<GermplasmListData> generateListEntries() {
 		final List<GermplasmListData> entries = new ArrayList<>();
 
@@ -657,6 +680,48 @@ public class GermplasmListExporterTest {
 			// do nothing
 		}
 
+	}
+
+	@Test
+	public void testGetVisibleColumnMapWithMGID() {
+		Map<String, Boolean> visibleColumnsMap;
+		int visibleColumnCount;
+		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable(new ArrayList<>(Arrays.asList(ColumnLabels.MGID.getName())));
+
+		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
+		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
+		Assert.assertFalse("MGID is not visible", this.isColumnVisible(visibleColumnsMap, String.valueOf(ColumnLabels.MGID.getTermId().getId())));
+		Assert.assertTrue("Expected to have exactly 10 visible columns.", visibleColumnCount == 10);
+	}
+
+	@Test
+	public void testGetVisibleColumnMapWithFGID() {
+		Map<String, Boolean> visibleColumnsMap;
+		int visibleColumnCount;
+		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable(new ArrayList<>(Arrays.asList(ColumnLabels.FGID.getName())));
+
+		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
+		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
+		Assert.assertFalse("FGID is not visible ", this.isColumnVisible(visibleColumnsMap,String.valueOf( ColumnLabels.FGID.getTermId().getId())));
+		Assert.assertTrue("Expected to have exactly 10 visible columns.", visibleColumnCount == 10);
+	}
+
+	@Test
+	public void testGetVisibleColumnMapWithAddedColumn() {
+		Map<String, Boolean> visibleColumnsMap;
+		int visibleColumnCount;
+		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable(new ArrayList<String>(Arrays.asList(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())));
+		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
+		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
+		Assert.assertTrue("CROSS-FEMALE PREFERRED NAME is visible ", visibleColumnsMap.containsKey(String.valueOf(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getTermId().getId())));
+		Assert.assertTrue("Expected to have exactly 11 visible columns.", visibleColumnCount == 11);
+	}
+
+	private boolean isColumnVisible(final Map<String, Boolean> visibleColumnsMap, final String column) {
+			if(visibleColumnsMap.containsKey(column)) {
+				return visibleColumnsMap.get(column);
+			}
+			return false;
 	}
 
 }

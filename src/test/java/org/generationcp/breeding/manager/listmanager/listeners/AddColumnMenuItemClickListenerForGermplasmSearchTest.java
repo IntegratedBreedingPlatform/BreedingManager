@@ -157,7 +157,7 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 		Mockito.doReturn(ColumnLabels.CROSS_FEMALE_GID.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
-		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.CROSS_FEMALE_GID);
+		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.FGID);
 
 	}
 
@@ -175,7 +175,7 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 		Mockito.doReturn(ColumnLabels.CROSS_MALE_GID.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
-		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.CROSS_MALE_GID);
+		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.MGID);
 
 	}
 
@@ -298,11 +298,11 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 
 	@Test
 	public void testFillWithCrossFemaleGIDItemClickAndColumnExists() {
-		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.CROSS_FEMALE_GID.getName());
+		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.FGID.getName());
 		Mockito.doReturn(ColumnLabels.CROSS_FEMALE_GID.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
-		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.CROSS_FEMALE_GID);
+		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.FGID);
 	}
 
 	@Test
@@ -317,11 +317,11 @@ public class AddColumnMenuItemClickListenerForGermplasmSearchTest {
 
 	@Test
 	public void testFillWithCrossMaleGIDItemClickAndColumnExists() {
-		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.CROSS_MALE_GID.getName());
+		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.MGID.getName());
 		Mockito.doReturn(ColumnLabels.CROSS_MALE_GID.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
-		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.CROSS_MALE_GID);
+		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.MGID);
 	}
 
 	@Test
