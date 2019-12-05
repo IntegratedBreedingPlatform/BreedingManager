@@ -263,7 +263,6 @@ public class GermplasmListExporterTest {
 			throws MiddlewareQueryException, GermplasmListExporterException, IOException, InvalidFormatException {
 		this.configureTermNamesFromDefault();
 		Mockito.doReturn(this.getUser()).when(this.userService).getUserById(Matchers.anyInt());
-
 		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_NO.getId())).thenReturn(fromOntology);
@@ -278,7 +277,7 @@ public class GermplasmListExporterTest {
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.STOCKID.getId())).thenReturn(fromOntology);
 
 		Mockito.doReturn(this.createWorkbook()).when(this.fileService).retrieveWorkbookTemplate(GermplasmListExporterTest.FILE_NAME);
-
+		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable();
 		this.germplasmListExporter.exportGermplasmListXLS(GermplasmListExporterTest.GERMPLASM_LIST_ID, GermplasmListExporterTest.FILE_NAME,
 				GermplasmListExporterTest.listDataTable);
 		// make sure that generateGermplasmListExcelFile is called and without errors
