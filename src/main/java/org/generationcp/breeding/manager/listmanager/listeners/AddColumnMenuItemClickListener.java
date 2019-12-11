@@ -171,9 +171,9 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 	}
 
 	void addCrossMaleGIDColumn() {
-		if (!this.addColumnSource.columnExists(ColumnLabels.CROSS_MALE_GID.getName())) {
-			this.addColumnSource.addColumn(ColumnLabels.CROSS_MALE_GID);
-			this.valuesGenerator.setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
+		if (!this.addColumnSource.columnExists(ColumnLabels.MGID.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.MGID);
+			this.valuesGenerator.setCrossMaleGIDColumnValues(ColumnLabels.MGID.getName());
 		}
 	}
 
@@ -185,9 +185,9 @@ public class AddColumnMenuItemClickListener implements ContextMenu.ClickListener
 	}
 
 	void addCrossFemaleGidColumn() {
-		if (!this.addColumnSource.columnExists(ColumnLabels.CROSS_FEMALE_GID.getName())) {
-			this.addColumnSource.addColumn(ColumnLabels.CROSS_FEMALE_GID);
-			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(),
+		if (!this.addColumnSource.columnExists(ColumnLabels.FGID.getName())) {
+			this.addColumnSource.addColumn(ColumnLabels.FGID);
+			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.FGID.getName(),
 					FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
 		}
 	}

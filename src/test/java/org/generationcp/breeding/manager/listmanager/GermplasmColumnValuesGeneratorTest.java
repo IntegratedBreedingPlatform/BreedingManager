@@ -39,9 +39,6 @@ public class GermplasmColumnValuesGeneratorTest {
 	private PedigreeService pedigreeService;
 
 	@Mock
-	private CrossExpansionProperties crossExpansionProperties;
-
-	@Mock
 	private FillColumnSource fillColumnSource;
 
 	@InjectMocks
@@ -384,7 +381,7 @@ public class GermplasmColumnValuesGeneratorTest {
 
 	@Test
 	public void testSetCrossMaleGIDColumnValuesForDerivativeGermplasm() {
-		Mockito.doReturn(this.generateListofGermplasm(true)).when(this.germplasmDataManager)
+		Mockito.doReturn(this.generateListofGermplasm(true, null, null)).when(this.germplasmDataManager)
 				.getGermplasms(GermplasmColumnValuesGeneratorTest.GID_LIST);
 		final String columnName = ColumnLabels.PARENTAGE.getName();
 		this.valuesGenerator.setCrossMaleGIDColumnValues(columnName);
@@ -437,7 +434,7 @@ public class GermplasmColumnValuesGeneratorTest {
 
 	@Test
 	public void testSetCrossMalePrefNameColumnValuesForDerivativeGermplasm() {
-		Mockito.doReturn(this.generateListofGermplasm(true)).when(this.germplasmDataManager)
+		Mockito.doReturn(this.generateListofGermplasm(true, null, null)).when(this.germplasmDataManager)
 				.getGermplasms(GermplasmColumnValuesGeneratorTest.GID_LIST);
 		final String columnName = ColumnLabels.PARENTAGE.getName();
 		this.valuesGenerator.setCrossMalePrefNameColumnValues(columnName);
@@ -603,6 +600,81 @@ public class GermplasmColumnValuesGeneratorTest {
 		Mockito.verify(this.germplasmDataManager)
 				.getImmediateSourcePreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class));
 		Mockito.verify(this.fillColumnSource, Mockito.times(5)).propagateUIChanges();
+	}
+
+	@Test
+	public void testSetCrossFemalePrefNameColumnValuesForDerivativeGermplasmWithParentGID() {
+		Mockito.doReturn(this.generateListofGermplasm(true, 1, 2)).when(this.germplasmDataManager)
+				.getGermplasms(GermplasmColumnValuesGeneratorTest.GID_LIST);
+		final String columnName = ColumnLabels.PARENTAGE.getName();
+		this.valuesGenerator.setCrossFemaleInfoColumnValues(columnName, FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
+		for (final Object itemId : GermplasmColumnValuesGeneratorTest.ITEMS_LIST) {
+			Mockito.verify(this.fillColumnSource).setColumnValueForItem(itemId, columnName, "1");
+		}
+	}
+
+	@Test
+	public void testSetCrossMaleGIDColumnValuesWithParentGID() {
+		Mockito.doReturn(this.generateListofGermplasm(true, 1, 2)).when(this.germplasmDataManager)
+				.getGermplasms(GermplasmColumnValuesGeneratorTest.GID_LIST);
+		final String columnName = ColumnLabels.PARENTAGE.getName();
+		this.valuesGenerator.setCrossMaleGIDColumnValues(columnName);
+		for (final Object itemId : GermplasmColumnValuesGeneratorTest.ITEMS_LIST) {
+			Mockito.verify(this.fillColumnSource).setColumnValueForItem(itemId, columnName, "2");
+		}
+	}
+
+	@Test
+	public void testSetCrossMaleInfoColumnValuesWithParentNAME() {
+		List<Germplasm> germplasms = this.generateListofGermplasm(true, 1, 2);
+		ArrayList<Integer> parent = new ArrayList<>();
+		parent.add(2);
+
+		final Map<Integer, String> namesMap = this.generateGIDStringMap("ABCDEFG",parent);
+		Mockito.when(this.germplasmDataManager.getPreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class))).thenReturn(namesMap);
+		Mockito.doReturn(germplasms).when(this.germplasmDataManager)
+				.getGermplasms(GermplasmColumnValuesGeneratorTest.GID_LIST);
+		final String columnName = ColumnLabels.PARENTAGE.getName();
+		this.valuesGenerator.setCrossMalePrefNameColumnValues(columnName);
+		for(final Object itemId : parent)  {
+			this.fillColumnSource.setColumnValueForItem(itemId, columnName, "ABCDEFG 1");
+		}
+	}
+
+	@Test
+	public void testSetCrossFemaleInfoColumnValuesWithParentNAME() {
+		List<Germplasm> germplasms = this.generateListofGermplasm(true, 1, 2);
+		ArrayList<Integer> parent = new ArrayList<>();
+		parent.add(1);
+
+		final Map<Integer, String> namesMap = this.generateGIDStringMap("ABCDEFG",parent);
+		Mockito.when(this.germplasmDataManager.getPreferredNamesByGids(ArgumentMatchers.anyListOf(Integer.class))).thenReturn(namesMap);
+		Mockito.doReturn(germplasms).when(this.germplasmDataManager)
+				.getGermplasms(GermplasmColumnValuesGeneratorTest.GID_LIST);
+		final String columnName = ColumnLabels.PARENTAGE.getName();
+		this.valuesGenerator.setCrossFemaleInfoColumnValues(columnName, FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
+		for (final Object itemId : GermplasmColumnValuesGeneratorTest.ITEMS_LIST) {
+			Mockito.verify(this.fillColumnSource).setColumnValueForItem(itemId, columnName, "-");
+		}
+
+		for(final Object itemId : parent)  {
+			this.fillColumnSource.setColumnValueForItem(itemId, columnName, "ABCDEFG 2");
+		}
+	}
+
+	private List<Germplasm> generateListofGermplasm(final boolean isDerivative, Integer femaleParent, Integer maleParent) {
+		final List<Germplasm> list = new ArrayList<>();
+		for (final Integer gid : GermplasmColumnValuesGeneratorTest.GID_LIST) {
+			final Germplasm germplasm = new Germplasm();
+			germplasm.setGid(gid);
+			germplasm.setGnpgs(isDerivative ? -1 : 2);
+			germplasm.setGpid1(femaleParent);
+			germplasm.setGpid2(maleParent);
+			germplasm.setFemaleParentPreferredName(String.valueOf(femaleParent));
+			germplasm.setMaleParentPreferredName(String.valueOf(maleParent));
+			list.add(germplasm);
+		}
+		return list;
 	}
 
 }

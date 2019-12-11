@@ -176,8 +176,8 @@ public class AddColumnMenuItemClickListenerTest {
 		Mockito.doReturn(ColumnLabels.CROSS_FEMALE_GID.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
-		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.CROSS_FEMALE_GID);
-		Mockito.verify(this.valuesGenerator).setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(),
+		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.FGID);
+		Mockito.verify(this.valuesGenerator).setCrossFemaleInfoColumnValues(ColumnLabels.FGID.getName(),
 				FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
 	}
 
@@ -196,8 +196,8 @@ public class AddColumnMenuItemClickListenerTest {
 		Mockito.doReturn(ColumnLabels.CROSS_MALE_GID.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
-		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.CROSS_MALE_GID);
-		Mockito.verify(this.valuesGenerator).setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
+		Mockito.verify(this.addColumnSource).addColumn(ColumnLabels.MGID);
+		Mockito.verify(this.valuesGenerator).setCrossMaleGIDColumnValues(ColumnLabels.MGID.getName());
 	}
 
 	@Test
@@ -362,12 +362,12 @@ public class AddColumnMenuItemClickListenerTest {
 
 	@Test
 	public void testFillWithCrossFemaleGIDItemClickAndColumnExists() {
-		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.CROSS_FEMALE_GID.getName());
+		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.FGID.getName());
 		Mockito.doReturn(ColumnLabels.CROSS_FEMALE_GID.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
-		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.CROSS_FEMALE_GID);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(),
+		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.FGID);
+		Mockito.verify(this.valuesGenerator, Mockito.never()).setCrossFemaleInfoColumnValues(ColumnLabels.FGID.getName(),
 				FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
 	}
 
@@ -384,12 +384,12 @@ public class AddColumnMenuItemClickListenerTest {
 
 	@Test
 	public void testFillWithCrossMaleGIDItemClickAndColumnExists() {
-		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.CROSS_MALE_GID.getName());
+		Mockito.doReturn(true).when(this.addColumnSource).columnExists(ColumnLabels.MGID.getName());
 		Mockito.doReturn(ColumnLabels.CROSS_MALE_GID.getName()).when(this.contextMenuItem).getName();
 		this.addColumnClickListener.contextItemClick(this.clickEvent);
 
-		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.CROSS_MALE_GID);
-		Mockito.verify(this.valuesGenerator, Mockito.never()).setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
+		Mockito.verify(this.addColumnSource, Mockito.never()).addColumn(ColumnLabels.MGID);
+		Mockito.verify(this.valuesGenerator, Mockito.never()).setCrossMaleGIDColumnValues(ColumnLabels.MGID.getName());
 	}
 
 	@Test

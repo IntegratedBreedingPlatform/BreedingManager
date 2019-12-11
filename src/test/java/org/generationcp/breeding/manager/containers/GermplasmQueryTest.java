@@ -94,7 +94,13 @@ public class GermplasmQueryTest {
 		this.itemPropertyIds.add(NOTE);
 		this.itemPropertyIds.add(NAMETYPE1);
 		this.itemPropertyIds.add(NAMETYPE2);
-		
+
+		//In added column menu CROSS_FEMALE_GID and CROSS_MALE_GID is still use but the property is FGID and MGID
+		this.itemPropertyIds.remove(ColumnLabels.CROSS_FEMALE_GID.getName());
+		this.itemPropertyIds.add(ColumnLabels.FGID.getName());
+		this.itemPropertyIds.remove(ColumnLabels.CROSS_MALE_GID.getName());
+		this.itemPropertyIds.add(ColumnLabels.MGID.getName());
+
 		// create a test list of germplasms with inventory information
 		final Map<Integer, String> pedigreeString = new HashMap<>();
 		final Map<Integer, String> groupSourcepreferredNamesMap = new HashMap<>();
@@ -220,9 +226,9 @@ public class GermplasmQueryTest {
 		Assert.assertEquals(germplasm.getGermplasmDate(), item.getItemProperty(ColumnLabels.GERMPLASM_DATE.getName()).getValue());
 		Assert.assertEquals(germplasm.getMethodCode(), item.getItemProperty(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName()).getValue());
 		Assert.assertEquals(germplasm.getMethodId(), item.getItemProperty(ColumnLabels.BREEDING_METHOD_NUMBER.getName()).getValue());
-		Assert.assertEquals(germplasm.getFemaleParentPreferredID(), item.getItemProperty(ColumnLabels.CROSS_FEMALE_GID.getName()).getValue());
+		Assert.assertEquals(germplasm.getFemaleParentPreferredID(), item.getItemProperty(ColumnLabels.FGID.getName()).getValue());
 		Assert.assertEquals(germplasm.getFemaleParentPreferredName(), item.getItemProperty(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()).getValue());
-		Assert.assertEquals(germplasm.getMaleParentPreferredID(), item.getItemProperty(ColumnLabels.CROSS_MALE_GID.getName()).getValue());
+		Assert.assertEquals(germplasm.getMaleParentPreferredID(), item.getItemProperty(ColumnLabels.MGID.getName()).getValue());
 		Assert.assertEquals(germplasm.getMaleParentPreferredName(), item.getItemProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).getValue());
 		Assert.assertEquals(germplasm.getGroupSourceGID(), item.getItemProperty(ColumnLabels.GROUP_SOURCE_GID.getName()).getValue());
 		Assert.assertEquals(germplasm.getGroupSourcePreferredName(), item.getItemProperty(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName()).getValue());

@@ -59,16 +59,16 @@ public class AddedColumnsMapper {
 			this.valuesGenerator.setMethodInfoColumnValues(ColumnLabels.BREEDING_METHOD_GROUP.getName(),
 					FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP);
 		}
-		if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_FEMALE_GID.getName())) {
-			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_GID.getName(),
+		if (this.isColumnVisible(visibleColumns, ColumnLabels.FGID.getName())) {
+			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.FGID.getName(),
 					FillWithOption.FILL_WITH_CROSS_FEMALE_GID);
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())) {
 			this.valuesGenerator.setCrossFemaleInfoColumnValues(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(),
 					FillWithOption.FILL_WITH_CROSS_FEMALE_NAME);
 		}
-		if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_MALE_GID.getName())) {
-			this.valuesGenerator.setCrossMaleGIDColumnValues(ColumnLabels.CROSS_MALE_GID.getName());
+		if (this.isColumnVisible(visibleColumns, ColumnLabels.MGID.getName())) {
+			this.valuesGenerator.setCrossMaleGIDColumnValues(ColumnLabels.MGID.getName());
 		}
 		if (this.isColumnVisible(visibleColumns, ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())) {
 			this.valuesGenerator.setCrossMalePrefNameColumnValues(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());

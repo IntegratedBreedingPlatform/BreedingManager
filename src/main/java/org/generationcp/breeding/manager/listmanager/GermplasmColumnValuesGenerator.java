@@ -4,7 +4,6 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -164,9 +163,8 @@ public class GermplasmColumnValuesGenerator {
 			for (final Object itemId : itemIds) {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 				final Germplasm germplasm = germplasmMap.get(gid);
-
-				if (germplasm != null && germplasm.getGnpgs() >= 2 && germplasm.getGpid2() != null) {
-					final String maleParent = germplasm.getGpid2().equals(0)? Name.UNKNOWN : germplasm.getGpid2().toString(); 
+				if (germplasm != null && (germplasm.getGnpgs() >= 2 || germplasm.getGnpgs()== -1) && germplasm.getGpid2() != null) {
+					final String maleParent = germplasm.getGpid2().equals(0)? Name.UNKNOWN : germplasm.getGpid2().toString();
 					this.fillColumnSource.setColumnValueForItem(itemId, columnName, maleParent);
 				} else {
 					this.fillColumnSource.setColumnValueForItem(itemId, columnName, "-");
@@ -204,8 +202,7 @@ public class GermplasmColumnValuesGenerator {
 			for (final Object itemId : itemIds) {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 				final Germplasm germplasm = germplasmMap.get(gid);
-
-				if (germplasm != null && germplasm.getGnpgs() >= 2 && germplasm.getGpid2() != null) {
+				if (germplasm != null && (germplasm.getGnpgs() >= 2 || germplasm.getGnpgs() == -1) && germplasm.getGpid2() != null) {
 					gidsToUseForQuery.add(germplasm.getGpid2());
 					List<Object> itemIdsInMap = gidToItemIdMap.get(germplasm.getGpid2());
 					if (itemIdsInMap == null) {
@@ -247,9 +244,9 @@ public class GermplasmColumnValuesGenerator {
 			for (final Object itemId : itemIds) {
 				final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
 				final Germplasm germplasm = germplasmMap.get(gid);
-				// get female only if germplasm is created via generative process
+				// get female only if germplasm is created via generative process or derivative process
 				final Integer femaleParentId = germplasm.getGpid1();
-				if (germplasm.getGnpgs() >= 2 && femaleParentId != null && femaleParentId != 0) {
+				if ((germplasm.getGnpgs() >= 2 || germplasm.getGnpgs() == -1 ) && femaleParentId != null && femaleParentId != 0) {
 					String value = "-";
 					if (FillWithOption.FILL_WITH_CROSS_FEMALE_GID.equals(option)) {
 						value = femaleParentId.toString();
@@ -332,7 +329,7 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	public void fillWithSequence(final String columnName, final String prefix, final String suffix, final int startNumber,
-			final int numOfZeros, final boolean spaceBetweenPrefixAndCode, final boolean spaceBetweenSuffixAndCode) {
+								 final int numOfZeros, final boolean spaceBetweenPrefixAndCode, final boolean spaceBetweenSuffixAndCode) {
 		final List<Object> itemIds = this.fillColumnSource.getItemIdsToProcess();
 		if (!itemIds.isEmpty()) {
 			int number = startNumber;
@@ -372,9 +369,9 @@ public class GermplasmColumnValuesGenerator {
 
 			final Map<Integer, String> crossExpansions = this.bulkGeneratePedigreeString(crossExpansionLevel);
 
-			for (final Iterator<Object> i = this.fillColumnSource.getItemIdsToProcess().iterator(); i.hasNext();) {
+			for (Object o : this.fillColumnSource.getItemIdsToProcess()) {
 				// iterate through the table elements' IDs
-				final Integer listDataId = (Integer) i.next();
+				final Integer listDataId = (Integer) o;
 				final Integer gid = this.fillColumnSource.getGidForItemId(listDataId);
 				final String crossExpansion = crossExpansions.get(gid);
 				this.fillColumnSource.setColumnValueForItem(listDataId, columnName, crossExpansion);
@@ -394,7 +391,7 @@ public class GermplasmColumnValuesGenerator {
 
 		for (final List<Integer> partitionedGidList : partition) {
 			final Set<Integer> partitionedGidSet = new HashSet<>(partitionedGidList);
-			crossExpansions.putAll(this.pedigreeService.getCrossExpansions(partitionedGidSet, crossExpansionLevel.intValue(),
+			crossExpansions.putAll(this.pedigreeService.getCrossExpansions(partitionedGidSet, crossExpansionLevel,
 					this.crossExpansionProperties));
 		}
 		return crossExpansions;
@@ -457,7 +454,7 @@ public class GermplasmColumnValuesGenerator {
 	}
 
 	private void fillColumnsWithPreferredName(final List<Object> itemIds, final Map<Integer, String> gidAndPreferredNameMap,
-			final String columnName) {
+											  final String columnName) {
 		for (final Object itemId : itemIds) {
 
 			final Integer gid = this.fillColumnSource.getGidForItemId(itemId);
@@ -471,10 +468,10 @@ public class GermplasmColumnValuesGenerator {
 		final List<Integer> gids = this.fillColumnSource.getGidsToProcess();
 		return Maps.uniqueIndex(this.germplasmDataManager.getGermplasms(gids), new Function<Germplasm, Integer>() {
 
-			@Nullable
 			@Override
 			public Integer apply(@Nullable final Germplasm germplasm) {
-				return germplasm.getGid();
+				return germplasm != null ? germplasm.getGid() : 0;
+
 			}
 		});
 	}

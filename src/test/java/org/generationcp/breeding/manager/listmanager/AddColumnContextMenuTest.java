@@ -122,13 +122,13 @@ public class AddColumnContextMenuTest {
 				.getMessage(FillWithOption.FILL_WITH_BREEDING_METHOD_GROUP.getMessageKey());
 		Mockito.doReturn(FillWithOption.FILL_WITH_CROSS_FEMALE_INFO.name()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_INFO.getMessageKey());
-		Mockito.doReturn(ColumnLabels.CROSS_FEMALE_GID.getName()).when(this.messageSource)
+		Mockito.doReturn(ColumnLabels.FGID.getName()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_GID.getMessageKey());
 		Mockito.doReturn(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_FEMALE_NAME.getMessageKey());
 		Mockito.doReturn(FillWithOption.FILL_WITH_CROSS_MALE_INFO.name()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_INFO.getMessageKey());
-		Mockito.doReturn(ColumnLabels.CROSS_MALE_GID.getName()).when(this.messageSource)
+		Mockito.doReturn(ColumnLabels.MGID.getName()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_GID.getMessageKey());
 		Mockito.doReturn(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).when(this.messageSource)
 				.getMessage(FillWithOption.FILL_WITH_CROSS_MALE_NAME.getMessageKey());
