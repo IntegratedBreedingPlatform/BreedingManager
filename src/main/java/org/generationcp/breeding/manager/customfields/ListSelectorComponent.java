@@ -44,7 +44,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.GermplasmListMetadata;
+import org.generationcp.middleware.pojos.ListMetadata;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
@@ -399,6 +399,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			germplasmListChildren = this.germplasmListManager
 					.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, this.getCurrentProgramUUID(),
 							ListSelectorComponent.BATCH_SIZE);
+			germplasmListManager.populateGermplasmListCreatedByName(germplasmListChildren);
 			this.addGermplasmListNodeToComponent(germplasmListChildren, parentGermplasmListId);
 
 		} catch (final MiddlewareQueryException e) {
@@ -765,16 +766,16 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		try {
 			final List<UserDefinedField> listTypes = this.germplasmDataManager
 					.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(), RowColumnType.LIST_TYPE.getFtype());
-			final Map<Integer, GermplasmListMetadata> allListMetaData =
+			final Map<Integer, ListMetadata> allListMetaData =
 					this.germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
 
 			final Collection<?> existingItems = this.germplasmListSource.getItemIds();
 
 			for (final GermplasmList listChild : germplasmListChildren) {
 				if (this.doAddItem(listChild)) {
-					final GermplasmListMetadata listMetadata = allListMetaData.get(listChild.getId());
+					final ListMetadata listMetadata = allListMetaData.get(listChild.getId());
 					final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
-					final String listOwner = listMetadata != null ? listMetadata.getOwnerName() : "";
+					final String listOwner = listChild.getCreatedBy();
 
 					final Object[] generateCellInfo =
 							this.generateCellInfo(listChild.getName(), listOwner, BreedingManagerUtil.getDescriptionForDisplay(listChild),
@@ -940,6 +941,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	void addProgramLevelLists(final GermplasmListSource germplasmListSource, final List<UserDefinedField> listTypes) {
 
 		final List<GermplasmList> programLevelGermplasmLists = this.germplasmListManager.getAllTopLevelLists(this.getCurrentProgramUUID());
+		this.germplasmListManager.populateGermplasmListCreatedByName(programLevelGermplasmLists);
 
 		// Add "Program lists" root folder and its children
 		addGermplasmLists(ListSelectorComponent.PROGRAM_LISTS, programLevelGermplasmLists, listTypes, germplasmListSource);
@@ -949,6 +951,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	void addCropLevelLists(final GermplasmListSource germplasmListSource, final List<UserDefinedField> listTypes) {
 
 		final List<GermplasmList> cropLevelGermplasmLists = this.germplasmListManager.getAllTopLevelLists(null);
+		this.germplasmListManager.populateGermplasmListCreatedByName(cropLevelGermplasmLists);
 
 		// Add "Crop lists" root folder and its children
 		addGermplasmLists(ListSelectorComponent.CROP_LISTS, cropLevelGermplasmLists, listTypes, germplasmListSource);
@@ -965,7 +968,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 		this.setNodeItemIcon(parentId, true);
 
-		final Map<Integer, GermplasmListMetadata> germplasmListMetadata =
+		final Map<Integer, ListMetadata> germplasmListMetadata =
 				germplasmListManager.getGermplasmListMetadata(germplasmLists);
 
 		for (final GermplasmList cropLevelGermplasmList : germplasmLists) {
@@ -980,12 +983,15 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	void addGermplasmList(final Object parentId, final GermplasmList germplasmList,
-			final Map<Integer, GermplasmListMetadata> germplasmListMetadata, final GermplasmListSource germplasmListSource,
+			final Map<Integer, ListMetadata> germplasmListMetadata, final GermplasmListSource germplasmListSource,
 			final List<UserDefinedField> listTypes) {
 
-		final GermplasmListMetadata listMetadata = germplasmListMetadata.get(germplasmList.getId());
+		ListMetadata listMetadata = null;
+		if (!germplasmList.isFolder()){
+			listMetadata = germplasmListMetadata.get(germplasmList.getId());
+		}
 		final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
-		final String listOwner = listMetadata != null ? listMetadata.getOwnerName() : "";
+		final String listOwner = (germplasmList.getCreatedBy() == null) ? "" : germplasmList.getCreatedBy();
 		germplasmListSource.addItem(
 				this.generateCellInfo(germplasmList.getName(), listOwner, BreedingManagerUtil.getDescriptionForDisplay(germplasmList),
 						BreedingManagerUtil.getTypeString(germplasmList.getType(), listTypes), listSize), germplasmList.getId());
