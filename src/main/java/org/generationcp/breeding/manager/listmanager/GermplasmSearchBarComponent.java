@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
@@ -31,17 +32,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.PopupView;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 
 @Configurable
 public class GermplasmSearchBarComponent extends CssLayout
@@ -268,27 +259,31 @@ public class GermplasmSearchBarComponent extends CssLayout
 	}
 
 	public void searchButtonClickAction() {
+		try{
+			final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
+			final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
+			if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
+				ConfirmDialog.show(this.getSourceWindow(), GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
+						GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
+						GermplasmSearchBarComponent.this.messageSource.getMessage(Message.OK),
+						GermplasmSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
 
-		final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
-		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
-			ConfirmDialog.show(this.getSourceWindow(), GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
-					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
-					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.OK),
-					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
+							private static final long serialVersionUID = 1L;
 
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void onClose(final ConfirmDialog dialog) {
-							if (dialog.isConfirmed()) {
-								GermplasmSearchBarComponent.this.doSearch(q);
+							@Override
+							public void onClose(final ConfirmDialog dialog) {
+								if (dialog.isConfirmed()) {
+									GermplasmSearchBarComponent.this.doSearch(q);
+								}
 							}
-						}
-					});
-		} else {
-			GermplasmSearchBarComponent.this.doSearch(q);
+						});
+			} else {
+				GermplasmSearchBarComponent.this.doSearch(q);
+			}
+		}catch(Exception ex) {
+			LOG.debug(ex.getMessage());
 		}
+
 	}
 
 	private Window getSourceWindow() {
