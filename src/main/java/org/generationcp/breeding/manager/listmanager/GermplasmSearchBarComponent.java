@@ -15,6 +15,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.manager.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -339,7 +340,8 @@ public class GermplasmSearchBarComponent extends CssLayout
 							GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + q, e);
 						}
 					}
-				} finally {
+				}
+				finally {
 					GermplasmSearchBarComponent.LOG.debug("" + monitor.stop());
 				}
 			}

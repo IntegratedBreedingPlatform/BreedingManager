@@ -19,6 +19,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Name;
@@ -260,11 +261,17 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 				// set the default value to empty string instead of null for germplasm without name
 				String germplasmNames = "";
 				if (propertyId == GermplasmSearchResultsComponent.NAMES) {
-					final Item item = GermplasmSearchResultsComponent.this.matchingGermplasmTable.getItem(itemId);
-					final Integer gid =
-							Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
+					try{
+						final Item item = GermplasmSearchResultsComponent.this.matchingGermplasmTable.getItem(itemId);
+						final Integer gid =
+								Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
 
-					germplasmNames = GermplasmSearchResultsComponent.this.getGermplasmNames(gid);
+						germplasmNames = GermplasmSearchResultsComponent.this.getGermplasmNames(gid);
+					}catch(MiddlewareException ex){
+						MessageNotifier.showError(GermplasmSearchResultsComponent.this.getWindow(), "Error with Cross Expansion", "There is a data problem that prevents the generation of the cross expansion. Please contact your administrator");
+						return germplasmNames;
+					}
+
 				}
 				return germplasmNames;
 			}
