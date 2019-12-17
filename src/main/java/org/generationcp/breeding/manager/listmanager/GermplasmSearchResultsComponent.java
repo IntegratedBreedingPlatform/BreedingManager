@@ -268,8 +268,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 						germplasmNames = GermplasmSearchResultsComponent.this.getGermplasmNames(gid);
 					}catch(MiddlewareException ex){
-						MessageNotifier.showError(GermplasmSearchResultsComponent.this.getWindow(), "Error with Cross Expansion", "There is a data problem that prevents the generation of the cross expansion. Please contact your administrator");
-						return germplasmNames;
+						if(ex.getMessage().contains("Problem building pedigree string for gid")){
+							MessageNotifier.showError(GermplasmSearchResultsComponent.this.getWindow(), "Error with Cross Expansion", "There is a data problem that prevents the generation of the cross expansion. Please contact your administrator");
+							return germplasmNames;
+						}
+
 					}
 
 				}
