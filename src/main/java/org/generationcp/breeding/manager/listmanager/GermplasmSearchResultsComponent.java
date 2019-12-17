@@ -616,7 +616,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.addColumnContextMenu = addColumnContextMenu;
 	}
 
-	public static class TableRightClickHandler implements Action.Handler {
+	public class TableRightClickHandler implements Action.Handler {
 
 		private static final long serialVersionUID = -897257270314381555L;
 
