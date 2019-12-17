@@ -16,7 +16,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
-import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.manager.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +51,6 @@ public class GermplasmSearchBarComponent extends CssLayout
 	private static final String PERCENT = "%";
 
 	private final AddEntryDialogSource source;
-	private HorizontalLayout searchBarLayoutLeft;
-	private CssLayout searchBarLayoutRight;
 	private TextField searchField;
 	private final GermplasmSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
@@ -147,7 +144,7 @@ public class GermplasmSearchBarComponent extends CssLayout
 		this.exactMatches = this.messageSource.getMessage(Message.EXACT_MATCHES);
 		this.matchesContaining = this.messageSource.getMessage(Message.MATCHES_CONTAINING);
 
-		final List<String> searchTypes = Arrays.asList(new String[] {this.matchesStartingWith, this.exactMatches, this.matchesContaining});
+		final List<String> searchTypes = Arrays.asList(this.matchesStartingWith, this.exactMatches, this.matchesContaining);
 		this.searchTypeOptions = new OptionGroup(null, searchTypes);
 		this.searchTypeOptions.setDebugId("searchTypeOptions");
 		this.searchTypeOptions.setDebugId("searchTypeOptions");
@@ -212,24 +209,24 @@ public class GermplasmSearchBarComponent extends CssLayout
 		// To allow for all of the elements to fit in the default width of the search bar. There may be a better way..
 		this.searchField.setWidth("120px");
 
-		this.searchBarLayoutLeft = new HorizontalLayout();
-		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
-		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
+		HorizontalLayout searchBarLayoutLeft = new HorizontalLayout();
+		searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
+		searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
 
-		this.searchBarLayoutLeft.setSpacing(true);
-		this.searchBarLayoutLeft.addComponent(this.searchField);
-		this.searchBarLayoutLeft.addComponent(this.searchButton);
-		this.searchBarLayoutLeft.addComponent(this.popup);
+		searchBarLayoutLeft.setSpacing(true);
+		searchBarLayoutLeft.addComponent(this.searchField);
+		searchBarLayoutLeft.addComponent(this.searchButton);
+		searchBarLayoutLeft.addComponent(this.popup);
 
-		this.searchBarLayoutRight = new CssLayout();
-		this.searchBarLayoutRight.setDebugId("searchBarLayoutRight");
-		this.searchBarLayoutLeft.setDebugId("searchBarLayoutRight");
+		CssLayout searchBarLayoutRight = new CssLayout();
+		searchBarLayoutRight.setDebugId("searchBarLayoutRight");
+		searchBarLayoutLeft.setDebugId("searchBarLayoutRight");
 
-		this.searchBarLayoutRight.addComponent(this.withInventoryOnlyCheckBox);
-		this.searchBarLayoutRight.addComponent(this.includeParentsCheckBox);
-		this.searchBarLayoutRight.addComponent(this.includeMGMembersCheckbox);
+		searchBarLayoutRight.addComponent(this.withInventoryOnlyCheckBox);
+		searchBarLayoutRight.addComponent(this.includeParentsCheckBox);
+		searchBarLayoutRight.addComponent(this.includeMGMembersCheckbox);
 
-		this.searchBarLayoutLeft.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
+		searchBarLayoutLeft.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 		this.withInventoryOnlyCheckBox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 		this.includeParentsCheckBox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 		this.includeMGMembersCheckbox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
@@ -238,8 +235,8 @@ public class GermplasmSearchBarComponent extends CssLayout
 		firstRow.setDebugId("firstRow");
 		firstRow.setDebugId("firstRow");
 
-		firstRow.addComponent(this.searchBarLayoutLeft);
-		firstRow.addComponent(this.searchBarLayoutRight);
+		firstRow.addComponent(searchBarLayoutLeft);
+		firstRow.addComponent(searchBarLayoutRight);
 		return firstRow;
 	}
 

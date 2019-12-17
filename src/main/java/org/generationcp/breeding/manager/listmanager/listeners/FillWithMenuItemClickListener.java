@@ -131,9 +131,9 @@ public class FillWithMenuItemClickListener implements ClickListener {
 		levelComboBox.setDebugId("levelComboBox");
 		levelComboBox.setDebugId("levelComboBox");
 		for (int ctr = 1; ctr <= 5; ctr++) {
-			levelComboBox.addItem(Integer.valueOf(ctr));
+			levelComboBox.addItem(ctr);
 		}
-		levelComboBox.setValue(Integer.valueOf(1));
+		levelComboBox.setValue(1);
 		levelComboBox.setNullSelectionAllowed(false);
 		layout.addComponent(levelComboBox, "top:10px;left:10px");
 

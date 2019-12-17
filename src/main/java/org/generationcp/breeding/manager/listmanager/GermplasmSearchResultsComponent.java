@@ -85,7 +85,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 	private Action.Handler rightClickActionHandler;
 
-	private org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
+	private final org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
 
 	private final LazyQueryDefinition definition = new LazyQueryDefinition(true, 20);
 
@@ -263,8 +263,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 				if (propertyId == GermplasmSearchResultsComponent.NAMES) {
 					try{
 						final Item item = GermplasmSearchResultsComponent.this.matchingGermplasmTable.getItem(itemId);
-						final Integer gid =
-								Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
+						final int gid =
+								Integer.parseInt(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
 
 						germplasmNames = GermplasmSearchResultsComponent.this.getGermplasmNames(gid);
 					}catch(MiddlewareException ex){
@@ -296,7 +296,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 	/**
 	 * This will just create a container with the table properties so we can have headers when we load the table initially
 	 *
-	 * @return
+	 * @return Container
 	 */
 	private Container createInitialContainer() {
 		final Container container = new IndexedContainer();
@@ -459,14 +459,14 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 	}
 
 	private String getGermplasmNames(final int gid) {
-		final StringBuilder germplasmNames = new StringBuilder("");
+		final StringBuilder germplasmNames = new StringBuilder();
 
-		final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+		final List<Name> names = this.germplasmDataManager.getNamesByGID(gid, null, null);
 
 		int i = 0;
 		for (final Name n : names) {
 			if (i < names.size() - 1) {
-				germplasmNames.append(n.getNval() + ", ");
+				germplasmNames.append(n.getNval()).append(", ");
 			} else {
 				germplasmNames.append(n.getNval());
 			}
@@ -495,18 +495,15 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 	}
 
 	protected void updateNoOfSelectedEntries() {
-		int count = 0;
-
 		final Collection<?> selectedItems = (Collection<?>) this.matchingGermplasmTable.getValue();
-		count = selectedItems.size();
+		int count = selectedItems.size();
 
 		this.updateNoOfSelectedEntries(count);
 	}
 
 	@SuppressWarnings("unchecked")
 	public void addSelectedEntriesToNewList() {
-		final List<Integer> selectedItems = new ArrayList<>();
-		selectedItems.addAll((Collection<? extends Integer>) this.matchingGermplasmTable.getValue());
+		final List<Integer> selectedItems = new ArrayList<>((Collection<? extends Integer>) this.matchingGermplasmTable.getValue());
 
 		if (selectedItems.isEmpty()) {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
@@ -619,11 +616,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.addColumnContextMenu = addColumnContextMenu;
 	}
 
-	public class TableRightClickHandler implements Action.Handler {
+	public static class TableRightClickHandler implements Action.Handler {
 
 		private static final long serialVersionUID = -897257270314381555L;
 
-		GermplasmSearchResultsComponent germplasmSearchResultsComponent;
+		final GermplasmSearchResultsComponent germplasmSearchResultsComponent;
 
 		public TableRightClickHandler(final GermplasmSearchResultsComponent germplasmSearchResultsComponent) {
 			this.germplasmSearchResultsComponent = germplasmSearchResultsComponent;
