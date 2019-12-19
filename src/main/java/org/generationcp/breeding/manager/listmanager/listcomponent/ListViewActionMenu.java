@@ -134,7 +134,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		}
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CROP_MANAGEMENT')")
 	private void setRemoveSelectedGermplasmWhenListIsLocked(final boolean visible) {
 		if (this.removeSelectedGermplasm != null) {
 			this.removeSelectedGermplasm.setVisible(visible);
@@ -182,7 +182,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.messageSource = messageSource;
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CROP_MANAGEMENT')")
 	protected void layoutAdminLink() {
 		this.removeSelectedGermplasm = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM));
 		this.codingAndGroupingOptions.addItem(this.messageSource.getMessage(Message.UNGROUP));
