@@ -421,28 +421,4 @@
 	<context:component-scan base-package="org.generationcp.commons.ruleengine.coding.expression" />
 
 	<!-- Nested <beans> elements can only be at the end. -->
-	
-	<!-- Only activate liquibase auto update in non-production environments. 
-		Requires -Dspring.profiles.active=development in system properties to make sure auto activation works in dev environments only. -->
-		
-	<!-- As a best practice, for production environments (definition of which is not yet clearly defined for BMS) database update should not trigger automatically.
-		 For this case, liquibase can generate a SQL script using the updateSQL commnad from the change log using a command that looks like following 
-		 	(add "dash dash" before command line options):
-	
-			java -jar <BMS_INSTALL>/infrastructure/tomcat/webapps/ibpworkbench/WEB-INF/lib/liquibase-core-3.5.0.jar 
-			  classpath=<BMS_INSTALL>/infrastructure/tomcat/webapps/ibpworkbench.war 
-			  driver=com.mysql.jdbc.Driver 
-			  changeLogFile=db_changelog_crop.xml 
-			  url="jdbc:mysql://localhost:43306/ibdbv2_maize_merged" 
-			  username=root 
-			  password= 
-			  updateSQL 
-		
-		TODO: This needs to be scripted for dynamically detecting crop datbases to run against.	
-		
-		Script generated as such will have to be runn manually against each production database by administrators/data managers.
-	 -->
-	<beans profile="development">
-		<bean id="liquibaseInitBean" class="org.generationcp.middleware.liquibase.LiquibaseInitBean" />
-	</beans>
 </beans>
