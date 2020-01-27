@@ -151,9 +151,9 @@ public class ReserveInventoryAction implements Serializable {
 
 			final Integer lotId = lotDetail.getLotId();
 			final Date transactionDate = DateUtil.getCurrentDate();
-			Integer transacStatus = TransactionStatus.PENDING.getIntValue();
+			Integer transacStatus = TransactionStatus.ANTICIPATED.getIntValue();
 			if (lotDetail.getTransactionStatus()) {
-				transacStatus =  TransactionStatus.CONFIRMED.getIntValue();
+				transacStatus =  TransactionStatus.COMMITTED.getIntValue();
 			}
 
 			// since this is a reserve transaction

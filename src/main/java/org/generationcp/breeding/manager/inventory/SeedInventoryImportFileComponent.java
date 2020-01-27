@@ -411,7 +411,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 				continue;
 			}
 
-			if (transaction.getStatus() == TransactionStatus.CONFIRMED.getIntValue()) {
+			if (transaction.getStatus() == TransactionStatus.COMMITTED.getIntValue()) {
 				// Skip and process next or Cancel import
 				importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_ERROR.toString());
 				continue;
@@ -423,12 +423,12 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 				final Double transactionQty = transaction.getQuantity() * -1;
 
 				if (Objects.equals(amountWithdrawn, transactionQty)) { // Actual withdrawal is same as reservation made on lot
-					transaction.setStatus(TransactionStatus.CONFIRMED.getIntValue());
+					transaction.setStatus(TransactionStatus.COMMITTED.getIntValue());
 					transaction.setCommitmentDate(DateUtil.getCurrentDateAsIntegerValue());
 					transaction.setComments(comments);
 					processedTransactions.add(transaction);
 				} else if (amountWithdrawn < transactionQty) { // Actual withdrawal is less than reservation made on lot
-					transaction.setStatus(TransactionStatus.CONFIRMED.getIntValue());
+					transaction.setStatus(TransactionStatus.COMMITTED.getIntValue());
 					transaction.setPreviousAmount(transactionQty);
 					final Double updatedQty = amountWithdrawn * -1;
 					transaction.setQuantity(updatedQty);
@@ -438,7 +438,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 				} else { // Actual withdrawal is greater than reservation. Need to check if extra reservation can be made or not
 					if (amountWithdrawn <= transactionQty + availableBalance) {
-						transaction.setStatus(TransactionStatus.CONFIRMED.getIntValue());
+						transaction.setStatus(TransactionStatus.COMMITTED.getIntValue());
 						transaction.setPreviousAmount(transactionQty);
 						final Double updatedQty = amountWithdrawn * -1;
 						transaction.setQuantity(updatedQty);
@@ -468,7 +468,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 						final Double explicitWithdrawalMade = lotDetails.getActualLotBalance() - balanceAmount;
 
 						if (explicitWithdrawalMade <= transactionQty + availableBalance) {
-							transaction.setStatus(TransactionStatus.CONFIRMED.getIntValue());
+							transaction.setStatus(TransactionStatus.COMMITTED.getIntValue());
 							transaction.setPreviousAmount(lotDetails.getActualLotBalance());
 							final Double updatedQty = explicitWithdrawalMade * -1;
 							transaction.setQuantity(updatedQty);
@@ -486,7 +486,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 					} else if (balanceAmount == 0) {
 						// Discarding actual balance
-						transaction.setStatus(TransactionStatus.CONFIRMED.getIntValue());
+						transaction.setStatus(TransactionStatus.COMMITTED.getIntValue());
 						transaction.setPreviousAmount(transactionQty);
 						final Double updatedQty = -1 * lotDetails.getActualLotBalance();
 						transaction.setQuantity(updatedQty);
