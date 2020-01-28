@@ -26,6 +26,7 @@ import org.generationcp.middleware.pojos.ims.EntityType;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.ims.TransactionStatus;
+import org.generationcp.middleware.pojos.ims.TransactionType;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.InitializingBean;
@@ -540,7 +541,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				final Transaction transaction =
 					new Transaction(null, workbenchUser.getUserid(), lot, currentDate, TransactionStatus.CONFIRMED.getIntValue(),
 						importedGermplasm.getSeedAmount(), SaveGermplasmListAction.INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId,
-						Double.valueOf(0), workbenchUser.getPerson().getId(), importedGermplasm.getInventoryId());
+						Double.valueOf(0), workbenchUser.getPerson().getId(), importedGermplasm.getInventoryId(), TransactionType.DEPOSIT.getId());
 				if (importedGermplasm.getSeedAmount() != null) {
 					this.gidTransactionSetMap.get(gid).add(transaction);
 				}
