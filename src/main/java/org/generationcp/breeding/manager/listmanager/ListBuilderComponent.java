@@ -524,6 +524,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
 
+		this.inventoryViewMenu = new ContextMenu();
+		this.inventoryViewMenu.setDebugId("inventoryViewMenu");
+		this.inventoryViewMenu.setWidth("300px");
+
 		//// Re-arranging Menu Items for Lots view
 		this.listEditingOptionsForLots = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
 		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
