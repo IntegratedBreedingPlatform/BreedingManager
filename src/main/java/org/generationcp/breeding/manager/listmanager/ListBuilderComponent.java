@@ -1,17 +1,25 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.Action;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -81,25 +89,15 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.Action;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Reindeer;
+import javax.annotation.Resource;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Configurable
 public class ListBuilderComponent extends VerticalLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource,
@@ -272,9 +270,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {// changed
 						// label
 						ListBuilderComponent.this.copyToNewListAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.PREPARE_SEED))) {// changed
-						// label
-						ListBuilderComponent.this.viewInventoryAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
 						ListBuilderComponent.this.resetButton.click();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
@@ -518,7 +513,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.menu.setWidth("300px");
 
 		// re-arranging Action menu items
-		this.menu.addItem(this.messageSource.getMessage(Message.PREPARE_SEED));
 		this.listEditingOptions = this.menu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
 		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
 		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
@@ -530,12 +524,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
 
-		this.inventoryViewMenu = new ContextMenu();
-		this.inventoryViewMenu.setDebugId("inventoryViewMenu");
-		this.inventoryViewMenu.setWidth("300px");
-
 		//// Re-arranging Menu Items for Lots view
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.listEditingOptionsForLots = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
 		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
 		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
@@ -548,8 +537,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.menuSaveReserveInventory = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
 		this.menuCancelReservation = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
 
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.EXPORT_SEED_LIST));
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.IMPORT_SEED_LIST));
 		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.PRINT_LABELS));
 
 		// Temporarily disable to Copy to List in InventoryView
