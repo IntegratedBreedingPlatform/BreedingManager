@@ -1,6 +1,10 @@
 
 package org.generationcp.breeding.manager.pojos;
 
+import com.google.common.base.Strings;
+import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
+import org.generationcp.commons.parsing.pojo.ImportedFactor;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,11 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
-import org.generationcp.commons.parsing.pojo.ImportedFactor;
-
-import com.google.common.base.Strings;
-
 public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
 	private static final long serialVersionUID = -7039616815348588609L;
@@ -21,8 +20,6 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	private boolean hasStockIDValues = false;
 	private boolean setImportedNameAsPreferredName = false;
 	private String preferredNameCode = "";
-
-	public static final String INVENTORY_AMOUNT_PROPERTY = "INVENTORY AMOUNT";
 
 	public ImportedGermplasmList(final String filename, final String name, final String title, final String type, final Date date) {
 		super(filename, name, title, type, date);
