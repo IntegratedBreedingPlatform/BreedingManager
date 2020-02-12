@@ -194,7 +194,7 @@ public class GermplasmListExporter {
 
 	public FileOutputStream exportGermplasmListXLS(final int germplasmListID, final String fileName, final Table listDataTable) throws GermplasmListExporterException {
 		final GermplasmListNewColumnsInfo currentColumnsInfo = this.germplasmListManager.getAdditionalColumnsForList(germplasmListID);
-		final Integer currentWorkbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
+		final int currentWorkbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
 
 		final GermplasmListExportInputValues input = new GermplasmListExportInputValues();
 		input.setFileName(fileName);
@@ -518,7 +518,7 @@ public class GermplasmListExporter {
 	}
 
 	protected Integer getCurrentLocalIbdbUserId() {
-		Integer currentLocalIbdbUserId = 0;
+		int currentLocalIbdbUserId = 0;
 
 		try {
 			currentLocalIbdbUserId = this.contextUtil.getCurrentWorkbenchUserId();
@@ -552,10 +552,10 @@ public class GermplasmListExporter {
 		return columnLabel.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
-	private List<String> getAddedColumnSort(GermplasmListNewColumnsInfo addedColumns) {
-    	List<String> addedColumn = new ArrayList<>();
+	private List<String> getAddedColumnSort(final GermplasmListNewColumnsInfo addedColumns) {
+    	final List<String> addedColumn = new ArrayList<>();
     	if(this.visibleColumnList !=null) {
-    		for(String column : visibleColumnList) {
+    		for(final String column : this.visibleColumnList) {
     			if(addedColumns.getColumnValuesMap().containsKey(column)) {
     				addedColumn.add(column);
 				}
