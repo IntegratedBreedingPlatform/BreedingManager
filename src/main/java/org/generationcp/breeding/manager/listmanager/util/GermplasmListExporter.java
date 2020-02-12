@@ -88,6 +88,8 @@ public class GermplasmListExporter {
 	@Resource
 	private UserService userService;
 
+	private List<String> visibleColumnList;
+
     public GermplasmListExporter() {
     }
 
@@ -219,6 +221,8 @@ public class GermplasmListExporter {
 
 		input.setGermplasmParents(this.getGermplasmParentsMap(listDataTable));
 
+		currentColumnsInfo.setAddedColumnCurrentSort(this.getAddedColumnSort(currentColumnsInfo));
+
 		input.setCurrentColumnsInfo(currentColumnsInfo);
 
 		return this.germplasmExportService.generateGermplasmListExcelFile(input);
@@ -292,10 +296,10 @@ public class GermplasmListExporter {
 		final List<String> excludedColumns = Arrays.asList(ColumnLabels.FGID.getName(), ColumnLabels.MGID.getName());
 
 		// change the visibleColumns array to list
-		final List<String> visibleColumnList = new ArrayList<>();
+		this.visibleColumnList = new ArrayList<>();
 		for (final Object column : visibleColumns) {
 			if (!listDataTable.isColumnCollapsed(column) && !excludedColumns.contains(column)) {
-				visibleColumnList.add(column.toString());
+				this.visibleColumnList.add(column.toString());
 			}
 		}
 
@@ -312,7 +316,7 @@ public class GermplasmListExporter {
 					|| ColumnLabels.DESIGNATION.getName().equalsIgnoreCase(column.toString())) {
 				columnHeaderMap.put(key, true);
 			} else {
-				columnHeaderMap.put(key, visibleColumnList.contains(column.toString()));
+				columnHeaderMap.put(key, this.visibleColumnList.contains(column.toString()));
 			}
 
 		}
@@ -546,5 +550,17 @@ public class GermplasmListExporter {
 
 	protected String getTermNameFromOntology(final ColumnLabels columnLabel) {
 		return columnLabel.getTermNameFromOntology(this.ontologyDataManager);
+	}
+
+	private List<String> getAddedColumnSort(GermplasmListNewColumnsInfo addedColumns) {
+    	List<String> addedColumn = new ArrayList<>();
+    	if(this.visibleColumnList !=null) {
+    		for(String column : visibleColumnList) {
+    			if(addedColumns.getColumnValuesMap().containsKey(column)) {
+    				addedColumn.add(column);
+				}
+			}
+		}
+    	return addedColumn;
 	}
 }
