@@ -500,7 +500,7 @@ public class GermplasmListExporter {
 			final ExportRow row) {
 		int i = 6;
 		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
-			for(String column : currentColumnsInfo.getAddedColumnCurrentSort()){
+			for(final String column : currentColumnsInfo.getAddedColumnCurrentSort()){
 				if(ColumnLabels.get(column) == null) {
 					final List<ListDataColumnValues> columnValues = currentColumnsInfo.getColumnValuesMap().get(column);
 					final ListDataColumnValues listDataColumnValues =
