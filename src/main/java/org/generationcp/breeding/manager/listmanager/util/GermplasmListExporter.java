@@ -404,6 +404,7 @@ public class GermplasmListExporter {
 	public void exportGermplasmListCSV(final String fileName, final Table listDataTable, final Integer germplasmListId) throws GermplasmListExporterException {
 
 		final GermplasmListNewColumnsInfo currentColumnsInfo = this.germplasmListManager.getAdditionalColumnsForList(germplasmListId);
+		currentColumnsInfo.setAddedColumnCurrentSort(this.getAddedColumnSort(currentColumnsInfo));
 		final List<ExportRow> exportColumnValues = this.getExportColumnValuesFromTable(listDataTable, currentColumnsInfo);
 		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeadersFromTable(listDataTable, currentColumnsInfo);
 
@@ -456,7 +457,7 @@ public class GermplasmListExporter {
 			for(final UserDefinedField nameType: nameTypes) {
 				nameTypesNameToCodeMap.put(nameType.getFname().toUpperCase(), nameType.getFcode());
 			}
-			for (final String column : currentColumnsInfo.getColumns()) {
+			for (final String column : currentColumnsInfo.getAddedColumnCurrentSort()) {
 				if(ColumnLabels.get(column) == null) {
 					final String columnHeader = nameTypesNameToCodeMap.get(column) != null ? nameTypesNameToCodeMap.get(column.toUpperCase()) : column;
 					exportColumnHeaders.add(new ExportColumnHeader(j++, columnHeader, true));
@@ -499,9 +500,9 @@ public class GermplasmListExporter {
 			final ExportRow row) {
 		int i = 6;
 		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
-			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
-				if(ColumnLabels.get(columnEntry.getKey()) == null) {
-					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
+			for(String column : currentColumnsInfo.getAddedColumnCurrentSort()){
+				if(ColumnLabels.get(column) == null) {
+					final List<ListDataColumnValues> columnValues = currentColumnsInfo.getColumnValuesMap().get(column);
 					final ListDataColumnValues listDataColumnValues =
 						(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
 
