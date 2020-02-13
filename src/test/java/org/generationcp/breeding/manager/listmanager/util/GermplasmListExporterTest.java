@@ -316,7 +316,7 @@ public class GermplasmListExporterTest {
 			Mockito.verify(this.germplasmExportService, Mockito.times(1)).generateCSVFile(Matchers.any(List.class),
 					Matchers.any(List.class), Matchers.anyString());
 
-		} catch (GermplasmListExporterException | IOException e) {
+		} catch (final GermplasmListExporterException |  IOException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
@@ -431,9 +431,9 @@ public class GermplasmListExporterTest {
 		final GermplasmListNewColumnsInfo currentColumnsInfo = new GermplasmListNewColumnsInfo(GermplasmListExporterTest.GERMPLASM_LIST_ID);
 
 		final Map<String, List<ListDataColumnValues>> map = new HashMap<>();
-		List list = new ArrayList();
+		final List list = new ArrayList();
 		for (final Object itemId : GermplasmListExporterTest.listDataTable.getItemIds()){
-			ListDataColumnValues ldcv = new ListDataColumnValues(PREFERRED_NAME, (Integer) itemId, LIST_NAME);
+			final ListDataColumnValues ldcv = new ListDataColumnValues(PREFERRED_NAME, (Integer) itemId, LIST_NAME);
 			list.add(ldcv);
 		}
 		map.put(PREFERRED_NAME, list);
@@ -460,8 +460,8 @@ public class GermplasmListExporterTest {
 
 	@Test
 	public void testAddAttributeAndNameTypeHeadersForAttributes() {
-		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
-		GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo();
+		final List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
+		final GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo();
 		this.germplasmListExporter.addAttributeAndNameTypeHeaders(currentColumnsInfo, exportColumnHeaders);
 		int counter = 0;
 		for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
@@ -470,8 +470,8 @@ public class GermplasmListExporterTest {
 	}
 	@Test
 	public void testAddAttributeAndNameTypeHeadersForNameTypes() {
-		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
-		GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo(GermplasmListExporterTest.CODE_1, GermplasmListExporterTest.CODE_1);
+		final List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
+		final GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo(GermplasmListExporterTest.CODE_1, GermplasmListExporterTest.CODE_1);
 		Mockito.when(this.germplasmListManager.getGermplasmNameTypes()).thenReturn(Arrays.asList(UserDefinedFieldTestDataInitializer.createUserDefinedField(GermplasmListExporterTest.CODE1, GermplasmListExporterTest.CODE_1)));
 		this.germplasmListExporter.addAttributeAndNameTypeHeaders(currentColumnsInfo, exportColumnHeaders);
 		Assert.assertEquals(GermplasmListExporterTest.CODE1, exportColumnHeaders.get(0).getName());
@@ -479,10 +479,10 @@ public class GermplasmListExporterTest {
 
 	@Test
 	public void testAddAttributesValues() {
-		GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo();
+		final GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo();
 		final ExportRow row = new ExportRow();
 		this.germplasmListExporter.addAttributeAndNameTypeValues(currentColumnsInfo, (Object)1, row);
-		Integer counter = 6;
+		final Integer counter = 6;
 		for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
 			Assert.assertEquals(columnEntry.getValue().get(0).getValue(), row.getValueForColumn(counter));
 		}
@@ -508,7 +508,7 @@ public class GermplasmListExporterTest {
 		return listDataTable;
 	}
 
-	private static Table generateTestTable(ArrayList<String> addedColumns) {
+	private static Table generateTestTable(final ArrayList<String> addedColumns) {
 		final Table listDataTable = new Table();
 
 		listDataTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
@@ -523,7 +523,7 @@ public class GermplasmListExporterTest {
 		listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), String.class, null);
 		listDataTable.setColumnCollapsingAllowed(true);
 
-		for(String column : addedColumns) {
+		for(final String column : addedColumns) {
 			listDataTable.addContainerProperty(column, String.class, null);
 		}
 
@@ -688,35 +688,32 @@ public class GermplasmListExporterTest {
 
 	@Test
 	public void testGetVisibleColumnMapWithMGID() {
-		Map<String, Boolean> visibleColumnsMap;
-		int visibleColumnCount;
+
 		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable(new ArrayList<>(Arrays.asList(ColumnLabels.MGID.getName())));
 
-		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
-		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
+		final Map<String, Boolean>  visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
+		final int visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
 		Assert.assertFalse("MGID is not visible", this.isColumnVisible(visibleColumnsMap, String.valueOf(ColumnLabels.MGID.getTermId().getId())));
 		Assert.assertTrue("Expected to have exactly 10 visible columns.", visibleColumnCount == 10);
 	}
 
 	@Test
 	public void testGetVisibleColumnMapWithFGID() {
-		Map<String, Boolean> visibleColumnsMap;
-		int visibleColumnCount;
+
 		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable(new ArrayList<>(Arrays.asList(ColumnLabels.FGID.getName())));
 
-		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
-		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
+		final Map<String, Boolean> visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
+		final int visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
 		Assert.assertFalse("FGID is not visible ", this.isColumnVisible(visibleColumnsMap,String.valueOf( ColumnLabels.FGID.getTermId().getId())));
 		Assert.assertTrue("Expected to have exactly 10 visible columns.", visibleColumnCount == 10);
 	}
 
 	@Test
 	public void testGetVisibleColumnMapWithAddedColumn() {
-		Map<String, Boolean> visibleColumnsMap;
-		int visibleColumnCount;
+
 		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable(new ArrayList<String>(Arrays.asList(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())));
-		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
-		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
+		final Map<String, Boolean>  visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
+		final int visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
 		Assert.assertTrue("CROSS-FEMALE PREFERRED NAME is visible ", visibleColumnsMap.containsKey(String.valueOf(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getTermId().getId())));
 		Assert.assertTrue("Expected to have exactly 11 visible columns.", visibleColumnCount == 11);
 	}
@@ -735,10 +732,10 @@ public class GermplasmListExporterTest {
 		final GermplasmListNewColumnsInfo currentColumnsInfo = new GermplasmListNewColumnsInfo(GermplasmListExporterTest.GERMPLASM_LIST_ID);
 		this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
 		final Map<String, List<ListDataColumnValues>> map = new HashMap<>();
-		setAddedColumnValues(map, NEWNOTE200, "NEWNOTE1");
-		setAddedColumnValues(map, DESC, "This is a description");
-		setAddedColumnValues(map, DATE, "02132020");
-		setAddedColumnValues(map, NOTE, "NOTE1");
+		this.setAddedColumnValues(map, NEWNOTE200, "NEWNOTE1");
+		this.setAddedColumnValues(map, DESC, "This is a description");
+		this.setAddedColumnValues(map, DATE, "02132020");
+		this.setAddedColumnValues(map, NOTE, "NOTE1");
 		currentColumnsInfo.setColumnValuesMap(map);
 		currentColumnsInfo.setAddedColumnCurrentSort(this.germplasmListExporter.getAddedColumnSort(currentColumnsInfo));
 
@@ -773,10 +770,10 @@ public class GermplasmListExporterTest {
 	private Map<String, List<ListDataColumnValues>> setAddedColumnValues(final Map<String, List<ListDataColumnValues>> map, final String columName, final String preferredValue) {
 
 
-		List list = new ArrayList();
+		final List list = new ArrayList();
 
 		for (final Object itemId : GermplasmListExporterTest.listDataTable.getItemIds()) {
-			ListDataColumnValues ldcv = new ListDataColumnValues(columName, (Integer) itemId, preferredValue);
+			final ListDataColumnValues ldcv = new ListDataColumnValues(columName, (Integer) itemId, preferredValue);
 			list.add(ldcv);
 		}
 		map.put(columName, list);
