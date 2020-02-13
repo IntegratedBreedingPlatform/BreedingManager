@@ -451,7 +451,7 @@ public class GermplasmListExporter {
 	protected void addAttributeAndNameTypeHeaders(final GermplasmListNewColumnsInfo currentColumnsInfo,
 			final List<ExportColumnHeader> exportColumnHeaders) {
 		int j = 6;
-		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
+		if (currentColumnsInfo != null && !currentColumnsInfo.getAddedColumnCurrentSort().isEmpty()) {
 			final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
 			final Map<String, String> nameTypesNameToCodeMap = new HashMap<>();
 			for(final UserDefinedField nameType: nameTypes) {
@@ -499,7 +499,7 @@ public class GermplasmListExporter {
 	protected void addAttributeAndNameTypeValues(final GermplasmListNewColumnsInfo currentColumnsInfo, final Object itemId,
 			final ExportRow row) {
 		int i = 6;
-		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
+		if (currentColumnsInfo != null && !currentColumnsInfo.getAddedColumnCurrentSort().isEmpty()) {
 			for(final String column : currentColumnsInfo.getAddedColumnCurrentSort()){
 				if(ColumnLabels.get(column) == null) {
 					final List<ListDataColumnValues> columnValues = currentColumnsInfo.getColumnValuesMap().get(column);
@@ -553,11 +553,11 @@ public class GermplasmListExporter {
 		return columnLabel.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
-	private List<String> getAddedColumnSort(final GermplasmListNewColumnsInfo addedColumns) {
+	protected List<String> getAddedColumnSort(final GermplasmListNewColumnsInfo addedColumns) {
     	final List<String> addedColumn = new ArrayList<>();
     	if(this.visibleColumnList !=null) {
     		for(final String column : this.visibleColumnList) {
-    			if(addedColumns.getColumnValuesMap().containsKey(column)) {
+    			if(addedColumns.getColumnValuesMap()!=null && addedColumns.getColumnValuesMap().containsKey(column)) {
     				addedColumn.add(column);
 				}
 			}

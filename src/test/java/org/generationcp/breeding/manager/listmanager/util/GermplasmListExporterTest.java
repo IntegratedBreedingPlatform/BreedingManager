@@ -72,6 +72,10 @@ public class GermplasmListExporterTest {
 	public static final String PREFERRED_NAME = "PREFERRED_NAME";
 	public static final  String CODE1 = "CODE1";
 	public static final  String CODE_1 = "CODE 1";
+	public static final String NEWNOTE200 = "NEWNOTE200";
+	public static final String NOTE = "NOTE";
+	public static final String DESC = "DESC";
+	public static final String DATE = "DATE";
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -343,7 +347,7 @@ public class GermplasmListExporterTest {
 		Assert.assertTrue(exportColumnHeaders.get(3).isDisplay());
 		Assert.assertTrue(exportColumnHeaders.get(4).isDisplay());
 		Assert.assertTrue(exportColumnHeaders.get(5).isDisplay());
-		
+
 		// make sure the header in CSV is same as the header in table
 		Assert.assertEquals(GermplasmListExporterTest.ENTRY_ID, exportColumnHeaders.get(0).getName());
 		Assert.assertEquals(GermplasmListExporterTest.GID, exportColumnHeaders.get(1).getName());
@@ -453,7 +457,7 @@ public class GermplasmListExporterTest {
 			Assert.assertEquals(LIST_NAME, row.getValueForColumn(6)); //PREFERRED_NAME
 		}
 	}
-	
+
 	@Test
 	public void testAddAttributeAndNameTypeHeadersForAttributes() {
 		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
@@ -472,7 +476,7 @@ public class GermplasmListExporterTest {
 		this.germplasmListExporter.addAttributeAndNameTypeHeaders(currentColumnsInfo, exportColumnHeaders);
 		Assert.assertEquals(GermplasmListExporterTest.CODE1, exportColumnHeaders.get(0).getName());
 	}
-	
+
 	@Test
 	public void testAddAttributesValues() {
 		GermplasmListNewColumnsInfo currentColumnsInfo = GermplasmListNewColumnsInfoTestDataInitializer.createGermplasmListNewColumnsInfo();
@@ -722,6 +726,62 @@ public class GermplasmListExporterTest {
 				return visibleColumnsMap.get(column);
 			}
 			return false;
+	}
+
+	@Test
+	public void testAddedColumnSort() throws GermplasmListExporterException {
+		GermplasmListExporterTest.listDataTable = this.generateTestTable(new ArrayList<>(Arrays.asList(NEWNOTE200, DESC, DATE, NOTE)));
+
+		final GermplasmListNewColumnsInfo currentColumnsInfo = new GermplasmListNewColumnsInfo(GermplasmListExporterTest.GERMPLASM_LIST_ID);
+		this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
+		final Map<String, List<ListDataColumnValues>> map = new HashMap<>();
+		setAddedColumnValues(map, NEWNOTE200, "NEWNOTE1");
+		setAddedColumnValues(map, DESC, "This is a description");
+		setAddedColumnValues(map, DATE, "02132020");
+		setAddedColumnValues(map, NOTE, "NOTE1");
+		currentColumnsInfo.setColumnValuesMap(map);
+		currentColumnsInfo.setAddedColumnCurrentSort(this.germplasmListExporter.getAddedColumnSort(currentColumnsInfo));
+
+
+
+		final List<ExportRow> exportRows =
+			this.germplasmListExporter.getExportColumnValuesFromTable(GermplasmListExporterTest.listDataTable, currentColumnsInfo);
+		Assert.assertEquals(10, exportRows.size());
+
+		// check if the values from the table match the created pojos
+		for (int x = 0; x < exportRows.size(); x++) {
+			final ExportRow row = exportRows.get(x);
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getEntryId().toString(), row.getValueForColumn(0));
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getGid().toString(), row.getValueForColumn(1));
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getEntryCode(), row.getValueForColumn(2));
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getDesignation(), row.getValueForColumn(3));
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getGroupName(), row.getValueForColumn(4));
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getSeedSource(), row.getValueForColumn(5));
+			Assert.assertEquals("NEWNOTE1", row.getValueForColumn(6)); //NEWNOTE200
+			Assert.assertEquals("This is a description", row.getValueForColumn(7)); //DESC
+			Assert.assertEquals("02132020", row.getValueForColumn(8)); //DATE
+			Assert.assertEquals("NOTE1", row.getValueForColumn(9)); //NOTE
+		}
+	}
+
+	/**
+	 *
+	 * @param columName
+	 * @param preferredValue - leave empty or null for random number values
+	 * @return
+	 */
+	private Map<String, List<ListDataColumnValues>> setAddedColumnValues(final Map<String, List<ListDataColumnValues>> map, final String columName, final String preferredValue) {
+
+
+		List list = new ArrayList();
+
+		for (final Object itemId : GermplasmListExporterTest.listDataTable.getItemIds()) {
+			ListDataColumnValues ldcv = new ListDataColumnValues(columName, (Integer) itemId, preferredValue);
+			list.add(ldcv);
+		}
+		map.put(columName, list);
+
+		return map;
 	}
 
 }
