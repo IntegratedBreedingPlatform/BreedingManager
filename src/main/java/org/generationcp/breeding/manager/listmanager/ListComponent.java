@@ -2474,7 +2474,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			closeLotTransaction.setLot(lot);
 
 			closeLotTransaction.setTransactionDate(transactionDate);
-			closeLotTransaction.setStatus(org.generationcp.middleware.pojos.ims.TransactionStatus.COMMITTED.getIntValue());
+			closeLotTransaction.setStatus(org.generationcp.middleware.pojos.ims.TransactionStatus.CONFIRMED.getIntValue());
 			closeLotTransaction.setQuantity(closingBalance);
 			closeLotTransaction.setComments(comments);
 
