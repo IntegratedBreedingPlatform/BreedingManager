@@ -1,14 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.AddedColumnsMapper;
@@ -328,7 +320,7 @@ public class DropHandlerMethodsTest {
 	@Test
 	public void testAddGermplasmFromList() {
 
-		final Map<String, List<ListDataColumnValues>> map = new HashMap<>();
+		final LinkedHashMap<String, List<ListDataColumnValues>> map = new LinkedHashMap<>();
 		final ListDataColumnValues ldcv = new ListDataColumnValues("GID", 1, "1");
 		map.put("GID", Lists.newArrayList(ldcv));
 		this.germplasmListNewColumnsInfo.setColumnValuesMap(map);
@@ -371,7 +363,7 @@ public class DropHandlerMethodsTest {
 		Mockito.doReturn(germplasmList).when(this.germplasmListManager).getGermplasmListById(DropHandlerMethodsTest.GERMPLASM_LIST_ID);
 
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
-		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
+		Mockito.doReturn(new LinkedHashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
 
 		List<GermplasmListData> listData1 = Lists.newArrayList(germplasmList.getListData().get(0));
 		List<GermplasmListData> listData2 = Lists.newArrayList(germplasmList.getListData().get(1));
@@ -404,7 +396,7 @@ public class DropHandlerMethodsTest {
 		Mockito.doReturn(this.listComponent).when(this.tableWithSelectAllLayout).getParent();
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.listComponent).getGermplasmListId();
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
-		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
+		Mockito.doReturn(new LinkedHashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
 
 		for (final Integer itemId : selectedIDs) {
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(itemId);
@@ -440,7 +432,7 @@ public class DropHandlerMethodsTest {
 		Mockito.doReturn(this.listComponent).when(this.tableWithSelectAllLayout).getParent();
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.listComponent).getGermplasmListId();
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
-		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
+		Mockito.doReturn(new LinkedHashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
 
 
 		// Create preferred name map for gid in the table

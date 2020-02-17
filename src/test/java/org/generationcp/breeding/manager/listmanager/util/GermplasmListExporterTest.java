@@ -430,7 +430,7 @@ public class GermplasmListExporterTest {
 	public void testAddedPreferredNameColumn() throws GermplasmListExporterException {
 		final GermplasmListNewColumnsInfo currentColumnsInfo = new GermplasmListNewColumnsInfo(GermplasmListExporterTest.GERMPLASM_LIST_ID);
 
-		final Map<String, List<ListDataColumnValues>> map = new HashMap<>();
+		final LinkedHashMap<String, List<ListDataColumnValues>> map = new LinkedHashMap<>();
 		final List list = new ArrayList();
 		for (final Object itemId : GermplasmListExporterTest.listDataTable.getItemIds()){
 			final ListDataColumnValues ldcv = new ListDataColumnValues(PREFERRED_NAME, (Integer) itemId, LIST_NAME);
@@ -731,13 +731,12 @@ public class GermplasmListExporterTest {
 
 		final GermplasmListNewColumnsInfo currentColumnsInfo = new GermplasmListNewColumnsInfo(GermplasmListExporterTest.GERMPLASM_LIST_ID);
 		this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
-		final Map<String, List<ListDataColumnValues>> map = new HashMap<>();
+		final LinkedHashMap<String, List<ListDataColumnValues>> map = new LinkedHashMap<>();
 		this.setAddedColumnValues(map, NEWNOTE200, "NEWNOTE1");
 		this.setAddedColumnValues(map, DESC, "This is a description");
 		this.setAddedColumnValues(map, DATE, "02132020");
 		this.setAddedColumnValues(map, NOTE, "NOTE1");
 		currentColumnsInfo.setColumnValuesMap(map);
-		currentColumnsInfo.setAddedColumnCurrentSort(this.germplasmListExporter.getAddedColumnSort(currentColumnsInfo));
 
 
 
