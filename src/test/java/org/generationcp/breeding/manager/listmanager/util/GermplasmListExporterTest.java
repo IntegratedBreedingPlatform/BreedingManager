@@ -435,6 +435,7 @@ public class GermplasmListExporterTest {
 		for (final Object itemId : GermplasmListExporterTest.listDataTable.getItemIds()){
 			final ListDataColumnValues ldcv = new ListDataColumnValues(PREFERRED_NAME, (Integer) itemId, LIST_NAME);
 			list.add(ldcv);
+			currentColumnsInfo.addColumn(PREFERRED_NAME);
 		}
 		map.put(PREFERRED_NAME, list);
 		currentColumnsInfo.setColumnValuesMap(map);
@@ -733,9 +734,13 @@ public class GermplasmListExporterTest {
 		this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
 		final LinkedHashMap<String, List<ListDataColumnValues>> map = new LinkedHashMap<>();
 		this.setAddedColumnValues(map, NEWNOTE200, "NEWNOTE1");
+		currentColumnsInfo.addColumn(NEWNOTE200);
 		this.setAddedColumnValues(map, DESC, "This is a description");
+		currentColumnsInfo.addColumn(DESC);
 		this.setAddedColumnValues(map, DATE, "02132020");
+		currentColumnsInfo.addColumn(DATE);
 		this.setAddedColumnValues(map, NOTE, "NOTE1");
+		currentColumnsInfo.addColumn(NOTE);
 		currentColumnsInfo.setColumnValuesMap(map);
 
 
