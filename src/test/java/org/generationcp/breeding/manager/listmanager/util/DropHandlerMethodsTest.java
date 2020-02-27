@@ -1,14 +1,6 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.AddedColumnsMapper;
@@ -190,11 +182,11 @@ public class DropHandlerMethodsTest {
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(listId);
 		}
 
-		List<GermplasmListData> listData1 = Lists.newArrayList(germplasmLists.get(0).getListData().get(0));
-		List<GermplasmListData> listData2 = Lists.newArrayList(germplasmLists.get(0).getListData().get(1));
-		List<GermplasmListData> listData3 = Lists.newArrayList(germplasmLists.get(0).getListData().get(2));
-		List<GermplasmListData> listData4 = Lists.newArrayList(germplasmLists.get(0).getListData().get(3));
-		List<GermplasmListData> listData5 = Lists.newArrayList(germplasmLists.get(0).getListData().get(4));
+		final List<GermplasmListData> listData1 = Lists.newArrayList(germplasmLists.get(0).getListData().get(0));
+		final List<GermplasmListData> listData2 = Lists.newArrayList(germplasmLists.get(0).getListData().get(1));
+		final List<GermplasmListData> listData3 = Lists.newArrayList(germplasmLists.get(0).getListData().get(2));
+		final List<GermplasmListData> listData4 = Lists.newArrayList(germplasmLists.get(0).getListData().get(3));
+		final List<GermplasmListData> listData5 = Lists.newArrayList(germplasmLists.get(0).getListData().get(4));
 
 		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), ArgumentMatchers.<List<Integer>>any())).thenReturn(listData1,
 				listData2, listData3, listData4, listData5, listData1,
@@ -328,7 +320,7 @@ public class DropHandlerMethodsTest {
 	@Test
 	public void testAddGermplasmFromList() {
 
-		final Map<String, List<ListDataColumnValues>> map = new HashMap<>();
+		final Map<String, List<ListDataColumnValues>> map = new LinkedHashMap<>();
 		final ListDataColumnValues ldcv = new ListDataColumnValues("GID", 1, "1");
 		map.put("GID", Lists.newArrayList(ldcv));
 		this.germplasmListNewColumnsInfo.setColumnValuesMap(map);
@@ -371,13 +363,13 @@ public class DropHandlerMethodsTest {
 		Mockito.doReturn(germplasmList).when(this.germplasmListManager).getGermplasmListById(DropHandlerMethodsTest.GERMPLASM_LIST_ID);
 
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
-		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
+		Mockito.doReturn(new LinkedHashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
 
-		List<GermplasmListData> listData1 = Lists.newArrayList(germplasmList.getListData().get(0));
-		List<GermplasmListData> listData2 = Lists.newArrayList(germplasmList.getListData().get(1));
-		List<GermplasmListData> listData3 = Lists.newArrayList(germplasmList.getListData().get(2));
-		List<GermplasmListData> listData4 = Lists.newArrayList(germplasmList.getListData().get(3));
-		List<GermplasmListData> listData5 = Lists.newArrayList(germplasmList.getListData().get(4));
+		final List<GermplasmListData> listData1 = Lists.newArrayList(germplasmList.getListData().get(0));
+		final List<GermplasmListData> listData2 = Lists.newArrayList(germplasmList.getListData().get(1));
+		final List<GermplasmListData> listData3 = Lists.newArrayList(germplasmList.getListData().get(2));
+		final List<GermplasmListData> listData4 = Lists.newArrayList(germplasmList.getListData().get(3));
+		final List<GermplasmListData> listData5 = Lists.newArrayList(germplasmList.getListData().get(4));
 
 		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), ArgumentMatchers.<List<Integer>>any())).thenReturn(listData1,
 				listData2, listData3, listData4, listData5);
@@ -404,7 +396,7 @@ public class DropHandlerMethodsTest {
 		Mockito.doReturn(this.listComponent).when(this.tableWithSelectAllLayout).getParent();
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.listComponent).getGermplasmListId();
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
-		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
+		Mockito.doReturn(new LinkedHashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
 
 		for (final Integer itemId : selectedIDs) {
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(itemId);
@@ -412,7 +404,7 @@ public class DropHandlerMethodsTest {
 
 		this.dropHandlerMethods.addFromListDataTable(sourceTbl);
 
-		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
 		this.verifyGermplasmListDataFromListDataTableIsTransferredProperly(selectedIDs, sourceTbl);
 
 	}
@@ -440,13 +432,13 @@ public class DropHandlerMethodsTest {
 		Mockito.doReturn(this.listComponent).when(this.tableWithSelectAllLayout).getParent();
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.listComponent).getGermplasmListId();
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
-		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
+		Mockito.doReturn(new LinkedHashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
 
 
 		// Create preferred name map for gid in the table
 		final Map<Integer, String> preferredNames = new HashMap<>();
 		preferredNames.put(gid, preferredName);
-		Mockito.doReturn(preferredNames).when(germplasmDataManager).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
+		Mockito.doReturn(preferredNames).when(this.germplasmDataManager).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
 
 		for (final Integer itemId : selectedIDs) {
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(itemId);
@@ -454,7 +446,7 @@ public class DropHandlerMethodsTest {
 
 		this.dropHandlerMethods.addFromListDataTable(sourceTable);
 
-		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(ArgumentMatchers.<List<Integer>>any());
 
 		final Item targetTableItem = this.targetTable.getItem(gid);
 		final Item sourceTableItem = sourceTable.getItem(gid);
@@ -496,7 +488,7 @@ public class DropHandlerMethodsTest {
 
 		final List<Integer> itemIds = this.dropHandlerMethods.getSelectedItemIds(sourceTable);
 
-		List<Integer> gids = this.dropHandlerMethods.extractGidsFromTable(sourceTable, itemIds);
+		final List<Integer> gids = this.dropHandlerMethods.extractGidsFromTable(sourceTable, itemIds);
 
 		Assert.assertEquals("Only 2 entries are selected so the gids extracted should only be 2", 2, gids.size());
 		Assert.assertTrue("Gid 1 should be in the extracted gid list", gids.contains(1));
@@ -603,7 +595,7 @@ public class DropHandlerMethodsTest {
 	}
 	
 	private void addColumnsToTable(final Table table, final ColumnLabels...columnLabels) {
-		for (ColumnLabels columnLabel : columnLabels) {
+		for (final ColumnLabels columnLabel : columnLabels) {
 			table.addContainerProperty(columnLabel.getName(), String.class, null);
 		}
 	}
