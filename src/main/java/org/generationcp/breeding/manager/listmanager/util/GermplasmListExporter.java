@@ -515,17 +515,6 @@ public class GermplasmListExporter {
 		}
 	}
 
-	protected Integer getCurrentLocalIbdbUserId() {
-		int currentLocalIbdbUserId = 0;
-
-		try {
-			currentLocalIbdbUserId = this.contextUtil.getCurrentWorkbenchUserId();
-		} catch (final MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
-		}
-		return currentLocalIbdbUserId;
-	}
-
 	protected void setGermplasmExportService(final GermplasmExportService germplasmExportService) {
 		this.germplasmExportService = germplasmExportService;
 	}

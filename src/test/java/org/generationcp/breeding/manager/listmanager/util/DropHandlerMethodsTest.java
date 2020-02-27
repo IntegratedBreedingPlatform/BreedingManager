@@ -320,7 +320,7 @@ public class DropHandlerMethodsTest {
 	@Test
 	public void testAddGermplasmFromList() {
 
-		final LinkedHashMap<String, List<ListDataColumnValues>> map = new LinkedHashMap<>();
+		final Map<String, List<ListDataColumnValues>> map = new HashMap<>();
 		final ListDataColumnValues ldcv = new ListDataColumnValues("GID", 1, "1");
 		map.put("GID", Lists.newArrayList(ldcv));
 		this.germplasmListNewColumnsInfo.setColumnValuesMap(map);
