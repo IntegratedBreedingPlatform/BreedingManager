@@ -21,7 +21,7 @@
 		<gwt.plugin.version>2.5.1</gwt.plugin.version>
 		<ibpcommons.version>${project.version}</ibpcommons.version>
 		<spring.version>4.1.6.RELEASE</spring.version>
-		<spring.security.version>3.2.5.RELEASE</spring.security.version>
+		<spring.security.version>5.2.2.RELEASE</spring.security.version>
 		<envConfig>${user.name}</envConfig>
 	</properties>
 
