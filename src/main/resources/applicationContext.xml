@@ -78,17 +78,17 @@
 		factory-method="getGermplasmListManager" scope="request">
 		<aop:scoped-proxy />
 	</bean>
-
+	
 	<bean id="germplasmGroupingService" factory-bean="managerFactory"
 		factory-method="getGermplasmGroupingService" scope="request">
 		<aop:scoped-proxy />
 	</bean>
-
+	
 	<bean id="germplasmNamingReferenceDataResolver" factory-bean="managerFactory"
 		factory-method="getGermplasmNamingReferenceDataResolver" scope="request">
 		<aop:scoped-proxy />
 	</bean>
-
+	
 	<bean id="pedigreeDataManager" factory-bean="managerFactory"
 		factory-method="getPedigreeDataManager" scope="request">
 		<aop:scoped-proxy />
@@ -181,7 +181,7 @@
 		scope="request">
 		<aop:scoped-proxy />
 	</bean>
-
+	
 	<bean id="jasperReportService" class="org.generationcp.commons.reports.service.impl.JasperReportServiceImpl"
 		scope="request">
 		<aop:scoped-proxy />
@@ -284,27 +284,27 @@
 	<bean id="germplasmExportedWorkbook" class="org.generationcp.commons.parsing.GermplasmExportedWorkbook" scope="request">
 		<aop:scoped-proxy />
 	</bean>
-
+	
 	<bean id="ontologyVariableManager" factory-bean="managerFactory"
 		factory-method="getOntologyVariableDataManager" scope="request">
 		<aop:scoped-proxy />
 	</bean>
-
+	
 	<bean id="fieldbookMiddlewareService" factory-bean="managerFactory"
 		factory-method="getFieldbookMiddlewareService" scope="request">
 		<aop:scoped-proxy />
 	</bean>
-
+	
 	<!-- Singleton bean as there is nothing request specific in here. -->
 	<bean id="germplasmNamingProperties" class="org.generationcp.commons.service.GermplasmNamingProperties">
 		<property name="germplasmOriginStudiesDefault" value="${germplasm.origin.studies.default}"/>
 		<property name="germplasmOriginStudiesWheat" value="${germplasm.origin.studies.wheat}"/>
 		<property name="germplasmOriginStudiesMaize" value="${germplasm.origin.studies.maize}"/>
 	</bean>
-
+	
 	<bean id="seedSourceGenerator" class="org.generationcp.commons.ruleengine.generator.SeedSourceGenerator">
 	</bean>
-
+	
 	<!-- Including all beans used for generating Code Sheet when exporting Germplasm List excel file -->
 	<context:component-scan base-package="org.generationcp.commons.workbook.generator" />
 
@@ -316,7 +316,7 @@
 	</bean>
 
     <bean id="userTreeStateService" class="org.generationcp.commons.service.impl.UserTreeStateServiceImpl"/>
-
+    
 
     <!-- Data Source and Transaction Configuration -->
 
@@ -376,8 +376,8 @@
 
 	<bean id="breedingManagerWindowGenerator" class="org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator" />
 
-	<bean id="trialInstanceBuilder" factory-bean="managerFactory"
-		  factory-method="getTrialInstanceBuilder" scope="request">
+	<bean id="trialEnvironmentBuilder" factory-bean="managerFactory"
+		  factory-method="getTrialEnvironmentBuilder" scope="request">
 		<aop:scoped-proxy />
 	</bean>
 
