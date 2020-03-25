@@ -991,4 +991,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
+
+	public void setStudyGermplasmList(final List<StudyGermplasmDto> studyGermplasmList) {
+		this.studyGermplasmList = studyGermplasmList;
+	}
+
+	public void setStudyLocationMap(final Map<String, String> studyLocationMap) {
+		this.studyLocationMap = studyLocationMap;
+	}
+
+	public void setStudyEnvironmentVariables(final List<MeasurementVariable> studyEnvironmentVariables) {
+		this.studyEnvironmentVariables = studyEnvironmentVariables;
+	}
 }

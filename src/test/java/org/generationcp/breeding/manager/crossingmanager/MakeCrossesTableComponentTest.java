@@ -22,6 +22,7 @@ import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.data.initializer.MeasurementDataTestDataInitializer;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -36,6 +37,7 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitUtils;
+import org.generationcp.middleware.service.api.study.StudyGermplasmDto;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Assert;
 import org.junit.Before;
@@ -388,93 +390,89 @@ public class MakeCrossesTableComponentTest {
 	public void testGenerateSeedSource() {
 		final Workbook workbook =  Mockito.mock(Workbook.class);
 		Mockito.when(this.makeCrossesMain.getWorkbook()).thenReturn(workbook);
-		final String studyName = "STUDY " + new Random().nextInt();
+		final Random random = new Random();
+		final String studyName = "STUDY " + random.nextInt();
 		Mockito.when(workbook.getStudyName()).thenReturn(studyName);
+		final MeasurementVariable condition = new MeasurementVariable();
+		condition.setTermId(random.nextInt());
+		final List<MeasurementVariable> conditions = Collections.singletonList(condition);
+		Mockito.when(workbook.getConditions()).thenReturn(conditions);
 
-		final String femaleGid = "50";
-		final String femalePlot = "11";
-		final String maleGid = "1023";
-		final String malePlot = "22";
-		final List<MeasurementData> dataList1 = new ArrayList<>();
-		dataList1.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.GID.getId(), TermId.GID.name(), femaleGid));
-		dataList1.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.PLOT_NO.getId(), TermId.PLOT_NO.name(), femalePlot));
-		final MeasurementRow row1 = new MeasurementRow(dataList1);
-		final List<MeasurementData> dataList2 = new ArrayList<>();
-		dataList2.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.GID.getId(), TermId.GID.name(), maleGid));
-		dataList2.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.PLOT_NO.getId(), TermId.PLOT_NO.name(), malePlot));
-		final MeasurementRow row2 = new MeasurementRow(dataList2);
-		Mockito.when(workbook.getObservations()).thenReturn(Arrays.asList(row1, row2));
+		this.makeCrossesTableComponent.setStudyGermplasmList(this.createStudyList(10, studyName));
+		final Map<String, String> locationMap = Collections.singletonMap("1", "Unknown Location");
+		this.makeCrossesTableComponent.setStudyLocationMap(locationMap);
+		final MeasurementVariable variable = new MeasurementVariable();
+		variable.setTermId(random.nextInt());
+		final List<MeasurementVariable> environmentVariableList = Collections.singletonList(variable);
+		this.makeCrossesTableComponent.setStudyEnvironmentVariables(environmentVariableList);
 
 		final List<GermplasmListEntry> maleEntries = this.createListEntries(1);
-		maleEntries.get(0).setGid(Integer.valueOf(maleGid));
+		maleEntries.get(0).setGid(103);
+		final Integer femaleGid = 105;
+
 		final String expectedSeedSource = RandomStringUtils.random(20);
+		final ArgumentCaptor<ImportedCross> crossCaptor = ArgumentCaptor.forClass(ImportedCross.class);
 		final ObservationUnitRow environmentRow = ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1));
-		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(Pair.of(
-			environmentRow, environmentRow), Pair.of(Collections.emptyList(), Collections.emptyList()),
-			Pair.of(Collections.emptyMap(), Collections.emptyMap()), Pair.of(Collections.emptyList(), Collections.emptyList()),
-			this.getCross(Collections.singletonList(malePlot), femalePlot, studyName))).thenReturn(expectedSeedSource);
-		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(Integer.valueOf(femaleGid), maleEntries);
+		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(ArgumentMatchers.eq(Pair.of(
+			environmentRow, environmentRow)), ArgumentMatchers.eq(Pair.of(conditions, conditions)),
+			ArgumentMatchers.eq(Pair.of(locationMap, locationMap)), ArgumentMatchers.eq(Pair.of(environmentVariableList, environmentVariableList)),
+			crossCaptor.capture())).thenReturn(expectedSeedSource);
+		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(femaleGid, maleEntries);
 		Assert.assertEquals(expectedSeedSource, seedSource);
+		final ImportedCross cross = crossCaptor.getValue();
+		Assert.assertEquals(3, cross.getMalePlotNos().get(0).intValue());
+		Assert.assertEquals(5, cross.getFemalePlotNo().intValue());
 	}
-	
-	@Test
-	public void testGenerateSeedSourceWhenParentGIDNotInStudy() {
-		final Workbook workbook =  Mockito.mock(Workbook.class);
-		Mockito.when(this.makeCrossesMain.getWorkbook()).thenReturn(workbook);
-		final String studyName = "STUDY " + new Random().nextInt();
-		Mockito.when(workbook.getStudyName()).thenReturn(studyName);
 
-		final String femaleGid = "50";
-		final String femalePlot = "11";
-		// Male GID is not in study
-		final String maleGid = "1023";
-		final List<MeasurementData> dataList1 = new ArrayList<>();
-		dataList1.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.GID.getId(), TermId.GID.name(), femaleGid));
-		dataList1.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.PLOT_NO.getId(), TermId.PLOT_NO.name(), femalePlot));
-		final MeasurementRow row1 = new MeasurementRow(dataList1);
-		Mockito.when(workbook.getObservations()).thenReturn(Collections.singletonList(row1));
-
-		final List<GermplasmListEntry> maleEntries = this.createListEntries(1);
-		maleEntries.get(0).setGid(Integer.valueOf(maleGid));
-		final String expectedSeedSource = RandomStringUtils.random(20);
-		// Expecting blank string to be used for seed source generation if plot number is not in study
-		final ObservationUnitRow environmentRow = ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1));
-		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(Pair.of(
-			environmentRow, environmentRow), Pair.of(Collections.emptyList(), Collections.emptyList()),
-			Pair.of(Collections.emptyMap(), Collections.emptyMap()), Pair.of(Collections.emptyList(), Collections.emptyList()),
-			this.getCross(Collections.singletonList(null), femalePlot, studyName))).thenReturn(expectedSeedSource);
-		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(Integer.valueOf(femaleGid), maleEntries);
-		Assert.assertEquals(expectedSeedSource, seedSource);
+	private List<StudyGermplasmDto> createStudyList(final Integer count, final String studyName) {
+		final List<StudyGermplasmDto> list = new ArrayList<>();
+		for (int i = 1; i <= count; i++) {
+			final StudyGermplasmDto parent = new StudyGermplasmDto();
+			parent.setGermplasmId(100 + i);
+			parent.setDesignation(studyName + ":" + i);
+			parent.setPosition(String.valueOf(i));
+			list.add(parent);
+		}
+		return list;
 	}
 	
 	@Test
 	public void testGenerateSeedSourceWhenParentIsUnknown() {
 		final Workbook workbook =  Mockito.mock(Workbook.class);
 		Mockito.when(this.makeCrossesMain.getWorkbook()).thenReturn(workbook);
-		final String studyName = "STUDY " + new Random().nextInt();
+		final Random random = new Random();
+		final String studyName = "STUDY " + random.nextInt();
 		Mockito.when(workbook.getStudyName()).thenReturn(studyName);
+		final MeasurementVariable condition = new MeasurementVariable();
+		condition.setTermId(random.nextInt());
+		final List<MeasurementVariable> conditions = Collections.singletonList(condition);
+		Mockito.when(workbook.getConditions()).thenReturn(conditions);
 
-		final String femaleGid = "50";
-		final String femalePlot = "11";
-		// Male GID is 0 = Unknown
-		final String maleGid = "0";
-		final List<MeasurementData> dataList1 = new ArrayList<>();
-		dataList1.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.GID.getId(), TermId.GID.name(), femaleGid));
-		dataList1.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.PLOT_NO.getId(), TermId.PLOT_NO.name(), femalePlot));
-		final MeasurementRow row1 = new MeasurementRow(dataList1);
-		Mockito.when(workbook.getObservations()).thenReturn(Collections.singletonList(row1));
+		this.makeCrossesTableComponent.setStudyGermplasmList(this.createStudyList(10, studyName));
+		final Map<String, String> locationMap = Collections.singletonMap("1", "Unknown Location");
+		this.makeCrossesTableComponent.setStudyLocationMap(locationMap);
+		final MeasurementVariable variable = new MeasurementVariable();
+		variable.setTermId(random.nextInt());
+		final List<MeasurementVariable> environmentVariableList = Collections.singletonList(variable);
+		this.makeCrossesTableComponent.setStudyEnvironmentVariables(environmentVariableList);
 
 		final List<GermplasmListEntry> maleEntries = this.createListEntries(1);
-		maleEntries.get(0).setGid(Integer.valueOf(maleGid));
+		// Male GID 0 = Unknown
+		maleEntries.get(0).setGid(0);
+		final Integer femaleGid = 105;
+
 		final String expectedSeedSource = RandomStringUtils.random(20);
-		// Expecting "0" to be used for seed source generation if parent is unknown
+		final ArgumentCaptor<ImportedCross> crossCaptor = ArgumentCaptor.forClass(ImportedCross.class);
 		final ObservationUnitRow environmentRow = ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1));
-		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(Pair.of(
-			environmentRow, environmentRow), Pair.of(Collections.emptyList(), Collections.emptyList()),
-			Pair.of(Collections.emptyMap(), Collections.emptyMap()), Pair.of(Collections.emptyList(), Collections.emptyList()),
-			this.getCross(Collections.singletonList(maleGid), femalePlot, studyName))).thenReturn(expectedSeedSource);
-		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(Integer.valueOf(femaleGid), maleEntries);
+		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(ArgumentMatchers.eq(Pair.of(
+			environmentRow, environmentRow)), ArgumentMatchers.eq(Pair.of(conditions, conditions)),
+			ArgumentMatchers.eq(Pair.of(locationMap, locationMap)), ArgumentMatchers.eq(Pair.of(environmentVariableList, environmentVariableList)),
+			crossCaptor.capture())).thenReturn(expectedSeedSource);
+		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(femaleGid, maleEntries);
 		Assert.assertEquals(expectedSeedSource, seedSource);
+		final ImportedCross cross = crossCaptor.getValue();
+		Assert.assertEquals(0, cross.getMalePlotNos().get(0).intValue());
+		Assert.assertEquals(5, cross.getFemalePlotNo().intValue());
 	}
 
 	@Test
@@ -630,7 +628,7 @@ public class MakeCrossesTableComponentTest {
 	}
 
 	@Test
-	public void generateCrossesListTest() {
+	public void testGenerateCrossesList() {
 		this.makeCrossesTableComponent.initializeCrossesMadeTable(this.initializeTable());
 		final int numOfMaleParents = 2;
 		final List<GermplasmListEntry> femaleEntries = this.createListEntries(1);
@@ -648,32 +646,29 @@ public class MakeCrossesTableComponentTest {
 
 		final Workbook workbook =  Mockito.mock(Workbook.class);
 		Mockito.when(this.makeCrossesMain.getWorkbook()).thenReturn(workbook);
-		final String studyName = "STUDY " + new Random().nextInt();
+		 Random random = new Random();
+		final String studyName = "STUDY " + random.nextInt();
 		Mockito.when(workbook.getStudyName()).thenReturn(studyName);
+		final MeasurementVariable condition = new MeasurementVariable();
+		condition.setTermId(random.nextInt());
+		final List<MeasurementVariable> conditions = Collections.singletonList(condition);
+		Mockito.when(workbook.getConditions()).thenReturn(conditions);
 
-		final String femalePlot = "11";
-		final String malePlot1 = "22";
-		final String malePlot2 = "33";
-		final List<MeasurementData> dataList1 = new ArrayList<>();
-		dataList1.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.GID.getId(), TermId.GID.name(), femaleGid));
-		dataList1.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.PLOT_NO.getId(), TermId.PLOT_NO.name(), femalePlot));
-		final MeasurementRow row1 = new MeasurementRow(dataList1);
-		final List<MeasurementData> dataList2 = new ArrayList<>();
-		dataList2.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.GID.getId(), TermId.GID.name(), maleEntries.get(0).getGid().toString()));
-		dataList2.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.PLOT_NO.getId(), TermId.PLOT_NO.name(), malePlot1));
-		final MeasurementRow row2 = new MeasurementRow(dataList2);
-		final List<MeasurementData> dataList3 = new ArrayList<>();
-		dataList3.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.GID.getId(), TermId.GID.name(), maleEntries.get(1).getGid().toString()));
-		dataList3.add(MeasurementDataTestDataInitializer.createMeasurementData(TermId.PLOT_NO.getId(), TermId.PLOT_NO.name(), malePlot2));
-		final MeasurementRow row3 = new MeasurementRow(dataList3);
-		Mockito.when(workbook.getObservations()).thenReturn(Arrays.asList(row1, row2, row3));
+		this.makeCrossesTableComponent.setStudyGermplasmList(this.createStudyList(10, studyName));
+		final Map<String, String> locationMap = Collections.singletonMap("1", "Unknown Location");
+		this.makeCrossesTableComponent.setStudyLocationMap(locationMap);
+		final MeasurementVariable variable = new MeasurementVariable();
+		variable.setTermId(random.nextInt());
+		final List<MeasurementVariable> environmentVariableList = Collections.singletonList(variable);
+		this.makeCrossesTableComponent.setStudyEnvironmentVariables(environmentVariableList);
+
 		final String expectedSeedSource = RandomStringUtils.random(20);
+		final ArgumentCaptor<ImportedCross> crossCaptor = ArgumentCaptor.forClass(ImportedCross.class);
 		final ObservationUnitRow environmentRow = ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1));
-		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(Pair.of(
-			environmentRow, environmentRow), Pair.of(Collections.emptyList(), Collections.emptyList()),
-			Pair.of(Collections.emptyMap(), Collections.emptyMap()), Pair.of(Collections.emptyList(), Collections.emptyList()),
-			this.getCross(Arrays.asList(malePlot1, malePlot2), femalePlot, studyName))).thenReturn(expectedSeedSource);
-
+		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(ArgumentMatchers.eq(Pair.of(
+			environmentRow, environmentRow)), ArgumentMatchers.eq(Pair.of(conditions, conditions)),
+			ArgumentMatchers.eq(Pair.of(locationMap, locationMap)), ArgumentMatchers.eq(Pair.of(environmentVariableList, environmentVariableList)),
+			crossCaptor.capture())).thenReturn(expectedSeedSource);
 		this.makeCrossesTableComponent.makeCrossesWithMultipleMaleParents(femaleEntries, maleEntries, FEMALE_LIST_NAME, MALE_LIST_NAME, false);
 
 		final List<Triple<Germplasm, Name, List<Progenitor>>> crossesList = this.makeCrossesTableComponent.generateCrossesList();
