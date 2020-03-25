@@ -4,7 +4,6 @@ package org.generationcp.breeding.manager.crossingmanager;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
@@ -28,11 +27,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 public class CrossingManagerMakeCrossesComponentTest {
@@ -159,7 +157,6 @@ public class CrossingManagerMakeCrossesComponentTest {
 		this.makeCrosses.initializeStudyContext(this.mockRequest);
 		Assert.assertNotNull("Expect StudyId to be initialized.", this.makeCrosses.getStudyId());
 		Assert.assertNotNull("Expect StudyWorkbook to be initialized.", this.makeCrosses.getWorkbook());
-		Assert.assertTrue("Expected isNavigatedFromStudy flag to be set to true.", this.makeCrosses.isNavigatedFromStudy());
 	}
 	
 	@Test

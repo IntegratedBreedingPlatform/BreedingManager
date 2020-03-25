@@ -69,10 +69,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	@Autowired
 	private FieldbookService fieldbookMiddlewareService;
 
-	private boolean isNavigatedFromStudy;
-
 	private String studyId;
 
+	// TODO Remove dependence in Workbook.
+	// Currently still using for getting trial observation row and study conditions for seed soure generation
 	private Workbook workbook = null;
 
 	private Button studyBackButton;
@@ -108,16 +108,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	void initializeStudyContext(final HttpServletRequest currentRequest) {
-		this.isNavigatedFromStudy = currentRequest.getPathInfo().contains(BreedingManagerApplication.NAVIGATION_FROM_STUDY_PREFIX);
-		if (this.isNavigatedFromStudy) {
-			final String[] parameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_ID);
-			this.studyId = parameterValues != null && parameterValues.length > 0 ? parameterValues[0] : "";
-			// Initialize the workbook.. this will be required later for seed source generation.
+		final String[] parameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_ID);
+		this.studyId = parameterValues != null && parameterValues.length > 0 ? parameterValues[0] : "";
+		// Initialize the workbook.. this will be required later for seed source generation.
 
-			if (!StringUtils.isBlank(this.studyId)) {
-				this.workbook = this.fieldbookMiddlewareService
-					.getStudyDataSet(Integer.valueOf(this.studyId));
-			}
+		if (!StringUtils.isBlank(this.studyId)) {
+			this.workbook = this.fieldbookMiddlewareService
+				.getStudyDataSet(Integer.valueOf(this.studyId));
 		}
 	}
 
@@ -232,7 +229,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.crossingMethodComponent.setDebugId("crossingMethodComponent");
 		this.crossesTableComponent = new MakeCrossesTableComponent(this);
 		this.crossesTableComponent.setDebugId("crossesTableComponent");
-		fieldbookMiddlewareService.loadAllObservations(workbook);
 	}
 
 	@Override
@@ -297,10 +293,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		studyCancelButton.setDebugId("studyCancelButton");
 		this.messageSource.setCaption(studyCancelButton, Message.CANCEL);
 		return studyCancelButton;
-	}
-
-	boolean isNavigatedFromStudy() {
-		return this.isNavigatedFromStudy;
 	}
 
 	String getStudyId() {
