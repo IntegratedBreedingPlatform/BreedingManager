@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
@@ -106,7 +107,7 @@ public class BuildNewListDropHandlerTest {
 		Mockito.when(this.mockContainer.addItem(Matchers.any())).thenReturn(this.mockTableItem);
 		Mockito.when(this.mockTableItem.getItemProperty(Matchers.anyString())).thenReturn(this.mockProperty);
 		Mockito.doReturn(BuildNewListDropHandlerTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
-		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
+		Mockito.doReturn(new LinkedHashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
 		Mockito.doReturn(this.listBuilderComponent).when(this.listManagerMain).getListBuilderComponent();
 
 		// drop related mocks

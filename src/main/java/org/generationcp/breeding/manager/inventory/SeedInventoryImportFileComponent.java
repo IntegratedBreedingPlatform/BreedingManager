@@ -1,14 +1,15 @@
 
 package org.generationcp.breeding.manager.inventory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
+import com.google.common.collect.Lists;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 import org.apache.commons.io.FilenameUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -38,15 +39,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.util.CollectionUtils;
 
-import com.google.common.collect.Lists;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Reindeer;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 @Configurable
 public class SeedInventoryImportFileComponent extends BaseSubWindow
@@ -411,7 +410,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 				continue;
 			}
 
-			if (transaction.getStatus() == TransactionStatus.COMMITTED.getIntValue()) {
+			if (transaction.getStatus() == TransactionStatus.CONFIRMED.getIntValue()) {
 				// Skip and process next or Cancel import
 				importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_ERROR.toString());
 				continue;
@@ -423,12 +422,12 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 				final Double transactionQty = transaction.getQuantity() * -1;
 
 				if (Objects.equals(amountWithdrawn, transactionQty)) { // Actual withdrawal is same as reservation made on lot
-					transaction.setStatus(TransactionStatus.COMMITTED.getIntValue());
+					transaction.setStatus(TransactionStatus.CONFIRMED.getIntValue());
 					transaction.setCommitmentDate(DateUtil.getCurrentDateAsIntegerValue());
 					transaction.setComments(comments);
 					processedTransactions.add(transaction);
 				} else if (amountWithdrawn < transactionQty) { // Actual withdrawal is less than reservation made on lot
-					transaction.setStatus(TransactionStatus.COMMITTED.getIntValue());
+					transaction.setStatus(TransactionStatus.CONFIRMED.getIntValue());
 					transaction.setPreviousAmount(transactionQty);
 					final Double updatedQty = amountWithdrawn * -1;
 					transaction.setQuantity(updatedQty);
@@ -438,7 +437,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 				} else { // Actual withdrawal is greater than reservation. Need to check if extra reservation can be made or not
 					if (amountWithdrawn <= transactionQty + availableBalance) {
-						transaction.setStatus(TransactionStatus.COMMITTED.getIntValue());
+						transaction.setStatus(TransactionStatus.CONFIRMED.getIntValue());
 						transaction.setPreviousAmount(transactionQty);
 						final Double updatedQty = amountWithdrawn * -1;
 						transaction.setQuantity(updatedQty);
@@ -468,7 +467,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 						final Double explicitWithdrawalMade = lotDetails.getActualLotBalance() - balanceAmount;
 
 						if (explicitWithdrawalMade <= transactionQty + availableBalance) {
-							transaction.setStatus(TransactionStatus.COMMITTED.getIntValue());
+							transaction.setStatus(TransactionStatus.CONFIRMED.getIntValue());
 							transaction.setPreviousAmount(lotDetails.getActualLotBalance());
 							final Double updatedQty = explicitWithdrawalMade * -1;
 							transaction.setQuantity(updatedQty);
@@ -486,7 +485,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 					} else if (balanceAmount == 0) {
 						// Discarding actual balance
-						transaction.setStatus(TransactionStatus.COMMITTED.getIntValue());
+						transaction.setStatus(TransactionStatus.CONFIRMED.getIntValue());
 						transaction.setPreviousAmount(transactionQty);
 						final Double updatedQty = -1 * lotDetails.getActualLotBalance();
 						transaction.setQuantity(updatedQty);

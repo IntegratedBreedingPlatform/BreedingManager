@@ -88,6 +88,8 @@ public class GermplasmListExporter {
 	@Resource
 	private UserService userService;
 
+	private List<String> visibleColumnList;
+
     public GermplasmListExporter() {
     }
 
@@ -192,7 +194,7 @@ public class GermplasmListExporter {
 
 	public FileOutputStream exportGermplasmListXLS(final int germplasmListID, final String fileName, final Table listDataTable) throws GermplasmListExporterException {
 		final GermplasmListNewColumnsInfo currentColumnsInfo = this.germplasmListManager.getAdditionalColumnsForList(germplasmListID);
-		final Integer currentWorkbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
+		final int currentWorkbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
 
 		final GermplasmListExportInputValues input = new GermplasmListExportInputValues();
 		input.setFileName(fileName);
@@ -292,10 +294,10 @@ public class GermplasmListExporter {
 		final List<String> excludedColumns = Arrays.asList(ColumnLabels.FGID.getName(), ColumnLabels.MGID.getName());
 
 		// change the visibleColumns array to list
-		final List<String> visibleColumnList = new ArrayList<>();
+		this.visibleColumnList = new ArrayList<>();
 		for (final Object column : visibleColumns) {
 			if (!listDataTable.isColumnCollapsed(column) && !excludedColumns.contains(column)) {
-				visibleColumnList.add(column.toString());
+				this.visibleColumnList.add(column.toString());
 			}
 		}
 
@@ -312,7 +314,7 @@ public class GermplasmListExporter {
 					|| ColumnLabels.DESIGNATION.getName().equalsIgnoreCase(column.toString())) {
 				columnHeaderMap.put(key, true);
 			} else {
-				columnHeaderMap.put(key, visibleColumnList.contains(column.toString()));
+				columnHeaderMap.put(key, this.visibleColumnList.contains(column.toString()));
 			}
 
 		}
@@ -495,9 +497,9 @@ public class GermplasmListExporter {
 			final ExportRow row) {
 		int i = 6;
 		if (currentColumnsInfo != null && !currentColumnsInfo.getColumns().isEmpty()) {
-			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : currentColumnsInfo.getColumnValuesMap().entrySet()) {
-				if(ColumnLabels.get(columnEntry.getKey()) == null) {
-					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
+			for(final String column : currentColumnsInfo.getColumns()){
+				if(ColumnLabels.get(column) == null) {
+					final List<ListDataColumnValues> columnValues = currentColumnsInfo.getColumnValuesMap().get(column);
 					final ListDataColumnValues listDataColumnValues =
 						(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
 
@@ -511,17 +513,6 @@ public class GermplasmListExporter {
 				}
 			}
 		}
-	}
-
-	protected Integer getCurrentLocalIbdbUserId() {
-		Integer currentLocalIbdbUserId = 0;
-
-		try {
-			currentLocalIbdbUserId = this.contextUtil.getCurrentWorkbenchUserId();
-		} catch (final MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
-		}
-		return currentLocalIbdbUserId;
 	}
 
 	protected void setGermplasmExportService(final GermplasmExportService germplasmExportService) {
@@ -547,4 +538,5 @@ public class GermplasmListExporter {
 	protected String getTermNameFromOntology(final ColumnLabels columnLabel) {
 		return columnLabel.getTermNameFromOntology(this.ontologyDataManager);
 	}
+
 }

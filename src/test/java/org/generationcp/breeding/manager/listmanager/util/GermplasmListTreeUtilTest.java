@@ -387,6 +387,7 @@ public class GermplasmListTreeUtilTest {
 		this.verifyUIChangesToTargetItem(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID,  GermplasmListTreeUtilTest.FOLDER_ID);
 	}
 
+	@Ignore // FIXME IBP-2634
 	@Test
 	public void testSetParentWhenTargetItemIsValidFolderButSourceListIsNull() {
 		this.setupTreeItemWithNoChild();
