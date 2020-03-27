@@ -167,11 +167,6 @@
 		<aop:scoped-proxy proxy-target-class="false" />
 	</bean>
 
-	<bean id="measurementVariableService" factory-bean="managerFactory"
-		  factory-method="getMeasurementVariableService" scope="request">
-		<aop:scoped-proxy proxy-target-class="false" />
-	</bean>
-
     <bean id="studyService" factory-bean="managerFactory"
 		  factory-method="getStudyService" scope="request">
         <aop:scoped-proxy />
@@ -398,6 +393,11 @@
 
 	<bean id="workbookSaver" factory-bean="managerFactory"
 		  factory-method="getWorkbookSaver" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="studyGermplasmListService" factory-bean="managerFactory"
+		  factory-method="getStudyGermplasmListService" scope="request">
 		<aop:scoped-proxy />
 	</bean>
 
