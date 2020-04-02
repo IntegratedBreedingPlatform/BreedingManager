@@ -26,6 +26,7 @@ import org.generationcp.middleware.pojos.ims.EntityType;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.ims.TransactionStatus;
+import org.generationcp.middleware.pojos.ims.TransactionType;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.InitializingBean;
@@ -128,7 +129,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		// Creates and saves germplasm record. Associate Names to created germplasm. Prepare lots to insert
 		this.processGermplasmNamesAndLots(germplasmNameObjects, excludeGermplasmCreateIds, seedStorageLocationId);
 
-		final GermplasmList list = this.saveGermplasmListRecord(germplasmList);
+		final GermplasmList storedGermplasmList = this.saveGermplasmListRecord(germplasmList);
 
 		// mark the existing entries of the list deleted before adding the new entries from germplasm import
 		final Integer existingListId = germplasmList.getId();
@@ -137,7 +138,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 
 		final List<ImportedGermplasm> importedGermplasm = importedGermplasmList.getImportedGermplasm();
-		this.saveGermplasmListDataRecords(germplasmNameObjects, list, importedGermplasm, excludeGermplasmCreateIds);
+		this.saveGermplasmListDataRecords(germplasmNameObjects, storedGermplasmList, importedGermplasm, excludeGermplasmCreateIds);
 
 		if (!newNames.isEmpty()) {
 			// save the names under the designation column.
@@ -155,7 +156,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.contextUtil.logProgramActivity(SaveGermplasmListAction.WB_ACTIVITY_NAME,
 				SaveGermplasmListAction.WB_ACTIVITY_DESCRIPTION + filename);
 
-		return list.getId();
+		return storedGermplasmList.getId();
 	}
 
 	/**
@@ -252,8 +253,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 			// process inventory
 			if (this.seedAmountScaleId != null) {
+				// Setting null when creating the lot entity given that getting the value at this stage will imply more changes to the complex logic used
+				// to create the objects
+				// StockId will be finally set in this.saveGermplasmListDataRecords
 				final Lot lot = new Lot(null, this.contextUtil.getCurrentWorkbenchUserId(), EntityType.GERMPLSM.name(), finalGid,
-						seedStorageLocation, this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
+						seedStorageLocation, this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT, null);
 				this.inventoryDataManager.generateLotIds(this.contextUtil.getProjectInContext().getCropType(), Lists.newArrayList(lot));
 				if (this.gidLotMap.get(finalGid) == null) {
 					this.gidLotMap.put(finalGid, new ArrayList<Lot>());
@@ -416,7 +420,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * @param importedGermplasmList : the data that is imported via spreadsheet
 	 * @param excludeGermplasmCreateIds : the GIDs for which a new germplasm record should not be created
 	 */
-	public void saveGermplasmListDataRecords(final List<GermplasmName> germplasmNameObjects, final GermplasmList list,
+	protected void saveGermplasmListDataRecords(final List<GermplasmName> germplasmNameObjects, final GermplasmList list,
 			final List<ImportedGermplasm> importedGermplasmList, final List<Integer> excludeGermplasmCreateIds) {
 
 		// create a map of GIDs to names, which we use to add new names to the system
@@ -536,11 +540,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			final List<Lot> lots = this.gidLotMap.get(gid);
 			if (!CollectionUtils.isEmpty(lots)) {
 				final Lot lot = lots.remove(0);
-
+				lot.setStockId(importedGermplasm.getInventoryId());
 				final Transaction transaction =
-					new Transaction(null, workbenchUser.getUserid(), lot, currentDate, TransactionStatus.COMMITTED.getIntValue(),
+					new Transaction(null, workbenchUser.getUserid(), lot, currentDate, TransactionStatus.CONFIRMED.getIntValue(),
 						importedGermplasm.getSeedAmount(), SaveGermplasmListAction.INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId,
-						Double.valueOf(0), workbenchUser.getPerson().getId(), importedGermplasm.getInventoryId());
+						Double.valueOf(0), workbenchUser.getPerson().getId(), TransactionType.DEPOSIT.getId());
 				if (importedGermplasm.getSeedAmount() != null) {
 					this.gidTransactionSetMap.get(gid).add(transaction);
 				}

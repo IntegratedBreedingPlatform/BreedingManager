@@ -1,9 +1,10 @@
 
 package org.generationcp.breeding.manager.inventory;
 
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.Lists;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryImportException;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventory;
@@ -29,10 +30,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.google.common.collect.Lists;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
+import java.util.List;
+import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SeedInventoryImportFileComponentTest {
@@ -540,7 +539,7 @@ public class SeedInventoryImportFileComponentTest {
 		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(validImportedInventoryList);
 
 		final List<Transaction> validReservedTransactions = InventoryDetailsTestDataInitializer.createValidReservedTransactions();
-		validReservedTransactions.get(0).setStatus(TransactionStatus.COMMITTED.getIntValue());
+		validReservedTransactions.get(0).setStatus(TransactionStatus.CONFIRMED.getIntValue());
 
 		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(validReservedTransactions);

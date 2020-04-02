@@ -11,72 +11,6 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
-import org.generationcp.breeding.manager.application.BreedingManagerLayout;
-import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.crossingmanager.actions.SaveCrossesMadeAction;
-import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
-import org.generationcp.breeding.manager.crossingmanager.listeners.PreviewCrossesTabCheckBoxListener;
-import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
-import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
-import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
-import org.generationcp.breeding.manager.customcomponent.ActionButton;
-import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
-import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
-import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.commons.ruleengine.generator.SeedSourceGenerator;
-import org.generationcp.commons.util.CollectionTransformationUtil;
-import org.generationcp.commons.util.DateUtil;
-import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.constant.ColumnLabels;
-import org.generationcp.middleware.domain.etl.MeasurementData;
-import org.generationcp.middleware.domain.etl.MeasurementRow;
-import org.generationcp.middleware.domain.etl.Workbook;
-import org.generationcp.middleware.domain.gms.GermplasmListType;
-import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.Progenitor;
-import org.generationcp.middleware.service.api.PedigreeService;
-import org.generationcp.middleware.util.CrossExpansionProperties;
-import org.generationcp.middleware.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.vaadin.peter.contextmenu.ContextMenu;
-
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -95,6 +29,81 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.crossingmanager.actions.SaveCrossesMadeAction;
+import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
+import org.generationcp.breeding.manager.crossingmanager.listeners.PreviewCrossesTabCheckBoxListener;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
+import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
+import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.commons.parsing.pojo.ImportedCross;
+import org.generationcp.commons.parsing.pojo.ImportedGermplasmParent;
+import org.generationcp.commons.ruleengine.generator.SeedSourceGenerator;
+import org.generationcp.commons.util.CollectionTransformationUtil;
+import org.generationcp.commons.util.DateUtil;
+import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.constant.ColumnLabels;
+import org.generationcp.middleware.domain.etl.MeasurementVariable;
+import org.generationcp.middleware.domain.etl.Workbook;
+import org.generationcp.middleware.domain.gms.GermplasmListType;
+import org.generationcp.middleware.domain.ontology.VariableType;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.manager.api.StudyDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.Progenitor;
+import org.generationcp.middleware.service.api.PedigreeService;
+import org.generationcp.middleware.service.api.dataset.DatasetService;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
+import org.generationcp.middleware.service.api.study.StudyGermplasmDto;
+import org.generationcp.middleware.service.api.study.StudyGermplasmListService;
+import org.generationcp.middleware.service.api.study.StudyService;
+import org.generationcp.middleware.util.CrossExpansionProperties;
+import org.generationcp.middleware.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.vaadin.peter.contextmenu.ContextMenu;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+
+import static org.generationcp.middleware.service.api.dataset.ObservationUnitUtils.fromMeasurementRow;
 
 /**
  * This class contains UI components and functions related to Crosses Made table in Make Crosses screen in Crossing Manager
@@ -141,6 +150,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	@Autowired
 	private PedigreeService pedigreeService;
 
+	@Autowired
+	private DatasetService datasetService;
+
+
+	@Autowired
+	private StudyGermplasmListService studyGermplasmListService;
+
+	@Autowired
+	private StudyDataManager studyDataManager;
+
 	private Label lblReviewCrosses;
 
 	private Label totalCrossesLabel;
@@ -162,6 +181,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	private String separator;
 
 	private final CrossingManagerMakeCrossesComponent makeCrossesMain;
+
+	private Map<String, String> studyLocationMap;
+
+	private List<MeasurementVariable> studyEnvironmentVariables;
+
+	private List<StudyGermplasmDto> studyGermplasmList;
 
 	MakeCrossesTableComponent(final CrossingManagerMakeCrossesComponent makeCrossesMain) {
 		this.makeCrossesMain = makeCrossesMain;
@@ -511,31 +536,41 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		// If crossing for a Nursery, use the seed source generation service.
 		final Workbook workbook = this.makeCrossesMain.getWorkbook();
 		if (workbook != null) {
-			final String femalePlotNo = getParentPlotNo(workbook, femaleParentGid);
-			final List<String> malePlotNos = new ArrayList<>();
-			for(final GermplasmListEntry maleParent: maleParents) {
-				final String malePlotNo = getParentPlotNo(workbook, maleParent.getGid());
-				malePlotNos.add(malePlotNo);
+			final ImportedCross crossInfo = new ImportedCross();
+			final String femalePlotNo = getParentPlotNo(femaleParentGid);
+			crossInfo.setFemaleParent(
+				new ImportedGermplasmParent(null, null, StringUtils.isEmpty(femalePlotNo) ? null : Integer.valueOf(femalePlotNo),
+					workbook.getStudyName()));
+
+			final List<ImportedGermplasmParent> crossMaleParents = new ArrayList<>();
+			for (final GermplasmListEntry maleParent : maleParents) {
+				final String malePlotNo = getParentPlotNo(maleParent.getGid());
+				crossMaleParents.add(
+					new ImportedGermplasmParent(null, null, StringUtils.isEmpty(malePlotNo) ? null : Integer.valueOf(malePlotNo),
+						workbook.getStudyName()));
 			}
+			crossInfo.setMaleParents(crossMaleParents);
 
 			// Single nursery is in context here, so set the same study name as both male/female parts. For import crosses case, these
 			// could be different Nurseries.
-			seedSource = this.seedSourceGenerator.generateSeedSourceForCross(workbook, malePlotNos, femalePlotNo,
-				workbook.getStudyName(), workbook.getStudyName());
+			final ObservationUnitRow observationUnitRow = fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1));
+			seedSource = this.seedSourceGenerator.generateSeedSourceForCross(Pair.of(observationUnitRow, observationUnitRow),
+				Pair.of(workbook.getConditions(), workbook.getConditions()), Pair.of(this.studyLocationMap, this.studyLocationMap),
+				Pair.of(this.studyEnvironmentVariables, this.studyEnvironmentVariables), crossInfo);
 		}
 		return seedSource;
 	}
 
 
-	// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
-	private String getParentPlotNo(final Workbook workbook, final Integer parentGid) {
+	// Look at the study germplasm list with plot to find plot number assigned to the male/female parent germplasm of the cross.
+	private String getParentPlotNo(final Integer parentGid) {
 		// Use "0" for unknown parent. If the GID is not found in study observations, the plot # will just be blank
 		String parentPlotNo = parentGid.equals(0)? "0" : "";
-		for (final MeasurementRow row : workbook.getObservations()) {
-			final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
-			final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
-			if (gidData != null && gidData.getValue().equals(parentGid.toString()) && plotNumberData != null) {
-				parentPlotNo = plotNumberData.getValue();
+		for (final StudyGermplasmDto row : this.studyGermplasmList) {
+			final String plotNumber = row.getPosition();
+			final Integer gid = row.getGermplasmId();
+			if (gid != null && gid.equals(parentGid) && plotNumber != null) {
+				parentPlotNo = plotNumber;
 			}
 		}
 		return parentPlotNo;
@@ -722,6 +757,15 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	public void initializeValues() {
 		this.generateTotalCrossesLabel(0);
 		this.generateTotalSelectedCrossesLabel(0);
+
+		final Integer studyId = Integer.valueOf(this.makeCrossesMain.getStudyId());
+		this.studyLocationMap =
+			this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(studyId);
+		this.studyEnvironmentVariables =
+			this.datasetService.getObservationSetVariables(this.makeCrossesMain.getWorkbook().getTrialDatasetId(),
+				Collections.singletonList(VariableType.ENVIRONMENT_DETAIL.getId()));
+		// Store all germplasm with plot info in memory
+		this.studyGermplasmList = this.studyGermplasmListService.getGermplasmListFromPlots(studyId, Collections.emptySet());
 	}
 
 	@Override
@@ -946,5 +990,17 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setStudyGermplasmList(final List<StudyGermplasmDto> studyGermplasmList) {
+		this.studyGermplasmList = studyGermplasmList;
+	}
+
+	public void setStudyLocationMap(final Map<String, String> studyLocationMap) {
+		this.studyLocationMap = studyLocationMap;
+	}
+
+	public void setStudyEnvironmentVariables(final List<MeasurementVariable> studyEnvironmentVariables) {
+		this.studyEnvironmentVariables = studyEnvironmentVariables;
 	}
 }

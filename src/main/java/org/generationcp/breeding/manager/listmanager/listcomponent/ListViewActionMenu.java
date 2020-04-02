@@ -28,7 +28,6 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	private ContextMenuItem menuGroupLines;
 	private ContextMenuItem menuEditList;
 	private ContextMenuItem menuDeleteList;
-	private ContextMenuItem menuInventoryView;
 	private ContextMenuItem menuSelectAll;
 	private ContextMenuItem listEditingOptions;
 	private ContextMenuItem codingAndGroupingOptions;
@@ -43,7 +42,6 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 
 		// Generate main level items
 		//Re-arranging Menu Items
-		this.menuInventoryView = this.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
 		this.listEditingOptions = this.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
 		this.menuSaveChanges = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
 		this.menuSelectAll = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
@@ -134,7 +132,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		}
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CROP_MANAGEMENT')")
 	private void setRemoveSelectedGermplasmWhenListIsLocked(final boolean visible) {
 		if (this.removeSelectedGermplasm != null) {
 			this.removeSelectedGermplasm.setVisible(visible);
@@ -182,7 +180,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.messageSource = messageSource;
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CROP_MANAGEMENT')")
 	protected void layoutAdminLink() {
 		this.removeSelectedGermplasm = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM));
 		this.codingAndGroupingOptions.addItem(this.messageSource.getMessage(Message.UNGROUP));
