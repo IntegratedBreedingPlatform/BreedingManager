@@ -36,6 +36,7 @@ import java.util.List;
 public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
+
 	private static final Integer MAX_GIDS_ALLOWED = new Integer(500);
 	private VerticalLayout mainRemoveGermplasmLayout;
 	private Label titleRemoveGermplasmLabel;
@@ -217,6 +218,7 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 	}
 
 	protected void deleteGermplasmsAction(final Collection<? extends Integer> selectedIdsToDelete) {
+
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(RemoveSelectedGermplasmAsDialog.this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -244,6 +246,7 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 						}
 					}
 
+					RemoveSelectedGermplasmAsDialog.this.showDeletePrefixDialog(deletedGids);
 					RemoveSelectedGermplasmAsDialog.this.refreshTable(deletedIds);
 				}
 
@@ -277,6 +280,15 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 		});
 	}
 
+	protected void showDeletePrefixDialog(final List<Integer> deletedGIDs) {
+		if(!deletedGIDs.isEmpty()) {
+			final UpdatePrefixCacheDialog updatePrefixCacheDialog =
+				new UpdatePrefixCacheDialog(deletedGIDs, this.source);
+			updatePrefixCacheDialog.setDebugId("updatePrefixCacheDialog");
+			this.getWindow().getParent().addWindow(updatePrefixCacheDialog);
+		}
+
+	}
 	protected List<Integer> deleteGermplasmsByGids(final List<Integer> gidsToDelete) {
 		final List<Integer> deletedGids =
 			this.getGermplasmListManager().deleteGermplasms(gidsToDelete, this.getGermplasmList().getId());
