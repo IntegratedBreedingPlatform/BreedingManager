@@ -19,7 +19,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.KeySequenceRegister;
 import org.generationcp.middleware.util.StringUtil;
 import org.springframework.beans.factory.InitializingBean;
