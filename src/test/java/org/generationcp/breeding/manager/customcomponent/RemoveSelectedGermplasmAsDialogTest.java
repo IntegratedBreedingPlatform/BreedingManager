@@ -91,8 +91,8 @@ public class RemoveSelectedGermplasmAsDialogTest {
 
 		MockitoAnnotations.initMocks(this);
 		RemoveSelectedGermplasmAsDialogTest.listDataTable = RemoveSelectedGermplasmAsDialogTest.generateTestTable();
-		ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
-		ListManagerTreeComponent listManagerTreeComponent = Mockito.mock(ListManagerTreeComponent.class);
+		final ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
+		final ListManagerTreeComponent listManagerTreeComponent = Mockito.mock(ListManagerTreeComponent.class);
 
 		Mockito.when(this.source.getListSelectionComponent()).thenReturn(listSelectionComponent);
 		Mockito.when(this.source.getListSelectionComponent().getListTreeComponent()).thenReturn(listManagerTreeComponent);

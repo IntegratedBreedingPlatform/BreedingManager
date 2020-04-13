@@ -235,16 +235,14 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 			final String prefix = keySequenceRegister.getKeyPrefix().trim().toUpperCase();
 			for (String name : names) {
 				name = name.trim().toUpperCase();
-				Pattern namePattern = Pattern.compile("^(" + prefix + UpdatePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
-				Matcher nameMatcher  = namePattern.matcher(name);
+				final Pattern namePattern = Pattern.compile("^(" + prefix + UpdatePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
+				final Matcher nameMatcher  = namePattern.matcher(name);
 				if(nameMatcher.find()) {
 					idsOfKeySequenceRegisterToBeUpdated.add(keySequenceRegister.getId());
 					continue;
 				}
 			}
 		}
-
-		System.out.println(this.prefixesTable.getVisibleItemIds().size() + " " + idsOfKeySequenceRegisterToBeUpdated.size());
 
 		if (this.prefixesTable.getVisibleItemIds().size() == idsOfKeySequenceRegisterToBeUpdated.size()) {
 			MessageNotifier
@@ -256,12 +254,12 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 				.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
 					this.messageSource.getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX));
 		} else {
-			final Integer noOfNonExistingPrefixes = this.prefixesTable.getVisibleItemIds().size() - idsOfKeySequenceRegisterToBeUpdated
+			final int noOfNonExistingPrefixes = this.prefixesTable.getVisibleItemIds().size() - idsOfKeySequenceRegisterToBeUpdated
 				.size();
 			MessageNotifier
 				.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.WARNING_PREFIX_UPDATE,
-						String.valueOf(idsOfKeySequenceRegisterToBeUpdated.size()), noOfNonExistingPrefixes.toString()));
+						String.valueOf(idsOfKeySequenceRegisterToBeUpdated.size()), Integer.toString(noOfNonExistingPrefixes)));
 
 		}
 

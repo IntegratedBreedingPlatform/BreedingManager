@@ -1,7 +1,6 @@
 package org.generationcp.breeding.manager.customcomponent;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -34,13 +33,7 @@ public class UpdatePrefixCacheDialogTest {
 	private ListManagerMain source;
 
 	@Mock
-	private Label totalListEntriesLabel;
-
-	@Mock
 	private Window window;
-
-	@Mock
-	private Window parentWindow;
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -63,11 +56,11 @@ public class UpdatePrefixCacheDialogTest {
 
 
 		Mockito.when(this.germplasmDataManager.getNamesByGidsAndPrefixes(ArgumentMatchers.eq(this.deletedGids), ArgumentMatchers.anyList()))
-			.thenReturn(Arrays.asList("PREF001"));
+			.thenReturn(Collections.singletonList("PREF001"));
 		this.prefixes = Collections.singletonList("PREF");
-		Mockito.when(this.prefixesTable.getVisibleItemIds()).thenReturn(prefixes);
+		Mockito.when(this.prefixesTable.getVisibleItemIds()).thenReturn(this.prefixes);
 
-		Mockito.when(this.source.getWindow()).thenReturn(window);
+		Mockito.when(this.source.getWindow()).thenReturn(this.window);
 	}
 
 	@Test
@@ -99,7 +92,7 @@ public class UpdatePrefixCacheDialogTest {
 	@Test
 	public void testUpdateSequencesSuccess() {
 		final KeySequenceRegister keySequenceRegister = new KeySequenceRegister(1, "PREF", 2, 2);
-		final List<String> names = Arrays.asList("PREF 001");
+		final List<String> names = Collections.singletonList("PREF 001");
 		this.dialog.updateSequences(names, Collections.singletonList(keySequenceRegister));
 		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS);
 		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS_PREFIX_UPDATE);
@@ -108,7 +101,7 @@ public class UpdatePrefixCacheDialogTest {
 	@Test
 	public void testUpdateSequencesWithError() {
 		final KeySequenceRegister keySequenceRegister = new KeySequenceRegister(1, "PREF", 2, 2);
-		final List<String> names = Arrays.asList("PREFS 001");
+		final List<String> names = Collections.singletonList("PREFS 001");
 		this.dialog.updateSequences(names, Collections.singletonList(keySequenceRegister));
 		Mockito.verify(this.messageSource).getMessage(Message.ERROR);
 		Mockito.verify(this.messageSource).getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX);
@@ -117,9 +110,9 @@ public class UpdatePrefixCacheDialogTest {
 	@Test
 	public void testUpdateSequencesWithWarning() {
 		this.prefixes = Arrays.asList("PREF", "PREFS");
-		Mockito.when(this.prefixesTable.getVisibleItemIds()).thenReturn(prefixes);
+		Mockito.when(this.prefixesTable.getVisibleItemIds()).thenReturn(this.prefixes);
 		final KeySequenceRegister keySequenceRegister = new KeySequenceRegister(1, "PREF", 2, 2);
-		final List<String> names = Arrays.asList("PREF001");
+		final List<String> names = Collections.singletonList("PREF001");
 		this.dialog.updateSequences(names, Collections.singletonList(keySequenceRegister));
 		Mockito.verify(this.messageSource).getMessage(Message.WARNING);
 		Mockito.verify(this.messageSource).getMessage(Message.WARNING_PREFIX_UPDATE,
