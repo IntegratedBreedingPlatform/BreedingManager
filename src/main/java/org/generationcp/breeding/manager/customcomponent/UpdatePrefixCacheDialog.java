@@ -19,6 +19,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.KeySequenceRegister;
 import org.generationcp.middleware.util.StringUtil;
 import org.springframework.beans.factory.InitializingBean;
@@ -51,9 +52,9 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 	private Button updatePrefixesButton;
 	private Button cancelButton;
 
-	private final List<Integer> deletedGIDs;
+	private List<Integer> deletedGIDs;
 	private Table prefixesTable;
-	private final ListManagerMain source;
+	private ListManagerMain source;
 
 
 	@Resource
@@ -243,6 +244,8 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 			}
 		}
 
+		System.out.println(this.prefixesTable.getVisibleItemIds().size() + " " + idsOfKeySequenceRegisterToBeUpdated.size());
+
 		if (this.prefixesTable.getVisibleItemIds().size() == idsOfKeySequenceRegisterToBeUpdated.size()) {
 			MessageNotifier
 				.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
@@ -313,5 +316,29 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 		public void buttonClick(final Button.ClickEvent event) {
 			this.updatePrefixCacheDialog.deletePrefixes();
 		}
+	}
+
+	void setPrefixesTable(final Table prefixesTable) {
+		this.prefixesTable = prefixesTable;
+	}
+
+	void setDeletedGIDs(final List<Integer> deletedGIDs) {
+		this.deletedGIDs = deletedGIDs;
+	}
+
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setSource(final ListManagerMain source) {
+		this.source = source;
+	}
+
+	public void setCancelButton(final Button cancelButton) {
+		this.cancelButton = cancelButton;
 	}
 }

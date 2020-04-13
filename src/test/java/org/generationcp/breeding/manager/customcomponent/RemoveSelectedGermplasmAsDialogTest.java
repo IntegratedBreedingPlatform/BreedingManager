@@ -64,6 +64,9 @@ public class RemoveSelectedGermplasmAsDialogTest {
 	private Window window;
 
 	@Mock
+	private Window parentWindow;
+
+	@Mock
 	private Application application;
 
 	@Mock
@@ -114,6 +117,7 @@ public class RemoveSelectedGermplasmAsDialogTest {
 
 		this.dialog.instantiateComponents();
 		this.dialog.initializeValues();
+		this.dialog.setParent(this.parentWindow);
 	}
 
 	private static GermplasmList getGermplasmList() {
