@@ -90,7 +90,7 @@ public class DeletePrefixCacheDialogTest {
 	}
 
 	@Test
-	public void testUpdateSequencesSuccess() {
+	public void testDeleteKeyRegistersSuccess() {
 		final KeySequenceRegister keySequenceRegister = new KeySequenceRegister(1, "PREF", 2, 2);
 		final List<String> names = Collections.singletonList("PREF 001");
 		this.dialog.deleteKeyRegisters(names, Collections.singletonList(keySequenceRegister));
@@ -99,7 +99,7 @@ public class DeletePrefixCacheDialogTest {
 	}
 
 	@Test
-	public void testUpdateSequencesWithError() {
+	public void testDeleteKeyRegistersWithError() {
 		final KeySequenceRegister keySequenceRegister = new KeySequenceRegister(1, "PREF", 2, 2);
 		final List<String> names = Collections.singletonList("PREFS 001");
 		this.dialog.deleteKeyRegisters(names, Collections.singletonList(keySequenceRegister));
@@ -108,7 +108,7 @@ public class DeletePrefixCacheDialogTest {
 	}
 
 	@Test
-	public void testUpdateSequencesWithWarning() {
+	public void testDeleteKeyRegistersWithWarning() {
 		this.prefixes = Arrays.asList("PREF", "PREFS");
 		Mockito.when(this.prefixesTable.getVisibleItemIds()).thenReturn(this.prefixes);
 		final KeySequenceRegister keySequenceRegister = new KeySequenceRegister(1, "PREF", 2, 2);
