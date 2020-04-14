@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Configurable
-public class UpdatePrefixCacheDialog extends BaseSubWindow
+public class DeletePrefixCacheDialog extends BaseSubWindow
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final String PREFIXES_TABLE_DATA = "Prefixes Table Data";
@@ -44,11 +44,11 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 	private static final String REMOVE_PROPERTY_ID = "REMOVE";
 	private static final String SEQUENCE_NUMBER_REGEX = ")\\s?(\\d+).*";
 
-	private VerticalLayout updatePrefixLayout;
 	private Label specifyPrefixLabel;
+	private Label deletePrefixLabel;
 	private TextField prefixTextField;
 	private Button addPrefixButton;
-	private Button updatePrefixesButton;
+	private Button deletePrefixesButton;
 	private Button cancelButton;
 
 	private List<Integer> deletedGIDs;
@@ -62,7 +62,7 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 
-	public UpdatePrefixCacheDialog(final List<Integer> deletedGIDs, final  ListManagerMain source) {
+	public DeletePrefixCacheDialog(final List<Integer> deletedGIDs, final  ListManagerMain source) {
 		super();
 		this.deletedGIDs = deletedGIDs;
 		this.source = source;
@@ -83,6 +83,11 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 		this.specifyPrefixLabel.setDebugId("specifyPrefixLabel");
 		this.specifyPrefixLabel.setWidth("180px");
 
+		this.deletePrefixLabel = new Label(this.messageSource.getMessage(Message.DELETE_PREFIX_LABEL));
+		this.deletePrefixLabel.setDebugId("deletePrefixLabel");
+		this.deletePrefixLabel.setWidth("100%");
+		this.deletePrefixLabel.setStyleName("italic");
+
 		this.prefixTextField = new TextField();
 		this.prefixTextField.setDebugId("prefixTextField");
 		this.prefixTextField.setWidth("170px");
@@ -97,11 +102,11 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 		this.cancelButton.setDebugId("cancelButton");
 		this.cancelButton.setWidth("80px");
 
-		this.updatePrefixesButton = new Button(this.messageSource.getMessage(Message.UPDATE));
-		this.updatePrefixesButton.setDebugId("updatePrefixesButton");
-		this.updatePrefixesButton.setWidth("80px");
-		this.updatePrefixesButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		this.updatePrefixesButton.setEnabled(false);
+		this.deletePrefixesButton = new Button(this.messageSource.getMessage(Message.DELETE));
+		this.deletePrefixesButton.setDebugId("deletePrefixesButton");
+		this.deletePrefixesButton.setWidth("80px");
+		this.deletePrefixesButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.deletePrefixesButton.setEnabled(false);
 
 		this.instantiateTable();
 	}
@@ -115,13 +120,13 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 	public void addListeners() {
 		this.cancelButton.addListener(new CloseWindowAction());
 		this.addPrefixButton.addListener(new AddPrefixButtonListener(this));
-		this.updatePrefixesButton.addListener(new UpdatePrefixButtonListener(this));
+		this.deletePrefixesButton.addListener(new DeletePrefixButtonListener(this));
 	}
 
 	@Override
 	public void layoutComponents() {
 		// window formatting
-		this.setCaption(this.messageSource.getMessage(Message.UPDATE_PREFIX).toUpperCase());
+		this.setCaption(this.messageSource.getMessage(Message.DELETE_PREFIX).toUpperCase());
 		this.center();
 		this.addStyleName(Bootstrap.WINDOW.CONFIRM.styleName());
 		this.setModal(true);
@@ -135,18 +140,19 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 		buttonLayout.setWidth("100%");
 		buttonLayout.setSpacing(true);
 		buttonLayout.addComponent(this.cancelButton);
-		buttonLayout.addComponent(this.updatePrefixesButton);
+		buttonLayout.addComponent(this.deletePrefixesButton);
 		buttonLayout.setComponentAlignment(this.cancelButton, Alignment.BOTTOM_RIGHT);
-		buttonLayout.setComponentAlignment(this.updatePrefixesButton, Alignment.BOTTOM_LEFT);
+		buttonLayout.setComponentAlignment(this.deletePrefixesButton, Alignment.BOTTOM_LEFT);
 
-		this.updatePrefixLayout = new VerticalLayout();
-		this.updatePrefixLayout.setDebugId("updatePrefixLayout");
-		this.updatePrefixLayout.setSpacing(true);
-		this.updatePrefixLayout.addComponent(new OneLineLayout(this.specifyPrefixLabel, this.prefixTextField, this.addPrefixButton));
-		this.updatePrefixLayout.addComponent(this.prefixesTable);
-		this.updatePrefixLayout.addComponent(buttonLayout);
+		final VerticalLayout deletePrefixLayout = new VerticalLayout();
+		deletePrefixLayout.setDebugId("deletePrefixLayout");
+		deletePrefixLayout.setSpacing(true);
+		deletePrefixLayout.addComponent(this.deletePrefixLabel);
+		deletePrefixLayout.addComponent(new OneLineLayout(this.specifyPrefixLabel, this.prefixTextField, this.addPrefixButton));
+		deletePrefixLayout.addComponent(this.prefixesTable);
+		deletePrefixLayout.addComponent(buttonLayout);
 
-		this.addComponent(this.updatePrefixLayout);
+		this.addComponent(deletePrefixLayout);
 
 	}
 
@@ -170,31 +176,31 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 	private void instantiateTable() {
 		this.prefixesTable = new ControllableRefreshTable();
 		this.prefixesTable.setWidth("100%");
-		this.prefixesTable.setHeight("335px");
+		this.prefixesTable.setHeight("300px");
 
-		this.prefixesTable.setData(UpdatePrefixCacheDialog.PREFIXES_TABLE_DATA);
-		this.prefixesTable.addContainerProperty(UpdatePrefixCacheDialog.PREFIXES_PROPERTY_ID, String.class, null);
-		this.prefixesTable.addContainerProperty(UpdatePrefixCacheDialog.REMOVE_PROPERTY_ID, Button.class, null);
+		this.prefixesTable.setData(DeletePrefixCacheDialog.PREFIXES_TABLE_DATA);
+		this.prefixesTable.addContainerProperty(DeletePrefixCacheDialog.PREFIXES_PROPERTY_ID, String.class, null);
+		this.prefixesTable.addContainerProperty(DeletePrefixCacheDialog.REMOVE_PROPERTY_ID, Button.class, null);
 
-		this.prefixesTable.setColumnHeader(UpdatePrefixCacheDialog.PREFIXES_PROPERTY_ID, UpdatePrefixCacheDialog.PREFIXES_PROPERTY_ID);
-		this.prefixesTable.setColumnHeader(UpdatePrefixCacheDialog.REMOVE_PROPERTY_ID, UpdatePrefixCacheDialog.REMOVE_PROPERTY_ID);
-		this.prefixesTable.setColumnWidth(UpdatePrefixCacheDialog.PREFIXES_PROPERTY_ID, 350);
-		this.prefixesTable.setColumnAlignment(UpdatePrefixCacheDialog.PREFIXES_PROPERTY_ID, Table.ALIGN_CENTER);
-		this.prefixesTable.setColumnAlignment(UpdatePrefixCacheDialog.REMOVE_PROPERTY_ID, Table.ALIGN_CENTER);
+		this.prefixesTable.setColumnHeader(DeletePrefixCacheDialog.PREFIXES_PROPERTY_ID, DeletePrefixCacheDialog.PREFIXES_PROPERTY_ID);
+		this.prefixesTable.setColumnHeader(DeletePrefixCacheDialog.REMOVE_PROPERTY_ID, DeletePrefixCacheDialog.REMOVE_PROPERTY_ID);
+		this.prefixesTable.setColumnWidth(DeletePrefixCacheDialog.PREFIXES_PROPERTY_ID, 350);
+		this.prefixesTable.setColumnAlignment(DeletePrefixCacheDialog.PREFIXES_PROPERTY_ID, Table.ALIGN_CENTER);
+		this.prefixesTable.setColumnAlignment(DeletePrefixCacheDialog.REMOVE_PROPERTY_ID, Table.ALIGN_CENTER);
 	}
 
 	private void addPrefix() {
 		final String prefix = this.prefixTextField.getValue().toString().trim();
 		if(!StringUtil.isEmpty(prefix) && !this.prefixesTable.getVisibleItemIds().contains(prefix.toUpperCase())) {
 			final Item newItem = this.prefixesTable.getContainerDataSource().addItem(prefix.toUpperCase());
-			newItem.getItemProperty(UpdatePrefixCacheDialog.PREFIXES_PROPERTY_ID).setValue(prefix);
+			newItem.getItemProperty(DeletePrefixCacheDialog.PREFIXES_PROPERTY_ID).setValue(prefix);
 
 			final Button removeButton = new Button("REMOVE");
 			removeButton.addListener(new RemovePrefixButtonListener(this));
 			removeButton.setData(prefix.toUpperCase() );
-			newItem.getItemProperty(UpdatePrefixCacheDialog.REMOVE_PROPERTY_ID).setValue(removeButton);
+			newItem.getItemProperty(DeletePrefixCacheDialog.REMOVE_PROPERTY_ID).setValue(removeButton);
 			this.prefixesTable.requestRepaint();
-			this.updatePrefixesButton.setEnabled(true);
+			this.deletePrefixesButton.setEnabled(true);
 		}
 		this.prefixTextField.setValue("");
 	}
@@ -203,7 +209,7 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 		this.prefixesTable.getContainerDataSource().removeItem(itemId);
 		this.prefixesTable.requestRepaint();
 		if(CollectionUtils.isEmpty(this.prefixesTable.getVisibleItemIds())) {
-			this.updatePrefixesButton.setEnabled(false);
+			this.deletePrefixesButton.setEnabled(false);
 		}
 	}
 
@@ -217,7 +223,7 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 					.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
 						this.messageSource.getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX));
 			} else {
-				this.updateSequences(names, keySequenceRegistersOfDeletedGermplasm);
+				this.deleteKeyRegisters(names, keySequenceRegistersOfDeletedGermplasm);
 			}
 		} else {
 			MessageNotifier
@@ -227,14 +233,14 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 		this.cancelButton.click();
 	}
 
-	void updateSequences(final List<String> names, final List<KeySequenceRegister> keySequenceRegistersOfDeletedGermplasm) {
+	void deleteKeyRegisters(final List<String> names, final List<KeySequenceRegister> keySequenceRegistersOfDeletedGermplasm) {
 		final Set<String> prefixesToBeDeleted = new HashSet<>();
 
 		for(final KeySequenceRegister keySequenceRegister: keySequenceRegistersOfDeletedGermplasm) {
 			final String prefix = keySequenceRegister.getKeyPrefix().trim().toUpperCase();
 			for (String name : names) {
 				name = name.trim().toUpperCase();
-				final Pattern namePattern = Pattern.compile("^(" + prefix + UpdatePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
+				final Pattern namePattern = Pattern.compile("^(" + prefix + DeletePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
 				final Matcher nameMatcher  = namePattern.matcher(name);
 				if(nameMatcher.find()) {
 					prefixesToBeDeleted.add(keySequenceRegister.getKeyPrefix());
@@ -246,7 +252,7 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 		if (this.prefixesTable.getVisibleItemIds().size() == prefixesToBeDeleted.size()) {
 			MessageNotifier
 				.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-					this.messageSource.getMessage(Message.SUCCESS_PREFIX_UPDATE));
+					this.messageSource.getMessage(Message.SUCCESS_PREFIX_DELETE));
 
 		} else if(prefixesToBeDeleted.isEmpty()) {
 			MessageNotifier
@@ -257,7 +263,7 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 				.size();
 			MessageNotifier
 				.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					this.messageSource.getMessage(Message.WARNING_PREFIX_UPDATE,
+					this.messageSource.getMessage(Message.WARNING_PREFIX_DELETE,
 						String.valueOf(prefixesToBeDeleted.size()), Integer.toString(noOfNonExistingPrefixes)));
 
 		}
@@ -269,49 +275,49 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 
 	static class AddPrefixButtonListener implements Button.ClickListener {
 
-		UpdatePrefixCacheDialog updatePrefixCacheDialog;
+		DeletePrefixCacheDialog deletePrefixCacheDialog;
 
-		AddPrefixButtonListener(final UpdatePrefixCacheDialog updatePrefixCacheDialog) {
-			this.updatePrefixCacheDialog = updatePrefixCacheDialog;
+		AddPrefixButtonListener(final DeletePrefixCacheDialog deletePrefixCacheDialog) {
+			this.deletePrefixCacheDialog = deletePrefixCacheDialog;
 		}
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void buttonClick(final Button.ClickEvent event) {
-			this.updatePrefixCacheDialog.addPrefix();
+			this.deletePrefixCacheDialog.addPrefix();
 		}
 	}
 
 	static class RemovePrefixButtonListener implements Button.ClickListener {
 
-		UpdatePrefixCacheDialog updatePrefixCacheDialog;
+		DeletePrefixCacheDialog deletePrefixCacheDialog;
 
-		RemovePrefixButtonListener(final UpdatePrefixCacheDialog updatePrefixCacheDialog) {
-			this.updatePrefixCacheDialog = updatePrefixCacheDialog;
+		RemovePrefixButtonListener(final DeletePrefixCacheDialog deletePrefixCacheDialog) {
+			this.deletePrefixCacheDialog = deletePrefixCacheDialog;
 		}
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void buttonClick(final Button.ClickEvent event) {
-			this.updatePrefixCacheDialog.deleteFromTable(event.getButton().getData().toString());
+			this.deletePrefixCacheDialog.deleteFromTable(event.getButton().getData().toString());
 		}
 	}
 
-	static class UpdatePrefixButtonListener implements Button.ClickListener {
+	static class DeletePrefixButtonListener implements Button.ClickListener {
 
-		UpdatePrefixCacheDialog updatePrefixCacheDialog;
+		DeletePrefixCacheDialog deletePrefixCacheDialog;
 
-		UpdatePrefixButtonListener(final UpdatePrefixCacheDialog updatePrefixCacheDialog) {
-			this.updatePrefixCacheDialog = updatePrefixCacheDialog;
+		DeletePrefixButtonListener(final DeletePrefixCacheDialog deletePrefixCacheDialog) {
+			this.deletePrefixCacheDialog = deletePrefixCacheDialog;
 		}
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void buttonClick(final Button.ClickEvent event) {
-			this.updatePrefixCacheDialog.deletePrefixes();
+			this.deletePrefixCacheDialog.deletePrefixes();
 		}
 	}
 

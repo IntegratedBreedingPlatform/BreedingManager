@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class UpdatePrefixCacheDialogTest {
+public class DeletePrefixCacheDialogTest {
 
 	private List<Integer> deletedGids;
 	private Collection prefixes;
@@ -42,7 +42,7 @@ public class UpdatePrefixCacheDialogTest {
 	private GermplasmDataManager germplasmDataManager;
 
 	@InjectMocks
-	private UpdatePrefixCacheDialog dialog;
+	private DeletePrefixCacheDialog dialog;
 
 	@Before
 	public void setUp() {
@@ -69,7 +69,7 @@ public class UpdatePrefixCacheDialogTest {
 		Mockito.when(this.germplasmDataManager.getKeySequenceRegistersByPrefixes(ArgumentMatchers.anyList())).thenReturn(Collections.singletonList(keySequenceRegister));
 		this.dialog.deletePrefixes();
 		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS);
-		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS_PREFIX_UPDATE);
+		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS_PREFIX_DELETE);
 	}
 
 	@Test
@@ -93,16 +93,16 @@ public class UpdatePrefixCacheDialogTest {
 	public void testUpdateSequencesSuccess() {
 		final KeySequenceRegister keySequenceRegister = new KeySequenceRegister(1, "PREF", 2, 2);
 		final List<String> names = Collections.singletonList("PREF 001");
-		this.dialog.updateSequences(names, Collections.singletonList(keySequenceRegister));
+		this.dialog.deleteKeyRegisters(names, Collections.singletonList(keySequenceRegister));
 		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS);
-		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS_PREFIX_UPDATE);
+		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS_PREFIX_DELETE);
 	}
 
 	@Test
 	public void testUpdateSequencesWithError() {
 		final KeySequenceRegister keySequenceRegister = new KeySequenceRegister(1, "PREF", 2, 2);
 		final List<String> names = Collections.singletonList("PREFS 001");
-		this.dialog.updateSequences(names, Collections.singletonList(keySequenceRegister));
+		this.dialog.deleteKeyRegisters(names, Collections.singletonList(keySequenceRegister));
 		Mockito.verify(this.messageSource).getMessage(Message.ERROR);
 		Mockito.verify(this.messageSource).getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX);
 	}
@@ -113,9 +113,9 @@ public class UpdatePrefixCacheDialogTest {
 		Mockito.when(this.prefixesTable.getVisibleItemIds()).thenReturn(this.prefixes);
 		final KeySequenceRegister keySequenceRegister = new KeySequenceRegister(1, "PREF", 2, 2);
 		final List<String> names = Collections.singletonList("PREF001");
-		this.dialog.updateSequences(names, Collections.singletonList(keySequenceRegister));
+		this.dialog.deleteKeyRegisters(names, Collections.singletonList(keySequenceRegister));
 		Mockito.verify(this.messageSource).getMessage(Message.WARNING);
-		Mockito.verify(this.messageSource).getMessage(Message.WARNING_PREFIX_UPDATE,
+		Mockito.verify(this.messageSource).getMessage(Message.WARNING_PREFIX_DELETE,
 			"1","1");
 	}
 }

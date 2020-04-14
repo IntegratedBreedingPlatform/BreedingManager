@@ -282,10 +282,10 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 
 	protected void showDeletePrefixDialog(final List<Integer> deletedGIDs) {
 		if(!deletedGIDs.isEmpty()) {
-			final UpdatePrefixCacheDialog updatePrefixCacheDialog =
-				new UpdatePrefixCacheDialog(deletedGIDs, this.source);
-			updatePrefixCacheDialog.setDebugId("updatePrefixCacheDialog");
-			this.getWindow().getParent().addWindow(updatePrefixCacheDialog);
+			final DeletePrefixCacheDialog deletePrefixCacheDialog =
+				new DeletePrefixCacheDialog(deletedGIDs, this.source);
+			deletePrefixCacheDialog.setDebugId("deletePrefixCacheDialog");
+			this.getWindow().getParent().addWindow(deletePrefixCacheDialog);
 		}
 
 	}
