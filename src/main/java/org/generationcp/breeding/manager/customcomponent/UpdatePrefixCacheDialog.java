@@ -228,7 +228,7 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 	}
 
 	void updateSequences(final List<String> names, final List<KeySequenceRegister> keySequenceRegistersOfDeletedGermplasm) {
-		final Set<Integer> idsOfKeySequenceRegisterToBeUpdated = new HashSet<>();
+		final Set<KeySequenceRegister> prefixesToBeUpdated = new HashSet<>();
 
 		for(final KeySequenceRegister keySequenceRegister: keySequenceRegistersOfDeletedGermplasm) {
 			final String prefix = keySequenceRegister.getKeyPrefix().trim().toUpperCase();
@@ -237,33 +237,33 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 				final Pattern namePattern = Pattern.compile("^(" + prefix + UpdatePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
 				final Matcher nameMatcher  = namePattern.matcher(name);
 				if(nameMatcher.find()) {
-					idsOfKeySequenceRegisterToBeUpdated.add(keySequenceRegister.getId());
+					prefixesToBeUpdated.add(keySequenceRegister);
 					continue;
 				}
 			}
 		}
 
-		if (this.prefixesTable.getVisibleItemIds().size() == idsOfKeySequenceRegisterToBeUpdated.size()) {
+		if (this.prefixesTable.getVisibleItemIds().size() == prefixesToBeUpdated.size()) {
 			MessageNotifier
 				.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 					this.messageSource.getMessage(Message.SUCCESS_PREFIX_UPDATE));
 
-		} else if(idsOfKeySequenceRegisterToBeUpdated.isEmpty()) {
+		} else if(prefixesToBeUpdated.isEmpty()) {
 			MessageNotifier
 				.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
 					this.messageSource.getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX));
 		} else {
-			final int noOfNonExistingPrefixes = this.prefixesTable.getVisibleItemIds().size() - idsOfKeySequenceRegisterToBeUpdated
+			final int noOfNonExistingPrefixes = this.prefixesTable.getVisibleItemIds().size() - prefixesToBeUpdated
 				.size();
 			MessageNotifier
 				.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.WARNING_PREFIX_UPDATE,
-						String.valueOf(idsOfKeySequenceRegisterToBeUpdated.size()), Integer.toString(noOfNonExistingPrefixes)));
+						String.valueOf(prefixesToBeUpdated.size()), Integer.toString(noOfNonExistingPrefixes)));
 
 		}
 
-		if(!idsOfKeySequenceRegisterToBeUpdated.isEmpty()) {
-			this.germplasmDataManager.updateKeySequenceRegister(new ArrayList<>(idsOfKeySequenceRegisterToBeUpdated));
+		if(!prefixesToBeUpdated.isEmpty()) {
+			this.germplasmDataManager.updateKeySequenceRegister(new ArrayList<>(prefixesToBeUpdated));
 		}
 	}
 
