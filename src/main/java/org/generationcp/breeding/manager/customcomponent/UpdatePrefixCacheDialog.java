@@ -167,7 +167,7 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 		}
 	}
 
-	void instantiateTable() {
+	private void instantiateTable() {
 		this.prefixesTable = new ControllableRefreshTable();
 		this.prefixesTable.setWidth("100%");
 		this.prefixesTable.setHeight("335px");
@@ -183,7 +183,7 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 		this.prefixesTable.setColumnAlignment(UpdatePrefixCacheDialog.REMOVE_PROPERTY_ID, Table.ALIGN_CENTER);
 	}
 
-	void addPrefix() {
+	private void addPrefix() {
 		final String prefix = this.prefixTextField.getValue().toString().trim();
 		if(!StringUtil.isEmpty(prefix) && !this.prefixesTable.getVisibleItemIds().contains(prefix.toUpperCase())) {
 			final Item newItem = this.prefixesTable.getContainerDataSource().addItem(prefix.toUpperCase());
@@ -199,7 +199,7 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 		this.prefixTextField.setValue("");
 	}
 
-	void deleteFromTable(final String itemId) {
+	private void deleteFromTable(final String itemId) {
 		this.prefixesTable.getContainerDataSource().removeItem(itemId);
 		this.prefixesTable.requestRepaint();
 		if(CollectionUtils.isEmpty(this.prefixesTable.getVisibleItemIds())) {
@@ -228,7 +228,7 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 	}
 
 	void updateSequences(final List<String> names, final List<KeySequenceRegister> keySequenceRegistersOfDeletedGermplasm) {
-		final Set<KeySequenceRegister> prefixesToBeUpdated = new HashSet<>();
+		final Set<String> prefixesToBeDeleted = new HashSet<>();
 
 		for(final KeySequenceRegister keySequenceRegister: keySequenceRegistersOfDeletedGermplasm) {
 			final String prefix = keySequenceRegister.getKeyPrefix().trim().toUpperCase();
@@ -237,33 +237,33 @@ public class UpdatePrefixCacheDialog extends BaseSubWindow
 				final Pattern namePattern = Pattern.compile("^(" + prefix + UpdatePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
 				final Matcher nameMatcher  = namePattern.matcher(name);
 				if(nameMatcher.find()) {
-					prefixesToBeUpdated.add(keySequenceRegister);
-					continue;
+					prefixesToBeDeleted.add(keySequenceRegister.getKeyPrefix());
+					break;
 				}
 			}
 		}
 
-		if (this.prefixesTable.getVisibleItemIds().size() == prefixesToBeUpdated.size()) {
+		if (this.prefixesTable.getVisibleItemIds().size() == prefixesToBeDeleted.size()) {
 			MessageNotifier
 				.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 					this.messageSource.getMessage(Message.SUCCESS_PREFIX_UPDATE));
 
-		} else if(prefixesToBeUpdated.isEmpty()) {
+		} else if(prefixesToBeDeleted.isEmpty()) {
 			MessageNotifier
 				.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
 					this.messageSource.getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX));
 		} else {
-			final int noOfNonExistingPrefixes = this.prefixesTable.getVisibleItemIds().size() - prefixesToBeUpdated
+			final int noOfNonExistingPrefixes = this.prefixesTable.getVisibleItemIds().size() - prefixesToBeDeleted
 				.size();
 			MessageNotifier
 				.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.WARNING_PREFIX_UPDATE,
-						String.valueOf(prefixesToBeUpdated.size()), Integer.toString(noOfNonExistingPrefixes)));
+						String.valueOf(prefixesToBeDeleted.size()), Integer.toString(noOfNonExistingPrefixes)));
 
 		}
 
-		if(!prefixesToBeUpdated.isEmpty()) {
-			this.germplasmDataManager.updateKeySequenceRegister(new ArrayList<>(prefixesToBeUpdated));
+		if(!prefixesToBeDeleted.isEmpty()) {
+			this.germplasmDataManager.deleteKeySequenceRegistersByKeyPrefixes(new ArrayList<>(prefixesToBeDeleted));
 		}
 	}
 
