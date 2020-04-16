@@ -191,17 +191,24 @@ public class DeletePrefixCacheDialog extends BaseSubWindow
 
 	private void addPrefix() {
 		final String prefix = this.prefixTextField.getValue().toString().trim();
-		if(!StringUtil.isEmpty(prefix) && !this.prefixesTable.getVisibleItemIds().contains(prefix.toUpperCase())) {
-			final Item newItem = this.prefixesTable.getContainerDataSource().addItem(prefix.toUpperCase());
-			newItem.getItemProperty(DeletePrefixCacheDialog.PREFIXES_PROPERTY_ID).setValue(prefix);
+		if(!StringUtil.isEmpty(prefix)) {
+			if(!this.prefixesTable.getVisibleItemIds().contains(prefix.toUpperCase())) {
+				final Item newItem = this.prefixesTable.getContainerDataSource().addItem(prefix.toUpperCase());
+				newItem.getItemProperty(DeletePrefixCacheDialog.PREFIXES_PROPERTY_ID).setValue(prefix);
 
-			final Button removeButton = new Button("REMOVE");
-			removeButton.addListener(new RemovePrefixButtonListener(this));
-			removeButton.setData(prefix.toUpperCase() );
-			newItem.getItemProperty(DeletePrefixCacheDialog.REMOVE_PROPERTY_ID).setValue(removeButton);
-			this.prefixesTable.requestRepaint();
-			this.deletePrefixesButton.setEnabled(true);
+				final Button removeButton = new Button("REMOVE");
+				removeButton.addListener(new RemovePrefixButtonListener(this));
+				removeButton.setData(prefix.toUpperCase() );
+				newItem.getItemProperty(DeletePrefixCacheDialog.REMOVE_PROPERTY_ID).setValue(removeButton);
+				this.prefixesTable.requestRepaint();
+				this.deletePrefixesButton.setEnabled(true);
+			} else {
+				MessageNotifier
+					.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
+						this.messageSource.getMessage(Message.WARNING_PREFIX_EXISTING_IN_TABLE));
+			}
 		}
+
 		this.prefixTextField.setValue("");
 	}
 
