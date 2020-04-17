@@ -769,7 +769,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		rightSubHeaderLayout.addComponent(this.editHeaderButton);
 		rightSubHeaderLayout.setComponentAlignment(this.editHeaderButton, Alignment.MIDDLE_RIGHT);
 
-		if (this.localUserIsListOwner() || this.UserHasInstancesRole(this.localUserId)) {
+		if (this.localUserIsListOwner() || this.userHasInstancesRole(this.localUserId)) {
 			rightSubHeaderLayout.addComponent(this.lockButton);
 			rightSubHeaderLayout.setComponentAlignment(this.lockButton, Alignment.MIDDLE_RIGHT);
 
@@ -803,10 +803,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.parentListDetailsComponent.addComponent(this.inventoryViewMenu);
 	}
 
-	private boolean UserHasInstancesRole(final Integer userId) {
+	private boolean userHasInstancesRole(final Integer userId) {
 		final WorkbenchUser workbenchUser = this.userService.getUserById(userId);
 		final List<UserRole> userRoles = workbenchUser.getRoles();
-		for (UserRole userRole : userRoles) {
+		for (final UserRole userRole : userRoles) {
 			if (userRole.getRole().getRoleType().getId().equals(RoleType.INSTANCE.getId())) {
 				return true;
 			}
