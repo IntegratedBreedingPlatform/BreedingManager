@@ -16,7 +16,6 @@ import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.ListSelectionComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.middleware.constant.ColumnLabels;
-import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -64,6 +63,9 @@ public class RemoveSelectedGermplasmAsDialogTest {
 	private Window window;
 
 	@Mock
+	private Window parentWindow;
+
+	@Mock
 	private Application application;
 
 	@Mock
@@ -84,12 +86,12 @@ public class RemoveSelectedGermplasmAsDialogTest {
 	}
 
 	@Before
-	public void setUp() throws MiddlewareQueryException, GermplasmListExporterException {
+	public void setUp() throws MiddlewareQueryException {
 
 		MockitoAnnotations.initMocks(this);
 		RemoveSelectedGermplasmAsDialogTest.listDataTable = RemoveSelectedGermplasmAsDialogTest.generateTestTable();
-		ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
-		ListManagerTreeComponent listManagerTreeComponent = Mockito.mock(ListManagerTreeComponent.class);
+		final ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
+		final ListManagerTreeComponent listManagerTreeComponent = Mockito.mock(ListManagerTreeComponent.class);
 
 		Mockito.when(this.source.getListSelectionComponent()).thenReturn(listSelectionComponent);
 		Mockito.when(this.source.getListSelectionComponent().getListTreeComponent()).thenReturn(listManagerTreeComponent);
@@ -114,6 +116,7 @@ public class RemoveSelectedGermplasmAsDialogTest {
 
 		this.dialog.instantiateComponents();
 		this.dialog.initializeValues();
+		this.dialog.setParent(this.parentWindow);
 	}
 
 	private static GermplasmList getGermplasmList() {

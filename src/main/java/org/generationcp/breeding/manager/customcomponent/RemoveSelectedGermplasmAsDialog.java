@@ -36,6 +36,7 @@ import java.util.List;
 public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
+
 	private static final Integer MAX_GIDS_ALLOWED = new Integer(500);
 	private VerticalLayout mainRemoveGermplasmLayout;
 	private Label titleRemoveGermplasmLabel;
@@ -217,13 +218,14 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 	}
 
 	protected void deleteGermplasmsAction(final Collection<? extends Integer> selectedIdsToDelete) {
-		final TransactionTemplate transactionTemplate = new TransactionTemplate(RemoveSelectedGermplasmAsDialog.this.transactionManager);
+
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 
-				final List<Integer> selectedDeleteGids = getDeleteGids(selectedIdsToDelete);
+				final List<Integer> selectedDeleteGids = this.getDeleteGids(selectedIdsToDelete);
 
 				final int size = selectedDeleteGids.size();
 				if(MAX_GIDS_ALLOWED.compareTo(size) < 0) {
@@ -240,16 +242,17 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 						if (selectedIdsToDelete.size() == deletedGids.size()) {
 							deletedIds.addAll(selectedIdsToDelete);
 						} else {
-							getDeletedIds(deletedIds, deletedGids);
+							this.getDeletedIds(deletedIds, deletedGids);
 						}
 					}
 
+					RemoveSelectedGermplasmAsDialog.this.showDeletePrefixDialog(deletedGids);
 					RemoveSelectedGermplasmAsDialog.this.refreshTable(deletedIds);
 				}
 
 			}
 
-			Integer getGidByDataTable(Integer itemId) {
+			Integer getGidByDataTable(final Integer itemId) {
 				final Button desigButton = (Button) RemoveSelectedGermplasmAsDialog.this.getListDataTable().getItem(itemId)
 					.getItemProperty(ColumnLabels.GID.getName()).getValue();
 				final String gid = desigButton.getCaption();
@@ -258,7 +261,7 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 
 			void getDeletedIds(final List<Integer> selectedIdsDeleted, final List<Integer> deletedGids) {
 				for (final Integer itemId : selectedIdsToDelete) {
-					final Integer gid = getGidByDataTable(itemId);
+					final Integer gid = this.getGidByDataTable(itemId);
 					if (deletedGids.contains(Integer.valueOf(gid))) {
 						selectedIdsDeleted.add(itemId);
 
@@ -269,7 +272,7 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 			List<Integer> getDeleteGids(final Collection<? extends Integer> selectedIdsToDelete) {
 				final List<Integer> selectedDeleteGids = new ArrayList<>();
 				for (final Integer itemId : selectedIdsToDelete) {
-					final Integer gid = getGidByDataTable(itemId);
+					final Integer gid = this.getGidByDataTable(itemId);
 					selectedDeleteGids.add(gid);
 				}
 				return selectedDeleteGids;
@@ -277,6 +280,15 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 		});
 	}
 
+	protected void showDeletePrefixDialog(final List<Integer> deletedGIDs) {
+		if(!deletedGIDs.isEmpty()) {
+			final DeletePrefixCacheDialog deletePrefixCacheDialog =
+				new DeletePrefixCacheDialog(deletedGIDs, this.source);
+			deletePrefixCacheDialog.setDebugId("deletePrefixCacheDialog");
+			this.getWindow().getParent().addWindow(deletePrefixCacheDialog);
+		}
+
+	}
 	protected List<Integer> deleteGermplasmsByGids(final List<Integer> gidsToDelete) {
 		final List<Integer> deletedGids =
 			this.getGermplasmListManager().deleteGermplasms(gidsToDelete, this.getGermplasmList().getId());
@@ -285,21 +297,21 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 
 		if (gidsToDelete.size() == deletedGids.size()) {
 			MessageNotifier
-				.showMessage(this.source.getWindow(), RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.SUCCESS),
-						RemoveSelectedGermplasmAsDialog.this.getMessageSource()
+				.showMessage(this.source.getWindow(), this.getMessageSource().getMessage(Message.SUCCESS),
+					this.getMessageSource()
 								.getMessage(Message.SUCCESS_DELETED_GERMPLASM, countDeletedGids));
 
 		} else if (deletedGids.size() != 0) {
-			final Integer gselectedIdsNotDeleted = gidsToDelete.size() - deletedGids.size();
+			final int gselectedIdsNotDeleted = gidsToDelete.size() - deletedGids.size();
 			MessageNotifier
-				.showWarning(this.source.getWindow(), RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.WARNING),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource()
-						.getMessage(Message.WARNING_DELETED_GERMPLASM, countDeletedGids, gselectedIdsNotDeleted.toString()));
+				.showWarning(this.source.getWindow(), this.getMessageSource().getMessage(Message.WARNING),
+					this.getMessageSource()
+						.getMessage(Message.WARNING_DELETED_GERMPLASM, countDeletedGids, Integer.toString(gselectedIdsNotDeleted)));
 
 		} else {
 			MessageNotifier
-				.showError(this.source.getWindow(), RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.ERROR),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource()
+				.showError(this.source.getWindow(), this.getMessageSource().getMessage(Message.ERROR),
+					this.getMessageSource()
 						.getMessage(Message.GERMPLASM_COULD_NOT_BE_DELETED, countGidsToDelete));
 		}
 
