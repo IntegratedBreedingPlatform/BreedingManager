@@ -13,16 +13,24 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
+import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.service.api.KeySequenceRegisterService;
 import org.generationcp.middleware.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -37,6 +45,8 @@ import java.util.regex.Pattern;
 @Configurable
 public class DeletePrefixCacheDialog extends BaseSubWindow
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+
+	private static final Logger LOG = LoggerFactory.getLogger(DeletePrefixCacheDialog.class);
 
 	private static final String PREFIXES_TABLE_DATA = "Prefixes Table Data";
 	private static final String PREFIXES_PROPERTY_ID = "PREFIX";
@@ -60,6 +70,12 @@ public class DeletePrefixCacheDialog extends BaseSubWindow
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
+
+	@Autowired
+	private KeySequenceRegisterService keySequenceRegisterService;
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	public DeletePrefixCacheDialog(final List<Integer> deletedGIDs, final  ListManagerMain source) {
 		super();
@@ -233,40 +249,59 @@ public class DeletePrefixCacheDialog extends BaseSubWindow
 	}
 
 	void deleteKeyRegisters(final List<String> names, final List<String> prefixes) {
-		final Set<String> prefixesToBeDeleted = new HashSet<>();
+		try {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 
-		for(final String prefix: prefixes) {
-			final Pattern namePattern = Pattern.compile("^(" + prefix + DeletePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
-			for (String name : names) {
-				name = name.trim().toUpperCase();
-				final Matcher nameMatcher  = namePattern.matcher(name);
-				if(nameMatcher.find()) {
-					prefixesToBeDeleted.add(prefix);
-					break;
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+				@Override
+				protected void doInTransactionWithoutResult(final TransactionStatus status) {
+					final Set<String> prefixesToBeDeleted = new HashSet<>();
+
+					for(final String prefix: prefixes) {
+						final Pattern namePattern = Pattern.compile("^(" + prefix + DeletePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
+						for (String name : names) {
+							name = name.trim().toUpperCase();
+							final Matcher nameMatcher  = namePattern.matcher(name);
+							if(nameMatcher.find()) {
+								prefixesToBeDeleted.add(prefix);
+								break;
+							}
+						}
+					}
+
+					if (DeletePrefixCacheDialog.this.prefixesTable.getVisibleItemIds().size() == prefixesToBeDeleted.size()) {
+						MessageNotifier
+							.showMessage(DeletePrefixCacheDialog.this.source.getWindow(), DeletePrefixCacheDialog.this.messageSource.getMessage(Message.SUCCESS),
+								DeletePrefixCacheDialog.this.messageSource.getMessage(Message.SUCCESS_PREFIX_DELETE));
+
+					} else if(prefixesToBeDeleted.isEmpty()) {
+						MessageNotifier
+							.showWarning(DeletePrefixCacheDialog.this.source.getWindow(), DeletePrefixCacheDialog.this.messageSource.getMessage(Message.WARNING),
+								DeletePrefixCacheDialog.this.messageSource.getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX));
+					} else {
+						prefixes.removeAll(prefixesToBeDeleted);
+						MessageNotifier
+							.showWarning(DeletePrefixCacheDialog.this.source.getWindow(), DeletePrefixCacheDialog.this.messageSource.getMessage(Message.WARNING),
+								DeletePrefixCacheDialog.this.messageSource.getMessage(Message.WARNING_PREFIX_DELETE,
+									String.valueOf(prefixesToBeDeleted.size()), String.join(", ", prefixes)));
+
+					}
+
+					if(!prefixesToBeDeleted.isEmpty()) {
+						DeletePrefixCacheDialog.this.keySequenceRegisterService.deleteKeySequences(new ArrayList<>(prefixesToBeDeleted));
+					}
+
+
 				}
-			}
-		}
+			});
+		} catch (final InternationalizableException e) {
+			DeletePrefixCacheDialog.LOG.error(e.getMessage(), e);
+			MessageNotifier.showError(this.source.getWindow(), e.getCaption(), e.getDescription());
+		} catch (final Exception e) {
+			DeletePrefixCacheDialog.LOG.error(e.getMessage(), e);
+			MessageNotifier.showError(this.source.getWindow(), "", e.getLocalizedMessage());
 
-		if (this.prefixesTable.getVisibleItemIds().size() == prefixesToBeDeleted.size()) {
-			MessageNotifier
-				.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-					this.messageSource.getMessage(Message.SUCCESS_PREFIX_DELETE));
-
-		} else if(prefixesToBeDeleted.isEmpty()) {
-			MessageNotifier
-				.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					this.messageSource.getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX));
-		} else {
-			prefixes.removeAll(prefixesToBeDeleted);
-			MessageNotifier
-				.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					this.messageSource.getMessage(Message.WARNING_PREFIX_DELETE,
-						String.valueOf(prefixesToBeDeleted.size()), String.join(", ", prefixes)));
-
-		}
-
-		if(!prefixesToBeDeleted.isEmpty()) {
-			this.germplasmDataManager.deleteKeySequenceRegisters(new ArrayList<>(prefixesToBeDeleted));
 		}
 	}
 
