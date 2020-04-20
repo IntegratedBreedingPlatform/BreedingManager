@@ -19,7 +19,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.pojos.KeySequenceRegister;
 import org.generationcp.middleware.util.StringUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -224,33 +223,25 @@ public class DeletePrefixCacheDialog extends BaseSubWindow
 		final List<String> prefixes = new ArrayList<>((Collection<? extends String>) this.prefixesTable.getVisibleItemIds());
 		final List<String> names = this.germplasmDataManager.getNamesByGidsAndPrefixes(this.deletedGIDs, prefixes);
 		if(!CollectionUtils.isEmpty(names)) {
-			final List<KeySequenceRegister> keySequenceRegistersOfDeletedGermplasm = this.germplasmDataManager.getKeySequenceRegistersByPrefixes(prefixes);
-			if(CollectionUtils.isEmpty(keySequenceRegistersOfDeletedGermplasm)) {
-				MessageNotifier
-					.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
-						this.messageSource.getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX));
-			} else {
-				this.deleteKeyRegisters(names, keySequenceRegistersOfDeletedGermplasm);
-			}
+			this.deleteKeyRegisters(names, prefixes);
 		} else {
 			MessageNotifier
-				.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+				.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX));
 		}
 		this.cancelButton.click();
 	}
 
-	void deleteKeyRegisters(final List<String> names, final List<KeySequenceRegister> keySequenceRegistersOfDeletedGermplasm) {
+	void deleteKeyRegisters(final List<String> names, final List<String> prefixes) {
 		final Set<String> prefixesToBeDeleted = new HashSet<>();
 
-		for(final KeySequenceRegister keySequenceRegister: keySequenceRegistersOfDeletedGermplasm) {
-			final String prefix = keySequenceRegister.getKeyPrefix().trim().toUpperCase();
+		for(final String prefix: prefixes) {
+			final Pattern namePattern = Pattern.compile("^(" + prefix + DeletePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
 			for (String name : names) {
 				name = name.trim().toUpperCase();
-				final Pattern namePattern = Pattern.compile("^(" + prefix + DeletePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
 				final Matcher nameMatcher  = namePattern.matcher(name);
 				if(nameMatcher.find()) {
-					prefixesToBeDeleted.add(keySequenceRegister.getKeyPrefix());
+					prefixesToBeDeleted.add(prefix);
 					break;
 				}
 			}
@@ -263,20 +254,19 @@ public class DeletePrefixCacheDialog extends BaseSubWindow
 
 		} else if(prefixesToBeDeleted.isEmpty()) {
 			MessageNotifier
-				.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+				.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX));
 		} else {
-			final int noOfNonExistingPrefixes = this.prefixesTable.getVisibleItemIds().size() - prefixesToBeDeleted
-				.size();
+			prefixes.removeAll(prefixesToBeDeleted);
 			MessageNotifier
 				.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.WARNING_PREFIX_DELETE,
-						String.valueOf(prefixesToBeDeleted.size()), Integer.toString(noOfNonExistingPrefixes)));
+						String.valueOf(prefixesToBeDeleted.size()), String.join(", ", prefixes)));
 
 		}
 
 		if(!prefixesToBeDeleted.isEmpty()) {
-			this.germplasmDataManager.deleteKeySequenceRegistersByKeyPrefixes(new ArrayList<>(prefixesToBeDeleted));
+			this.germplasmDataManager.deleteKeySequenceRegisters(new ArrayList<>(prefixesToBeDeleted));
 		}
 	}
 
