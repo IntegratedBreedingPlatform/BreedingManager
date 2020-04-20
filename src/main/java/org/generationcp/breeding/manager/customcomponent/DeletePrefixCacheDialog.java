@@ -272,7 +272,8 @@ public class DeletePrefixCacheDialog extends BaseSubWindow
 
 					if (DeletePrefixCacheDialog.this.prefixesTable.getVisibleItemIds().size() == prefixesToBeDeleted.size()) {
 						MessageNotifier
-							.showMessage(DeletePrefixCacheDialog.this.source.getWindow(), DeletePrefixCacheDialog.this.messageSource.getMessage(Message.SUCCESS),
+							.showMessage(DeletePrefixCacheDialog.this.source.getWindow(),
+								DeletePrefixCacheDialog.this.messageSource.getMessage(Message.SUCCESS),
 								DeletePrefixCacheDialog.this.messageSource.getMessage(Message.SUCCESS_PREFIX_DELETE));
 
 					} else if(prefixesToBeDeleted.isEmpty()) {
@@ -280,11 +281,12 @@ public class DeletePrefixCacheDialog extends BaseSubWindow
 							.showWarning(DeletePrefixCacheDialog.this.source.getWindow(), DeletePrefixCacheDialog.this.messageSource.getMessage(Message.WARNING),
 								DeletePrefixCacheDialog.this.messageSource.getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX));
 					} else {
-						prefixes.removeAll(prefixesToBeDeleted);
+						final List<String> undeletedPrefixes = new ArrayList<>((Collection<? extends String>) DeletePrefixCacheDialog.this.prefixesTable.getVisibleItemIds());
+						undeletedPrefixes.removeAll(prefixesToBeDeleted);
 						MessageNotifier
 							.showWarning(DeletePrefixCacheDialog.this.source.getWindow(), DeletePrefixCacheDialog.this.messageSource.getMessage(Message.WARNING),
 								DeletePrefixCacheDialog.this.messageSource.getMessage(Message.WARNING_PREFIX_DELETE,
-									String.valueOf(prefixesToBeDeleted.size()), String.join(", ", prefixes)));
+									String.valueOf(prefixesToBeDeleted.size()), String.join(", ", undeletedPrefixes)));
 
 					}
 
@@ -375,5 +377,9 @@ public class DeletePrefixCacheDialog extends BaseSubWindow
 
 	public void setCancelButton(final Button cancelButton) {
 		this.cancelButton = cancelButton;
+	}
+
+	public void setTransactionManager(final PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 }

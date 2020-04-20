@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +41,9 @@ public class DeletePrefixCacheDialogTest {
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
 
+	@Mock
+	private PlatformTransactionManager transactionManager;
+
 	@InjectMocks
 	private DeletePrefixCacheDialog dialog;
 
@@ -52,6 +56,7 @@ public class DeletePrefixCacheDialogTest {
 		this.dialog.setGermplasmDataManager(this.germplasmDataManager);
 		this.dialog.setMessageSource(this.messageSource);
 		this.dialog.setCancelButton(new Button());
+		this.dialog.setTransactionManager(this.transactionManager);
 
 
 		Mockito.when(this.germplasmDataManager.getNamesByGidsAndPrefixes(ArgumentMatchers.eq(this.deletedGids), ArgumentMatchers.anyList()))
@@ -74,7 +79,7 @@ public class DeletePrefixCacheDialogTest {
 		Mockito.when(this.germplasmDataManager.getNamesByGidsAndPrefixes(ArgumentMatchers.eq(this.deletedGids), ArgumentMatchers.anyList()))
 			.thenReturn(new ArrayList<>());
 		this.dialog.deletePrefixes();
-		Mockito.verify(this.messageSource).getMessage(Message.ERROR);
+		Mockito.verify(this.messageSource).getMessage(Message.WARNING);
 		Mockito.verify(this.messageSource).getMessage(Message.NO_EXISTING_NAME_WITH_PREFIX);
 	}
 
@@ -102,6 +107,6 @@ public class DeletePrefixCacheDialogTest {
 		this.dialog.deleteKeyRegisters(names, Collections.singletonList("PREF"));
 		Mockito.verify(this.messageSource).getMessage(Message.WARNING);
 		Mockito.verify(this.messageSource).getMessage(Message.WARNING_PREFIX_DELETE,
-			"1", "PREF");
+			"1", "PREFS");
 	}
 }
