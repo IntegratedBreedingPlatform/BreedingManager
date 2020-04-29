@@ -257,9 +257,8 @@ public class DeletePrefixCacheDialog extends BaseSubWindow
 				@Override
 				protected void doInTransactionWithoutResult(final TransactionStatus status) {
 					final Set<String> prefixesToBeDeleted = new HashSet<>();
-
 					for(final String prefix: prefixes) {
-						final Pattern namePattern = Pattern.compile("^(" + prefix + DeletePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
+						final Pattern namePattern = Pattern.compile("^(" + Pattern.quote(prefix) + DeletePrefixCacheDialog.SEQUENCE_NUMBER_REGEX);
 						for (String name : names) {
 							name = name.trim().toUpperCase();
 							final Matcher nameMatcher  = namePattern.matcher(name);
