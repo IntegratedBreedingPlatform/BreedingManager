@@ -96,7 +96,7 @@ public class DeletePrefixCacheDialog extends BaseSubWindow
 	public void instantiateComponents() {
 		this.specifyPrefixLabel = new Label(this.messageSource.getMessage(Message.SPECIFY_PREFIX));
 		this.specifyPrefixLabel.setDebugId("specifyPrefixLabel");
-		this.specifyPrefixLabel.setWidth("180px");
+		this.specifyPrefixLabel.setWidth("80px");
 
 		this.deletePrefixLabel = new Label(this.messageSource.getMessage(Message.DELETE_PREFIX_LABEL));
 		this.deletePrefixLabel.setDebugId("deletePrefixLabel");
