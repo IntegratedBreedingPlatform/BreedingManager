@@ -85,8 +85,8 @@ public class DeletePrefixCacheDialogTest {
 
 	@Test
 	public void testDeleteKeyRegistersSuccess() {
-		final List<String> names = Collections.singletonList("PREF 001");
-		this.dialog.deleteKeyRegisters(names, Collections.singletonList("PREF"));
+		final List<String> names = Collections.singletonList("PREF*-(12) 001");
+		this.dialog.deleteKeyRegisters(names, Collections.singletonList("PREF*-(12)"));
 		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS);
 		Mockito.verify(this.messageSource).getMessage(Message.SUCCESS_PREFIX_DELETE);
 	}
