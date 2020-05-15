@@ -1304,31 +1304,26 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	private void exportListForGenotypingOrderAction() {
 		if (this.isCurrentListSaved()) {
-			if (this.currentlySavedGermplasmList.isLockedList()) {
-				final String tempFileName = System.getProperty(ListBuilderComponent.USER_HOME) + "/tempListForGenotyping.xls";
-				final GermplasmListExporter listExporter = new GermplasmListExporter();
+			final String tempFileName = System.getProperty(ListBuilderComponent.USER_HOME) + "/tempListForGenotyping.xls";
+			final GermplasmListExporter listExporter = new GermplasmListExporter();
 
-				try {
-					listExporter.exportKBioScienceGenotypingOrderXLS(this.currentlySavedGermplasmList.getId(), tempFileName, 96);
+			try {
+				listExporter.exportKBioScienceGenotypingOrderXLS(this.currentlySavedGermplasmList.getId(), tempFileName, 96);
 
-					final String listName = this.currentlySavedGermplasmList.getName();
+				final String listName = this.currentlySavedGermplasmList.getName();
 
-					final VaadinFileDownloadResource fileDownloadResource = new VaadinFileDownloadResource(new File(tempFileName),
-							listName.replace(" ", "_") + "ForGenotyping.xls", this.source.getApplication());
+				final VaadinFileDownloadResource fileDownloadResource = new VaadinFileDownloadResource(new File(tempFileName),
+					listName.replace(" ", "_") + "ForGenotyping.xls", this.source.getApplication());
 
-					this.source.getWindow().open(fileDownloadResource);
+				this.source.getWindow().open(fileDownloadResource);
 
-					// must figure out other way to clean-up file because
-					// deleting it here makes it unavailable for download
+				// must figure out other way to clean-up file because
+				// deleting it here makes it unavailable for download
 
-				} catch (final GermplasmListExporterException e) {
-					MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
-							e.getMessage());
-					ListBuilderComponent.LOG.error(e.getMessage(), e);
-				}
-			} else {
+			} catch (final GermplasmListExporterException e) {
 				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
-						this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
+					e.getMessage());
+				ListBuilderComponent.LOG.error(e.getMessage(), e);
 			}
 		}
 	}

@@ -87,6 +87,7 @@ import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
+import org.generationcp.middleware.domain.workbench.RoleType;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -100,6 +101,7 @@ import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.pojos.workbench.UserRole;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.service.api.user.UserService;
@@ -767,13 +769,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		rightSubHeaderLayout.addComponent(this.editHeaderButton);
 		rightSubHeaderLayout.setComponentAlignment(this.editHeaderButton, Alignment.MIDDLE_RIGHT);
 
-		if (this.localUserIsListOwner()) {
+		if (this.localUserIsListOwner() || this.userHasInstancesRole(this.localUserId)) {
 			rightSubHeaderLayout.addComponent(this.lockButton);
 			rightSubHeaderLayout.setComponentAlignment(this.lockButton, Alignment.MIDDLE_RIGHT);
 
 			rightSubHeaderLayout.addComponent(this.unlockButton);
 			rightSubHeaderLayout.setComponentAlignment(this.unlockButton, Alignment.MIDDLE_RIGHT);
 		}
+
 		this.setLockedState(this.germplasmList.isLockedList());
 
 		this.subHeaderLayout = new HorizontalLayout();
@@ -798,6 +801,17 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		this.parentListDetailsComponent.addComponent(this.menu);
 		this.parentListDetailsComponent.addComponent(this.inventoryViewMenu);
+	}
+
+	private boolean userHasInstancesRole(final Integer userId) {
+		final WorkbenchUser workbenchUser = this.userService.getUserById(userId);
+		final List<UserRole> userRoles = workbenchUser.getRoles();
+		for (final UserRole userRole : userRoles) {
+			if (userRole.getRole().getRoleType().getId().equals(RoleType.INSTANCE.getId())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

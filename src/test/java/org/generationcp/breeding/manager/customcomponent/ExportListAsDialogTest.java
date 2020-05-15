@@ -265,31 +265,6 @@ public class ExportListAsDialogTest {
 				ExportListAsDialogTest.germplasmList.getName().replace(" ", "_") + "ForGenotyping.xls", this.source);
 	}
 
-	@Test
-	public void testExportListForGenotypingOrderActionWithException() throws GermplasmListExporterException {
-		Mockito.doThrow(new GermplasmListExporterException()).when(this.listExporter)
-				.exportKBioScienceGenotypingOrderXLS(ExportListAsDialogTest.TEST_GERMPLASM_LIST_ID, TEMPORARY_FILE_PATH_CSV,
-						ExportListAsDialog.DEFAULT_PLATE_SIZE);
-		this.dialog.exportListForGenotypingOrderAction();
-		verify(this.fileDownloaderUtility, Mockito.times(0)).initiateFileDownload(TEMPORARY_FILE_PATH_CSV,
-				ExportListAsDialogTest.germplasmList.getName().replace(" ", "_") + "ForGenotyping.xls", this.source);
-
-		final ArgumentCaptor<Window.Notification> captor = ArgumentCaptor.forClass(Window.Notification.class);
-		verify(this.window).showNotification(captor.capture());
-		final Window.Notification notification = captor.getValue();
-		assertEquals(ERROR_EXPORTING_LIST, notification.getCaption());
-	}
-	
-	@Test
-	public void testExportListForGenotypingOrderActionForUnlockedList() throws GermplasmListExporterException {
-		// Set status of list = unlocked
-		ExportListAsDialogTest.germplasmList.setStatus(1);
-		this.dialog.exportListForGenotypingOrderAction();
-		Mockito.verifyZeroInteractions(this.listExporter);
-		Mockito.verifyZeroInteractions(this.fileDownloaderUtility);
-		Mockito.verifyZeroInteractions(this.installationDirectoryUtil);
-	}
-
 	private static GermplasmList getGermplasmList() {
 		final GermplasmList germplasmList = new GermplasmList();
 		germplasmList.setName("Sample List");
@@ -443,35 +418,6 @@ public class ExportListAsDialogTest {
 		verify(exportListAsDialogMock, Mockito.times(1)).exportListAction(ArgumentMatchers.<Table>isNull());
 		// ExportListAsDialog window should be closed
 		verify(parentWindow, Mockito.times(1)).removeWindow(exportListAsDialogMock);
-	}
-
-	@Test
-	public void testFinishExportListenerListIsNotLocked() {
-
-		final Integer lockedStatus = 1;
-
-		final Window parentWindow = Mockito.mock(Window.class);
-		final ExportListAsDialog exportListAsDialogMock = Mockito.mock(ExportListAsDialog.class);
-		final GermplasmList germplasmList = new GermplasmList();
-		germplasmList.setStatus(lockedStatus);
-
-		Mockito.when(exportListAsDialogMock.getParent()).thenReturn(parentWindow);
-		Mockito.when(exportListAsDialogMock.getWindow()).thenReturn(parentWindow);
-		Mockito.when(exportListAsDialogMock.getGermplasmList()).thenReturn(germplasmList);
-		Mockito.when(exportListAsDialogMock.getMessageSource()).thenReturn(this.messageSource);
-
-		final ExportListAsDialog.FinishButtonListener finishButtonListener =
-				new ExportListAsDialog.FinishButtonListener(exportListAsDialogMock);
-
-		finishButtonListener.buttonClick(null);
-
-		// ExportListAction should not be called
-		verify(exportListAsDialogMock, Mockito.times(0)).exportListAction(ArgumentMatchers.any(Table.class));
-		// Window should not be closed
-		verify(parentWindow, Mockito.times(0)).removeWindow(exportListAsDialogMock);
-
-		// Error message should be displayed
-		verify(this.messageSource).getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED);
 	}
 
 }
