@@ -85,7 +85,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 	private Action.Handler rightClickActionHandler;
 
-	private org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
+	private final org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
 
 	private final LazyQueryDefinition definition = new LazyQueryDefinition(true, 20);
 
@@ -267,7 +267,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 								Integer.parseInt(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
 
 						germplasmNames = GermplasmSearchResultsComponent.this.getGermplasmNames(gid);
-					}catch(MiddlewareException ex){
+					}catch(final MiddlewareException ex){
 						if(ex.getMessage().contains("Problem building pedigree string for gid")){
 							MessageNotifier.showError(GermplasmSearchResultsComponent.this.getWindow(), "Error with Cross Expansion", "There is a data problem that prevents the generation of the cross expansion. Please contact your administrator");
 							return germplasmNames;
@@ -449,7 +449,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 			} else {
 				throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
 			}
-		}catch (MiddlewareException e){
+		}catch (final MiddlewareException e){
 			throw new BreedingManagerSearchException(Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE);
 		}finally{
 			GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
@@ -500,7 +500,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 	protected void updateNoOfSelectedEntries() {
 		final Collection<?> selectedItems = (Collection<?>) this.matchingGermplasmTable.getValue();
-		int count = selectedItems.size();
+		final int count = selectedItems.size();
 
 		this.updateNoOfSelectedEntries(count);
 	}
@@ -620,7 +620,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 		this.addColumnContextMenu = addColumnContextMenu;
 	}
 
-	public class TableRightClickHandler implements Action.Handler {
+	public static class TableRightClickHandler implements Action.Handler {
 
 		private static final long serialVersionUID = -897257270314381555L;
 
