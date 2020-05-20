@@ -16,6 +16,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.manager.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -323,6 +324,8 @@ public class GermplasmSearchBarComponent extends CssLayout
 						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),
 								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
 								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
+					} else if (Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE.equals(e.getErrorMessage())) {
+						MessageNotifier.showError(GermplasmSearchBarComponent.this.getWindow(), "Error with Cross Expansion", "There is a data problem that prevents the generation of the cross expansion. Please contact your administrator");
 					} else {
 						// case for no results, database error
 						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),

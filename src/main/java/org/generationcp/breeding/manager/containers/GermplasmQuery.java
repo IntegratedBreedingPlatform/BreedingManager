@@ -29,6 +29,7 @@ import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.service.api.PedigreeService;
@@ -96,6 +97,8 @@ public class GermplasmQuery implements Query {
 	private boolean showAddToList = true;
 	private int size;
 	private List<Integer> allGids;
+	private boolean isValidPedigree;
+	private boolean isValidatedPedigree;
 
 	public GermplasmQuery(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
 			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable, final QueryDefinition definition) {
@@ -351,11 +354,32 @@ public class GermplasmQuery implements Query {
 
 	void retrieveGIDsofMatchingGermplasm() {
 
+		// Validate pedigree
+		Set<Integer> allGermplasmGids = null;
+		if(!this.isValidatedPedigree) {
+			allGermplasmGids = this.validatePedigree();
+		}
+
+		if(this.isValidPedigree) {
+			if(allGermplasmGids == null) {
+				final GermplasmSearchParameter searchAllParameter = new GermplasmSearchParameter(this.searchParameter);
+				allGermplasmGids = this.germplasmDataManager.retrieveGidsOfSearchGermplasmResult(searchAllParameter);
+			}
+			this.allGids = new ArrayList<>(allGermplasmGids);
+		}
+	}
+
+	/**
+	 * Use to check if pedigree is valid for searched germplasm id
+	 * @return
+	 */
+	private Set<Integer> validatePedigree() {
+		this.isValidatedPedigree = true;
 		final GermplasmSearchParameter searchAllParameter = new GermplasmSearchParameter(this.searchParameter);
 		final Set<Integer> allGermplasmGids = this.germplasmDataManager.retrieveGidsOfSearchGermplasmResult(searchAllParameter);
-
-		this.allGids = new ArrayList<>(allGermplasmGids);
-
+		this.pedigreeService.getCrossExpansions(new HashSet<>(allGermplasmGids), null, this.crossExpansionProperties);
+		this.isValidPedigree = true;
+		return allGermplasmGids;
 	}
 
 	public List<Integer> getAllGids() {
