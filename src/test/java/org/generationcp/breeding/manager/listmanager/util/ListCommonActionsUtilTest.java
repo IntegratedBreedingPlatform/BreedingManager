@@ -17,8 +17,6 @@ import org.generationcp.breeding.manager.listmanager.ListTabComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.InventoryDetailsTestDataInitializer;
-import org.generationcp.middleware.domain.inventory.GermplasmInventory;
-import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -29,7 +27,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -223,36 +220,6 @@ public class ListCommonActionsUtilTest {
 
 		final boolean hasAnyReservation = ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListData);
 		Assert.assertFalse(hasAnyReservation);
-	}
-
-	@Test
-	public void testHandleCreateLabelsActionWithNoReservation() {
-		final List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer
-				.createGermplasmListDataForReservedEntries();
-		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0)
-				.setWithdrawalStatus(GermplasmInventory.WITHDRAWN);
-
-		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Matchers.isA(Integer.class), Matchers.anyInt(),
-				Matchers.anyInt())).thenReturn(germplasmListData);
-
-		ListCommonActionsUtil.handleCreateLabelsAction(1, this.inventoryDataManager, this.messageSource, null, null,
-				this.window);
-
-		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.PRINT_LABELS);
-		Mockito.verify(this.messageSource, Mockito.times(1))
-				.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION);
-	}
-
-	@Test
-	public void testCreateListEntryLotDetailsMap() {
-		final List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer
-				.createGermplasmListDataForReservedEntries();
-
-		final Map<Integer, ListEntryLotDetails> listEntryLotDetailsMap = ListCommonActionsUtil
-				.createListEntryLotDetailsMap(germplasmListData);
-
-		Assert.assertNotNull(listEntryLotDetailsMap);
-		Assert.assertEquals(1, listEntryLotDetailsMap.size());
 	}
 
 	@Test

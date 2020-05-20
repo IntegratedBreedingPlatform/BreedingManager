@@ -1,12 +1,11 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
-import com.vaadin.Application;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.themes.BaseTheme;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
@@ -19,11 +18,9 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
-import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
@@ -388,49 +385,6 @@ public class ListCommonActionsUtil {
 		}
 
 		return hasAnyReservation;
-	}
-
-	public static void handleCreateLabelsAction(final Integer listId, final InventoryDataManager inventoryDataManager,
-			final SimpleResourceBundleMessageSource messageSource, final ContextUtil contextUtil, final Application application,
-			final Window window) {
-		final List<GermplasmListData> germplasmListDatas = inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
-
-		if (!ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListDatas)) {
-			MessageNotifier.showError(window, messageSource.getMessage(Message.PRINT_LABELS),
-					messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION));
-			return;
-		}
-
-		// Navigate to labels printing
-		// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
-		// of navigating in and out of the Vaadin application
-		final String urlRedirectionScript =
-				"window.location = '" + application.getURL().getProtocol() + "://" + application.getURL().getHost() + ":" + application
-						.getURL().getPort() + "/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId
-						+ "?restartApplication&loggedInUserId=" + contextUtil.getContextInfoFromSession().getLoggedInUserId()
-						+ "&selectedProjectId=" + contextUtil.getContextInfoFromSession().getSelectedProjectId() + "&authToken="
-						+ contextUtil.getContextInfoFromSession().getAuthToken() + "';";
-
-		application.getMainWindow().executeJavaScript(urlRedirectionScript);
-
-	}
-
-	public static Map<Integer, ListEntryLotDetails> createListEntryLotDetailsMap(final List<GermplasmListData> inventoryDetails) {
-		final Map<Integer, ListEntryLotDetails> lotDetailsMap = new HashMap<>();
-
-		for (final GermplasmListData inventoryDetail : inventoryDetails) {
-
-			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
-			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
-
-			if (lotDetails != null) {
-				for (final ListEntryLotDetails lotDetail : lotDetails) {
-					lotDetailsMap.put(lotDetail.getLotId(), lotDetail);
-				}
-			}
-		}
-
-		return lotDetailsMap;
 	}
 
 	public static Map<Integer, LotDetails> createLotDetailsMap(final List<GermplasmListData> inventoryDetails) {

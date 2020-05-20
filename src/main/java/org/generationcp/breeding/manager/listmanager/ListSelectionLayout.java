@@ -11,11 +11,17 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -41,17 +47,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Mark Agarrado
@@ -465,21 +464,6 @@ public class ListSelectionLayout extends VerticalLayout
 		}
 	}
 
-	public void updateViewForAllLists(final ModeView modeView) {
-		final List<ListComponent> listComponents = new ArrayList<>();
-		listComponents.addAll(this.listStatusForChanges.keySet());
-
-		if (modeView.equals(ModeView.LIST_VIEW)) {
-			for (final ListComponent listComponent : listComponents) {
-				listComponent.changeToListView();
-			}
-		} else if (modeView.equals(ModeView.INVENTORY_VIEW)) {
-			for (final ListComponent listComponent : listComponents) {
-				listComponent.viewInventoryActionConfirmed();
-			}
-		}
-	}
-
 	public void updateHasChangesForAllList(final Boolean hasChanges) {
 		final List<ListComponent> listComponents = new ArrayList<>();
 		listComponents.addAll(this.listStatusForChanges.keySet());
@@ -496,17 +480,6 @@ public class ListSelectionLayout extends VerticalLayout
 		for (final ListComponent listComponent : listComponents) {
 			if (listComponent.hasUnsavedChanges()) {
 				listComponent.resetListDataTableValues();
-			}
-		}
-	}
-
-	public void resetInventoryViewForCancelledChanges() {
-		final List<ListComponent> listComponents = new ArrayList<>();
-		listComponents.addAll(this.listStatusForChanges.keySet());
-
-		for (final ListComponent listComponent : listComponents) {
-			if (listComponent.hasUnsavedChanges()) {
-				listComponent.resetListInventoryTableValues();
 			}
 		}
 	}
