@@ -18,6 +18,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.manager.Operation;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -271,7 +272,11 @@ public class GermplasmSearchBarComponent extends CssLayout
 							@Override
 							public void onClose(final ConfirmDialog dialog) {
 								if (dialog.isConfirmed()) {
-									GermplasmSearchBarComponent.this.doSearch(q);
+									try{
+										GermplasmSearchBarComponent.this.doSearch(q);
+									}catch (final Exception e){
+										Log.debug(e.getMessage());
+									}
 								}
 							}
 						});
