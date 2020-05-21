@@ -1,9 +1,10 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.beust.jcommander.internal.Lists;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
@@ -31,11 +32,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.beust.jcommander.internal.Lists;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SaveListButtonClickListenerTest {
 
@@ -213,7 +212,6 @@ public class SaveListButtonClickListenerTest {
 		this.saveListener.doSaveAction(true, true);
 		Mockito.verify(this.messageSource).getMessage(Message.LIST_DATA_SAVED_SUCCESS);
 		Mockito.verify(this.listDataTable).requestRepaint();
-		Mockito.verify(this.source).resetListInventoryTableValues();
 
 		// Verify that the programUUID and status remain the same and not overwritten by this method.
 		Assert.assertNull(currentlySavedGermplasmList.getProgramUUID());

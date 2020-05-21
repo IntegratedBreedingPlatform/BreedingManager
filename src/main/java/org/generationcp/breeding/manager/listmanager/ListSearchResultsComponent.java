@@ -1,14 +1,21 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.Action;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.VerticalLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.util.ToolTipGenerator;
@@ -30,19 +37,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.Action;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.VerticalLayout;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Configurable
 public class ListSearchResultsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -197,12 +195,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 			@Override
 			public Action[] getActions(Object target, Object sender) {
-
-				if (ListSearchResultsComponent.this.source.getModeView().equals(ModeView.INVENTORY_VIEW)) {
-					return ListSearchResultsComponent.LISTS_TABLE_CONTEXT_MENU_LOCKED;
-				} else {
-					return ListSearchResultsComponent.LISTS_TABLE_CONTEXT_MENU;
-				}
+				return ListSearchResultsComponent.LISTS_TABLE_CONTEXT_MENU;
 			}
 		};
 

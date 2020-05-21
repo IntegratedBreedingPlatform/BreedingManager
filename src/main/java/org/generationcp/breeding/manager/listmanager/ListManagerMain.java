@@ -1,18 +1,22 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
-import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
-import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
 import org.generationcp.commons.help.document.HelpButton;
@@ -31,22 +35,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Reindeer;
+import javax.annotation.Resource;
+import java.util.List;
 
 @Configurable
-public class ListManagerMain extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout,
-		UnsavedChangesConfirmDialogSource {
+public class ListManagerMain extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 5976245899964745758L;
 
@@ -84,7 +77,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	private ModeView modeView;
 	// marks if there are unsaved changes in List from ListSelectorComponent and ListBuilderComponent
 	private boolean hasChanges;
-	private UnsavedChangesConfirmDialog unsavedChangesDialog;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -528,133 +520,9 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
 	public void setModeView(final ModeView newModeView) {
-		String message = "";
-
-		if (this.modeView != newModeView) {
-			if (this.hasChanges) {
-				if (this.modeView.equals(ModeView.LIST_VIEW) && newModeView.equals(ModeView.INVENTORY_VIEW)) {
-					message = "You have unsaved changes to one or more lists. Do you want to save them before changing views?";
-					this.showUnsavedChangesConfirmDialog(message, newModeView);
-				} else if (this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)) {
-					message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
-					this.showUnsavedChangesConfirmDialog(message, newModeView);
-				}
-			} else {
-				this.modeView = newModeView;
-				this.updateView(this.modeView);
-			}
-		}
-
-	}
-
-	public void showUnsavedChangesConfirmDialog(final String message, final ModeView newModeView) {
-		this.modeView = newModeView;
-		this.unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
-		this.unsavedChangesDialog.setDebugId("unsavedChangesDialog");
-		this.getWindow().addWindow(this.unsavedChangesDialog);
-	}
-
-	public void setModeViewOnly(final ModeView newModeView) {
 		this.modeView = newModeView;
 	}
 
-	public void updateView(final ModeView modeView) {
-		this.listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
-
-		if (modeView.equals(ModeView.INVENTORY_VIEW)) {
-			this.listBuilderComponent.viewInventoryActionConfirmed();
-		} else if (modeView.equals(ModeView.LIST_VIEW)) {
-			this.listBuilderComponent.changeToListView();
-		}
-
-	}
-
-	@Override
-	public void saveAllListChangesAction() {
-
-		if (this.getListSelectionComponent().getListDetailsLayout().hasUnsavedChanges()) {
-			final Map<ListComponent, Boolean> listToUpdate = new HashMap<ListComponent, Boolean>();
-			listToUpdate.putAll(this.listSelectionComponent.getListDetailsLayout().getListStatusForChanges());
-
-			for (final Map.Entry<ListComponent, Boolean> list : listToUpdate.entrySet()) {
-				final Boolean isListHasUnsavedChanges = list.getValue();
-				if (isListHasUnsavedChanges) {
-					final ListComponent toSave = list.getKey();
-					// NOTE: the value of modeView here is the newModeView
-					if (this.modeView.equals(ModeView.LIST_VIEW)) {
-						toSave.saveReservationChangesAction(this.getWindow());
-					} else if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-						toSave.saveChangesAction();
-					}
-				}
-			}
-		}
-
-		if (this.listBuilderComponent.hasUnsavedChanges()) {
-			// Save all changes in ListBuilder
-			final GermplasmList currentlySavedGermplasmList = this.listBuilderComponent.getCurrentlySavedGermplasmList();
-			if (currentlySavedGermplasmList == null) {
-				this.listBuilderComponent.openSaveListAsDialog();
-			} else {
-				if (this.modeView.equals(ModeView.INVENTORY_VIEW)){
-					this.listBuilderComponent.getSaveListButtonListener().doSaveAction();
-					// Change ListBuilder View to List View
-					this.listBuilderComponent.viewInventoryActionConfirmed();
-				}
-				else {
-					this.listBuilderComponent.saveReservationsAction();
-				}
-			}
-		}
-
-		this.resetUnsavedStatus();
-		this.updateView(this.modeView);
-
-		this.getWindow().removeWindow(this.unsavedChangesDialog);
-		// end of saveAllListChangesAction()
-	}
-
-	@Override
-	public void discardAllListChangesAction() {
-		// cancel all the unsaved changes
-		if (this.modeView.equals(ModeView.LIST_VIEW)) {
-			this.listSelectionComponent.getListDetailsLayout().resetInventoryViewForCancelledChanges();
-		} else if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-			this.listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
-		}
-
-		this.listSelectionComponent.getListDetailsLayout().updateViewForAllLists(this.modeView);
-
-		if (this.listBuilderComponent.getCurrentlySavedGermplasmList() != null) {
-			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-				this.listBuilderComponent.discardChangesInListView();
-			} else if (this.modeView.equals(ModeView.LIST_VIEW)) {
-				this.listBuilderComponent.discardChangesInInventoryView();
-			}
-		} else {
-			// if no list save, just reset the list
-			this.listBuilderComponent.resetList();
-		}
-
-		this.resetUnsavedStatus();
-
-		this.getWindow().removeWindow(this.unsavedChangesDialog);
-		// end of discardAllListChangesAction()
-	}
-
-	@Override
-	public void cancelAllListChangesAction() {
-
-		// Return to Previous Mode View
-		if (this.modeView.equals(ModeView.LIST_VIEW)) {
-			this.setModeViewOnly(ModeView.INVENTORY_VIEW);
-		} else if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-			this.setModeViewOnly(ModeView.LIST_VIEW);
-		}
-
-		this.getWindow().removeWindow(this.unsavedChangesDialog);
-		// end of cancelAllListChangesAction()
-	}
 
 	public void resetUnsavedStatus() {
 		this.listSelectionComponent.getListDetailsLayout().updateHasChangesForAllList(false);

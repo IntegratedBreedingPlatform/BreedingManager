@@ -1,11 +1,14 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.SortableButton;
@@ -34,17 +37,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This handles saving logic in ListBuilder component
+ * This handles saving logic in ListBuilder component.
  *
  */
 @Configurable
@@ -189,7 +187,6 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				if (success) {
 					SaveListButtonClickListener.this.source.resetUnsavedChangesFlag();
 					SaveListButtonClickListener.this.source.getSource().closeList(currentlySavedList);
-					SaveListButtonClickListener.this.source.resetListInventoryTableValues();
 					if (showMessages) {
 						MessageNotifier.showMessage(SaveListButtonClickListener.this.source.getWindow(),
 								SaveListButtonClickListener.this.messageSource.getMessage(Message.SUCCESS),

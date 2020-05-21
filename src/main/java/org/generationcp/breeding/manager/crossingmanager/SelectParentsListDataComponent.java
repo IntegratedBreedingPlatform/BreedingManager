@@ -165,7 +165,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	private static final String CHECKBOX_COLUMN_ID = "Checkbox Column ID";
 
 	public static final String LIST_DATA_TABLE_ID = "SelectParentsListDataComponent List Data Table ID";
-	public static final String CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE = "Crossing manager parent tab inventory table";
 
 	private static final Action ACTION_ADD_TO_FEMALE_LIST = new Action("Add to Female List");
 	private static final Action ACTION_ADD_TO_MALE_LIST = new Action("Add to Male List");

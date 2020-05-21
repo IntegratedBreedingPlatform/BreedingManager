@@ -11,11 +11,16 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import java.util.Arrays;
-
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
@@ -32,14 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.Window;
+import java.util.Arrays;
 
 @Configurable
 public class GidLinkButtonClickListener implements Button.ClickListener {
@@ -131,11 +129,6 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 			if (this.listManagerMain.listBuilderIsLocked()) {
 				addToListLink.setEnabled(false);
 				addToListLink.setDescription("Cannot add entry to locked list in List Builder section.");
-			}
-
-			if (this.listManagerMain.getModeView().equals(ModeView.INVENTORY_VIEW)) {
-				addToListLink.setEnabled(false);
-				addToListLink.setDescription("Please switch to list view first before adding a germplasm entry to the list.");
 			}
 
 			addToListLink.setImmediate(true);
