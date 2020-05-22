@@ -150,7 +150,8 @@ public class FillWithMenuItemClickListener implements ClickListener {
 					FillWithMenuItemClickListener.this.valuesGenerator.fillWithCrossExpansion(crossExpansionLevel,
 							columnName);
 				}catch (MiddlewareException ex){
-					MessageNotifier.showError(FillWithMenuItemClickListener.this.addColumnSource.getWindow(), "Error with Cross Expansion", "There is a data problem that prevents the generation of the cross expansion. Please contact your administrator");
+					final String gid = ex.getMessage().replaceAll("\\D", "");
+					MessageNotifier.showError(FillWithMenuItemClickListener.this.addColumnSource.getWindow(), "Error with Cross Expansion", String.format("There is a data problem that prevents the generation of the cross expansion for GID '%s'. Please contact your administrator", gid));
 				}
 
 				FillWithMenuItemClickListener.this.addColumnSource.getWindow()
