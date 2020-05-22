@@ -330,7 +330,8 @@ public class GermplasmSearchBarComponent extends CssLayout
 								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
 								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
 					} else if (Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE.equals(e.getErrorMessage())) {
-						MessageNotifier.showError(GermplasmSearchBarComponent.this.getWindow(), "Error with Cross Expansion", "There is a data problem that prevents the generation of the cross expansion. Please contact your administrator");
+						final String gid = e.getCause().getMessage().replaceAll("\\D+", "");
+						MessageNotifier.showError(GermplasmSearchBarComponent.this.getWindow(), "Error with Cross Expansion", String.format("There is a data problem that prevents the generation of the cross expansion for GID '%s'. Please contact your administrator", gid));
 					} else {
 						// case for no results, database error
 						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),

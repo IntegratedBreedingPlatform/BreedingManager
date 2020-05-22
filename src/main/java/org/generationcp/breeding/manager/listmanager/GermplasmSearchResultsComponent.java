@@ -450,7 +450,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 				throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
 			}
 		}catch (final MiddlewareException e){
-			throw new BreedingManagerSearchException(Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE);
+			throw new BreedingManagerSearchException(Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE, e);
 		}finally{
 			GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
 		}
