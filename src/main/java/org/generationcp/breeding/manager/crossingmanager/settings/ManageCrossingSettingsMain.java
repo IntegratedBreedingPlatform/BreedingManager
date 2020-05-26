@@ -16,6 +16,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.HeaderLabelLayout;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
+	@Autowired
+	private StudyDataManager studyDataManager;
+
 	private Label toolTitle;
 	private Label designCrossesHeaderLabel;
 
@@ -46,14 +50,15 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 	private final ComponentContainer parent;
 
 	private GermplasmList germplasmList = null;
+	private Integer studyId = null;
 
 	public ManageCrossingSettingsMain(final ComponentContainer parent) {
 		this.parent = parent;
 	}
 
-	public ManageCrossingSettingsMain(final ComponentContainer parent, final GermplasmList germplasmList) {
+	public ManageCrossingSettingsMain(final ComponentContainer parent, final Integer studyId) {
 		this(parent);
-		this.germplasmList = germplasmList;
+		this.studyId = studyId;
 	}
 
 	@Override
@@ -89,9 +94,11 @@ public class ManageCrossingSettingsMain extends VerticalLayout
 
 		this.makeCrossesComponent = new CrossingManagerMakeCrossesComponent(this);
 		this.makeCrossesComponent.setDebugId("makeCrossesComponent");
-		if (this.germplasmList != null) {
-			this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(this.germplasmList.getId(),
-					this.germplasmList.getName());
+		if (this.studyId != null) {
+			// If the germplasm list is coming from a study, set the list name value to study name.
+			final String studyName = this.studyDataManager.getStudyDetails(studyId).getStudyName();
+			this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(this.studyId, null,
+				studyName);
 		}
 
 		this.tabSheet.addTab(this.makeCrossesComponent);

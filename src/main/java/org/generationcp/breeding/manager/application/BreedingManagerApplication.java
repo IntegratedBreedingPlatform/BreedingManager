@@ -105,33 +105,17 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 				final Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
 				manageCrossingSettings.setDebugId("manageCrossingSettings");
 				try {
-					final String[] listIdParameterValues =
-							BreedingManagerUtil.getApplicationRequest().getParameterValues(BreedingManagerApplication.REQ_PARAM_LIST_ID);
-					final String listIdParam = listIdParameterValues != null && listIdParameterValues.length > 0 ?
-							listIdParameterValues[0] : "";
-					final Integer listId = Integer.parseInt(listIdParam);
-
 					final String[] studyIdParameterValues =
 							BreedingManagerUtil.getApplicationRequest().getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_ID);
 					final String studyId = studyIdParameterValues != null && studyIdParameterValues.length > 0 ?
 							studyIdParameterValues[0] : "";
 
-					final String[] studyTypeParameterValues =
-						BreedingManagerUtil.getApplicationRequest().getParameterValues(BreedingManagerApplication.REQ_PARAM_STUDY_TYPE);
-					final String studyTypeParam =
-						studyTypeParameterValues != null && studyTypeParameterValues.length > 0 ? listIdParameterValues[0] : "";
-
-					final boolean errorWithListIdReqParam = listId == -1;
 					final boolean errorWithStudyIdReqParam = studyId.isEmpty() || !NumberUtils.isDigits(studyId);
-					final boolean errorWithStudyTypeReqParam = StringUtils.isBlank(studyTypeParam);
-
 
 					manageCrossingSettings.setSizeUndefined();
-
-					return validateAndConstructWindow(manageCrossingSettings, listId, errorWithListIdReqParam, errorWithStudyIdReqParam,
-						errorWithStudyTypeReqParam);
+					return this.validateAndConstructWindow(manageCrossingSettings, Integer.valueOf(studyId), errorWithStudyIdReqParam);
 				} catch (final NumberFormatException nfe) {
-					return getWindowWithErrorMessage(manageCrossingSettings,
+					return this.getWindowWithErrorMessage(manageCrossingSettings,
 							this.messageSource.getMessage(Message.ERROR_WRONG_GERMPLASM_LIST_ID));
 				}
 			}
@@ -140,34 +124,20 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		return super.getWindow(name);
 	}
 
-	private Window validateAndConstructWindow(final Window manageCrossingSettings, final Integer listId, final boolean errorWithListIdReqParam,
-			final boolean errorWithStudyIdReqParam, final boolean errorWithStudyTypeReqParam) {
-		if (!errorWithListIdReqParam && !errorWithStudyIdReqParam && !errorWithStudyTypeReqParam) {
-			constructCreateCrossesWindow(manageCrossingSettings, listId);
-		} else if (errorWithListIdReqParam && errorWithStudyIdReqParam && errorWithStudyTypeReqParam) {
-			return getWindowWithErrorMessage(manageCrossingSettings,
-					this.messageSource.getMessage(Message.ERROR_WRONG_GERMPLASM_LIST_ID) + " "
-							+ this.messageSource.getMessage(Message.ERROR_WRONG_STUDY_ID) + " "
-						+ this.messageSource.getMessage(Message.ERROR_WRONG_STUDY_TYPE));
-		} else if  (errorWithStudyIdReqParam) {
-			constructCreateCrossesWindow(manageCrossingSettings, listId);
+	private Window validateAndConstructWindow(final Window manageCrossingSettings, final Integer studyId,
+			final boolean errorWithStudyIdReqParam) {
+
+		this.constructCreateCrossesWindow(manageCrossingSettings, studyId);
+
+		if (errorWithStudyIdReqParam) {
 			MessageNotifier.showWarning(manageCrossingSettings, this.messageSource.getMessage(Message.ERROR_WITH_REQUEST_PARAMETERS),
 					this.messageSource.getMessage(Message.ERROR_WRONG_STUDY_ID));
-		} else if  (errorWithStudyTypeReqParam) {
-			constructCreateCrossesWindow(manageCrossingSettings, listId);
-			MessageNotifier.showWarning(manageCrossingSettings, this.messageSource.getMessage(Message.ERROR_WITH_REQUEST_PARAMETERS),
-				this.messageSource.getMessage(Message.ERROR_WRONG_STUDY_TYPE));
-		} else {
-			return getWindowWithErrorMessage(manageCrossingSettings,
-					this.messageSource.getMessage(Message.ERROR_WRONG_GERMPLASM_LIST_ID));
 		}
-
 		return manageCrossingSettings;
 	}
 
-	private void constructCreateCrossesWindow(final Window manageCrossingSettings, final Integer listId) {
-		final GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
-		this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, germplasmList);
+	private void constructCreateCrossesWindow(final Window manageCrossingSettings, final Integer studyId) {
+		this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, studyId);
 		this.manageCrossingSettingsMain.setDebugId("manageCrossingSettingsMain");
 		manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 		this.addWindow(manageCrossingSettings);

@@ -55,7 +55,8 @@ public class ViewListHeaderWindow extends BaseSubWindow implements BreedingManag
 		this.setHeight("340px");
 		this.setWidth("350px");
 
-		this.listHeaderComponent = new ViewListHeaderComponent(this.germplasmList, userNameMap, listTypes);
+		// Just create a new GermplasmList with blank details if germplasmList is not available.
+		this.listHeaderComponent = new ViewListHeaderComponent(this.germplasmList == null ? new GermplasmList() : this.germplasmList, userNameMap, listTypes);
 		this.listHeaderComponent.setDebugId("listHeaderComponent");
 	}
 

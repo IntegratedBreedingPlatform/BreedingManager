@@ -56,8 +56,8 @@ public class SelectParentsComponentTest {
 	@Test
 	public void testHideDetailsTabsheet() {
 		// Open 2 lists in tabsheet
-		this.selectParentsComponent.createListDetailsTab(1, LIST_NAME);
-		this.selectParentsComponent.createListDetailsTab(2, "LIST 2");
+		this.selectParentsComponent.createListDetailsTab(null, 1, LIST_NAME);
+		this.selectParentsComponent.createListDetailsTab(null, 2, "LIST 2");
 		
 		// Check that "Close All tabs" and list tabsheet are visible for verifying whether they were hidden later on
 		Assert.assertTrue(this.selectParentsComponent.getCloseAllTabsButton().isVisible());
@@ -76,8 +76,8 @@ public class SelectParentsComponentTest {
 	public void testCloseAllTabsButtonClick() {
 		// Open 1 list in tabsheet
 		this.selectParentsComponent.addListeners();
-		this.selectParentsComponent.createListDetailsTab(1, LIST_NAME);
-		this.selectParentsComponent.createListDetailsTab(1, "LIST 2");
+		this.selectParentsComponent.createListDetailsTab(null, 1, LIST_NAME);
+		this.selectParentsComponent.createListDetailsTab(null, 1, "LIST 2");
 		
 		// Check that "Close All tabs" and list tabsheet are visible for verifying whether they were hidden later on
 		Assert.assertTrue(this.selectParentsComponent.getCloseAllTabsButton().isVisible());
@@ -95,13 +95,13 @@ public class SelectParentsComponentTest {
 	public void testCloseAllTabsButtonVisibility() {
 		// Open 1 list in tabsheet
 		this.selectParentsComponent.addListeners();
-		this.selectParentsComponent.createListDetailsTab(1, LIST_NAME);
+		this.selectParentsComponent.createListDetailsTab(null, 1, LIST_NAME);
 		
 		// "Close All tabs" is hidden if there's only one list
 		Assert.assertFalse(this.selectParentsComponent.getCloseAllTabsButton().isVisible());
 		
 		// Check that "Close All tabs" is visible if there are 2 or more lists open
-		this.selectParentsComponent.createListDetailsTab(1, "LIST 2");
+		this.selectParentsComponent.createListDetailsTab(null,1, "LIST 2");
 		Assert.assertTrue(this.selectParentsComponent.getCloseAllTabsButton().isVisible());
 	}
 	
@@ -109,7 +109,7 @@ public class SelectParentsComponentTest {
 	public void testToggleTabsheetButtonClick() {
 		// Open 1 list in tabsheet
 		this.selectParentsComponent.addListeners();
-		this.selectParentsComponent.createListDetailsTab(1, LIST_NAME);
+		this.selectParentsComponent.createListDetailsTab(null,1, LIST_NAME);
 		Assert.assertTrue(this.selectParentsComponent.getListDetailsTabSheet().isVisible());
 		
 		// Check that tabsheet is hidden upon button click

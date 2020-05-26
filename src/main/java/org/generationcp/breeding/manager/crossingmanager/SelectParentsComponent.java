@@ -233,7 +233,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	@Override
 	public void studyClicked(final GermplasmList list) {
-		createListDetailsTab(list.getId(), list.getName());
+		this.createListDetailsTab(null, list.getId(), list.getName());
 	}
 
 	public void openBrowseForListDialog() {
@@ -273,7 +273,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		return popupWindow;
 	}
 
-	public void createListDetailsTab(final Integer listId, final String listName) {
+	public void createListDetailsTab(final Integer studyId, final Integer listId, final String listName) {
 
 		if (listDetailsTabSheet.getComponentCount() == 0) {
 			showListDetailsTabSheet();
@@ -292,7 +292,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 			}
 		} else {
 			final Tab newTab = listDetailsTabSheet
-					.addTab(new SelectParentsListDataComponent(listId, listName, source.getParentsComponent()), listName);
+					.addTab(new SelectParentsListDataComponent(studyId, listId, listName, source.getParentsComponent()), listName);
 			newTab.setDescription(generateTabDescription(listId));
 			newTab.setClosable(true);
 			listDetailsTabSheet.setSelectedTab(newTab);

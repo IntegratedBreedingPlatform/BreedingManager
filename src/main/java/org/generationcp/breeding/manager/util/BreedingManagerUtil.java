@@ -383,7 +383,7 @@ public class BreedingManagerUtil {
 	public static String getTypeString(String typeCode, List<UserDefinedField> listTypes) {
 		try {
 			for (UserDefinedField listType : listTypes) {
-				if (typeCode.equals(listType.getFcode())) {
+				if (listType.getFcode().equals(typeCode)) {
 					return listType.getFname();
 				}
 			}

@@ -65,6 +65,8 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 
 	@Override
 	public void instantiateComponents() {
+
+
 		this.nameLabel = new Label(this.messageSource.getMessage(Message.LIST_NAME) + ":");
 		this.nameLabel.setDebugId("nameLabel");
 		this.nameLabel.addStyleName("bold");
@@ -77,7 +79,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		this.ownerLabel = new Label(this.messageSource.getMessage(Message.LIST_OWNER_LABEL) + ":");
 		this.ownerLabel.setDebugId("ownerLabel");
 		this.ownerLabel.addStyleName("bold");
-		
+
 		final String ownerName = userNameMap.get(this.germplasmList.getUserId());
 		this.ownerValueLabel = new Label(ownerName);
 		this.ownerValueLabel.setDebugId("ownerValueLabel");
@@ -116,7 +118,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		this.dateLabel.setDebugId("dateLabel");
 		this.dateLabel.addStyleName("bold");
 
-		this.dateValueLabel = new Label(this.germplasmList.getDate().toString());
+		this.dateValueLabel = new Label(this.germplasmList.getDate() != null ? this.germplasmList.getDate().toString() : "");
 		this.dateValueLabel.setDebugId("dateValueLabel");
 		this.dateValueLabel.setWidth("200px");
 
@@ -134,6 +136,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		this.notesValueLabel = new Label(notes);
 		this.notesValueLabel.setDebugId("notesValueLabel");
 		this.notesValueLabel.setDescription(this.germplasmList.getNotes());
+
 	}
 
 	public GermplasmList getGermplasmList() {
@@ -149,9 +152,9 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		this.getGermplasmList().setStatus(status);
 	}
 
-	private String getStatusValue(final int status) {
+	private String getStatusValue(final Integer status) {
 		String statusValue = "Unlocked List";
-		if (this.germplasmList.getStatus() >= 100) {
+		if (status != null && this.germplasmList.getStatus() >= 100) {
 			statusValue = "Locked List";
 		}
 		return statusValue;
@@ -218,7 +221,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 
 		builder.append("<tr>\n");
 		String statusValue = "Unlocked List";
-		if (this.germplasmList.getStatus() >= 100) {
+		if (this.germplasmList.getStatus() != null && this.germplasmList.getStatus() >= 100) {
 			statusValue = "Locked List";
 		}
 		builder.append("<td><b>Status:</b></td>\n");

@@ -65,7 +65,7 @@ public class SelectParentsListDataComponentTest {
 
 	@InjectMocks
 	private final SelectParentsListDataComponent selectParents =
-			new SelectParentsListDataComponent(SelectParentsListDataComponentTest.GERMPLASM_LIST_ID,
+			new SelectParentsListDataComponent(null, SelectParentsListDataComponentTest.GERMPLASM_LIST_ID,
 					SelectParentsListDataComponentTest.LIST_NAME, this.makeCrossesParentsComponent);
 
 	private GermplasmList germplasmList;
