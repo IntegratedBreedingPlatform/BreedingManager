@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
@@ -15,7 +16,9 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.manager.Operation;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,17 +33,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.PopupView;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 
 @Configurable
 public class GermplasmSearchBarComponent extends CssLayout
@@ -60,8 +53,6 @@ public class GermplasmSearchBarComponent extends CssLayout
 	private static final String PERCENT = "%";
 
 	private final AddEntryDialogSource source;
-	private HorizontalLayout searchBarLayoutLeft;
-	private CssLayout searchBarLayoutRight;
 	private TextField searchField;
 	private final GermplasmSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
@@ -155,7 +146,7 @@ public class GermplasmSearchBarComponent extends CssLayout
 		this.exactMatches = this.messageSource.getMessage(Message.EXACT_MATCHES);
 		this.matchesContaining = this.messageSource.getMessage(Message.MATCHES_CONTAINING);
 
-		final List<String> searchTypes = Arrays.asList(new String[] {this.matchesStartingWith, this.exactMatches, this.matchesContaining});
+		final List<String> searchTypes = Arrays.asList(this.matchesStartingWith, this.exactMatches, this.matchesContaining);
 		this.searchTypeOptions = new OptionGroup(null, searchTypes);
 		this.searchTypeOptions.setDebugId("searchTypeOptions");
 		this.searchTypeOptions.setDebugId("searchTypeOptions");
@@ -220,24 +211,24 @@ public class GermplasmSearchBarComponent extends CssLayout
 		// To allow for all of the elements to fit in the default width of the search bar. There may be a better way..
 		this.searchField.setWidth("120px");
 
-		this.searchBarLayoutLeft = new HorizontalLayout();
-		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
-		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
+		final HorizontalLayout searchBarLayoutLeft = new HorizontalLayout();
+		searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
+		searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
 
-		this.searchBarLayoutLeft.setSpacing(true);
-		this.searchBarLayoutLeft.addComponent(this.searchField);
-		this.searchBarLayoutLeft.addComponent(this.searchButton);
-		this.searchBarLayoutLeft.addComponent(this.popup);
+		searchBarLayoutLeft.setSpacing(true);
+		searchBarLayoutLeft.addComponent(this.searchField);
+		searchBarLayoutLeft.addComponent(this.searchButton);
+		searchBarLayoutLeft.addComponent(this.popup);
 
-		this.searchBarLayoutRight = new CssLayout();
-		this.searchBarLayoutRight.setDebugId("searchBarLayoutRight");
-		this.searchBarLayoutLeft.setDebugId("searchBarLayoutRight");
+		final CssLayout searchBarLayoutRight = new CssLayout();
+		searchBarLayoutRight.setDebugId("searchBarLayoutRight");
+		searchBarLayoutLeft.setDebugId("searchBarLayoutRight");
 
-		this.searchBarLayoutRight.addComponent(this.withInventoryOnlyCheckBox);
-		this.searchBarLayoutRight.addComponent(this.includeParentsCheckBox);
-		this.searchBarLayoutRight.addComponent(this.includeMGMembersCheckbox);
+		searchBarLayoutRight.addComponent(this.withInventoryOnlyCheckBox);
+		searchBarLayoutRight.addComponent(this.includeParentsCheckBox);
+		searchBarLayoutRight.addComponent(this.includeMGMembersCheckbox);
 
-		this.searchBarLayoutLeft.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
+		searchBarLayoutLeft.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 		this.withInventoryOnlyCheckBox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 		this.includeParentsCheckBox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 		this.includeMGMembersCheckbox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
@@ -246,8 +237,8 @@ public class GermplasmSearchBarComponent extends CssLayout
 		firstRow.setDebugId("firstRow");
 		firstRow.setDebugId("firstRow");
 
-		firstRow.addComponent(this.searchBarLayoutLeft);
-		firstRow.addComponent(this.searchBarLayoutRight);
+		firstRow.addComponent(searchBarLayoutLeft);
+		firstRow.addComponent(searchBarLayoutRight);
 		return firstRow;
 	}
 
@@ -267,27 +258,35 @@ public class GermplasmSearchBarComponent extends CssLayout
 	}
 
 	public void searchButtonClickAction() {
+		try{
+			final String q = this.searchField.getValue().toString();
+			final String searchType = (String) this.searchTypeOptions.getValue();
+			if (this.matchesContaining.equals(searchType)) {
+				ConfirmDialog.show(this.getSourceWindow(), this.messageSource.getMessage(Message.WARNING),
+					this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
+					this.messageSource.getMessage(Message.OK),
+					this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
 
-		final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
-		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
-			ConfirmDialog.show(this.getSourceWindow(), GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
-					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
-					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.OK),
-					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
+							private static final long serialVersionUID = 1L;
 
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void onClose(final ConfirmDialog dialog) {
-							if (dialog.isConfirmed()) {
-								GermplasmSearchBarComponent.this.doSearch(q);
+							@Override
+							public void onClose(final ConfirmDialog dialog) {
+								if (dialog.isConfirmed()) {
+									try{
+										GermplasmSearchBarComponent.this.doSearch(q);
+									}catch (final Exception e){
+										Log.debug(e.getMessage());
+									}
+								}
 							}
-						}
-					});
-		} else {
-			GermplasmSearchBarComponent.this.doSearch(q);
+						});
+			} else {
+				this.doSearch(q);
+			}
+		}catch(final Exception ex) {
+			LOG.debug(ex.getMessage());
 		}
+
 	}
 
 	private Window getSourceWindow() {
@@ -330,6 +329,9 @@ public class GermplasmSearchBarComponent extends CssLayout
 						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),
 								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
 								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
+					} else if (Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE.equals(e.getErrorMessage())) {
+						final String gid = e.getCause().getMessage().replaceAll("\\D+", "");
+						MessageNotifier.showError(GermplasmSearchBarComponent.this.getWindow(), "Error with Cross Expansion", String.format("There is a data problem that prevents the generation of the cross expansion for GID '%s'. Please contact your administrator", gid));
 					} else {
 						// case for no results, database error
 						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),
@@ -339,7 +341,8 @@ public class GermplasmSearchBarComponent extends CssLayout
 							GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + q, e);
 						}
 					}
-				} finally {
+				}
+				finally {
 					GermplasmSearchBarComponent.LOG.debug("" + monitor.stop());
 				}
 			}

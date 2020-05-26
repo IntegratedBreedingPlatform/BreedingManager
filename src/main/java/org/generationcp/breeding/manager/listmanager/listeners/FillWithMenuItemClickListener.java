@@ -11,6 +11,8 @@ import org.generationcp.breeding.manager.listmanager.util.FillWithOption;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
@@ -129,9 +131,9 @@ public class FillWithMenuItemClickListener implements ClickListener {
 		levelComboBox.setDebugId("levelComboBox");
 		levelComboBox.setDebugId("levelComboBox");
 		for (int ctr = 1; ctr <= 5; ctr++) {
-			levelComboBox.addItem(Integer.valueOf(ctr));
+			levelComboBox.addItem(ctr);
 		}
-		levelComboBox.setValue(Integer.valueOf(1));
+		levelComboBox.setValue(1);
 		levelComboBox.setNullSelectionAllowed(false);
 		layout.addComponent(levelComboBox, "top:10px;left:10px");
 
@@ -144,8 +146,14 @@ public class FillWithMenuItemClickListener implements ClickListener {
 			@Override
 			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 				final Integer crossExpansionLevel = (Integer) levelComboBox.getValue();
-				FillWithMenuItemClickListener.this.valuesGenerator.fillWithCrossExpansion(crossExpansionLevel,
-						columnName);
+				try{
+					FillWithMenuItemClickListener.this.valuesGenerator.fillWithCrossExpansion(crossExpansionLevel,
+							columnName);
+				}catch (final MiddlewareException ex){
+					final String gid = ex.getMessage().replaceAll("\\D", "");
+					MessageNotifier.showError(FillWithMenuItemClickListener.this.addColumnSource.getWindow(), "Error with Cross Expansion", String.format("There is a data problem that prevents the generation of the cross expansion for GID '%s'. Please contact your administrator", gid));
+				}
+
 				FillWithMenuItemClickListener.this.addColumnSource.getWindow()
 						.removeWindow(specifyCrossExpansionLevelWindow);
 			}
