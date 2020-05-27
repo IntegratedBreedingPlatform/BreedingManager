@@ -340,7 +340,7 @@ public class GermplasmSearchResultsComponentTest {
 		final GermplasmSearchResultsComponent mockGermplasmSearchResultsComponent = Mockito.mock(GermplasmSearchResultsComponent.class);
 
 		final GermplasmSearchResultsComponent.TableRightClickHandler rightClickHandler =
-				new GermplasmSearchResultsComponent().new TableRightClickHandler(mockGermplasmSearchResultsComponent);
+			new GermplasmSearchResultsComponent.TableRightClickHandler(mockGermplasmSearchResultsComponent);
 
 		rightClickHandler.handleAction(GermplasmSearchResultsComponent.ACTION_COPY_TO_NEW_LIST, null, null);
 
@@ -358,7 +358,7 @@ public class GermplasmSearchResultsComponentTest {
 				.thenReturn(mockPagedTableWithSelectAllLayout);
 
 		final GermplasmSearchResultsComponent.TableRightClickHandler rightClickHandler =
-				new GermplasmSearchResultsComponent().new TableRightClickHandler(mockGermplasmSearchResultsComponent);
+			new GermplasmSearchResultsComponent.TableRightClickHandler(mockGermplasmSearchResultsComponent);
 
 		rightClickHandler.handleAction(GermplasmSearchResultsComponent.ACTION_SELECT_ALL, null, null);
 
